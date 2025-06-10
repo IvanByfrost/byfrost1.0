@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Byfrost - Registro</title>
+	<link rel="stylesheet" href="F:\ASGARD\Byfrost\www\css\registerstyles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+<div class="login-container">
+  <div class="login-box">
+    <div class="logo">
+		<a href="home.html">
+      <img src="F:\ASGARD\Byfrost\www\img\horizontal-logo.svg" alt="Byfrost Logo">
+		</a>
+    </div>
+	  <div class="login-titles">	
+      <h3>¡Crea tu cuenta!</h3>
+      <p>Rellena los siguientes campos con tus datos</p>
+    	</div>
+
+<form id="register-form">
+  <div class="input-grid">
+    <select id="document-type" required>
+      <option value="" disabled selected>Tipo de documento</option>
+      <option value="cc">Cédula de ciudadanía</option>
+      <option value="ti">Tarjeta de identidad</option>
+      <option value="ce">Cédula de extranjería</option>
+      <option value="pa">Pasaporte</option>
+    </select>
+
+    <input type="text" id="credential-number" placeholder="Número de documento" required pattern="\d+" title="Solo números permitidos">
+    <input type="text" id="name_user" placeholder="Nombres" required>
+    <input type="text" id="lastname_user" placeholder="Apellidos" required>
+  </div>
+
+  <button type="submit" class="btn btn-info w-100 text-white">Siguiente</button>
+</form>
+<a href="login.html">¿Ya tienes una cuenta?</a>
+  </div>
+</div>
+
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="about">
+                    <h2>Nosotros</h2>
+                    <p>Nuestra solución tecnológica innovadora propone transformar la gestión administrativa de las instituciones educativas, ofreciendo una plataforma intuitiva y sostenible.</p>
+                </div>
+        <div class="contact">
+                    <h2>Contacto</h2>
+                    <p>Cra 7 # 98-25, Bogotá, Colombia</p>
+                    <p>(601) 7886590</p>
+                    <p>(601) 4567890</p>
+                    <a href="www.byfrost.com.co">www.byfrost.com.co</a>
+                    <p>info@byfrost.com</p>
+                </div>
+        <div class="site-map">
+                    <p><a href="#">Inicio</a></p>
+                    <p><a href="plans.htm">Planes</a></p>
+                    <p><a href="contact.htm">Contáctenos</a></p>
+                    <p><a href="faq.htm">FAQ</a></p>
+                    <p><a href="site-map.htm">Mapa del sitio</a></p>
+                </div>
+            </div>
+    <div class = "copyright">
+            <p>Byfrost &copy; 2026. Todos los derechos reservados.</p>
+            <p>Diseñado por Byfrost Software.</p>
+        </div>
+    </div>
+    </footer>
+
+    <script src="../json/register.js"></script>
+</body>
+</html>
