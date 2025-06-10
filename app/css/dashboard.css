@@ -1,0 +1,201 @@
+.root-dashboard {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+}
+
+.root-sidebar {
+    width: 200px;
+    background-color: #88e1ff;
+    padding: 20px;
+}
+
+.root-sidebar ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.root-sidebar ul li {
+    margin-bottom: 10px;
+}
+
+.root-sidebar li a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    color: #333;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar-menu i[data-lucide] {
+    width: 18px;
+    height: 18px;
+    stroke: #007bff;
+}
+
+.sidebar-menu li a:hover {
+    background-color: #f0f4ff;
+    color: #007bff;
+    border-radius: 6px;
+}
+
+.root-sidebar ul a {
+    text-decoration: none;
+    color: #000000;
+}
+
+.main-dashboard {
+    flex: 1;
+    padding: 20px;
+    background-color: #ffffff;
+    flex-wrap: wrap;
+}
+
+.mdashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-direction: column;
+}
+
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: 2fr 2fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 20px;
+    padding: 10px;
+    flex-wrap: wrap;
+}
+
+.card {
+    background-color: white;
+    /* Fondo base para que se vea el cambio */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    position: relative;
+}
+
+.card h3 {
+height: 100%;
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+}
+
+.card:hover {
+    background-color: #97ff9e;
+    color: rgb(0, 0, 0);
+}
+
+.dash-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background-color: rgb(244, 244, 244);
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.form-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.input-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.form-footer {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.btn-register {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #00c452;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-info {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #55beff;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    padding: 10px 20px;
+}
+
+.btn-cancel {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #ff5555;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    align-items: center;
+}
+
+    .search-container {
+      display: flex;
+      background-color: white;
+      border-radius: 25px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+
+    .search-container input[type="text"] {
+      border: none;
+      padding: 10px 15px;
+      width: 100%;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .search-container button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 10px 15px;   
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+
+    .search-container button:hover {
+      background-color: #45a049;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-items: center;
+    }
+    .user-avatar img {
+      display: flex;
+      gap: 10px;
+      border-radius: 50%;
+    }

@@ -1,0 +1,141 @@
+.wrapper-register {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-image: url('../img/fondoregister.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+
+/* Form Inputs */
+#document-type, #credential-number, #name_user, #lastname_user, #phone-user, #adress_user, #email_user, #conf-email_user, #password_user, #conf-password_user {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  font-size: 16px;
+  border-radius: 10px;
+  background-color: white;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+#document-type {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23000" class="bi bi-caret-down-fill" viewBox="0 0 16 16"><path d="M7.247 11.14l-4.796-5.481C2.11 5.21 2.443 4.5 3.093 4.5h9.813c.65 0 .983.71.642 1.159l-4.796 5.48a1 1 0 0 1-1.505 0z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px 16px;
+  padding-right: 40px;
+}
+
+ #credential-number:focus, #name_user:focus, #lastname_user:focus, #phone-user:focus, #adress_user:focus, #email_user:focus, #conf-email_user:focus, #password_user:focus, #conf-password_user:focus {
+  border-color: #a5ffa0;
+  background-color: #e3ffe2;
+}
+
+#document-type:focus {
+  border-color: #a5ffa0;
+}
+
+.input-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.input-grid select, .input-grid input {
+  flex: 1 1 calc(50% - 10px);
+  padding: 15px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-family: lato, sans-serif;
+}
+
+.button-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 30px;
+  justify-content: flex-end;
+}
+
+.button-grid .btn {
+  flex: 1 1 calc(50% - 10px);
+  padding: 10px 15px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+}
+
+.button-link {
+  display: inline-block;
+  text-decoration: none;
+}
+
+
+textarea:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 191, 255, 0.5); /* azul claro al enfocar */
+}
+
+.login-titles h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 5px;
+  color: #000000;
+}
+
+.login-titles p {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-top: 5px;
+  color: #000000;
+}
+
+input.is-invalid {
+  border: 2px solid #ff5e5e;
+  background-color: #ffb7b7;
+}
+
+.error-msg {
+  color: red;
+  font-size: 0.9em;
+  margin-top: 4px;
+  text-align: left;
+  display: block;
+  min-height: 1.2em;
+}
+
+.terms-politics {
+  margin-top: 10px;
+  justify-content: left;
+}
+
+.terms-politics p {
+  justify-content: left;
+}
+
+.error-list {
+  color: red;
+  font-size: 0.9em;
+  margin-top: 10px;
+  list-style: disc inside;
+  padding-left: 0;
+  align-self: flex-start;
+}
+
+#error-list, .error-list {
+  text-align: left; /* Anula el centrado heredado */
+  margin-left: 0;   /* Por si tiene margen automático */
+}
+
+#terms-politics, .terms-politics {
+  text-align: left; /* Anula el centrado heredado */
+  margin-left: 0;   /* Por si tiene margen automático */
+}

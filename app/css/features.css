@@ -1,0 +1,56 @@
+/* Estilos para la sección de características */
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    width: 100%;
+    max-width: none;
+    border-radius: 10px;
+    overflow: hidden;
+    text-align: center;
+    align-items: stretch;
+    align-content: stretch;
+}
+
+.features img {
+    width: 100%;
+    height: 350px; /* o auto */
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    display: block;
+}
+
+.features h2 {
+    text-align: center;
+    font-size: 1.5em;
+    margin: 10px 0;
+    font-weight: 700;
+}
+
+.features p {
+    text-align: left;
+    font-size: 1em;
+    margin: 10px 0;
+    color: #555;
+}
+
+.app-download {
+    display: flex;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    background-color: #99f1ff;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.app-img {
+    width: 100%;
+    gap: 20px;
+    max-width: 120px;
+    height: auto;
+    margin-bottom: 20px;
+    padding: 10px;
+}

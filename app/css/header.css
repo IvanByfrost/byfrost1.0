@@ -1,0 +1,64 @@
+/* Estilos generales */
+.main-header {
+    display: flex;
+    font-family: lato, sans-serif;
+    background-color: #ffffff;
+    color: #000000;
+    padding: 20px 0;
+    text-align: center;
+    justify-content: space-between;
+    padding: 15px 40px;
+  }
+  
+  .logo-header {
+    margin-left: 10px;
+    display: flex;
+  }
+  
+  .login-bttn {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #000000;
+    font-weight: 600;
+    padding: 8px 15px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    height: 58px;
+  }
+  
+  .login-bttn img {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .login-bttn:hover {
+    text-decoration: bolder;
+    background-color: #d9f6dd;
+    color: #057a35;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .login-bttn a {
+    text-decoration: none;
+  }
+
+.menu-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    background-color: #ffffff;
+    padding: 10px 0;
+  }
+  
+  .menu-bar a {
+    margin: 0 15px;
+    text-decoration: none;
+    color: #000000;
+    font-weight: bold;
+  }
+  .menu-bar a:hover {
+    color: #007bff;
+  }

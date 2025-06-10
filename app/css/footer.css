@@ -1,0 +1,55 @@
+/* Footer */
+footer {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 20px 0;
+    text-align: center;
+}
+
+/* Contenedor flexible */
+.footer-content {
+    display: flex;
+    justify-content: center; /* Centra los elementos */
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px; /* Espaciado más equilibrado */
+    max-width: 1100px; /* Para que no se estire demasiado */
+    margin: 0 auto;
+    padding: 10px;
+}
+
+/* Ajustando las secciones */
+footer .about,
+footer .contact,
+footer .site-map {
+    flex: 1; /* Para que ocupen el mismo espacio */
+    min-width: 280px; /* Evita que se vuelvan demasiado angostos */
+    max-width: 400px; /* Evita que se expandan demasiado */
+    text-align: left;
+}
+
+/* Títulos */
+footer h2 {
+    font-size: 1.4em;
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+/* Texto */
+footer p {
+    font-size: 14px;
+    line-height: 1.5; /* Mejora la legibilidad */
+    margin-bottom: 10px;
+}
+
+/* Enlaces */
+footer a {
+    color: #000000;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+footer a:hover {
+
+    color: #007bff;
+}

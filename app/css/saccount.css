@@ -1,0 +1,261 @@
+/* Estilos generales */
+
+.main-header {
+  display: flex;
+  font-family: lato, sans-serif;
+  background-color: #ffffff;
+  color: #000000;
+  padding: 20px 0;
+  text-align: center;
+  justify-content: space-between;
+  padding: 15px 40px;
+}
+
+.logo-header {
+  margin-left: 10px;
+  display: flex;
+}
+
+.login-bttn {
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #000000;
+  font-weight: 600;
+  padding: 8px 15px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  height: 58px;
+}
+
+.login-bttn img {
+  width: 20px;
+  height: 20px;
+}
+
+.login-bttn:hover {
+  text-decoration: bolder;
+  background-color: #d9f6dd;
+  color: #057a35;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.login-bttn a {
+  text-decoration: none;
+}
+
+body {
+  font-family: lato, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-image: url('F:/ASGARD/Byfrost/www/img/FondoForgotPass.webp'); /* Reemplaza 'fondo.jpg' con tu imagen de fondo */
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.saccount{
+  display: flex;
+  justify-content: center;
+  border-radius: 20px;
+  background-color: #66FF66;
+}
+
+/* Login Box */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  padding: 40px;
+  border-radius: 10px;
+}
+
+.login-box {
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 60px;
+  border-radius: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.login-box .logo img {
+  height: 80px;
+  margin-bottom: 20px;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 20px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-size: 16px;
+  font-family: lato, sans-serif;
+}
+
+.login-box button {
+  background-color: #007bff;
+  color: #000000;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 30%;
+  margin-bottom: 10px;
+  font-family: lato, sans-serif;
+  font-weight: 800;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+#register-bttn {
+  background-color: #66FF66;
+  color: #000000;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  width: 50%;
+  margin-top: 10px;
+  font-family: lato, sans-serif;
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.login-box a {
+  display: block;
+  margin-bottom: 5px;
+  color: #007bff;
+  text-decoration: bolder;
+}
+
+/* Footer */
+footer {
+  background-color: #ffffff;
+  color: #000000;
+  padding: 20px 0;
+  text-align: center;
+}
+
+/* Contenedor flexible */
+.footer-content {
+  display: flex;
+  justify-content: center; /* Centra los elementos */
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 20px; /* Espaciado más equilibrado */
+  max-width: 1100px; /* Para que no se estire demasiado */
+  margin: 0 auto;
+  padding: 10px;
+}
+
+/* Ajustando las secciones */
+footer .about,
+footer .contact,
+footer .site-map {
+  flex: 1; /* Para que ocupen el mismo espacio */
+  min-width: 280px; /* Evita que se vuelvan demasiado angostos */
+  max-width: 400px; /* Evita que se expandan demasiado */
+  text-align: left;
+}
+
+/* Títulos */
+footer h2 {
+  font-size: 1.4em;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+/* Texto */
+footer p {
+  font-size: 14px;
+  line-height: 1.5; /* Mejora la legibilidad */
+  margin-bottom: 10px;
+}
+
+/* Enlaces */
+footer a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+  /* Estilo común para input y select */
+  #document-type, #credential #name_user #lastname_user{
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+      border-radius: 10px;
+      background-color: white;
+      outline: none;
+      transition: border-color 0.3s ease;
+  }
+
+  /* Quitar la apariencia nativa del select para que se parezca más a un input */
+  #document-type {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23000" class="bi bi-caret-down-fill" viewBox="0 0 16 16"><path d="M7.247 11.14l-4.796-5.481C2.11 5.21 2.443 4.5 3.093 4.5h9.813c.65 0 .983.71.642 1.159l-4.796 5.48a1 1 0 0 1-1.505 0z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px 16px;
+      padding-right: 40px; /* espacio para la flechita */
+  }
+
+  /* Para que al enfocar tenga un cambio visual */
+  #document-type:focus, #credential:focus {
+      border-color: #a5ffa0;
+  }
+
+.input-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.input-grid select,
+.input-grid input {
+  flex: 1 1 calc(50% - 10px);
+  padding: 15px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  font-family: lato, sans-serif;
+	
+}
+
+.button-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 30px;
+  justify-content: flex-end; /* o center si prefieres */
+}
+
+.button-grid button {
+  flex: 1 1 calc(50% - 10px); /* 2 botones por fila */
+  padding: 10px 15px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}

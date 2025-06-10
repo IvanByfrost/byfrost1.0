@@ -1,0 +1,24 @@
+.error-container {
+    display: flex;
+    background-image: url('../img/malla-byfrost.jpg');
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 200px); /* Ajusta la altura para centrar verticalmente */
+    text-align: center;
+}
+
+.error-title {
+    font-family: lato, sans-serif;
+    font-weight: 700;
+    font-size: 12em;
+    color: #fe4040;
+    text-decoration: solid;
+    margin-bottom: 20px;
+    
+}
+
+.image-error {
+    margin-top: 40px;
+    align-items: center;
+}

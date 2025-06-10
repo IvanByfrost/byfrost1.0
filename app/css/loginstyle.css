@@ -1,0 +1,112 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-image: url('../img/fondo-login.webp');
+    background-size: cover;
+    background-position: center;
+}
+
+/* Login Box */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    padding: 40px;
+    border-radius: 10px;
+}
+
+.login-box {
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 60px;
+    border-radius: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.login-box .logo img {
+    height: 80px;
+    margin-bottom: 20px;
+}
+
+.inputEstilo1 {
+    width: 100%;
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 16px;
+    font-family: lato, sans-serif;
+}
+
+.login-box button {
+    background-color: #00b7ff;
+    color: #000000;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 30%;
+    margin-bottom: 10px;
+    font-family: lato, sans-serif;
+    font-weight: 800;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+#register-bttn {
+    background-color: #66FF66;
+    color: #000000;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 50%;
+    margin-top: 10px;
+    font-family: lato, sans-serif;
+    font-weight: 700;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.login-box a {
+    display: block;
+    margin-bottom: 5px;
+    color: #00b7ff;
+    text-decoration: bolder;
+}
+
+/* Aplica borde verde cuando el campo está enfocado */
+.login-box input:focus,
+.login-box select:focus {
+    border-color: #a5ffa0;
+}
+
+/* Aplica borde verde cuando el campo tiene texto o valor válido */
+.login-box input:not(:placeholder-shown),
+.login-box select:valid {
+    border-color: #a5ffa0;
+}
+
+  button.prev, button.next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255,255,255,0.7);
+    border: none;
+    padding: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 10;
+  }
+
+button.prev { left: 10px; }
+button.next { right: 10px; }
+
+.error-msg {
+  color: red;
+  font-size: 0.9em;
+  margin-top: 4px;
+  display: block;
+  text-align: right;
+}
