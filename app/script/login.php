@@ -1,20 +1,15 @@
 <?php
-#session_start();
-#include("conexion.php");
+session_start();
+include("conexion.php");
 $fecha_creacion = date('Y-m-d');
 $asunto = $_POST['asunto'];
 
 	if($asunto=="login"){
+		$tipoDocumento = $_POST['tipoDocumento'];
 		$documento = $_POST['documento'];
 		$password = md5($_POST['password']);
-		
-		$datos = [
-			"estatus"	=> "ok",
-		];
-		echo json_encode($datos);
 
-		/*
-		$sql1 = "SELECT * FROM usuarios WHERE usuario = '$usuario' and password = '$password' LIMIT 1";
+		$sql1 = "SELECT * FROM usuarios WHERE tipoDocumento = '$tipoDocumento' and documento = '$documento' and password = '$password' LIMIT 1";
 		$proceso1 = mysqli_query($conexion,$sql1);
 		$contador1 = mysqli_num_rows($proceso1);
 		if($contador1==0){
@@ -30,18 +25,18 @@ $asunto = $_POST['asunto'];
 				$rol = $row1["rol"];
 			}
 
-			$redireccion = "admin.php";
-			session_start();
-			$_SESSION["systemDiazStoreId"] = $usuarioId;
-			$_SESSION["systemDiazStoreRol"] = $rol;
+			#$redireccion = "admin.php";
+			#session_start();
+			#$_SESSION["sistemaIvan"] = $usuarioId;
+			#$_SESSION["sistemaIvan"] = $rol;
 			
 			$datos = [
 				"estatus"	=> "ok",
-				"redireccion"	=> $redireccion,
+				"msg" => "Aqui se logea"
+				#"redireccion"	=> $redireccion,
 			];
 			echo json_encode($datos);
 		}
-		*/
 	}
 
 	if($asunto=='table1'){
@@ -236,39 +231,42 @@ $asunto = $_POST['asunto'];
 		$tipoDocumento = $_POST['tipoDocumento'];
 		$documento = $_POST['documento'];
 		$password = md5($_POST['password']);
-		
-		$datos = [
-			"estatus"	=> "ok",
-		];
-		echo json_encode($datos);
-	}
+		$rol = 1;
 
-	if($asunto=='crear'){
-		$nombre = $_POST['nombre'];
-		$numeroIdentificacion = $_POST['numeroIdentificacion'];
-		$tipoIdentificacion = $_POST['tipoIdentificacion'];
-		$telefono = $_POST['telefono'];
-		$direccion = $_POST['direccion'];
-		$correo = $_POST['correo'];
-		$cumpleaños = $_POST['cumpleaños'];
-
-		$sql3 = "SELECT * FROM clientes WHERE identificacion = '$numeroIdentificacion'";
-		$proceso3 = mysqli_query($conexion,$sql3);
-		$contador3 = mysqli_num_rows($proceso3);
-		if($contador3>0){
-			$datos = [
-				"estatus"	=> "error",
-				"msg"	=> "El cliente ya existe",
-			];
-			echo json_encode($datos);
-			exit;
-		}
-		
-		$sql1 = "INSERT INTO clientes (identificacion,tipoIdentificacion,nombre,telefono,direccion,correo,cumpleanios) VALUES ('$numeroIdentificacion','$tipoIdentificacion','$nombre','$telefono','$direccion','$correo','$cumpleaños')";
+		$sql1 = "SELECT * FROM usuarios WHERE correo = '$correo' or tipoDocumento = '$tipoDocumento' or documento = '$documento'";
 		$proceso1 = mysqli_query($conexion,$sql1);
+		$contador1 = mysqli_num_rows($proceso1);
+		if($contador1>0){
+			$error = "";
+
+			while($row1=mysqli_fetch_array($proceso1)){
+				$correoSql = $row1["correo"];
+				$tipoDocumentoSql = $row1["tipoDocumento"];
+				$documentoSql = $row1["documento"];
+				if($correoSql==$correo){
+					$error = "El correo ya existe";
+				}else if($tipoDocumentoSql==$tipoDocumento and $documentoSql==$documento){
+					$error = "El documento ya existe";
+				}
+			}
+
+			if($error!=""){
+				$datos = [
+					"estatus"	=> "error",
+					"msg"	=> $error,
+				];
+				echo json_encode($datos);
+				exit;
+			}
+
+		}
+
+		$sql2 = "INSERT INTO usuarios (tipoDocumento,documento,correo,password,rol) VALUES ('$tipoDocumento','$documento,'$correo','$password',$rol)";
+		$proceso2 = mysqli_query($conexion,$sql2);
+		
 		$datos = [
 			"estatus"	=> "ok",
-			"msg"	=> "Se ha creado exitosamente",
+			"msg"	=> "Creado exitosamente",
 		];
 		echo json_encode($datos);
 	}

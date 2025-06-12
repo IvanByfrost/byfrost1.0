@@ -67,6 +67,9 @@
             <div class="col-12">
                 <input type="password" class="inputEstilo1" id="password" name="password" placeholder="Contraseña" required>
             </div>
+            <div class="col-12">
+                <input type="password" class="inputEstilo1" id="password2" name="password2" placeholder="Confirmar Contraseña" required>
+            </div>
 
             <div class="col-6">
                 <button type="submit" id="register-bttn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Completar Registro</button>
@@ -130,6 +133,7 @@
         var tipoDocumento = $('#tipoDocumento').val();
         var documento = $('#documento').val();
         var password = $('#password').val();
+        var password2 = $('#password2').val();
         
         if(documento.length<4 || documento.length>12){
             var textoError1 = "";
@@ -158,6 +162,17 @@
             Swal.fire({
                 title: 'Error',
                 text: textoError1,
+                icon: 'error',
+                position: 'center',
+                timer: 5000
+            });
+            return false;
+        }
+
+        if(password != password2){
+            Swal.fire({
+                title: 'Error',
+                text: 'Las contraseñas no coinciden',
                 icon: 'error',
                 position: 'center',
                 timer: 5000
