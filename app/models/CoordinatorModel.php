@@ -1,6 +1,6 @@
 <?php
-class CoordinadorModelo {
-    public function obtenerDatos() {
+class CoordinatorModel extends MainModel {
+    public function getData() {
         return [
             'nombre' => 'María Gómez',
             'rol' => 'Coordinadora',

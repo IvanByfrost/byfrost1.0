@@ -48,3 +48,10 @@
   </div>
 </body>
 </html>
+
+
+<?php
+require_once 'controlador/CoordinadorController.php';
+
+$controlador = new CoordinatorController($dbConn);
+$controlador->mostrarPanel();
