@@ -19,7 +19,7 @@ require_once ROOT . '/app/views/default/head.php';
         <a href="faq.html" class="btn-menu">FAQ</a>
     </div>
 
-    <a href="<?php echo views ?>index/login.php">
+    <a href="/byfrost1.0/app/views/index/login.php">
         <div class="login-bttn">
     <img src="<?php echo url . rq ?>img\user-icon.svg" alt="User Icon" width="30"> 
     Iniciar sesión
