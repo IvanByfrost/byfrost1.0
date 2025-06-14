@@ -1,7 +1,7 @@
 <?php
 session_start();
-include("conexion.php");
-$fecha_creacion = date('Y-m-d');
+include("connection.php");
+$fecha_creacion = date('d-m-y');
 $asunto = $_POST['asunto'];
 
 	if($asunto=="login"){
