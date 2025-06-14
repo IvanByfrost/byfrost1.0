@@ -18,6 +18,14 @@ class TeacherModel extends mainModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // Función para crear un nuevo profesor. 
+    public function createTeacher(){
+        $query = "INSERT INTO PROFESSOR ()";
+        $stmt = $this->dbConn->prepare($query);
+        $stmt->execute();
+        return $stmt->rowCount() > 0; // Retorna true si se creó correctamente
+    }
+
     // Función para obtener un profesor por Documento
     public function getTeachersbyDoc($document)
     {
