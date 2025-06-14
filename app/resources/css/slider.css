@@ -30,6 +30,7 @@
 
 .slider-wrapper .slider-item:nth-child(2)::before {   
     background-image: url('../img/slider2.webp');
+
 }
 
 .slider-wrapper .slider-item:nth-child(3)::before {   

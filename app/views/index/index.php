@@ -1,8 +1,10 @@
 <?php
-require_once 'config.php';
+if (!defined('ROOT')) {
+    define('ROOT', dirname(dirname(dirname(__DIR__))));
+}
+require_once ROOT . '/app/config.php';
 require_once __DIR__ . '/../default/head.php';
 require_once __DIR__ . '/../default/header.php';
-require_once __DIR__ . '/../default/footer.php';
 ?>
 
 <body>
@@ -51,22 +53,22 @@ require_once __DIR__ . '/../default/footer.php';
 <section class="feature-section">
     <div class="features">
         <div class="features">
-            <img src="img\gestion1.webp" alt="Gestión">
+            <img src="<?php echo url . rq ?>img\gestion1.webp" alt="Gestión">
             <h2>Gestión centralizada y eficiente</h2>
             <p>Accede a toda la información administrativa y académica en un solo lugar, optimizando tiempos y reduciendo errores.</p>
         </div>
     <div class="features">
-        <img src="img\automatizacion.webp" alt="Automatización">
+        <img src="<?php echo url . rq ?>img\automatizacion.webp" alt="Automatización">
         <h2>Automatización de procesos</h2>
         <p>Digitaliza tareas como inscripciones, calificaciones y reportes, permitiendo a docentes y administrativos enfocarse en lo realmente importante.</p>
     </div>
     <div class="features">
-        <img src="img\acesso.webp" alt="Acceso">
+        <img src="<?php echo url . rq ?>img\acesso.webp" alt="Acceso">
         <h2>Acceso seguro y en tiempo real</h2>
         <p>Consulta desde cualquier dispositivo con acceso autorizado, garantizando la confidencialidad y disponibilidad de los datos.</p>
     </div>
     <div class="features">
-        <img src="img\comunicacion.webp" alt="Acceso">
+        <img src="<?php echo url . rq ?>img\comunicacion.webp" alt="Acceso">
         <h2>Mejor comunicación institucional</h2>
         <p>Facilita la interacción entre docentes, alumnos y padres mediante notificaciones, reportes y seguimiento del rendimiento académico.</p>
     </div>
@@ -76,8 +78,13 @@ require_once __DIR__ . '/../default/footer.php';
 <section class="app-buttons">
     <div class="app-download">
         <h2>Descarga la app Byfrost</h2>
-        <img src="img\Byfrost.svg" alt="Byfrost Logo" width="100">
-        <img src="img\playstore-badge.webp" alt="Google Play" width="200">
-        <img src="img\appstore-badge.webp" alt="App Store" width="180">
+        <img src="<?php echo url . rq ?>img\Byfrost.svg" alt="Byfrost Logo" width="100">
+        <img src="<?php echo url . rq ?>img\playstore-badge.webp" alt="Google Play" width="200">
+        <img src="<?php echo url . rq ?>img\appstore-badge.webp" alt="App Store" width="180">
     </div>
 </section>
+
+<?php
+require_once ROOT . '/app/config.php';
+require_once __DIR__ . '/../default/footer.php';
+?>

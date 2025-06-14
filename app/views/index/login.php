@@ -1,41 +1,8 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Byfrost</title>
-    <link rel="stylesheet" href="css\header.css">
-    <link rel="stylesheet" href="css\features.css">
-    <link rel="stylesheet" href="css\footer.css">
-    <link rel="stylesheet" href="css\loginstyle.css">
-    <link rel="stylesheet" href="css\slider.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200,0,0">
-</head>
-
-<header>
-    <div class="main-header">
-    <div class="logo-header">
-        <a href="index.php">
-            <img src="img\horizontal-logo.svg" alt="Byfrost Logo" width="200">
-        </a>
-    </div>
-
-    <div class="menu-bar">
-        <a href="plans.htm" class="btn-menu">Planes</a>
-        <a href="contact.php" class="btn-menu">Contáctenos</a>
-        <a href="faq.html" class="btn-menu">FAQ</a>
-    </div>
-
-    <a href="login.php">
-        <div class="login-bttn">
-    <img src="img\user-icon.svg" alt="User Icon" width="30"> 
-    Iniciar sesión
-        </div>
-    </a>
-</div>
-</header>
+<?php
+require_once(__DIR__ . '/../../config.php');
+require_once __DIR__ . '/../default/head.php';
+require_once __DIR__ . '/../default/header.php';
+?>
 
 <body>
 <div class="container">
