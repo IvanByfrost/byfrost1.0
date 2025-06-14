@@ -11,9 +11,9 @@ class TeacherModel extends mainModel
     }
 
     // Función para obtener todos los profesores
-    public function getTeachers()
+    public function getTeachers($document)
     {
-        $query = "";
+        $query = "SELECT * FROM professor";
         $stmt = $this->dbConn->query($query);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -21,7 +21,7 @@ class TeacherModel extends mainModel
     // Función para obtener un profesor por Documento
     public function getTeachersbyDoc($document)
     {
-        $query = "";
+        $query = "SELECT * FROM professor WHERE doc_professor = :document";
         $stmt = $this->dbConn->prepare($query);
         $stmt->execute(['document' => $document]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -29,7 +29,7 @@ class TeacherModel extends mainModel
     //Función para eliminar un profesor por Documento
     public function deleteTeacher($document)
     {
-        $query = "";
+        $query = "DELETE FROM professor WHERE doc_professor = :document";
         $stmt = $this->dbConn->prepare($query);
         $stmt->execute(['document' => $document]);
     }
