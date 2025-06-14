@@ -11,7 +11,7 @@ class TeacherModel extends mainModel
     }
 
     // Función para obtener todos los profesores
-    public function getTeachers($document)
+    public function getTeachers()
     {
         $query = "SELECT * FROM professor";
         $stmt = $this->dbConn->query($query);

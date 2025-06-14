@@ -12,9 +12,9 @@ class TeacherController extends MainController
         parent::__construct($dbConn);
         $this->teacherModel = new TeacherModel($dbConn);
     }
-    public function getAllTeachers($teachers)
+    public function dashTeacher()
     {
-        $teachers = $this->teacherModel->getTeachers($teachers);
+        $teachers = $this->teacherModel->getTeachers();
         $this->render('teacher/dashboard', ['teachers' => $teachers]);
     }
 }
