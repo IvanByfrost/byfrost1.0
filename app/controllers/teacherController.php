@@ -12,4 +12,5 @@ class TeacherController extends MainController
         parent::__construct($dbConn);
         $this->teacherModel = new TeacherModel($dbConn);
     }
+
 }
