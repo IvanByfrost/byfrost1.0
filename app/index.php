@@ -1,56 +1,29 @@
 <?php
-/* $url = $_GET['url'] ?? 'Index/index';
-echo $url; */
+define('ROOT', dirname(__DIR__));
+require_once 'config.php'; // Asegúrate que define constantes como DB_HOST, DB_NAME, etc.
 
-require 'config.php';
-$controller = "";
-$method = "";
-$params = "";
-
-$url = $_GET['url'] ?? 'Index/index';
-$arrayUrl = explode('/', $url);
-if (isset($arrayUrl[0])){
-    $controller = $arrayUrl[0];
-}
-
-if (isset($arrayUrl[1])){
-    if ($arrayUrl[1] !="") {
-        $method = $arrayUrl[1];
-    }
-}
-
-if (isset($arrayUrl[2])){
-    if ($arrayUrl[2] !="") {
-        $params = $arrayUrl[2];
-    }
-}
-
+// Autocarga
 spl_autoload_register(function ($class) {
-if(file_exists(lbs.$class.".php")) 
-require lbs.$class.".php";
-});
-require 'controllers/errorController.php';
-$error = new ErrorController();
-$controller = $controller."controller";
-$ControllersPath = "controllers/".$controller.".php";
-if (file_exists($ControllersPath)){
-    require $ControllersPath;
-    $controller = new $controller();
-    if(isset($method)) {
-        if (method_exists($controller, $method)) {
-            if (isset($params)){
-                $controller->{$method}($params);
-            } else {
-                $controller ->{$method}();
-            } 
-        } else {
-            $error ->Error($url);
-        } 
+    $paths = ['Library', 'Controllers', 'Models'];
+    foreach ($paths as $folder) {
+        $file = __DIR__ . "/$folder/$class.php";
+        if (file_exists($file)) {
+            require_once $file;
+            return;
+        }
     }
-} else {
-    $error ->Error($url);
+});
+
+// Conexión a la base de datos
+try {
+    $dbConn = new PDO("mysql:host=localhost;dbname=baldur-test", 'root', '');
+    $dbConn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Error de conexión: " . $e->getMessage());
 }
 
-//echo $controller." ".$method." ".$params;
+// Instancia de la clase de vistas
+$view = new Views();
 
-?>
+// Iniciar enrutador
+$router = new Router($dbConn, $view);

@@ -1,8 +1,8 @@
 <?php
 require_once 'config.php';
-require_once 'default/head.php';
-require_once 'default/header.php';
-require_once 'default/footer.php';
+require_once __DIR__ . '/../default/head.php';
+require_once __DIR__ . '/../default/header.php';
+require_once __DIR__ . '/../default/footer.php';
 ?>
 
 <body>
