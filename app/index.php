@@ -1,149 +1,56 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Byfrost</title>
-    <link rel="stylesheet" href="css\header.css">
-    <link rel="stylesheet" href="css\features.css">
-    <link rel="stylesheet" href="css\footer.css">
-    <link rel="stylesheet" href="css\home.css">
-    <link rel="stylesheet" href="css\slider.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200,0,0">
-</head>
+<?php
+/* $url = $_GET['url'] ?? 'Index/index';
+echo $url; */
 
-<header>
-    <div class="main-header">
-    <div class="logo-header">
-        <a href="index.php">
-            <img src="img\horizontal-logo.svg" alt="Byfrost Logo" width="200">
-        </a>
-    </div>
+require 'config.php';
+$controller = "";
+$method = "";
+$params = "";
 
-    <div class="menu-bar">
-        <a href="plans.htm" class="btn-menu">Planes</a>
-        <a href="contact.php" class="btn-menu">Contáctenos</a>
-        <a href="faq.html" class="btn-menu">FAQ</a>
-    </div>
+$url = $_GET['url'] ?? 'Index/index';
+$arrayUrl = explode('/', $url);
+if (isset($arrayUrl[0])){
+    $controller = $arrayUrl[0];
+}
 
-    <a href="login.php">
-        <div class="login-bttn">
-    <img src="img\user-icon.svg" alt="User Icon" width="30"> 
-    Iniciar sesión
-        </div>
-    </a>
-</div>
-</header>
+if (isset($arrayUrl[1])){
+    if ($arrayUrl[1] !="") {
+        $method = $arrayUrl[1];
+    }
+}
 
-<body>
-    <div class="slider-container swiper">
-        <div class="slider-wrapper swiper-wrapper">
-            <div class="slider-item swiper-slide">
-                <div class="slide-content">
-                    <h3 class ="slide-subtitle">Transformación educativa</h3>
-                    <h2 class ="slide-title">Transforma la gestión educativa</h2>
-                    <p class ="slide-description">Accede a toda la información administrativa y académica en un solo lugar, optimizando tiempos y reduciendo errores.</p>
-                    <a href="404.html" class="slide-button"><span>Ver planes</span></a>
-                </div>
-            </div>
-            <div class="slider-item swiper-slide">
-                <div class="slide-content">
-                    <h3 class ="slide-subtitle">Automatización</h3>
-                    <h2 class ="slide-title">Vuelve todo más rápido</h2>
-                    <p class ="slide-description">Digitaliza tareas como inscripciones, calificaciones y reportes, permitiendo a docentes y administrativos enfocarse en lo realmente importante.</p>
-                    <a href="404.html" class="slide-button"><span>Ver planes</span></a>
-                </div>
-            </div>
-            <div class="slider-item swiper-slide">
-                <div class="slide-content">
-                    <h3 class ="slide-subtitle">Comunicación institucional</h3>
-                    <h2 class ="slide-title">Comunícate de mejor manera</h2>
-                    <p class ="slide-description">Facilita la interacción entre docentes, alumnos y padres mediante notificaciones, reportes y seguimiento del rendimiento académico.</p>
-                    <a href="404.html" class="slide-button"><span>Ver planes</span></a>
-                </div>
-            </div>
-        </div>
-        <div class="slider-controls">
-            <ul class="slider-pagination">
-                <div class="slider-indicator"></div>
-                <li class="slider-tab">
-                    Transformación educativa
-                </li>
-                <li class="slider-tab">
-                    Automatización
-                </li>
-                <li class="slider-tab">
-                    Comunicación institucional
-                </li>
-            </ul>
-        </div>
-    </div>
-<section class="feature-section">
-    <div class="features">
-        <div class="features">
-            <img src="img\gestion1.webp" alt="Gestión">
-            <h2>Gestión centralizada y eficiente</h2>
-            <p>Accede a toda la información administrativa y académica en un solo lugar, optimizando tiempos y reduciendo errores.</p>
-        </div>
-    <div class="features">
-        <img src="img\automatizacion.webp" alt="Automatización">
-        <h2>Automatización de procesos</h2>
-        <p>Digitaliza tareas como inscripciones, calificaciones y reportes, permitiendo a docentes y administrativos enfocarse en lo realmente importante.</p>
-    </div>
-    <div class="features">
-        <img src="img\acesso.webp" alt="Acceso">
-        <h2>Acceso seguro y en tiempo real</h2>
-        <p>Consulta desde cualquier dispositivo con acceso autorizado, garantizando la confidencialidad y disponibilidad de los datos.</p>
-    </div>
-    <div class="features">
-        <img src="img\comunicacion.webp" alt="Acceso">
-        <h2>Mejor comunicación institucional</h2>
-        <p>Facilita la interacción entre docentes, alumnos y padres mediante notificaciones, reportes y seguimiento del rendimiento académico.</p>
-    </div>
-    </div>
-</section>
+if (isset($arrayUrl[2])){
+    if ($arrayUrl[2] !="") {
+        $params = $arrayUrl[2];
+    }
+}
 
-<section class="app-buttons">
-    <div class="app-download">
-        <h2>Descarga la app Byfrost</h2>
-        <img src="img\Byfrost.svg" alt="Byfrost Logo" width="100">
-        <img src="img\playstore-badge.webp" alt="Google Play" width="200">
-        <img src="img\appstore-badge.webp" alt="App Store" width="180">
-    </div>
-</section>
+spl_autoload_register(function ($class) {
+if(file_exists(lbs.$class.".php")) 
+require lbs.$class.".php";
+});
+require 'controllers/errorController.php';
+$error = new ErrorController();
+$controller = $controller."controller";
+$ControllersPath = "controllers/".$controller.".php";
+if (file_exists($ControllersPath)){
+    require $ControllersPath;
+    $controller = new $controller();
+    if(isset($method)) {
+        if (method_exists($controller, $method)) {
+            if (isset($params)){
+                $controller->{$method}($params);
+            } else {
+                $controller ->{$method}();
+            } 
+        } else {
+            $error ->Error($url);
+        } 
+    }
+} else {
+    $error ->Error($url);
+}
 
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="about">
-                    <h2>Nosotros</h2>
-                    <p>Nuestra solución tecnológica innovadora propone transformar la gestión administrativa de las instituciones educativas, ofreciendo una plataforma intuitiva y sostenible.</p>
-                </div>
-        <div class="contact">
-                    <h2>Contacto</h2>
-                    <p>Cra 7 # 98-25, Bogotá, Colombia</p>
-                    <p>(601) 7886590</p>
-                    <p>(601) 4567890</p>
-                    <a href="www.byfrost.com.co">www.byfrost.com.co</a>
-                    <p>info@byfrost.com</p>
-                </div>
-        <div class="site-map">
-                    <p><a href="#">Inicio</a></p>
-                    <p><a href="plans.htm">Planes</a></p>
-                    <p><a href="contact.htm">Contáctenos</a></p>
-                    <p><a href="faq.htm">FAQ</a></p>
-                    <p><a href="site-map.htm">Mapa del sitio</a></p>
-                </div>
-            </div>
-    <div class = "copyright">
-            <p>Byfrost &copy; 2026. Todos los derechos reservados.</p>
-            <p>Diseñado por Byfrost Software.</p>
-        </div>
-    </div>
-    </footer>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script src="js\slider.js"></script>
-</body>
-</html>
+//echo $controller." ".$method." ".$params;
+
+?>
