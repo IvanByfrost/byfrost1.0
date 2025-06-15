@@ -15,6 +15,12 @@ class Router
 
         $this->parseUrl();
         $this->loadController();
+        if (isset($_GET['error'])) {
+            require_once 'Controllers/ErrorController.php';
+            $error = new ErrorController($this->dbConn, $this->view);
+            $error->Error($_GET['error']);
+            return;
+        }
     }
 
     protected function parseUrl()

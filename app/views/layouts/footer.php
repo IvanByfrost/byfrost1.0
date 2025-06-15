@@ -34,7 +34,7 @@
     <script src="<?php echo url . rq ?>js/bootstrap.bundle.js"></script>
     <script type="text/javascript" src="<?php echo url . rq ?>js/sweetalert2.js"></script>
     <script type="text/javascript" src="<?php echo url . rq ?>js/loginFunctions.js"></script>
-        <script type="text/javascript" src="<?php echo url . rq ?>js/registerFunctions.js"></script>
+        <script type="text/javascript" src="<?php echo url . rq ?>js/registerFunction.js"></script>
     </body>
 
     </html
