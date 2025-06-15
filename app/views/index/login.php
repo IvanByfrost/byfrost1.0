@@ -1,7 +1,7 @@
 <?php
 require_once(__DIR__ . '/../../config.php');
-require_once __DIR__ . '/../default/head.php';
-require_once __DIR__ . '/../default/header.php';
+require_once __DIR__ . '/../layouts/head.php';
+require_once __DIR__ . '/../layouts/header.php';
 ?>
 
 <body>
@@ -48,6 +48,6 @@ require_once __DIR__ . '/../default/header.php';
 <br>
 
 <?php
-require_once __DIR__ . '/../default/footer.php';
+require_once __DIR__ . '/../layouts/footer.php';
 ?>
 

@@ -5,9 +5,9 @@ class Views {
 
         if (file_exists($viewPath)) {
             if ($data) extract($data);
-            require 'views/default/head.php';
+            require 'views/layouts/head.php';
             require $viewPath;
-            require 'views/default/footer.php';
+            require 'views/layouts/footer.php';
         } else {
             echo "Vista no encontrada: $viewPath";
         }
