@@ -16,7 +16,8 @@ require_once ROOT . '/app/views/layouts/head.php';
     <div class="menu-bar">
         <a href="plans.htm" class="btn-menu">Planes</a>
         <a href="contact.php" class="btn-menu">Contáctenos</a>
-        <a href="faq.html" class="btn-menu">FAQ</a>
+        <a href="faq.php" class="btn-menu">FAQ</a>
+        <a href="about.php" class="btn-menu">Quiénes somos</a>
     </div>
 
     <a href="/byfrost1.0/app/views/index/login.php">

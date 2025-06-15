@@ -1,4 +1,2 @@
-<div class = "">
-<h1 class = "text-danger">Error.</h1>
-<h2 class = "text-danger">Dirección inválida : <?php echo $mensaje?></h2>
-</div>
+<h1>Error</h1>
+<p><?= isset($model) ? $model : "Ocurrió un error inesperado." ?></p>
