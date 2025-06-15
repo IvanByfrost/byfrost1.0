@@ -14,7 +14,7 @@ require_once __DIR__ . '/../layouts/header.php';
 			</a>
         </div>-->
         <div class="row">
-            <div class="col-12 mt-3 mb-3" style="font-weight: bold; font-size: 30px;">Iniciar sesión</div>
+            <div class="col-12 mt-3 mb-3" style="font-weight: bold; font-size: 30px;">Bienvenido(a) de nuevo</div>
             <div class="col-12">
                 <select class="inputEstilo1" id="tipoDocumento" required>
                     <option value="">Seleccione</option>
