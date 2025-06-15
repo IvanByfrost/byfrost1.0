@@ -12,6 +12,7 @@ require_once ROOT . '/app/config.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Byfrost</title>
     <link rel="stylesheet" href="<?php echo url . rq ?>css\homeStyle.css">
+    <link rel="stylesheet" href="<?php echo url . rq ?>css\loginstyle.css">
     <!--<link rel="stylesheet" href="<?php echo url . rq ?>css\header.css">
     <link rel="stylesheet" href="<?php echo url . rq ?>css\footer.css">
     <link rel="stylesheet" href="<?php echo url . rq ?>css\home.css">-->

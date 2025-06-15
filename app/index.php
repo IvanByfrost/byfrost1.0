@@ -1,6 +1,6 @@
 <?php
 define('ROOT', dirname(__DIR__));
-require_once 'config.php'; // Asegúrate que define constantes como DB_HOST, DB_NAME, etc.
+require_once 'config.php'; 
 
 // Autocarga
 spl_autoload_register(function ($class) {

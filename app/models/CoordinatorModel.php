@@ -1,5 +1,6 @@
 <?php
 class CoordinatorModel extends MainModel {
+    //Función para obtener los datos del coordinador
     public function getData() {
         return [
             'nombre' => 'María Gómez',

@@ -85,6 +85,5 @@ require_once __DIR__ . '/../default/header.php';
 </section>
 
 <?php
-require_once ROOT . '/app/config.php';
 require_once __DIR__ . '/../default/footer.php';
 ?>
