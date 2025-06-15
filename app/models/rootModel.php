@@ -7,4 +7,10 @@ class RootModel extends MainModel
     {
         $this->dbConn = $dbConn;
     }
+
+    //Función para obtener los datos del usuario.
+    //Función para insertar los datos del usuario.
+    //Función para actualizar los datos del usuario.
+    //Función para eliminar los datos del usuario.
+
 }

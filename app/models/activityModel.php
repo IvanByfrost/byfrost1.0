@@ -1,6 +1,7 @@
 <?php
 // Modelo para manejar a las actividades
 require_once 'mainModel.php';
+
 class ActivityModel extends MainModel
 {
     // Constructor de la clase 
@@ -10,7 +11,9 @@ class ActivityModel extends MainModel
         $this->dbConn = $dbConn;
     }
     //Función para crear una actividad.
-
+    public function createActivity() {
+        
+    }
     //Función para consultar actividades. 
     public function getActivities()
     {
@@ -19,5 +22,11 @@ class ActivityModel extends MainModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     //Función para actualizar una actividad
+        public function updateActivity() {
+        
+    }
     //Función para eliminar una actividad
+        public function deleteActivity() {
+        
+    }
 }
