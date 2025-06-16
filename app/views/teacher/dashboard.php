@@ -8,6 +8,8 @@ require_once ROOT . '/app/views/layouts/dashHeader.php';
 
 <body>
     <nav>
-
+        <?php
+        require_once 'teacherSidebar.php';
+        ?>
     </nav>
 </body>

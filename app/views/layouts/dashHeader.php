@@ -8,7 +8,7 @@ require_once ROOT . '/app/views/layouts/head.php';
 
 <header>
     <div class="main-header">
-        <a href="index.php">
+        <a href= "#">
             <img src="<?php echo url . rq ?>img\horizontal-logo.svg" alt="Byfrost Logo" width="200">
         </a>
     </div>
