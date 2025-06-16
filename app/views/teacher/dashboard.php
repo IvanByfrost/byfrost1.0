@@ -1,5 +1,13 @@
 <?php
-require_once 'layouts/header.php';
-
-
+if (!defined('ROOT')) {
+    define('ROOT', dirname(dirname(dirname(__DIR__))));
+}
+require_once ROOT . '/app/config.php';
+require_once ROOT . '/app/views/layouts/dashHeader.php';
 ?>
+
+<body>
+    <nav>
+
+    </nav>
+</body>
