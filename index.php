@@ -1,5 +1,5 @@
 <?php
-define('ROOT', dirname(__DIR__));
+define('ROOT', __DIR__);
 require_once 'config.php';
 
 // Autocarga

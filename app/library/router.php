@@ -16,7 +16,7 @@ class Router
         $this->parseUrl();
         $this->loadController();
         if (isset($_GET['error'])) {
-            require_once 'Controllers/ErrorController.php';
+            require_once ROOT.'/app/controllers/errorController.php';
             $error = new ErrorController($this->dbConn, $this->view);
             $error->Error($_GET['error']);
             return;
@@ -42,7 +42,7 @@ class Router
 
     protected function loadController()
     {
-        $controllerPath = "Controllers/{$this->controller}.php";
+        $controllerPath = ROOT . "/app/controllers/{$this->controller}.php";
         if (file_exists($controllerPath)) {
             require_once $controllerPath;
             $controllerInstance = new $this->controller($this->dbConn, $this->view);
@@ -59,7 +59,7 @@ class Router
 
     protected function handleError($message)
     {
-        require_once 'Controllers/errorController.php';
+        require_once ROOT . 'app/controllers/errorController.php';
         $error = new ErrorController($this->dbConn, $this->view);
         $error->Error($message);
     }

@@ -7,6 +7,6 @@ class IndexController extends MainController{
    parent::__construct($dbConn, $view);      
     }
     public function Index() {
-        $this->view->Render('Index', 'index');
+        $this->view->Render('index', 'index');
     }
 }
