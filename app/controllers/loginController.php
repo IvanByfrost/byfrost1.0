@@ -3,7 +3,7 @@ include("connection.php");
 class LoginController extends mainController
 {
     protected $dbConn;
-    $subject = $_POST['asunto'];
+    
     // Constructor de la clase 
     
     public function __construct($dbConn)
@@ -17,7 +17,8 @@ class LoginController extends mainController
     // Procesa el formulario y redirige al dashboard según el rol
     public function auth()
     {
-        if ($asunto == "login") {
+        $subject = $_POST['asunto'];
+        if ($subject == "login") {
             $credType = $_POST['credType'];
             $documentNum = $_POST['documentNum'];
             $passwordUser = $_POST['password'];
@@ -41,21 +42,21 @@ class LoginController extends mainController
                 exit;
             } else if ($counter1 >= 1) {
                 while ($row1 = mysqli_fetch_array($proceso1)) {
-                    $usuarioId = $row1["id"];
-                    $rol = $row1["rol"];
+                    $idUser = $row1["id"];
+                    $roleUser = $row1["rol"];
                 }
 
-                #$redireccion = "admin.php";
-                #session_start();
-                #$_SESSION["sistemaIvan"] = $usuarioId;
-                #$_SESSION["sistemaIvan"] = $rol;
+                $redireccion = "admin.php";
+                session_start();
+                $_SESSION["sistemaIvan"] = $usuarioId;
+                $_SESSION["sistemaIvan"] = $rol;
 
                 $datos = [
                     "estatus"    => "ok",
                     "msg" => "Aqui se logea"
                     #"redireccion"	=> $redireccion,
                 ];
-                echo json_encode($datos);
+                echo json_encode($data);
             }
         }
     }
