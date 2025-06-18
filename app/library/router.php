@@ -59,7 +59,7 @@ class Router
 
     protected function handleError($message)
     {
-        require_once ROOT . 'app/controllers/errorController.php';
+        require_once ROOT . '/app/controllers/errorController.php';
         $error = new ErrorController($this->dbConn, $this->view);
         $error->Error($message);
     }
