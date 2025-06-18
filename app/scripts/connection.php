@@ -1,7 +1,7 @@
 <?php
 function getConnection() {
     try {
-        $db = new PDO("mysql:host=localhost;dbname=baldur_test", 'root', '');
+        $db = new PDO("mysql:host=localhost;dbname=baldur-test", 'root', '');
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $db->exec("SET NAMES utf8");
         date_default_timezone_set('America/Bogota');

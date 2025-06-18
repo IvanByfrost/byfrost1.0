@@ -1,13 +1,12 @@
 <?php
 define('ROOT', dirname(__DIR__));
-require_once ROOT . '/config.php';
-//echo "Ruta ROOT: " . ROOT;
+require_once 'config.php';
 
 // Autocarga
 spl_autoload_register(function ($class) {
-    $paths = ['Library', 'Controllers', 'Models'];
+    $paths = ['library', 'controllers', 'models'];
     foreach ($paths as $folder) {
-        $file = __DIR__ . "/$folder/$class.php";
+        $file = ROOT . "/app/$folder/$class.php";
         if (file_exists($file)) {
             require_once $file;
             return;
@@ -16,7 +15,7 @@ spl_autoload_register(function ($class) {
 });
 
 // Conexión a la base de datos
-require_once 'connection.php';
+require_once app .'/scripts/connection.php';
 $dbConn = getConnection();
 
 // Instancia de la clase de vistas
