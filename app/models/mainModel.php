@@ -1,4 +1,5 @@
 <?php
+
 // Modelo principal para manejar la conexión a la base de datos
 class mainModel {
     protected $dbConn;

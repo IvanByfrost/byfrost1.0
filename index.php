@@ -1,6 +1,7 @@
 <?php
 define('ROOT', dirname(__DIR__));
-require_once 'config.php'; 
+require_once ROOT . '/config.php';
+//echo "Ruta ROOT: " . ROOT;
 
 // Autocarga
 spl_autoload_register(function ($class) {
@@ -15,12 +16,8 @@ spl_autoload_register(function ($class) {
 });
 
 // Conexión a la base de datos
-try {
-    $dbConn = new PDO("mysql:host=localhost;dbname=baldur-test", 'root', '');
-    $dbConn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Error de conexión: " . $e->getMessage());
-}
+require_once 'connection.php';
+$dbConn = getConnection();
 
 // Instancia de la clase de vistas
 $view = new Views();
