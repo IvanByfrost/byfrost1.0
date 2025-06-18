@@ -1,8 +1,9 @@
 <?php
-
+include("connection.php");
 class LoginController extends mainController
 {
     protected $dbConn;
+    $subject = $_POST['asunto'];
     // Constructor de la clase 
     
     public function __construct($dbConn)
@@ -31,14 +32,14 @@ class LoginController extends mainController
             $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
 
-            if ($contador1 == 0) {
-                $datos = [
+            if ($counter1 == 0) {
+                $data = [
                     "estatus"    => "error",
                     "msg"    => "Credenciales Incorrectas",
                 ];
-                echo json_encode($datos);
+                echo json_encode($data);
                 exit;
-            } else if ($contador1 >= 1) {
+            } else if ($counter1 >= 1) {
                 while ($row1 = mysqli_fetch_array($proceso1)) {
                     $usuarioId = $row1["id"];
                     $rol = $row1["rol"];
