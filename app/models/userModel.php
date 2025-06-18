@@ -8,4 +8,9 @@ class UserModel extends mainModel {
     }
 
     // Función para crear un usuario
+    // Función para consultar un usuario
+    // Función para actualizar un usuario
+    // Función para eliminar un usuario
+    // Función para validar un usuario
+}
 ?>
