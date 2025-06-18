@@ -57,10 +57,25 @@ class Router
         }
     }
 
-    protected function handleError($message)
+    protected function handleError($message = 'Página no encontrada', $code = 404)
     {
+        http_response_code($code);
         require_once ROOT . '/app/controllers/errorController.php';
+    
         $error = new ErrorController($this->dbConn, $this->view);
-        $error->Error($message);
+    
+        // Forzamos la vista de error por código (sin depender de $_GET)
+        switch ($code) {
+            case 400:
+                $error->Error('400');
+                break;
+            case 500:
+                $error->Error('500');
+                break;
+            case 404:
+            default:
+                $error->Error($message); // mensaje personalizado o código
+                break;
+        }
     }
 }
