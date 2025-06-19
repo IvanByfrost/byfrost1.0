@@ -13,7 +13,9 @@ class LoginController extends mainController
     }
 
     // Muestra el formulario de login
-    public function index() {}
+    public function index() {
+        require_once app.views . 'index/login.php';
+    }
 
     // Procesa el formulario y redirige al dashboard según el rol
     public function auth()
