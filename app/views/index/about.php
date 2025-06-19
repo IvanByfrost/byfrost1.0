@@ -10,9 +10,26 @@ require_once __DIR__ . '/../layouts/header.php';
 <div class="about-container">
     <div class="our-team">
         <h2>Nuestro equipo</h2>
-        <div class="photo"></div>
-        <div class="photo"></div>
-        <div class="photo"></div>
+        <div class="photo">
+            <img src="<?php echo url . rq ?>img\team1.webp" alt="Team Member 1">
+            <h3>Iván Ruiz</h3>
+            <p>CEO - Scrum Master</p>
+        </div>
+        <div class="photo">
+            <img src="<?php echo url . rq ?>img\team2.webp" alt="Team Member 1">
+            <h3>Johan Carrillo</h3>
+            <p>Backend Developer</p>
+        </div>
+        <div class="photo">
+            <img src="<?php echo url . rq ?>img\team3.webp" alt="Team Member 1">
+            <h3>Lucía Nova</h3>
+            <p>Backend Developer</p>
+        </div>
+        <div class="photo">
+            <img src="<?php echo url . rq ?>img\team4.webp" alt="Team Member 1">
+            <h3>Laura Ariza</h3>
+            <p>Frontend Developer</p>
+        </div>
     </div>
 </div>
 
