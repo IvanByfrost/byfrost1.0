@@ -1,13 +1,13 @@
 <?php
 // software_academico/app/controllers/RectorController.php
 
-require_once MODELS_PATH . 'rectorModel.php';
+require_once 'hmasterModel.php';
 
 class hmasterController {
     private $rectorModel;
 
     public function __construct() {
-        $this->rectorModel = new rectorModel();
+        $this->rectorModel = new hmasterModel();
     }
 
     // Acción por defecto: Listar rectores
