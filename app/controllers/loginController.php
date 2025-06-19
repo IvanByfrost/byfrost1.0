@@ -3,9 +3,9 @@ include("connection.php");
 class LoginController extends mainController
 {
     protected $dbConn;
-    
+
     // Constructor de la clase 
-    
+
     public function __construct($dbConn)
     {
         $this->dbConn = $dbConn;
@@ -17,47 +17,61 @@ class LoginController extends mainController
     // Procesa el formulario y redirige al dashboard según el rol
     public function auth()
     {
-        $subject = $_POST['asunto'];
+        //Verifica que se hayan enviado los datos necesarios
+        if (!isset($_POST['subject'], $_POST['credType'], $_POST['documentNum'], $_POST['password'])) {
+            return [
+                "status" => "error",
+                "msg" => "Faltan datos en la solicitud."
+            ];
+        }
+        $subject = $_POST['subject'];
         if ($subject == "login") {
             $credType = $_POST['credType'];
             $documentNum = $_POST['documentNum'];
             $passwordUser = $_POST['password'];
 
-            $query = "SELECT * FROM mainUser WHERE credType = '$credType' and documentNumber = '$documentNum' and userPassword = '$passwordUser' LIMIT 1";
+            $query = "SELECT * FROM mainUser 
+          WHERE credType = :credType 
+          AND documentNumber = :documentNum 
+          AND userPassword = :passwordUser 
+          LIMIT 1";
             $stmt = $this->dbConn->prepare($query);
             $stmt->execute([
-                'credType' => $credType,
-                'documentNum' => $documentNum
+                ':credType'     => $credType,
+                ':documentNum'  => $documentNum,
+                ':passwordUser' => $passwordUser  // ¡No olvides este!
             ]);
 
-            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            $counter = count($user);
 
-
-            if ($counter1 == 0) {
-                $data = [
-                    "estatus"    => "error",
-                    "msg"    => "Credenciales Incorrectas",
-                ];
-                echo json_encode($data);
-                exit;
-            } else if ($counter1 >= 1) {
-                while ($row1 = mysqli_fetch_array($proceso1)) {
-                    $idUser = $row1["id"];
-                    $roleUser = $row1["rol"];
-                }
-
-                $redireccion = "admin.php";
-                session_start();
-                $_SESSION["sistemaIvan"] = $usuarioId;
-                $_SESSION["sistemaIvan"] = $rol;
-
-                $datos = [
-                    "estatus"    => "ok",
-                    "msg" => "Aqui se logea"
-                    #"redireccion"	=> $redireccion,
-                ];
-                echo json_encode($data);
+            if ($user) {
+                // El usuario fue encontrado, puedes iniciar sesión, etc.
+                echo "¡Bienvenido, " . $user['firstName'] . "!";
+            } else {
+                // No se encontró ningún usuario con esas credenciales.
+                echo "Credenciales incorrectas.";
             }
+
+            if ($user && password_verify($passwordUser, $user['userPassword'])) {
+                // Contraseña válida, el usuario ha sido autenticado
+                session_start();
+                $_SESSION["ByFrost_id"] = $user['id'];   // Guarda el ID
+                $_SESSION["ByFrost_role"] = $user['rol']; // Guarda el rol en una clave diferente
+
+                // No reveles el hash de la contraseña al cliente
+                unset($user['userPassword']); 
+
+                return [
+                    "status"      => "ok",
+                    "msg"         => "¡Bienvenido, " . $user['firstName'] . "!",
+                    "redirection" => "admin.php",
+                    "userData"    => $user // Puedes enviar datos del usuario si es necesario
+                ];
+            }
+
+
+
         }
     }
 
