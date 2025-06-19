@@ -15,7 +15,7 @@ require_once ROOT . '/app/views/layouts/head.php';
 
     <div class="menu-bar">
         <a href="plans.php" class="btn-menu">Planes</a>
-        <a href="contact.php" class="btn-menu">Contáctenos</a>
+        <a href="contact.php" class="btn-menu">Contáctanos</a>
         <a href="faq.php" class="btn-menu">FAQ</a>
         <a href="about.php" class="btn-menu">Quiénes somos</a>
     </div>
