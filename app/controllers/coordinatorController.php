@@ -10,7 +10,7 @@ class CoordinatorController {
         $this->model = new CoordinatorModel($this->dbConn);
     }
 
-    public function showDash() {
+    public function showDashCoord() {
         $data = $this->model->getData();
         require './vista/coordinator/dashboard.php';
     }
