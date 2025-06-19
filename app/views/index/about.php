@@ -9,7 +9,7 @@ require_once __DIR__ . '/../layouts/header.php';
 
 <div class="about-container">
     <div class="our-team">
-        <h2>Nuestro equipo</h2>
+        <h1>Nuestro equipo</h1>
         <div class="photo">
             <img src="<?php echo url . rq ?>img\team1.webp" alt="Team Member 1">
             <h3>Iván Ruiz</h3>
