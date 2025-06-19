@@ -156,3 +156,26 @@ footer a:hover {
 
     color: #007bff;
 }
+
+/* Estilos para las fotos de nuestro equipo */
+.about-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px; /* Espacio entre las fotos */
+}
+
+.our-team {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    gap: 20px; /* Espacio entre las fotos */
+}
+
+.photo {
+    width: 150px; /* Ancho fijo para las fotos */
+    height: 150px; /* Alto fijo para las fotos */
+    border-radius: 50%; /* Hace que las fotos sean circulares */
+    overflow: hidden; /* Oculta el desbordamiento */
+}
