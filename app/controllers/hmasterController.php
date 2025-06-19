@@ -4,10 +4,12 @@
 require_once 'hmasterModel.php';
 
 class hmasterController {
-    private $hmasterModel;
-
-    public function __construct() {
-        $this->hmasterModel = new hmasterModel();
+    protected $dbConn;
+    protected $view;
+    public function __construct($dbConn, $view)
+    {
+        $this->dbConn = $dbConn;
+        $this->view = $view;
     }
 
     // Acción por defecto: Lista de rectores
@@ -77,10 +79,10 @@ class hmasterController {
     public function headMasterUpdate() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id = $_POST['id_rector'] ?? null;
-            $userName = $_POST['nombre'] ?? '';
-            $userLastName = $_POST['apellido'] ?? '';
+            $userName = $_POST['userName'] ?? '';
+            $userLastName = $_POST['userLastName'] ?? '';
             $userEmail = $_POST['email'] ?? '';
-            $phoneUser = $_POST['telefono'] ?? null;
+            $phoneUser = $_POST['phoneUser'] ?? null;
 
             $userEmail = $_POST['email'] ?? '';
             if ($id && $this->hmasterModel->updateHeadMaster($id, $userName, $userLastName, $userEmail, $phoneUser)) {
