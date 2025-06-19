@@ -14,4 +14,6 @@ class CoordinatorController {
         $data = $this->model->getData();
         require './vista/coordinator/dashboard.php';
     }
+
+    
 }

@@ -1,6 +1,17 @@
 <?php
 class CoordinatorModel extends MainModel {
+    protected $dbConn;
+    public function __construct($dbConn)
+    {
+        $this->dbConn = $dbConn;
+    }
+
     //Función para obtener los datos del coordinador
+    //Función para crear un coordinador
+    //Función para actualizar un coordinador
+    //Función para eliminar un coordinador
+    
+
     public function getData() {
         return [
             'nombre' => 'María Gómez',
