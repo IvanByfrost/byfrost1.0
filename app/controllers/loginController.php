@@ -9,6 +9,7 @@ class LoginController extends mainController
     public function __construct($dbConn)
     {
         $this->dbConn = $dbConn;
+
     }
 
     // Muestra el formulario de login
@@ -39,19 +40,11 @@ class LoginController extends mainController
             $stmt->execute([
                 ':credType'     => $credType,
                 ':documentNum'  => $documentNum,
-                ':passwordUser' => $passwordUser  // ¡No olvides este!
+                //':passwordUser' => $passwordUser  // ¡No olvides este!
             ]);
 
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             $counter = count($user);
-
-            if ($user) {
-                // El usuario fue encontrado, puedes iniciar sesión, etc.
-                echo "¡Bienvenido, " . $user['firstName'] . "!";
-            } else {
-                // No se encontró ningún usuario con esas credenciales.
-                echo "Credenciales incorrectas.";
-            }
 
             if ($user && password_verify($passwordUser, $user['userPassword'])) {
                 // Contraseña válida, el usuario ha sido autenticado
@@ -64,7 +57,7 @@ class LoginController extends mainController
 
                 return [
                     "status"      => "ok",
-                    "msg"         => "¡Bienvenido, " . $user['firstName'] . "!",
+                    "msg"         => "¡Bienvenido, " . $user['userName'] . "!",
                     "redirection" => "admin.php",
                     "userData"    => $user // Puedes enviar datos del usuario si es necesario
                 ];
