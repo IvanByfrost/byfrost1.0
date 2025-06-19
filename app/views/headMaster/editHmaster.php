@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Rector</title>
+    <link rel="stylesheet" href="/software_academico/public/css/style.css">
+</head>
+<body>
+    <h1>Editar Rector</h1>
+    <a href="/software_academico/rector/listar">Volver al Listado</a>
+    <br><br>
+    <?php if (isset($rector)): ?>
+    <form action="/software_academico/rector/actualizar" method="POST">
+        <input type="hidden" name="id_rector" value="<?php echo htmlspecialchars($rector['id_rector']); ?>">
+
+        <label for="nombre">Nombre:</label><br>
+        <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($rector['nombre']); ?>" required><br><br>
+
+        <label for="apellido">Apellido:</label><br>
+        <input type="text" id="apellido" name="apellido" value="<?php echo htmlspecialchars($rector['apellido']); ?>" required><br><br>
+
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($rector['email']); ?>" required><br><br>
+
+        <label for="telefono">Teléfono:</label><br>
+        <input type="text" id="telefono" name="telefono" value="<?php echo htmlspecialchars($rector['telefono']); ?>"><br><br>
+
+        <button type="submit">Actualizar Rector</button>
+    </form>
+    <?php else: ?>
+        <p>Rector no encontrado para editar.</p>
+    <?php endif; ?>
+</body>
+</html>
