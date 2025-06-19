@@ -1,5 +1,4 @@
 <?php
-require_once "mainController.php";
 require_once "app/models/teacherModel.php";
 
 // Controlador para manejar las operaciones relacionadas con los profesores
@@ -17,4 +16,9 @@ class TeacherController extends MainController
         $teachers = $this->teacherModel->getTeachers();
         $this->render('teacher/dashboard', ['teachers' => $teachers]);
     }
+
+    // Función para crear un profesor
+    // Función para consultar un profesor
+    // Función para actualizar un profesor
+    // Función para eliminar un profesor
 }

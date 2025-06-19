@@ -1,5 +1,5 @@
 <?php
-require_once 'models/CoordinatorModel.php';
+require_once 'models/coordinatorModel.php';
 
 class CoordinatorController {
     protected $model;
@@ -15,5 +15,8 @@ class CoordinatorController {
         require './vista/coordinator/dashboard.php';
     }
 
-    
+    //Función para crear un coordinador
+    //Función para consultar un coordinador
+    //Función para actualizar un coordinador
+    //Función para eliminar un coordinador
 }
