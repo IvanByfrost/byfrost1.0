@@ -4,10 +4,10 @@
 require_once 'hmasterModel.php';
 
 class hmasterController {
-    private $hmasterController;
+    private $hmasterModel;
 
     public function __construct() {
-        $this->hmasterController = new hmasterController();
+        $this->hmasterModel = new hmasterModel();
     }
 
     // Acción por defecto: Lista de rectores
@@ -17,7 +17,7 @@ class hmasterController {
 
     // Mostrar la lista de rectores
     public function listAction() {
-        $HeadMaster = $this->hmasterController->getAllRectores();
+        $headMaster = $this->hmasterModel->getAllRectores();
         // Cargar la vista
         require_once app.views . 'headMaster/hmasterLists.php';
     }
@@ -46,7 +46,7 @@ class hmasterController {
                 return;
             }
 
-            if ($this->rectorModel->createRector($userName, $userLastName, $userEmail, $hashedPassword, $phoneUser)) {
+            if ($this->hmasterModel->createHmaster($userName, $userLastName, $userEmail, $hashedPassword, $phoneUser)) {
                 header('Location: /software_academico/rector/listar'); // Redirigir a la lista
                 exit();
             } else {
@@ -59,11 +59,11 @@ class hmasterController {
     }
 
     // Mostrar el formulario para editar un rector existente
-    public function editarAction() {
+    public function editHeadMaster() {
         $id = $_GET['id'] ?? null; // Obtener ID de la URL
         if ($id) {
-            $rector = $this->rectorModel->getRectorById($id);
-            if ($rector) {
+            $headMaster = $this->hmasterModel->getRectorById($id);
+            if ($headMaster) {
                 require_once  . 'rector/editar.php';
             } else {
                 echo "Rector no encontrado.";
@@ -74,15 +74,16 @@ class hmasterController {
     }
 
     // Procesar la actualización de un rector
-    public function actualizarAction() {
+    public function headMasterUpdate() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id = $_POST['id_rector'] ?? null;
-            $nombre = $_POST['nombre'] ?? '';
-            $apellido = $_POST['apellido'] ?? '';
-            $email = $_POST['email'] ?? '';
-            $telefono = $_POST['telefono'] ?? null;
+            $userName = $_POST['nombre'] ?? '';
+            $userLastName = $_POST['apellido'] ?? '';
+            $userEmail = $_POST['email'] ?? '';
+            $phoneUser = $_POST['telefono'] ?? null;
 
-            if ($id && $this->rectorModel->updateRector($id, $nombre, $apellido, $email, $telefono)) {
+            $userEmail = $_POST['email'] ?? '';
+            if ($id && $this->hmasterModel->updateHeadMaster($id, $userName, $userLastName, $userEmail, $phoneUser)) {
                 header('Location: /software_academico/rector/listar');
                 exit();
             } else {
@@ -95,10 +96,10 @@ class hmasterController {
     }
 
     // Eliminar un rector
-    public function eliminarAction() {
+    public function deleteHeadMaster() {
         $id = $_GET['id'] ?? null;
         if ($id) {
-            if ($this->rectorModel->deleteRector($id)) {
+            if ($this->hmasterModel->deleteHeadMaster($id)) {
                 header('Location: /software_academico/rector/listar');
                 exit();
             } else {
