@@ -1,8 +1,8 @@
 require_once 'config/app.php';
 
-include VIEWS_PATH . 'includes/head/head.php';
-include VIEWS_PATH . 'links.php';
-include VIEWS_PATH . 'includes/header/header.php';
+include app.views . 'includes/head/head.php';
+include app.views . 'links.php';
+include app.views . 'includes/header/header.php';
 ?>
 
 <body>
