@@ -1,9 +1,16 @@
 <?php
 class registerController
 {
+    protected $dbConn;
     public function index()
     {
         require_once 'app/views/index/register.php';
+    }
+
+        public function __construct($dbConn)
+    {
+        $this->dbConn = $dbConn;
+
     }
 
 public function registerUser()
