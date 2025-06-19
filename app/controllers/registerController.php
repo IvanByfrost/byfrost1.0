@@ -26,7 +26,7 @@ public function registerUser()
 
         // 2. Llamar al modelo
         require_once 'app/models/userModel.php';
-        $userModel = new userModel($dbConn);
+        $userModel = new userModel($this->$dbConn);
         $success = $userModel->createUser($data);
 
         // 3. Devolver respuesta
