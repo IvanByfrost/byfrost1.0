@@ -29,10 +29,11 @@ class TeacherController extends MainController
         if ($teacher) {
             $this->render('teacher/success', ['message' => 'Profesor creado exitosamente']);
         } else {
-            $this->render('teacher/error', ['message' => 'Error al crear el profesor']);
+            $this->render('Error/error', ['message' => 'Error al crear el profesor']);
         }
     }
     // Función para consultar un profesor
     // Función para actualizar un profesor
     // Función para eliminar un profesor
+    
 }

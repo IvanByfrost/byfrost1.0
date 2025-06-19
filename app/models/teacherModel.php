@@ -20,7 +20,7 @@ class TeacherModel extends mainModel
 
     // Función para crear un nuevo profesor. 
     public function createTeacher(){
-        $query = "INSERT INTO PROFESSOR ()";
+        $query = "INSERT INTO professor ()";
         $stmt = $this->dbConn->prepare($query);
         $stmt->execute();
         return $stmt->rowCount() > 0; // Retorna true si se creó correctamente
