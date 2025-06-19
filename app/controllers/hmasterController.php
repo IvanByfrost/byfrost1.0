@@ -4,41 +4,41 @@
 require_once MODELS_PATH . 'rectorModel.php';
 
 class hmasterController {
-    private $rectorModel;
+    private $hmasterController;
 
     public function __construct() {
-        $this->rectorModel = new rectorModel();
+        $this->hmasterController = new hmasterController();
     }
 
-    // Acción por defecto: Listar rectores
-    public function indexAction() {
-        $this->listarAction();
+    // Acción por defecto: Lista de rectores
+    public function headMasterList() {
+        $this->listAction();
     }
 
     // Mostrar la lista de rectores
-    public function listarAction() {
-        $rectores = $this->rectorModel->getAllRectores();
+    public function listAction() {
+        $HeadMaster = $this->hmasterController->getAllRectores();
         // Cargar la vista
-        require_once VIEWS_PATH . 'rector/listar.php';
+        require_once app.views . 'headMaster/hmasterLists.php';
     }
 
     // Mostrar el formulario para agregar un nuevo rector
-    public function crearAction() {
+    public function newHeadMaster() {
         // Cargar la vista del formulario
-        require_once VIEWS_PATH . 'rector/crear.php';
+        require_once app.views . 'headMaster/createHmaster.php';
     }
 
     // Procesar la adición de un nuevo rector
-    public function guardarAction() {
+    public function addHeadMaster() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $nombre = $_POST['nombre'] ?? '';
-            $apellido = $_POST['apellido'] ?? '';
-            $email = $_POST['email'] ?? '';
-            $password = $_POST['password'] ?? ''; // La contraseña en texto plano
-            $telefono = $_POST['telefono'] ?? null;
+            $userName = $_POST['userName'] ?? '';
+            $userLastName = $_POST['userLastName'] ?? '';
+            $userEmail = $_POST['email'] ?? '';
+            $userPassword = $_POST['password'] ?? ''; // La contraseña en texto plano
+            $phoneUser = $_POST['phoneUser'] ?? null;
 
             // Validar y hashear la contraseña antes de guardarla
-            if (!empty($password)) {
+            if (!empty($userPassword)) {
                 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
             } else {
                 // Manejar error o asignar un valor por defecto si la contraseña es obligatoria
@@ -46,7 +46,7 @@ class hmasterController {
                 return;
             }
 
-            if ($this->rectorModel->createRector($nombre, $apellido, $email, $hashedPassword, $telefono)) {
+            if ($this->rectorModel->createRector($userName, $userLastName, $userEmail, $hashedPassword, $phoneUser)) {
                 header('Location: /software_academico/rector/listar'); // Redirigir a la lista
                 exit();
             } else {
@@ -64,7 +64,7 @@ class hmasterController {
         if ($id) {
             $rector = $this->rectorModel->getRectorById($id);
             if ($rector) {
-                require_once VIEWS_PATH . 'rector/editar.php';
+                require_once  . 'rector/editar.php';
             } else {
                 echo "Rector no encontrado.";
             }
