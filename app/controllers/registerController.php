@@ -7,7 +7,7 @@ class registerController
         require_once 'app/views/index/register.php';
     }
 
-        public function __construct($dbConn)
+    public function __construct($dbConn)
     {
         $this->dbConn = $dbConn;
 
@@ -49,6 +49,10 @@ public function registerUser()
             ]);
         }
     }
+}
+
+public function getUser() {
+    
 }
 
 }
