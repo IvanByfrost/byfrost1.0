@@ -7,8 +7,17 @@ class CoordinatorModel extends MainModel {
     }
 
     //Función para obtener los datos del coordinador
+    public function getCoordinator(){
+        // Aquí podrías realizar una consulta a la base de datos para obtener los datos del coordinador
+    }
     //Función para crear un coordinador
+    public function createCoordinator(){
+        // Aquí podrías realizar una inserción en la base de datos para crear un nuevo coordinador
+    }
     //Función para actualizar un coordinador
+    public function updateCoordinator(){
+        // Aquí podrías realizar una actualización en la base de datos para modificar los datos de un coordinador existente
+    }
     //Función para eliminar un coordinador
     
 
