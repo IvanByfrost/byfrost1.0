@@ -12,6 +12,8 @@ require_once ROOT . '/app/views/layouts/dashHeader.php';
         require_once 'hmasterSidebar.php';
         ?>
     </nav>
+
+  
 </body>
 
 <script src="https://unpkg.com/lucide@latest"></script>

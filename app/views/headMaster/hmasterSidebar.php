@@ -22,7 +22,15 @@
                 <ul class="submenu"></ul>
                 <ul class="submenu"></ul>
             </li>
-            <li><a href="<?php ROOT; ?>#"><i data-lucide="bar-chart-2"></i>Reportes</a></li>
-            <li><a href="<?php ROOT; ?>#"><i data-lucide="settings"></i>Configuración</a></li>
+            <li><a href="<?php ROOT; ?>#"><i data-lucide="bar-chart-2"></i>Reportes</a>
+                <ul class="submenu"></ul>
+                <ul class="submenu"></ul>
+                <ul class="submenu"></ul>
+            </li>
+            <li><a href="<?php ROOT; ?>#"><i data-lucide="settings"></i>Configuración</a>
+                <ul class="submenu"></ul>
+                <ul class="submenu"></ul>
+                <ul class="submenu"></ul>
+            </li>
         </ul>
     </div>
