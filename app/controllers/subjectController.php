@@ -9,5 +9,13 @@ class subjectController extends MainController
         $this->dbConn = $dbConn;
     }
 
+    public function getAllSubjects() {
+        $subjectModel = new subjectModel($this->dbConn);
+        $subjects = $subjectModel->getAllSubjects();
+        
+        // Cargar la vista con los datos de las asignaturas
+        require_once app.views . 'subject/subjectList.php';
+    }
+
     
 }
