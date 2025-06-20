@@ -3,7 +3,7 @@
 
 require_once 'hmasterModel.php';
 
-class hmasterController {
+class hmasterController extends MainController {
     protected $dbConn;
     protected $view;
     public function __construct($dbConn, $view)
