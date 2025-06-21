@@ -14,7 +14,7 @@ $asunto = $_POST['asunto'];
 		$contador1 = mysqli_num_rows($proceso1);
 		if($contador1==0){
 			$datos = [
-				"estatus"	=> "error",
+				"status"	=> "error",
 				"msg"	=> "Credenciales Incorrectas",
 			];
 			echo json_encode($datos);
@@ -31,7 +31,7 @@ $asunto = $_POST['asunto'];
 			#$_SESSION["sistemaIvan"] = $rol;
 			
 			$datos = [
-				"estatus"	=> "ok",
+				"status"	=> "ok",
 				"msg" => "Aqui se logea"
 				#"redireccion"	=> $redireccion,
 			];
@@ -220,7 +220,7 @@ $asunto = $_POST['asunto'];
 		';
 
 		$datos = [
-			"estatus"	=> "ok",
+			"status"	=> "ok",
 			"html"	=> $html,
 		];
 		echo json_encode($datos);
@@ -252,7 +252,7 @@ $asunto = $_POST['asunto'];
 
 			if($error!=""){
 				$datos = [
-					"estatus"	=> "error",
+					"status"	=> "error",
 					"msg"	=> $error,
 				];
 				echo json_encode($datos);
@@ -265,7 +265,7 @@ $asunto = $_POST['asunto'];
 		$proceso2 = mysqli_query($conexion,$sql2);
 		
 		$datos = [
-			"estatus"	=> "ok",
+			"status"	=> "ok",
 			"msg"	=> "Creado exitosamente",
 		];
 		echo json_encode($datos);

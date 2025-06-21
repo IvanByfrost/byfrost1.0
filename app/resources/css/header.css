@@ -1,4 +1,4 @@
-/* Estilos generales */
+/* Estilos generales  */
 .main-header {
     display: flex;
     font-family: lato, sans-serif;
@@ -9,7 +9,7 @@
     justify-content: space-between;
     padding: 15px 40px;
   }
-  
+  /* Estilos generales del header - duplicado*/
   .logo-header {
     margin-left: 10px;
     display: flex;

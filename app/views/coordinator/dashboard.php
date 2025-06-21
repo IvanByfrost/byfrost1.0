@@ -54,4 +54,4 @@
 require_once 'controlador/CoordinadorController.php';
 
 $controlador = new CoordinatorController($dbConn);
-$controlador->mostrarPanel();
+// $controlador->mostrarPanel(); // Removed because the method does not exist

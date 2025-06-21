@@ -1,19 +1,20 @@
-    function soloNumeros(id,value){
+    console.log("Script cargado");
+    function onlyNumbers(id,value){
         var input = $("#"+id);
         input.val(input.val().replace(/[^0-9]/g, ''));
     }
 
-    $("#formulario1").on("submit", function(e){
+    $("#loginForm").on("submit", function(e){
         e.preventDefault();
-        var tipoDocumento = $('#tipoDocumento').val();
-        var documento = $('#documento').val();
-        var password = $('#password').val();
+        var credType = $('#credType').val();
+        var userDocument = $('#userDocument').val();
+        var userPassword = $('#userPassword').val();
         
-        if(documento.length<4 || documento.length>12){
+        if(userDocument.length<4 || userDocument.length>12){
             var textoError1 = "";
-            if(documento.length<4){
+            if(userDocument.length<4){
                 textoError1 = "El documento debe tener mínimo 4 caracteres";
-            }else if(documento.length>12){
+            }else if(userDocument.length>12){
                 textoError1 = "El documento debe tener máximo 12 caracteres";
             }
             Swal.fire({
@@ -26,16 +27,16 @@
             return false;
         }
 
-        if(password.length<4 || password.length>12){
-            var textoError1 = "";
-            if(password.length<4){
-                textoError1 = "La password debe tener mínimo 4 caracteres";
-            }else if(password.length>12){
-                textoError1 = "La password debe tener máximo 12 caracteres";
+        if(userPassword.length<4 || userPassword.length>12){
+            var ErrorTextP = "";
+            if(userPassword.length<4){
+                ErrorTextP = "La contraseña debe tener mínimo 4 caracteres";
+            }else if(userPassword.length>12){
+                ErrorTextP = "La contraseña debe tener máximo 12 caracteres";
             }
             Swal.fire({
                 title: 'Error',
-                text: textoError1,
+                text: ErrorTextP,
                 icon: 'error',
                 position: 'center',
                 timer: 5000
@@ -45,29 +46,29 @@
 
         $.ajax({
             type: 'POST',
-            url: 'script/login.php',
+            url: ROOT + 'processes/loginProcess.php',
             dataType: "JSON",
             data: {
-                "tipoDocumento": tipoDocumento,
-                "documento": documento,
-                "password": password,
-                "asunto": "login",
+                "credType": credType,
+                "userDocument": userDocument,
+                "userPassword": userPassword,
+                "subject": "login",
             },
 
-            success: function(respuesta) {
-                console.log(respuesta);
-                if(respuesta["estatus"]=="ok"){
+            success: function(response) {
+                console.log(response);
+                if(response["status"]=="ok"){
                     Swal.fire({
                         title: 'Ok',
-                        text: respuesta["msg"],
+                        text: response["msg"],
                         icon: 'success',
                         position: 'center',
                         timer: 5000
                     });
-                }else if(respuesta["estatus"]=="error"){
+                }else if(response["status"]=="error"){
                     Swal.fire({
                         title: 'Error',
-                        text: respuesta["msg"],
+                        text: response["msg"],
                         icon: 'error',
                         position: 'center',
                         timer: 5000
@@ -75,8 +76,8 @@
                 }
             },
 
-            error: function(respuesta) {
-                console.log(respuesta['responseText']);
+            error: function(response) {
+                console.log(response['responseText']);
             }
         });
     });
