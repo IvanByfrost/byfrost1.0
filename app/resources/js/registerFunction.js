@@ -58,7 +58,7 @@
 
         $.ajax({
             type: 'POST',
-            url: 'app/controller/registerController.php',
+            url: 'byfrost1.0/app/controllers/registerController.php',
             dataType: "JSON",
             data: {
                 "userEmail": userEmail,
