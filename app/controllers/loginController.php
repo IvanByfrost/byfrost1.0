@@ -1,5 +1,9 @@
 <?php
-include url . '/app/scripts/connection.php';
+if (!defined('ROOT')) {
+    define('ROOT', dirname(dirname((__DIR__))));
+}
+include ROOT . '/app/scripts/connection.php';
+require_once 'mainController.php';
 class LoginController extends mainController
 {
     protected $dbConn;
@@ -9,19 +13,19 @@ class LoginController extends mainController
     public function __construct($dbConn)
     {
         $this->dbConn = $dbConn;
-
     }
 
     // Muestra el formulario de login
-    public function index() {
-        require_once app.views . 'index/login.php';
+    public function index()
+    {
+        require_once app . views . 'index/login.php';
     }
 
     // Procesa el formulario y redirige al dashboard según el rol
     public function auth()
     {
         //Verifica que se hayan enviado los datos necesarios
-        if (!isset($_POST['subject'], $_POST['credType'], $_POST['userDocument'], $_POST['password'])) {
+        if (!isset($_POST['subject'], $_POST['credType'], $_POST['userDocument'], $_POST['userPassword'])) {
             return [
                 "status" => "error",
                 "msg" => "Faltan datos en la solicitud."
@@ -30,32 +34,32 @@ class LoginController extends mainController
         $subject = $_POST['subject'];
         if ($subject == "login") {
             $credType = $_POST['credType'];
-            $documentNum = $_POST['documentNum'];
-            $passwordUser = $_POST['password'];
+            $userDocument = $_POST['userDocument'];
+            $userPassword = $_POST['userPassword'];
 
             $query = "SELECT * FROM mainUser 
           WHERE credType = :credType 
-          AND documentNumber = :documentNum 
+          AND userDocument = :documentNum 
           AND userPassword = :passwordUser 
           LIMIT 1";
             $stmt = $this->dbConn->prepare($query);
             $stmt->execute([
                 ':credType'     => $credType,
-                ':documentNum'  => $documentNum,
+                ':documentNum'  => $userDocument,
                 //':passwordUser' => $passwordUser  // ¡No olvides este!
             ]);
 
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             $counter = count($user);
 
-            if ($user && password_verify($passwordUser, $user['userPassword'])) {
+            if ($user && password_verify($userPassword, $user['userPassword'])) {
                 // Contraseña válida, el usuario ha sido autenticado
                 session_start();
                 $_SESSION["ByFrost_id"] = $user['id'];   // Guarda el ID
                 $_SESSION["ByFrost_role"] = $user['rol']; // Guarda el rol en una clave diferente
 
                 // No reveles el hash de la contraseña al cliente
-                unset($user['userPassword']); 
+                unset($user['userPassword']);
 
                 return [
                     "status"      => "ok",
@@ -64,9 +68,6 @@ class LoginController extends mainController
                     "userData"    => $user // Puedes enviar datos del usuario si es necesario
                 ];
             }
-
-
-
         }
     }
 

@@ -1,5 +1,9 @@
 <?php
-include 'byfrost1.0/app/scripts/connection.php';
+if (!defined('ROOT')) {
+    define('ROOT', dirname(dirname((__DIR__))));
+}
+include_once ROOT.'/app/scripts/connection.php';
+require_once 'mainController.php';
 class registerController extends mainController
 {
     protected $dbConn;
@@ -33,21 +37,25 @@ class registerController extends mainController
             }
 
             // 2. Llamar al modelo
-            require_once 'app/models/userModel.php';
-            $userModel = new userModel($this->$dbConn);
+            require_once ROOT.'/app/models/userModel.php';
+            $userModel = new userModel($this->dbConn);
             $success = $userModel->createUser($data);
 
             // 3. Devolver respuesta
             if ($success) {
+                header('Content-Type: application/json');
                 echo json_encode([
                     'estatus' => 'ok',
                     'msg' => 'Usuario registrado exitosamente'
                 ]);
+                exit;
             } else {
+                header('Content-Type: application/json');
                 echo json_encode([
                     'estatus' => 'error',
                     'msg' => 'No se pudo registrar el usuario'
                 ]);
+                exit;
             }
         }
     }

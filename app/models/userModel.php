@@ -1,4 +1,5 @@
 <?php
+require_once 'mainModel.php';
 class UserModel extends mainModel {
     // Constructor de la clase 
     protected $dbConn;
@@ -16,10 +17,11 @@ class UserModel extends mainModel {
     // Función para crear un usuario
     public function createUser($data) {
         // Implementar la lógica para crear un usuario
-        $query = "INSERT INTO mainUser (userName, credType, userDocument, userEmail, userPassword) VALUES (:userName, :credType, :userDocument, :userEmail, :userPassword)";
+        $query = "INSERT INTO mainUser (credType, userDocument, userEmail, userPassword) VALUES (:credType, :userDocument, :userEmail, :userPassword)";
         $stmt = $this->dbConn->prepare($query);
         $stmt->execute([
-            'userName' => $data['userName'],
+            'credType' => $data['credType'],
+            'userDocument' => $data['userDocument'],
             'userEmail' => $data['userEmail'],
             'userPassword' => password_hash($data['userPassword'], PASSWORD_DEFAULT)
         ]);
