@@ -17,12 +17,13 @@ class registerController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // 1. Recolectar y validar los datos
             $data = [
-                'userName' => $_POST['userName'] ?? '',
+                'credType' => $_POST['credType'] ?? '',
+                'userDocument' => $_POST['userDocument'] ?? '',
                 'userEmail' => $_POST['userEmail'] ?? '',
                 'userPassword' => $_POST['userPassword'] ?? ''
             ];
 
-            if (empty($data['userName']) || empty($data['userEmail']) || empty($data['userPassword'])) {
+            if (empty($data['userDocument']) || empty($data['userEmail']) || empty($data['userPassword'])) {
                 echo json_encode([
                     'estatus' => 'error',
                     'msg' => 'Todos los campos son obligatorios'
