@@ -12,7 +12,10 @@ require_once ROOT . '/app/views/layouts/dashHeader.php';
         require_once 'rootSidebar.php';
         ?>
     </nav>
-</body>
+  </body>
+<?php
+require_once __DIR__ . '/../layouts/dashFooter.php';
+?>
 
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>

@@ -16,7 +16,7 @@ $data = [
     'direccion' => $_POST['addressUser'] ?? ''
 ];
 
-if (empty($data['userEmail']) || empty($data['userName']) ||empty($data['userPhone'] )) {
+if (empty($data['userEmail']) || empty($data['userName']) || empty($data['userPhone'])) {
     echo json_encode([
         'status' => 'error',
         'msg' => 'Campos obligatorios faltantes.'
