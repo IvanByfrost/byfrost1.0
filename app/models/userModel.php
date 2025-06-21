@@ -16,7 +16,7 @@ class UserModel extends mainModel {
     // Función para crear un usuario
     public function createUser($data) {
         // Implementar la lógica para crear un usuario
-        $query = "INSERT INTO mainUser (userName, userEmail, userPassword) VALUES (:userName, :userEmail, :userPassword)";
+        $query = "INSERT INTO mainUser (userName, credType, userDocument, userEmail, userPassword) VALUES (:userName, :credType, :userDocument, :userEmail, :userPassword)";
         $stmt = $this->dbConn->prepare($query);
         $stmt->execute([
             'userName' => $data['userName'],

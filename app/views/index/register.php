@@ -16,7 +16,7 @@ require_once __DIR__ . '/../layouts/header.php';
             <div class="row">
                 <div class="col-12 mt-3 mb-3" style="font-weight: bold; font-size: 30px;">Bienvenido(a) a Byfrost</div>
                 <div class="col-12">
-                    <select class="inputEstilo1" id="tipoDocumento" required>
+                    <select class="inputEstilo1" id="credType" required>
                         <option value="">Seleccione</option>
                         <option value="Cédula de ciudadanía">Cédula de ciudadanía</option>
                         <option value="Tarjeta de identidad">Tarjeta de identidad</option>
@@ -27,16 +27,16 @@ require_once __DIR__ . '/../layouts/header.php';
                     </select>
                 </div>
                 <div class="col-12">
-                    <input type="text" class="inputEstilo1" id="documento" name="documento" placeholder="Número de documento" pattern="[0-9]+" title="Solo números" onkeyup="soloNumeros('documento',value);" autocomplete="off" required>
+                    <input type="text" class="inputEstilo1" id="userDocument" name="documento" placeholder="Número de documento" pattern="[0-9]+" title="Solo números" onkeyup="soloNumeros('documento',value);" autocomplete="off" required>
                 </div>
-                                <div class="col-12">
+                <div class="col-12">
                     <input type="email" class="inputEstilo1" id="correo" name="correo" placeholder="Correo Electrónico" autocomplete="off" required>
                 </div>
                 <div class="col-12">
-                    <input type="password" class="inputEstilo1" id="password" name="password" placeholder="Contraseña" required>
+                    <input type="password" class="inputEstilo1" id="userPassword" name="password" placeholder="Contraseña" required>
                 </div>
                 <div class="col-12">
-                    <input type="password" class="inputEstilo1" id="password2" name="password2" placeholder="Confirmar Contraseña" required>
+                    <input type="password" class="inputEstilo1" id="passwordConf" name="password2" placeholder="Confirmar Contraseña" required>
                 </div>
 
                 <div class="col-6">
@@ -50,8 +50,8 @@ require_once __DIR__ . '/../layouts/header.php';
             </div>
         </form>
     </div>
-<br>
+    <br>
 
-<?php
-require_once __DIR__ . '/../layouts/footer.php';
-?>
+    <?php
+    require_once __DIR__ . '/../layouts/footer.php';
+    ?>
