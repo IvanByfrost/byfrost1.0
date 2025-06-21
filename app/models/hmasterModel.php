@@ -35,7 +35,7 @@ class hmasterModel {
     public function createHmaster($userName, $userLastName, $userEmail, $password, $phoneUser = null) {
         // Se asume que la contraseña ya viene hasheada desde el controlador
         $sql = "INSERT INTO rectores (nombre, apellido, email, password, telefono) VALUES (?, ?, ?, ?, ?)";
-        $stmt = $this->conexion->prepare($sql);
+        $stmt = $this->dbConn->prepare($sql);
         $stmt->bind_param("sssss", $userName, $userLastName, $userEmail, $password, $phoneUser);
         return $stmt->execute();
     }
