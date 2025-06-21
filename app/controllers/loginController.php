@@ -1,5 +1,5 @@
 <?php
-include("connection.php");
+include url . '/app/scripts/connection.php';
 class LoginController extends mainController
 {
     protected $dbConn;

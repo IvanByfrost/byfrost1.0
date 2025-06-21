@@ -1,5 +1,6 @@
 <?php
-class registerController
+include 'byfrost1.0/app/scripts/connection.php';
+class registerController extends mainController
 {
     protected $dbConn;
     public function index()
