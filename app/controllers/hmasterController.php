@@ -19,7 +19,7 @@ class hmasterController extends MainController {
 
     // Mostrar la lista de rectores
     public function listAction() {
-        $headMaster = $this->hmasterModel->getAllRectores();
+        $headMaster = $this->dbConn->getAllRectores();
         // Cargar la vista
         require_once app.views . 'headMaster/hmasterLists.php';
     }
@@ -41,14 +41,14 @@ class hmasterController extends MainController {
 
             // Validar y hashear la contraseña antes de guardarla
             if (!empty($userPassword)) {
-                $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+                $hashedPassword = password_hash($userPassword, PASSWORD_DEFAULT);
             } else {
                 // Manejar error o asignar un valor por defecto si la contraseña es obligatoria
                 echo "Error: La contraseña es obligatoria.";
                 return;
             }
 
-            if ($this->hmasterModel->createHmaster($userName, $userLastName, $userEmail, $hashedPassword, $phoneUser)) {
+            if ($this->dbConn->createHmaster($userName, $userLastName, $userEmail, $hashedPassword, $phoneUser)) {
                 header('Location: /software_academico/rector/listar'); // Redirigir a la lista
                 exit();
             } else {
@@ -64,9 +64,9 @@ class hmasterController extends MainController {
     public function editHeadMaster() {
         $id = $_GET['id'] ?? null; // Obtener ID de la URL
         if ($id) {
-            $headMaster = $this->hmasterModel->getRectorById($id);
+            $headMaster = $this->dbConn->getRectorById($id);
             if ($headMaster) {
-                require_once  . 'rector/editar.php';
+                require_once app.views. 'rector/editar.php';
             } else {
                 echo "Rector no encontrado.";
             }
@@ -85,7 +85,7 @@ class hmasterController extends MainController {
             $phoneUser = $_POST['phoneUser'] ?? null;
 
             $userEmail = $_POST['email'] ?? '';
-            if ($id && $this->hmasterModel->updateHeadMaster($id, $userName, $userLastName, $userEmail, $phoneUser)) {
+            if ($id && $this->dbConn->updateHeadMaster($id, $userName, $userLastName, $userEmail, $phoneUser)) {
                 header('Location: /software_academico/rector/listar');
                 exit();
             } else {
@@ -101,7 +101,7 @@ class hmasterController extends MainController {
     public function deleteHeadMaster() {
         $id = $_GET['id'] ?? null;
         if ($id) {
-            if ($this->hmasterModel->deleteHeadMaster($id)) {
+            if ($this->dbConn->deleteHeadMaster($id)) {
                 header('Location: /software_academico/rector/listar');
                 exit();
             } else {

@@ -35,7 +35,7 @@ class hmasterModel {
     public function createHmaster($userName, $userLastName, $userEmail, $password, $phoneUser = null) {
         // Se asume que la contraseña ya viene hasheada desde el controlador
         $sql = "INSERT INTO rectores (nombre, apellido, email, password, telefono) VALUES (?, ?, ?, ?, ?)";
-        $stmt = $this->conexion->prepare($sql);
+        $stmt = $this->dbConn->prepare($sql);
         $stmt->bind_param("sssss", $userName, $userLastName, $userEmail, $password, $phoneUser);
         return $stmt->execute();
     }
@@ -43,7 +43,7 @@ class hmasterModel {
     // Actualizar un rector
     public function headMasterUpdate($id, $userName, $userLastName, $userEmail, $phoneUser = null) {
         $sql = "UPDATE rectores SET nombre = ?, apellido = ?, email = ?, telefono = ? WHERE id_rector = ?";
-        $stmt = $this->conexion->prepare($sql);
+        $stmt = $this->dbConn->prepare($sql);
         $stmt->bind_param("ssssi", $userName, $userLastName, $userEmail, $phoneUser, $id);
         return $stmt->execute();
     }
@@ -51,13 +51,13 @@ class hmasterModel {
     // Eliminar un rector
     public function deleteHeadMaster($id) {
         $sql = "DELETE FROM rectores WHERE id_rector = ?";
-        $stmt = $this->conexion->prepare($sql);
+        $stmt = $this->dbConn->prepare($sql);
         $stmt->bind_param("i", $id);
         return $stmt->execute();
     }
 
     public function __destruct() {
-        $this->conexion->close();
+        $this->dbConn->close();
     }
 }
 ?>
