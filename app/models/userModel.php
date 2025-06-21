@@ -36,6 +36,9 @@ class UserModel extends mainModel {
     // Función para actualizar un usuario
     public function updateUser(){
         //Aquí va la lógica de actualizar el usuario.
+                $query = "SELECT * FROM mainUser WHERE userId = :userId ";
+        $stmt = $this->dbConn->query($query);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     // Función para eliminar un usuario
     public function deleteUser(){

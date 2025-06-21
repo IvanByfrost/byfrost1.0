@@ -2,7 +2,7 @@
 if (!defined('ROOT')) {
     define('ROOT', dirname(dirname((__DIR__))));
 }
-include ROOT . '/app/scripts/connection.php';
+//require ROOT . '/app/scripts/connection.php';
 require_once 'mainController.php';
 class LoginController extends mainController
 {
@@ -22,7 +22,7 @@ class LoginController extends mainController
     }
 
     // Procesa el formulario y redirige al dashboard según el rol
-    public function auth()
+    public function authUser()
     {
         //Verifica que se hayan enviado los datos necesarios
         if (!isset($_POST['subject'], $_POST['credType'], $_POST['userDocument'], $_POST['userPassword'])) {
@@ -39,14 +39,13 @@ class LoginController extends mainController
 
             $query = "SELECT * FROM mainUser 
           WHERE credType = :credType 
-          AND userDocument = :documentNum 
-          AND userPassword = :passwordUser 
+          AND userDocument = :userDocument  
           LIMIT 1";
             $stmt = $this->dbConn->prepare($query);
             $stmt->execute([
                 ':credType'     => $credType,
-                ':documentNum'  => $userDocument,
-                //':passwordUser' => $passwordUser  // ¡No olvides este!
+                ':userDocument'  => $userDocument,
+                //':userPassword' => $userPassword  // ¡No olvides este!
             ]);
 
             $user = $stmt->fetch(PDO::FETCH_ASSOC);

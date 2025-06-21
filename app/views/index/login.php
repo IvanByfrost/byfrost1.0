@@ -18,21 +18,21 @@ require_once __DIR__ . '/../layouts/header.php';
             <div class="row">
                 <div class="col-12 mt-3 mb-3" style="font-weight: bold; font-size: 30px;">Bienvenido(a) de nuevo</div>
                 <div class="col-12">
-                    <select class="inputEstilo1" id="tipoDocumento" required>
+                    <select class="inputEstilo1" id="credType" required>
                         <option value="">Seleccione</option>
-                        <option value="Cédula de ciudadanía">Cédula de ciudadanía</option>
-                        <option value="Tarjeta de identidad">Tarjeta de identidad</option>
-                        <option value="Pasaporte">Pasaporte</option>
-                        <option value="Cédula de extranjería">Cédula de extranjería</option>
-                        <option value="Permiso de permanencia">Permiso de permanencia</option>
-                        <option value="Registro civil">Registro civil</option>
+                        <option value="CC">Cédula de ciudadanía</option>
+                        <option value="TI">Tarjeta de identidad</option>
+                        <option value="PP">Pasaporte</option>
+                        <option value="CE">Cédula de extranjería</option>
+                        <option value="PM">Permiso de permanencia</option>
+                        <option value="RC">Registro civil</option>
                     </select>
                 </div>
                 <div class="col-12">
                     <input type="text" class="inputEstilo1" id="userDocument" name="documento" placeholder="Número de documento" pattern="[0-9]+" title="Only Numbers" onkeyup="onlyNumbers('userDocument',value);" autocomplete="off" required>
                 </div>
                 <div class="col-12">
-                    <input type="password" class="inputEstilo1" id="password" name="password" placeholder="Contraseña" required>
+                    <input type="password" class="inputEstilo1" id="userPassword" name="password" placeholder="Contraseña" required>
                 </div>
 
                 <div class="col-6">

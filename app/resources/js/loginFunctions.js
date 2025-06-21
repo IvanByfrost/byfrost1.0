@@ -4,7 +4,7 @@
         input.val(input.val().replace(/[^0-9]/g, ''));
     }
 
-    $("#formulario1").on("submit", function(e){
+    $("#loginForm").on("submit", function(e){
         e.preventDefault();
         var credType = $('#credType').val();
         var userDocument = $('#userDocument').val();
@@ -46,7 +46,7 @@
 
         $.ajax({
             type: 'POST',
-            url: ROOT + '/controllers/loginController.php',
+            url: ROOT + 'processes/loginProcess.php',
             dataType: "JSON",
             data: {
                 "credType": credType,
