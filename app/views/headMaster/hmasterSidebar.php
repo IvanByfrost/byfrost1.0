@@ -3,14 +3,13 @@
         <ul>
             <li>
                 <a href="<?php ROOT; ?>#"><i data-lucide="home"></i>Inicio</a>
-                <ul class="submenu"></ul>
-                <ul class="submenu"></ul>
-                <ul class="submenu"></ul>
             </li>
             <li><a href="<?php ROOT; ?>#"><i data-lucide="school"></i>Colegios</a>
-                <ul class="submenu"></ul>
-                <ul class="submenu"></ul>
-                <ul class="submenu"></ul>
+                <ul class="submenu">
+                    <li><a href="<?php ROOT; ?>#">Registrar Colegio</a></li>
+                    <li><a href="<?php ROOT; ?>#">Ver Colegios</a></li>
+                    <li><a href="<?php ROOT; ?>#">Editar Colegios</a></li>
+                </ul>
             </li>
             <li><a href="<?php ROOT; ?>#"><i data-lucide="user"></i>Coordinador</a>
                 <ul class="submenu"></ul>
