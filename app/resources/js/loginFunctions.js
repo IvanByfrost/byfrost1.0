@@ -1,4 +1,4 @@
-    function soloNumeros(id,value){
+    function onlyNumbers(id,value){
         var input = $("#"+id);
         input.val(input.val().replace(/[^0-9]/g, ''));
     }
@@ -27,15 +27,15 @@
         }
 
         if(userPassword.length<4 || userPassword.length>12){
-            var textoError1 = "";
+            var ErrorTextP = "";
             if(userPassword.length<4){
-                textoError1 = "La contraseña debe tener mínimo 4 caracteres";
+                ErrorTextP = "La contraseña debe tener mínimo 4 caracteres";
             }else if(userPassword.length>12){
-                textoError1 = "La contraseña debe tener máximo 12 caracteres";
+                ErrorTextP = "La contraseña debe tener máximo 12 caracteres";
             }
             Swal.fire({
                 title: 'Error',
-                text: textoError1,
+                text: ErrorTextP,
                 icon: 'error',
                 position: 'center',
                 timer: 5000
