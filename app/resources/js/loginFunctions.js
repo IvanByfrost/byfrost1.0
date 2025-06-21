@@ -9,11 +9,11 @@
         var userDocument = $('#userDocument').val();
         var userPassword = $('#userPassword').val();
         
-        if(documento.length<4 || documento.length>12){
+        if(userDocument.length<4 || userDocument.length>12){
             var textoError1 = "";
-            if(documento.length<4){
+            if(userDocument.length<4){
                 textoError1 = "El documento debe tener mínimo 4 caracteres";
-            }else if(documento.length>12){
+            }else if(userDocument.length>12){
                 textoError1 = "El documento debe tener máximo 12 caracteres";
             }
             Swal.fire({
@@ -26,12 +26,12 @@
             return false;
         }
 
-        if(password.length<4 || password.length>12){
+        if(userPassword.length<4 || userPassword.length>12){
             var textoError1 = "";
-            if(password.length<4){
-                textoError1 = "La password debe tener mínimo 4 caracteres";
-            }else if(password.length>12){
-                textoError1 = "La password debe tener máximo 12 caracteres";
+            if(userPassword.length<4){
+                textoError1 = "La contraseña debe tener mínimo 4 caracteres";
+            }else if(userPassword.length>12){
+                textoError1 = "La contraseña debe tener máximo 12 caracteres";
             }
             Swal.fire({
                 title: 'Error',
@@ -48,10 +48,10 @@
             url: 'script/login.php',
             dataType: "JSON",
             data: {
-                "tipoDocumento": tipoDocumento,
-                "documento": documento,
-                "password": password,
-                "asunto": "login",
+                "credType": credType,
+                "userDocument": userDocument,
+                "userPassword": userPassword,
+                "subject": "login",
             },
 
             success: function(respuesta) {
