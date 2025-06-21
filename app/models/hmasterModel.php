@@ -10,32 +10,32 @@ class hmasterModel {
 
     // Obtener todos los rectores
     public function getAllHmaster() {
-        $sql = "SELECT * FROM rectores";
-        $resultado = $this->dbConn->query($sql);
+        $sql = "SELECT * FROM headmaster";
+        $result = $this->dbConn->query($sql);
         $headMaster = [];
-        if ($resultado->num_rows > 0) {
-            while ($fila = $resultado->fetch_assoc()) {
-                $headMaster[] = $fila;
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $headMaster[] = $row;
             }
         }
         return $headMaster;
     }
 
     // Obtener un rector por ID
-    public function getRectorById($id) {
-        $sql = "SELECT * FROM rectores WHERE id_rector = ?";
+    public function getRectorById($document) {
+        $sql = "SELECT * FROM headmaster WHERE doc_hmaster = :document";
         $stmt = $this->dbConn->prepare($sql);
-        $stmt->bind_param("i", $id);
+        $stmt->bind_param("i", $document);
         $stmt->execute();
-        $resultado = $stmt->get_result();
-        return $resultado->fetch_assoc();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
     }
 
     // Insertar un nuevo rector
     public function createHmaster($userName, $userLastName, $userEmail, $password, $phoneUser = null) {
         // Se asume que la contraseña ya viene hasheada desde el controlador
-        $sql = "INSERT INTO rectores (nombre, apellido, email, password, telefono) VALUES (?, ?, ?, ?, ?)";
-        $stmt = $this->conexion->prepare($sql);
+        $sql = "INSERT INTO headmaster (userId) VALUES ()";
+        $stmt = $this->dbConn->prepare($sql);
         $stmt->bind_param("sssss", $userName, $userLastName, $userEmail, $password, $phoneUser);
         return $stmt->execute();
     }
