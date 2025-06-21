@@ -5,11 +5,11 @@
 
     $("#formulario1").on("submit", function(e) {
         e.preventDefault();
-        var correo = $('#userEmail').val();
-        var tipoDocumento = $('#credType').val();
-        var documento = $('#userDocument').val();
-        var password = $('#userPassword').val();
-        var password2 = $('#passwordConf').val();
+        var userEmail = $('#userEmail').val();
+        var credType = $('#credType').val();
+        var userDocument = $('#userDocument').val();
+        var userPassword = $('#userPassword').val();
+        var passwordConf = $('#passwordConf').val();
 
         if (documento.length < 4 || documento.length > 12) {
             var textoError1 = "";
