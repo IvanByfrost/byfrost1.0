@@ -45,7 +45,7 @@
 
         $.ajax({
             type: 'POST',
-            url: 'script/login.php',
+            url: 'app/controllers/loginController.php',
             dataType: "JSON",
             data: {
                 "credType": credType,
