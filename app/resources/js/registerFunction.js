@@ -58,7 +58,7 @@
 
         $.ajax({
             type: 'POST',
-            url: 'controller/registerController.php',
+            url: 'app/controller/registerController.php',
             dataType: "JSON",
             data: {
                 "userEmail": userEmail,
