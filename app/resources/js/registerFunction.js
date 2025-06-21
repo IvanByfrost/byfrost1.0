@@ -1,3 +1,4 @@
+console.log("Script cargado");
     function onlyNumbers(id, value) {
         var input = $("#" + id);
         input.val(input.val().replace(/[^0-9]/g, ''));
@@ -58,7 +59,7 @@
 
         $.ajax({
             type: 'POST',
-            url: ROOT + 'app/controllers/registerController.php',
+            url: ROOT + 'controllers/registerController.php',
             dataType: "JSON",
             data: {
                 "userEmail": userEmail,
@@ -68,20 +69,20 @@
                 "subject": "register",
             },
 
-            success: function(respuesta) {
-                console.log(respuesta);
-                if (respuesta["estatus"] == "ok") {
+            success: function(response) {
+                console.log(response);
+                if (response["estatus"] == "ok") {
                     Swal.fire({
                         title: 'Ok',
-                        text: respuesta["msg"],
+                        text: response["msg"],
                         icon: 'success',
                         position: 'center',
                         timer: 5000
                     });
-                } else if (respuesta["estatus"] == "error") {
+                } else if (response["estatus"] == "error") {
                     Swal.fire({
                         title: 'Error',
-                        text: respuesta["msg"],
+                        text: response["msg"],
                         icon: 'error',
                         position: 'center',
                         timer: 5000
@@ -89,8 +90,8 @@
                 }
             },
 
-            error: function(respuesta) {
-                console.log(respuesta['responseText']);
+            error: function(response) {
+                console.log(response['responseText']);
             }
         });
     });
