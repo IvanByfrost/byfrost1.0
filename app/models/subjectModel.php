@@ -16,6 +16,9 @@ class subjectModel extends mainModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     // Función para crear una asignatura
+    public function createSubject(){
+        //
+    }
     // Función para actualizar una asignatura
     // Función para eliminar una asignatura
 }
