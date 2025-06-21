@@ -9,7 +9,7 @@
         var userDocument = $('#userDocument').val();
         var userPassword = $('#userPassword').val();
         
-        if(userDocument.length<4 || documento.length>12){
+        if(userDocument.length<4 || userDocument.length>12){
             var textoError1 = "";
             if(userDocument.length<4){
                 textoError1 = "El documento debe tener mínimo 4 caracteres";
@@ -26,12 +26,12 @@
             return false;
         }
 
-        if(userPassword.length<4 || password.length>12){
+        if(userPassword.length<4 || userPassword.length>12){
             var textoError1 = "";
             if(userPassword.length<4){
-                textoError1 = "La password debe tener mínimo 4 caracteres";
+                textoError1 = "La contraseña debe tener mínimo 4 caracteres";
             }else if(userPassword.length>12){
-                textoError1 = "La password debe tener máximo 12 caracteres";
+                textoError1 = "La contraseña debe tener máximo 12 caracteres";
             }
             Swal.fire({
                 title: 'Error',
