@@ -32,8 +32,16 @@ class UserModel extends mainModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     // Función para actualizar un usuario
-    
+    public function updateUser(){
+        //Aquí va la lógica de actualizar el usuario.
+    }
     // Función para eliminar un usuario
+    public function deleteUser(){
+        //Aquí va la lógica de eliminar un usuario.
+    }
     // Función para validar un usuario
+    public function validateUser(){
+        //Aquí va la lógica de validar un usuario. 
+    }
 }
 ?>
