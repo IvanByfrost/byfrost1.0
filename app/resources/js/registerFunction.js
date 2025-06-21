@@ -1,14 +1,14 @@
-    function soloNumeros(id, value) {
+    function onlyNumbers(id, value) {
         var input = $("#" + id);
         input.val(input.val().replace(/[^0-9]/g, ''));
     }
 
     $("#formulario1").on("submit", function(e) {
         e.preventDefault();
-        var correo = $('#correo').val();
-        var tipoDocumento = $('#tipoDocumento').val();
-        var documento = $('#documento').val();
-        var password = $('#password').val();
+        var correo = $('#userEmail').val();
+        var tipoDocumento = $('#credType').val();
+        var documento = $('#userDocument').val();
+        var password = $('#userPassword').val();
         var password2 = $('#password2').val();
 
         if (documento.length < 4 || documento.length > 12) {
@@ -61,11 +61,11 @@
             url: 'script/login.php',
             dataType: "JSON",
             data: {
-                "correo": correo,
-                "tipoDocumento": tipoDocumento,
-                "documento": documento,
-                "password": password,
-                "asunto": "register",
+                "userEmail": userEmail,
+                "credType": credType,
+                "userDocument": userDocument,
+                "userPassword": userPassword,
+                "subject": "register",
             },
 
             success: function(respuesta) {
