@@ -1,4 +1,10 @@
-$("#completarPerfil").on("submit", function(e){
+console.log("Script cargado");
+    function onlyNumbers(id,value){
+        var input = $("#"+id);
+        input.val(input.val().replace(/[^0-9]/g, ''));
+    }
+
+$("#CompleteProfile").on("submit", function (e) {
     e.preventDefault();
     let formData = $(this).serialize();
 
@@ -7,7 +13,7 @@ $("#completarPerfil").on("submit", function(e){
         url: ROOT + 'processes/profileProcess.php',
         data: formData,
         dataType: 'json',
-        success: function(response) {
+        success: function (response) {
             if (response.status === "ok") {
                 Swal.fire({
                     title: "Listo",

@@ -14,7 +14,7 @@ require_once ROOT . '/app/layouts/header.php';
 
             <input type="text" class="form-control mb-3" name="userName" placeholder="Nombre" required>
             <input type="text" class="form-control mb-3" name="userName" placeholder="Apellido" required>
-            <input type="text" class="form-control mb-3" name="userPhone" placeholder="Teléfono" required>
+            <input type="text" class="form-control mb-3" name="userPhone" placeholder="Teléfono" pattern="[0-9]+" title="Only Numbers" onkeyup="onlyNumbers('userDocument',value);" autocomplete="off" required>
             <input type="text" class="form-control mb-3" name="addressUser" placeholder="Dirección" required>
 
             <button type="submit" class="btn btn-primary">Guardar</button>

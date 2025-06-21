@@ -29,10 +29,10 @@ require_once __DIR__ . '/../layouts/header.php';
                     </select>
                 </div>
                 <div class="col-12">
-                    <input type="text" class="inputEstilo1" id="userDocument" name="documento" placeholder="Número de documento" pattern="[0-9]+" title="Only Numbers" onkeyup="onlyNumbers('userDocument',value);" autocomplete="off" required>
+                    <input type="text" class="inputEstilo1" id="userDocument" name="userDocument" placeholder="Número de documento" pattern="[0-9]+" title="Only Numbers" onkeyup="onlyNumbers('userDocument',value);" autocomplete="off" required>
                 </div>
                 <div class="col-12">
-                    <input type="password" class="inputEstilo1" id="userPassword" name="password" placeholder="Contraseña" required>
+                    <input type="password" class="inputEstilo1" id="userPassword" name="userPassword" placeholder="Contraseña" required>
                 </div>
 
                 <div class="col-6">
