@@ -21,7 +21,7 @@ class LoginController extends mainController
     public function auth()
     {
         //Verifica que se hayan enviado los datos necesarios
-        if (!isset($_POST['subject'], $_POST['credType'], $_POST['documentNum'], $_POST['password'])) {
+        if (!isset($_POST['subject'], $_POST['credType'], $_POST['userDocument'], $_POST['password'])) {
             return [
                 "status" => "error",
                 "msg" => "Faltan datos en la solicitud."
