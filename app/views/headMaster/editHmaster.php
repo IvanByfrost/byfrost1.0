@@ -10,21 +10,21 @@
     <h1>Editar Rector</h1>
     <a href="/software_academico/rector/listar">Volver al Listado</a>
     <br><br>
-    <?php if (isset($rector)): ?>
+    <?php if (isset($headMaster)): ?>
     <form action="/software_academico/rector/actualizar" method="POST">
-        <input type="hidden" name="id_rector" value="<?php echo htmlspecialchars($rector['id_rector']); ?>">
+        <input type="hidden" name="id_rector" value="<?php echo htmlspecialchars($headMaster['id_rector']); ?>">
 
         <label for="nombre">Nombre:</label><br>
-        <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($rector['nombre']); ?>" required><br><br>
+        <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($headMaster['nombre']); ?>" required><br><br>
 
         <label for="apellido">Apellido:</label><br>
-        <input type="text" id="apellido" name="apellido" value="<?php echo htmlspecialchars($rector['apellido']); ?>" required><br><br>
+        <input type="text" id="apellido" name="apellido" value="<?php echo htmlspecialchars($headMaster['apellido']); ?>" required><br><br>
 
         <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($rector['email']); ?>" required><br><br>
+        <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($headMaster['email']); ?>" required><br><br>
 
         <label for="telefono">Teléfono:</label><br>
-        <input type="text" id="telefono" name="telefono" value="<?php echo htmlspecialchars($rector['telefono']); ?>"><br><br>
+        <input type="text" id="telefono" name="telefono" value="<?php echo htmlspecialchars($headMaster['telefono']); ?>"><br><br>
 
         <button type="submit">Actualizar Rector</button>
     </form>

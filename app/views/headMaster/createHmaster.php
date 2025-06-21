@@ -1,11 +1,3 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Nuevo Rector</title>
-    <link rel="stylesheet" href="resources/css/">
-</head>
 <body>
     <h1>Crear Nuevo Rector</h1>
     <a href="xampp">Volver al Listado</a>
@@ -29,4 +21,3 @@
         <button type="submit">Guardar Rector</button>
     </form>
 </body>
-</html>

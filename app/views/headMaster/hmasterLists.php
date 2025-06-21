@@ -21,17 +21,17 @@
             </tr>
         </thead>
         <tbody>
-            <?php if (!empty($rectores)): ?>
-                <?php foreach ($rectores as $rector): ?>
+            <?php if (!empty($headMasters)): ?>
+                <?php foreach ($headMasters as $headMaster): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($rector['id_rector']); ?></td>
-                        <td><?php echo htmlspecialchars($rector['nombre']); ?></td>
-                        <td><?php echo htmlspecialchars($rector['apellido']); ?></td>
-                        <td><?php echo htmlspecialchars($rector['email']); ?></td>
-                        <td><?php echo htmlspecialchars($rector['telefono']); ?></td>
+                        <td><?php echo htmlspecialchars($headMaster['id_rector']); ?></td>
+                        <td><?php echo htmlspecialchars($headMaster['nombre']); ?></td>
+                        <td><?php echo htmlspecialchars($headMaster['apellido']); ?></td>
+                        <td><?php echo htmlspecialchars($headMaster['email']); ?></td>
+                        <td><?php echo htmlspecialchars($headMaster['telefono']); ?></td>
                         <td>
-                            <a href="/software_academico/rector/editar?id=<?php echo htmlspecialchars($rector['id_rector']); ?>">Editar</a> |
-                            <a href="/software_academico/rector/eliminar?id=<?php echo htmlspecialchars($rector['id_rector']); ?>" onclick="return confirm('¿Estás seguro de eliminar a este rector?');">Eliminar</a>
+                            <a href="/software_academico/rector/editar?id=<?php echo htmlspecialchars($headMaster['id_rector']); ?>">Editar</a> |
+                            <a href="/software_academico/rector/eliminar?id=<?php echo htmlspecialchars($headMaster['id_rector']); ?>" onclick="return confirm('¿Estás seguro de eliminar a este rector?');">Eliminar</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
