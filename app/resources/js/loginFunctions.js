@@ -1,3 +1,4 @@
+    console.log("Script cargado");
     function onlyNumbers(id,value){
         var input = $("#"+id);
         input.val(input.val().replace(/[^0-9]/g, ''));
@@ -45,7 +46,7 @@
 
         $.ajax({
             type: 'POST',
-            url: 'app/controllers/loginController.php',
+            url: ROOT + '/controllers/loginController.php',
             dataType: "JSON",
             data: {
                 "credType": credType,

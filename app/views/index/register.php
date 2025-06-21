@@ -3,7 +3,9 @@
 require_once __DIR__ . '/../layouts/head.php';
 require_once __DIR__ . '/../layouts/header.php';
 ?>
-
+<script>
+    const ROOT = "<?php echo url ?>"; 
+</script>
 <body>
     <br>
     <div class="container">
