@@ -5,9 +5,9 @@
 
     $("#formulario1").on("submit", function(e){
         e.preventDefault();
-        var tipoDocumento = $('#tipoDocumento').val();
-        var documento = $('#documento').val();
-        var password = $('#password').val();
+        var credType = $('#credType').val();
+        var userDocument = $('#userDocument').val();
+        var userPassword = $('#userPassword').val();
         
         if(documento.length<4 || documento.length>12){
             var textoError1 = "";
