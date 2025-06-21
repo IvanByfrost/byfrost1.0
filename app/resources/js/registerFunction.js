@@ -11,11 +11,11 @@
         var userPassword = $('#userPassword').val();
         var passwordConf = $('#passwordConf').val();
 
-        if (documento.length < 4 || documento.length > 12) {
+        if (userDocument.length < 4 || userDocument.length > 12) {
             var textoError1 = "";
-            if (documento.length < 4) {
+            if (userDocument.length < 4) {
                 textoError1 = "El documento debe tener mínimo 4 caracteres";
-            } else if (documento.length > 12) {
+            } else if (userDocument.length > 12) {
                 textoError1 = "El documento debe tener máximo 12 caracteres";
             }
             Swal.fire({
@@ -28,11 +28,11 @@
             return false;
         }
 
-        if (password.length < 4 || password.length > 12) {
+        if (userPassword.length < 4 || userPassword.length > 12) {
             var textoError1 = "";
-            if (password.length < 4) {
+            if (userPassword.length < 4) {
                 textoError1 = "La password debe tener mínimo 4 caracteres";
-            } else if (password.length > 12) {
+            } else if (userPassword.length > 12) {
                 textoError1 = "La password debe tener máximo 12 caracteres";
             }
             Swal.fire({
@@ -45,7 +45,7 @@
             return false;
         }
 
-        if (password != password2) {
+        if (userPassword != passwordConf) {
             Swal.fire({
                 title: 'Error',
                 text: 'Las contraseñas no coinciden',
