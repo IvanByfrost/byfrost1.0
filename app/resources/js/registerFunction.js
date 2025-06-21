@@ -9,7 +9,7 @@
         var tipoDocumento = $('#credType').val();
         var documento = $('#userDocument').val();
         var password = $('#userPassword').val();
-        var password2 = $('#password2').val();
+        var password2 = $('#passwordConf').val();
 
         if (documento.length < 4 || documento.length > 12) {
             var textoError1 = "";
