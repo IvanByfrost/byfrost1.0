@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Nuevo Rector</title>
-    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="resources/css/">
 </head>
 <body>
     <h1>Crear Nuevo Rector</h1>
