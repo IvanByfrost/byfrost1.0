@@ -20,12 +20,12 @@ require_once __DIR__ . '/../layouts/header.php';
                 <div class="col-12">
                     <select class="inputEstilo1" id="credType" required>
                         <option value="">Seleccione</option>
-                        <option value="Cédula de ciudadanía">Cédula de ciudadanía</option>
-                        <option value="Tarjeta de identidad">Tarjeta de identidad</option>
-                        <option value="Pasaporte">Pasaporte</option>
-                        <option value="Cédula de extranjería">Cédula de extranjería</option>
-                        <option value="Permiso de permanencia">Permiso de permanencia</option>
-                        <option value="Registro civil">Registro civil</option>
+                        <option value="CC">Cédula de ciudadanía</option>
+                        <option value="TI">Tarjeta de identidad</option>
+                        <option value="PP">Pasaporte</option>
+                        <option value="CE">Cédula de extranjería</option>
+                        <option value="PM">Permiso de permanencia</option>
+                        <option value="RC">Registro civil</option>
                     </select>
                 </div>
                 <div class="col-12">

@@ -1,5 +1,10 @@
 <?php
-class registerController
+if (!defined('ROOT')) {
+    define('ROOT', dirname(dirname((__DIR__))));
+}
+include_once ROOT.'/app/scripts/connection.php';
+require_once 'mainController.php';
+class registerController extends mainController
 {
     protected $dbConn;
     public function index()
@@ -17,12 +22,13 @@ class registerController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // 1. Recolectar y validar los datos
             $data = [
-                'userName' => $_POST['userName'] ?? '',
+                'credType' => $_POST['credType'] ?? '',
+                'userDocument' => $_POST['userDocument'] ?? '',
                 'userEmail' => $_POST['userEmail'] ?? '',
                 'userPassword' => $_POST['userPassword'] ?? ''
             ];
 
-            if (empty($data['userName']) || empty($data['userEmail']) || empty($data['userPassword'])) {
+            if (empty($data['userDocument']) || empty($data['userEmail']) || empty($data['userPassword'])) {
                 echo json_encode([
                     'estatus' => 'error',
                     'msg' => 'Todos los campos son obligatorios'
@@ -31,21 +37,25 @@ class registerController
             }
 
             // 2. Llamar al modelo
-            require_once 'app/models/userModel.php';
-            $userModel = new userModel($this->$dbConn);
+            require_once ROOT.'/app/models/userModel.php';
+            $userModel = new userModel($this->dbConn);
             $success = $userModel->createUser($data);
 
             // 3. Devolver respuesta
             if ($success) {
+                header('Content-Type: application/json');
                 echo json_encode([
                     'estatus' => 'ok',
                     'msg' => 'Usuario registrado exitosamente'
                 ]);
+                exit;
             } else {
+                header('Content-Type: application/json');
                 echo json_encode([
                     'estatus' => 'error',
                     'msg' => 'No se pudo registrar el usuario'
                 ]);
+                exit;
             }
         }
     }

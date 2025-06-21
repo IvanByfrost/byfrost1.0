@@ -59,7 +59,7 @@ console.log("Script cargado");
 
         $.ajax({
             type: 'POST',
-            url: ROOT + 'controllers/registerController.php',
+            url: ROOT + 'processes/registerProcess.php',
             dataType: "JSON",
             data: {
                 "userEmail": userEmail,
