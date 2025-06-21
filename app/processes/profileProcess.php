@@ -18,23 +18,23 @@ $data = [
 
 if (empty($data['userEmail']) || empty($data['userName']) ||empty($data['userPhone'] )) {
     echo json_encode([
-        'estatus' => 'error',
+        'status' => 'error',
         'msg' => 'Campos obligatorios faltantes.'
     ]);
     exit;
 }
 
 // Actualizar en la BD
-$success = $userModel->updateProfile($data); // Crea esta función en tu modelo
+$success = $userModel->completeProfile($data); // Crea esta función en tu modelo
 
 if ($success) {
     echo json_encode([
-        'estatus' => 'ok',
+        'status' => 'ok',
         'msg' => 'Perfil actualizado correctamente.'
     ]);
 } else {
     echo json_encode([
-        'estatus' => 'error',
+        'status' => 'error',
         'msg' => 'No se pudo guardar el perfil.'
     ]);
 }

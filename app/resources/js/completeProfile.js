@@ -8,7 +8,7 @@ $("#completarPerfil").on("submit", function(e){
         data: formData,
         dataType: 'json',
         success: function(response) {
-            if (response.estatus === "ok") {
+            if (response.status === "ok") {
                 Swal.fire({
                     title: "Listo",
                     text: response.msg,

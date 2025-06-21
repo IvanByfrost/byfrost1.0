@@ -71,7 +71,7 @@ console.log("Script cargado");
 
             success: function(response) {
                 console.log(response);
-                if (response["estatus"] == "ok") {
+                if (response["status"] == "ok") {
                     Swal.fire({
                         title: 'Ok',
                         text: response["msg"],
@@ -79,7 +79,7 @@ console.log("Script cargado");
                         position: 'center',
                         timer: 5000
                     });
-                } else if (response["estatus"] == "error") {
+                } else if (response["status"] == "error") {
                     Swal.fire({
                         title: 'Error',
                         text: response["msg"],

@@ -55,20 +55,20 @@
                 "subject": "login",
             },
 
-            success: function(respuesta) {
-                console.log(respuesta);
-                if(respuesta["estatus"]=="ok"){
+            success: function(response) {
+                console.log(response);
+                if(response["status"]=="ok"){
                     Swal.fire({
                         title: 'Ok',
-                        text: respuesta["msg"],
+                        text: response["msg"],
                         icon: 'success',
                         position: 'center',
                         timer: 5000
                     });
-                }else if(respuesta["estatus"]=="error"){
+                }else if(response["status"]=="error"){
                     Swal.fire({
                         title: 'Error',
-                        text: respuesta["msg"],
+                        text: response["msg"],
                         icon: 'error',
                         position: 'center',
                         timer: 5000
@@ -76,8 +76,8 @@
                 }
             },
 
-            error: function(respuesta) {
-                console.log(respuesta['responseText']);
+            error: function(response) {
+                console.log(response['responseText']);
             }
         });
     });

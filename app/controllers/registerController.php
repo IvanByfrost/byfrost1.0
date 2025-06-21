@@ -30,7 +30,7 @@ class registerController extends mainController
 
             if (empty($data['userDocument']) || empty($data['userEmail']) || empty($data['userPassword'])) {
                 echo json_encode([
-                    'estatus' => 'error',
+                    'status' => 'error',
                     'msg' => 'Todos los campos son obligatorios'
                 ]);
                 return;
@@ -45,14 +45,14 @@ class registerController extends mainController
             if ($success) {
                 header('Content-Type: application/json');
                 echo json_encode([
-                    'estatus' => 'ok',
+                    'status' => 'ok',
                     'msg' => 'Usuario registrado exitosamente'
                 ]);
                 exit;
             } else {
                 header('Content-Type: application/json');
                 echo json_encode([
-                    'estatus' => 'error',
+                    'status' => 'error',
                     'msg' => 'No se pudo registrar el usuario'
                 ]);
                 exit;
