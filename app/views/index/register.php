@@ -30,7 +30,7 @@ require_once __DIR__ . '/../layouts/header.php';
                     <input type="text" class="inputEstilo1" id="userDocument" name="documento" placeholder="Número de documento" pattern="[0-9]+" title="Solo números" onkeyup="soloNumeros('documento',value);" autocomplete="off" required>
                 </div>
                 <div class="col-12">
-                    <input type="email" class="inputEstilo1" id="correo" name="correo" placeholder="Correo Electrónico" autocomplete="off" required>
+                    <input type="email" class="inputEstilo1" id="userEmail" name="correo" placeholder="Correo Electrónico" autocomplete="off" required>
                 </div>
                 <div class="col-12">
                     <input type="password" class="inputEstilo1" id="userPassword" name="password" placeholder="Contraseña" required>
