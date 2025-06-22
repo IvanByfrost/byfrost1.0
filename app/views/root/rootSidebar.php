@@ -1,9 +1,3 @@
-<?php
-if (!defined('ROOT')) {
-    define('ROOT', dirname(dirname(dirname(__DIR__))));
-}
-?>
-
 <div class="root-dashboard">
     <div class="root-sidebar">
         <ul>

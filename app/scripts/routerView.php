@@ -1,6 +1,6 @@
 <?php
 if (!defined('ROOT')) {
-    define('ROOT', dirname(dirname((__DIR__))));
+    define('ROOT', dirname(__DIR__) . '/');
 }
 
 $view = $_GET['view'] ?? '';
@@ -15,9 +15,10 @@ if (
     exit;
 }
 
+$parts = explode('/', $view);
+
 // Validar carpeta permitida
 $allowedDirs = ['root', 'teacher', 'headMaster', 'student', 'coordinator', 'treasurer'];
-$parts = explode('/', $view);
 
 // Si no está en carpetas permitidas
 if (!in_array($parts[0], $allowedDirs)) {
@@ -26,8 +27,10 @@ if (!in_array($parts[0], $allowedDirs)) {
     exit;
 }
 
+
+
 // Construir la ruta al archivo
-$viewPath = ROOT . "views/" . $view . ".php";
+$viewPath = ROOT . "/views/" . $view . ".php";
 
 // Si existe, mostrarla
 if (file_exists($viewPath)) {

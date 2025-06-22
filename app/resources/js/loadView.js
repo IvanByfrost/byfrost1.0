@@ -1,14 +1,18 @@
-function loadView(viewName) {
+window.loadView = function(viewName) {
+    const target = document.getElementById("mainContent");
+    if (!target) {
+        console.error("Elemento con id 'mainContent' no encontrado.");
+        return;
+    }
+
     console.log("Cargando vista:", viewName);
-    fetch("app/scripts/routerView.php?view=" + viewName)
+    fetch(`${BASE_URL}/scripts/routerView.php?view=${viewName}`)
         .then(response => {
-            console.log("Respuesta recibida:", response);
             if (!response.ok) throw new Error("Vista no encontrada.");
             return response.text();
         })
         .then(html => {
-            console.log("HTML recibido:", html);
-            document.getElementById("mainContent").innerHTML = html;
+            target.innerHTML = html;
         })
         .catch(err => {
             console.error("Error al cargar la vista:", err);
@@ -23,4 +27,4 @@ function loadView(viewName) {
                 alert('No se pudo cargar la vista.');
             }
         });
-}
+};
