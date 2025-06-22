@@ -1,18 +1,21 @@
 <?php
 if (!defined('ROOT')) {
-    define('ROOT', dirname(dirname(dirname(__DIR__))));
+  define('ROOT', dirname(dirname(dirname(__DIR__))));
 }
 require_once ROOT . '/config.php';
 require_once ROOT . '/app/views/layouts/dashHeader.php';
 ?>
 
 <body>
-    <nav>
-        <?php
-        require_once 'rootSidebar.php';
-        ?>
-    </nav>
-  </body>
+  <nav>
+    <?php
+    require_once 'rootSidebar.php';
+    ?>
+  </nav>
+  <main id="mainContent">
+
+  </main>
+</body>
 <?php
 require_once __DIR__ . '/../layouts/dashFooter.php';
 ?>

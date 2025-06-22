@@ -13,6 +13,7 @@
     <script type="text/javascript" src="<?php echo url . rq ?>js/registerFunction.js"></script>
     <script type="text/javascript" src="<?php echo url . rq ?>js/loginFunctions.js"></script>
     <script type="text/javascript" src="<?php echo url . rq ?>js/completeProfile.js"></script>
+        <script type="text/javascript" src="<?php echo url . rq ?>js/loadView.js"></script>
     <script type="text/javascript" src="<?php echo url . rq ?>js/toggleMenu.js"></script>
 
     </body>
