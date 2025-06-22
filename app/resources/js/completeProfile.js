@@ -22,7 +22,8 @@ $("#CompleteProfile").on("submit", function (e) {
                 });
 
                 setTimeout(() => {
-                    window.location.href = 'login.php';
+                    console.log("Redirigiendo...");
+                    window.location.href = 'completeProf.php';
                 }, 2100);
             } else {
                 Swal.fire({
