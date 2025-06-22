@@ -1,6 +1,6 @@
 <?php
 if (!defined('ROOT')) {
-    define('ROOT', dirname(dirname(dirname(__DIR__))));
+    define('ROOT', dirname(__DIR__, 3));
 }
 require_once ROOT . '/config.php';
 ?>

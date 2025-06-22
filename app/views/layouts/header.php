@@ -1,6 +1,6 @@
 <?php
 if (!defined('ROOT')) {
-    define('ROOT', dirname(dirname(dirname(__DIR__))));
+    define('ROOT', dirname(__DIR__, 2));
 }
 require_once ROOT . '/config.php';
 require_once ROOT . '/app/views/layouts/head.php';
@@ -14,10 +14,10 @@ require_once ROOT . '/app/views/layouts/head.php';
     </div>
 
     <div class="menu-bar">
-        <a href="plans.php" class="btn-menu">Planes</a>
-        <a href="contact.php" class="btn-menu">Contáctanos</a>
-        <a href="faq.php" class="btn-menu">FAQ</a>
-        <a href="about.php" class="btn-menu">Quiénes somos</a>
+        <a href="<?php echo url . views ?>index/plans.php" class="btn-menu">Planes</a>
+        <a href="<?php echo url . views ?>index/contact.php" class="btn-menu">Contáctanos</a>
+        <a href="<?php echo url . views ?>index/faq.php" class="btn-menu">FAQ</a>
+        <a href="<?php echo url . views ?>index/about.php" class="btn-menu">Quiénes somos</a>
     </div>
 
     <a href="/byfrost1.0/app/views/index/login.php">
