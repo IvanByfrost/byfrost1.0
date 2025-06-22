@@ -10,13 +10,14 @@ $userModel = new userModel($dbConn);
 
 // Obtener y validar
 $data = [
-    'email' => $_POST['userEmail'] ?? '',
+    'userDocument' => $_POST['userDocument'] ?? '',
     'userName' => $_POST['userName'] ?? '',
-    'telefono' => $_POST['userPhone'] ?? '',
-    'direccion' => $_POST['addressUser'] ?? ''
+    'lastnameUser' => $_POST['lastnameUser'] ?? '',
+    'userPhone' => $_POST['userPhone'] ?? '',
+    'addressUser' => $_POST['addressUser'] ?? ''
 ];
 
-if (empty($data['userEmail']) || empty($data['userName']) || empty($data['userPhone'])) {
+if (empty($data['userDocument']) || empty($data['userName']) || empty($data['lastnameUser']) || empty($data['userPhone']) || empty($data['addressUser'])) {
     echo json_encode([
         'status' => 'error',
         'msg' => 'Campos obligatorios faltantes.'
@@ -28,11 +29,13 @@ if (empty($data['userEmail']) || empty($data['userName']) || empty($data['userPh
 $success = $userModel->completeProfile($data); // Crea esta función en tu modelo
 
 if ($success) {
+    header('Content-Type: application/json');
     echo json_encode([
         'status' => 'ok',
         'msg' => 'Perfil actualizado correctamente.'
     ]);
 } else {
+    header('Content-Type: application/json');
     echo json_encode([
         'status' => 'error',
         'msg' => 'No se pudo guardar el perfil.'

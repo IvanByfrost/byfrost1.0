@@ -59,10 +59,11 @@ class UserModel extends mainModel
     public function completeProfile($data)
     {
         $query = "UPDATE mainUser 
-              SET userName = :userName, 
+              SET userName = :userName,
+               lastnameUser = :lastnameUser,
                   userPhone = :userPhone, 
                   addressUser = :addressUser
-              WHERE userEmail = :userEmails";
+              WHERE userDocument = :userDocument";
 
         $stmt = $this->dbConn->prepare($query);
         $stmt->execute([

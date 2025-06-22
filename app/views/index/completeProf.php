@@ -10,10 +10,10 @@ require_once ROOT . '/app/layouts/header.php';
     <div class="container mt-5">
         <form id="CompleteProfile">
             <h2>¡Vamos a completar tu perfil!</h2>
-            <input type="hidden" name="email" value="<?php echo htmlspecialchars($_GET['user'] ?? '') ?>">
-
+            <input type="hidden" name="userDocument" value="<?php echo htmlspecialchars($_GET['user'] ?? '') ?>">
             <input type="text" class="form-control mb-3" id="userName" name="userName" placeholder="Nombre" required>
-            <input type="text" class="form-control mb-3" id="lastnameUser" name="userName" placeholder="Apellido" required>
+            <input type="text" class="form-control mb-3" id="lastnameUser" name="lastnameUser" placeholder="Apellido" required>
+            <input type="date" class="form-control mb-3" id="dob" name="dob" placeholder="Fecha de nacimiento" required>
             <input type="text" class="form-control mb-3" name="userPhone" id="userPhone" placeholder="Teléfono" pattern="[0-9]+" title="Only Numbers" onkeyup="onlyNumbers('userPhone',value);" autocomplete="off" required>
             <input type="text" class="form-control mb-3" name="addressUser" id="addressUser" placeholder="Dirección" required>
 
