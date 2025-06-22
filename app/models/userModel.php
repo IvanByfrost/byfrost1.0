@@ -20,6 +20,13 @@ class UserModel extends mainModel
     public function createUser($data)
     {
         // Implementar la lógica para crear un usuario
+        // 1. Verificar si el documento ya existe
+        $queryCheck = "SELECT COUNT(*) FROM mainUser WHERE userDocument = :userDocument";
+        $stmtCheck = $this->dbConn->prepare($queryCheck);
+        $stmtCheck->execute([':userDocument' => $data['userDocument']]);
+        if ($stmtCheck->fetchColumn() > 0) {
+            throw new Exception("Ya existe un usuario con ese documento.");
+        }
         $query = "INSERT INTO mainUser (credType, userDocument, userEmail, userPassword) VALUES (:credType, :userDocument, :userEmail, :userPassword)";
         $stmt = $this->dbConn->prepare($query);
         $stmt->execute([
@@ -45,16 +52,6 @@ class UserModel extends mainModel
         $stmt = $this->dbConn->query($query);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    // Función para eliminar un usuario
-    public function deleteUser()
-    {
-        //Aquí va la lógica de eliminar un usuario.
-    }
-    // Función para validar un usuario
-    public function validateUser()
-    {
-        //Aquí va la lógica de validar un usuario. 
-    }
 
     public function completeProfile($data)
     {
@@ -75,4 +72,17 @@ class UserModel extends mainModel
 
         return $stmt->rowCount() > 0;
     }
+
+        // Función para eliminar un usuario
+    public function deleteUser()
+    {
+        //Aquí va la lógica de eliminar un usuario.
+    }
+    // Función para validar un usuario
+    public function validateUser()
+    {
+        //Aquí va la lógica de validar un usuario. 
+    }
+
+
 }

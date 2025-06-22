@@ -8,7 +8,7 @@ require_once ROOT . '/app/layouts/header.php';
 
 <body>
     <div class="container mt-5">
-        <form id="CompleteProfile">
+        <form id="completeProfile">
             <h2>¡Vamos a completar tu perfil!</h2>
             <input type="hidden" name="userDocument" value="<?php echo htmlspecialchars($_GET['user'] ?? '') ?>">
             <input type="text" class="form-control mb-3" id="userName" name="userName" placeholder="Nombre" required>

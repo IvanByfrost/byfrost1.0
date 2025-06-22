@@ -2,7 +2,7 @@
 if (!defined('ROOT')) {
     define('ROOT', dirname(dirname((__DIR__))));
 }
-include_once ROOT.'/app/scripts/connection.php';
+include_once ROOT . '/app/scripts/connection.php';
 require_once 'mainController.php';
 class registerController extends mainController
 {
@@ -36,26 +36,29 @@ class registerController extends mainController
                 return;
             }
 
-            // 2. Llamar al modelo
-            require_once ROOT.'/app/models/userModel.php';
-            $userModel = new userModel($this->dbConn);
-            $success = $userModel->createUser($data);
+            // 2. Llamar al modelo dentro de un try-catch
+            try {
+                require_once ROOT . '/app/models/userModel.php';
+                $userModel = new userModel($this->dbConn);
+                $success = $userModel->createUser($data);
 
-            // 3. Devolver respuesta
-            if ($success) {
-                header('Content-Type: application/json');
-                echo json_encode([
-                    'status' => 'ok',
-                    'msg' => 'Usuario registrado exitosamente'
-                ]);
-                exit;
-            } else {
-                header('Content-Type: application/json');
+                if ($success) {
+                    echo json_encode([
+                        'status' => 'ok',
+                        'msg' => 'Usuario registrado exitosamente'
+                    ]);
+                } else {
+                    echo json_encode([
+                        'status' => 'error',
+                        'msg' => 'No se pudo registrar el usuario'
+                    ]);
+                }
+            } catch (Exception $e) {
+                // Aquí capturamos el error del modelo
                 echo json_encode([
                     'status' => 'error',
-                    'msg' => 'No se pudo registrar el usuario'
+                    'msg' => $e->getMessage()
                 ]);
-                exit;
             }
         }
     }

@@ -1,10 +1,7 @@
-console.log("Script cargado");
-    function onlyNumbers(id, value) {
-        var input = $("#" + id);
-        input.val(input.val().replace(/[^0-9]/g, ''));
-    }
+(function(){
+    console.log("Script cargado");
 
-    $("#formulario1").on("submit", function(e) {
+    $("#registerForm").on("submit", function(e) {
         e.preventDefault();
         var userEmail = $('#userEmail').val();
         var credType = $('#credType').val();
@@ -95,3 +92,4 @@ console.log("Script cargado");
             }
         });
     });
+})();

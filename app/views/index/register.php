@@ -9,7 +9,7 @@ require_once __DIR__ . '/../layouts/header.php';
 <body>
     <br>
     <div class="container">
-        <form id="formulario1" class="login-box">
+        <form id="registerForm" class="login-box">
             <!--<div class="logo">
             <a href="index.php">
                 <img src="img\horizontal-logo.svg" alt="Byfrost Logo">
