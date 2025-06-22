@@ -64,16 +64,17 @@ class UserModel extends mainModel
 
         $stmt = $this->dbConn->prepare($query);
         $stmt->execute([
-            ':userName' => $data['userName'],
-            ':userPhone' => $data['userPhone'],
-            ':addressUser' => $data['addressUser'],
-            ':userEmail' => $data['userEmail']
+            ':userName'      => $data['userName'],
+            ':lastnameUser'  => $data['lastnameUser'],
+            ':userPhone'     => $data['userPhone'],
+            ':addressUser'   => $data['addressUser'],
+            ':userDocument'  => $data['userDocument']
         ]);
 
         return $stmt->rowCount() > 0;
     }
 
-        // Función para eliminar un usuario
+    // Función para eliminar un usuario
     public function deleteUser()
     {
         //Aquí va la lógica de eliminar un usuario.
@@ -83,6 +84,4 @@ class UserModel extends mainModel
     {
         //Aquí va la lógica de validar un usuario. 
     }
-
-
 }

@@ -16,3 +16,10 @@ CREATE TABLE
 ALTER TABLE mainUser ADD UNIQUE (userDocument);
 
 CREATE INDEX idx_userDocument ON mainUser (userDocument);
+
+CREATE TABLE roleUser (
+    roleId INT PRIMARY KEY AUTO_INCREMENT,
+    roleName VARCHAR(50) NOT NULL UNIQUE,
+    userId INT NOT NULL,
+    FOREIGN KEY (userId) REFERENCES user_main(user_main_id)
+)

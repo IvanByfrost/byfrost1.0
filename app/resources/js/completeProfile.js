@@ -27,7 +27,7 @@
 
                     setTimeout(() => {
                         console.log("Redirigiendo...");
-                        window.location.href = 'completeProf.php';
+                        window.location.href = 'login.php';
                     }, 2100);
                 } else {
                     Swal.fire({
