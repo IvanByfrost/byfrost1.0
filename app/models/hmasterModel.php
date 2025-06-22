@@ -1,7 +1,8 @@
 <?php
 // software_academico/app/models/RectorModel.php
 
-class hmasterModel {
+class hmasterModel
+{
     protected $dbConn;
     public function __construct($dbConn)
     {
@@ -9,7 +10,8 @@ class hmasterModel {
     }
 
     // Obtener todos los rectores
-    public function getAllHmaster() {
+    public function getAllHmaster()
+    {
         $sql = "SELECT * FROM headmaster";
         $result = $this->dbConn->query($sql);
         $headMaster = [];
@@ -22,7 +24,8 @@ class hmasterModel {
     }
 
     // Obtener un rector por ID
-    public function getRectorById($document) {
+    public function getRectorById($document)
+    {
         $sql = "SELECT * FROM headmaster WHERE doc_hmaster = :document";
         $stmt = $this->dbConn->prepare($sql);
         $stmt->bind_param("i", $document);
@@ -32,7 +35,8 @@ class hmasterModel {
     }
 
     // Insertar un nuevo rector
-    public function createHmaster($userName, $userLastName, $userEmail, $password, $phoneUser = null) {
+    public function createHmaster($userName, $userLastName, $userEmail, $password, $phoneUser = null)
+    {
         // Se asume que la contraseña ya viene hasheada desde el controlador
         $sql = "INSERT INTO rectores (nombre, apellido, email, password, telefono) VALUES (?, ?, ?, ?, ?)";
         $stmt = $this->dbConn->prepare($sql);
@@ -41,7 +45,8 @@ class hmasterModel {
     }
 
     // Actualizar un rector
-    public function headMasterUpdate($id, $userName, $userLastName, $userEmail, $phoneUser = null) {
+    public function headMasterUpdate($id, $userName, $userLastName, $userEmail, $phoneUser = null)
+    {
         $sql = "UPDATE rectores SET nombre = ?, apellido = ?, email = ?, telefono = ? WHERE id_rector = ?";
         $stmt = $this->dbConn->prepare($sql);
         $stmt->bind_param("ssssi", $userName, $userLastName, $userEmail, $phoneUser, $id);
@@ -49,15 +54,17 @@ class hmasterModel {
     }
 
     // Eliminar un rector
-    public function deleteHeadMaster($id) {
+    public function deleteHeadMaster($id)
+    {
         $sql = "DELETE FROM rectores WHERE id_rector = ?";
         $stmt = $this->dbConn->prepare($sql);
         $stmt->bind_param("i", $id);
         return $stmt->execute();
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         $this->dbConn->close();
     }
+
 }
-?>

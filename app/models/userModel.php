@@ -84,4 +84,17 @@ class UserModel extends mainModel
     {
         //Aquí va la lógica de validar un usuario. 
     }
+
+    //Función para asignar un rol a un usuario
+        //Función para asignar un rol. 
+    public function assignRole($userId, $roleId)
+    {
+        $query = "UPDATE mainUser SET roleId = :roleId WHERE mainUser = :userId";
+        $stmt = $this->dbConn->prepare($query);
+        $stmt->execute([
+            ':roleId' => $roleId,
+            ':userId' => $userId
+        ]);
+        return $stmt->rowCount() > 0;
+    }
 }
