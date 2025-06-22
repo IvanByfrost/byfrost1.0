@@ -1,4 +1,5 @@
 <?php
+session_start();
 if (!defined('ROOT')) {
   define('ROOT', dirname(__DIR__, 3));
 }
@@ -16,7 +17,7 @@ require_once ROOT . '/config.php';
 </head>
 <script>
   setTimeout(() => {
-    window.location.href = "<?php echo url . rq . $_SESSION['ByFrost_redirect']; ?>";
+    window.location.href = "<?php echo url . views . $_SESSION['ByFrost_redirect']; ?>";
   }, 3000); // Redirige en 3 segundos
 </script>
 
@@ -24,7 +25,9 @@ require_once ROOT . '/config.php';
   <div class="loading-cont">
     <img class="BYFROST" src="<?php echo url . rq ?>img/Byfrost-logo.svg" alt="loading-logo" />
     <h1>BYFROST</h1>
-    <p>¡Bienvenido de vuelta, <span id="userName">Iván</span>!</p>
+    <p>¡Hola de vuelta, <span id="userName"><?php echo htmlspecialchars($_SESSION["ByFrost_userName"] ?? 'Usuario'); ?></span>! ! Que tengas un buen día 😊</p>
+
+
   </div>
 </body>
 

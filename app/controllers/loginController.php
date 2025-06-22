@@ -75,8 +75,15 @@ class LoginController extends mainController
                     $redirectPage = 'login.php';
                 }
                 $_SESSION['ByFrost_redirect'] = $redirectPage;
-                header("Location: " . url . "views/index/charger.php"); // Ajusta ruta real
+                
+                //header('Content-Type: application/json');
+                echo json_encode([
+                    "status" => "ok",
+                    "msg" => "Login correcto.",
+                    "redirect" => url . "views/index/charger.php"
+                ]);
                 exit;
+
                 // Redirige al usuario a la página correspondiente según su rol
                 $response = [
                     "status"      => "ok",
