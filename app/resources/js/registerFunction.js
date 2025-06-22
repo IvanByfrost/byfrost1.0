@@ -76,6 +76,10 @@
                         position: 'center',
                         timer: 5000
                     });
+                    setTimeout(function () {
+                        // Redirigir al formulario de completar perfil con el documento
+                        window.location.href = "completeProf.php?user=" + encodeURIComponent(userDocument);
+                    }, 2100);
                 } else if (response["status"] == "error") {
                     Swal.fire({
                         title: 'Error',

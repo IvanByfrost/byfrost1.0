@@ -9,7 +9,7 @@
 
         $.ajax({
             type: 'POST',
-            url: "<?php echo url . rq ?>processes/profileProcess.php",
+            url: "/byfrost1.0/app/processes/profileProcess.php",
             data: formData,
             dataType: 'json',
             success: function (response) {

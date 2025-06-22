@@ -6,7 +6,6 @@ require_once ROOT . '/app/layouts/head.php';
 require_once ROOT . '/app/layouts/header.php';
 ?>
 
-<body>
     <div class="container mt-5">
         <form id="completeProfile">
             <h2>¡Vamos a completar tu perfil!</h2>
@@ -20,6 +19,3 @@ require_once ROOT . '/app/layouts/header.php';
             <button type="submit" class="btn btn-primary">Guardar</button>
         </form>
     </div>
-
-    <script src="<?php echo url . rq ?>js/completarPerfil.js"></script>
-</body>
