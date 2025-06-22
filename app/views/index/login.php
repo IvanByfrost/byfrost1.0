@@ -9,7 +9,7 @@ require_once __DIR__ . '/../layouts/header.php';
 <body>
     <br>
     <div class="container">
-        <form id="loginForm" class="login-box">
+        <form id="loginForm" class="login-box" method="POST" action="<?php echo url . rq ?>app/processes/loginProcess.php">
             <!--<div class="logo">
             <a href="index.php">
                 <img src="<?php echo url . rq ?>img\horizontal-logo.svg" alt="Byfrost Logo">

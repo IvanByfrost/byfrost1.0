@@ -33,3 +33,18 @@ SELECT u.userId, u.userDocument, r.roleName
 FROM mainUser u
 JOIN roles r ON u.roleId = r.roleId
 WHERE u.userDocument = :userDocument AND u.userPassword = :userPassword
+
+//Insert de los roles
+INSERT INTO roles (roleName)
+VALUES 
+  ('root'),
+  ('headmaster'),
+  ('treasurer'),
+  ('coordinator'),
+  ('teacher'),
+  ('parent'),
+  ('student');
+
+  SELECT u.*, r.roleName AS rol
+FROM mainUser u
+JOIN roles r ON u.roleId = r.id

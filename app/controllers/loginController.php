@@ -1,4 +1,5 @@
 <?php
+session_start();
 if (!defined('ROOT')) {
     define('ROOT', dirname(dirname((__DIR__))));
 }
@@ -37,9 +38,11 @@ class LoginController extends mainController
             $userDocument = $_POST['userDocument'];
             $userPassword = $_POST['userPassword'];
 
-            $query = "SELECT * FROM mainUser 
-          WHERE credType = :credType 
-          AND userDocument = :userDocument  
+            $query = "SELECT u.*, r.roleName AS rol
+          FROM mainUser u
+          JOIN roles r ON u.roleId = r.id
+          WHERE u.credType = :credType 
+          AND u.userDocument = :userDocument
           LIMIT 1";
             $stmt = $this->dbConn->prepare($query);
             $stmt->execute([
@@ -49,23 +52,35 @@ class LoginController extends mainController
             ]);
 
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
-            $counter = count($user);
+            //$counter = count($user);
 
             $response = [];
 
             if ($user && password_verify($userPassword, $user['userPassword'])) {
                 // Contraseña válida, el usuario ha sido autenticado
-                session_start();
                 $_SESSION["ByFrost_id"] = $user['id'];   // Guarda el ID
                 $_SESSION["ByFrost_role"] = $user['rol']; // Guarda el rol en una clave diferente
 
                 // No reveles el hash de la contraseña al cliente
                 unset($user['userPassword']);
 
+                $_SESSION["ByFrost_userName"] = $user['userName'];
+
+                $validRoles = ['root', 'teacher', 'student', 'headmaster', 'coordinator', 'treasurer', 'parent'];
+
+                if (in_array($user['rol'], $validRoles)) {
+                    $redirectPage = "{$user['rol']}/dashboard.php";
+                } else {
+                    $redirectPage = 'login.php';
+                }
+                $_SESSION['ByFrost_redirect'] = $redirectPage;
+                header("Location: " . url . "views/system/loading.php"); // Ajusta ruta real
+                exit;
+                // Redirige al usuario a la página correspondiente según su rol
                 $response = [
                     "status"      => "ok",
                     "msg"         => "¡Bienvenido, " . $user['userName'] . "!",
-                    "redirection" => "admin.php",
+                    "redirection" => $redirectPage,
                     "userData"    => $user // Puedes enviar datos del usuario si es necesario
                 ];
             } else {
