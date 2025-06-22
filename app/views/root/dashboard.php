@@ -5,6 +5,9 @@ if (!defined('ROOT')) {
 require_once ROOT . '/config.php';
 require_once ROOT . '/app/views/layouts/dashHeader.php';
 ?>
+<script>
+    const ROOT = "<?php echo url ?>";
+</script>
 
 <body>
   <nav>
@@ -12,12 +15,16 @@ require_once ROOT . '/app/views/layouts/dashHeader.php';
     require_once 'rootSidebar.php';
     ?>
   </nav>
-  <main id="mainContent">
+  <div id="main-content">
 
-  </main>
+</div>
 </body>
 <?php
 require_once __DIR__ . '/../layouts/dashFooter.php';
 ?>
 
 <script src="https://unpkg.com/lucide@latest"></script>
+<script src="<?php echo url . rq ?>js/loadView.js"></script>
+<script>
+  // Inicializar Lucide
+  lucide.createIcons();

@@ -7,5 +7,4 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    lucide.createIcons(); // importante para que cargue los iconos
 });
