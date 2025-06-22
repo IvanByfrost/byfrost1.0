@@ -21,8 +21,3 @@ require_once __DIR__ . '/../layouts/dashFooter.php';
 ?>
 
 <script src="https://unpkg.com/lucide@latest"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    lucide.createIcons();
-  });
-</script>
