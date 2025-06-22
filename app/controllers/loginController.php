@@ -51,6 +51,8 @@ class LoginController extends mainController
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             $counter = count($user);
 
+            $response = [];
+
             if ($user && password_verify($userPassword, $user['userPassword'])) {
                 // Contraseña válida, el usuario ha sido autenticado
                 session_start();
@@ -60,13 +62,22 @@ class LoginController extends mainController
                 // No reveles el hash de la contraseña al cliente
                 unset($user['userPassword']);
 
-                return [
+                $response = [
                     "status"      => "ok",
                     "msg"         => "¡Bienvenido, " . $user['userName'] . "!",
                     "redirection" => "admin.php",
                     "userData"    => $user // Puedes enviar datos del usuario si es necesario
                 ];
+            } else {
+                $response = [
+                    "status" => "error",
+                    "msg" => "Credenciales inválidas."
+                ];
             }
+
+            header('Content-Type: application/json');
+            echo json_encode($response);
+            exit;
         }
     }
 
