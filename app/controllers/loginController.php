@@ -3,6 +3,7 @@ session_start();
 if (!defined('ROOT')) {
     define('ROOT', dirname(dirname((__DIR__))));
 }
+require_once ROOT . '/config.php';
 //require ROOT . '/app/scripts/connection.php';
 require_once 'mainController.php';
 class LoginController extends mainController
@@ -40,7 +41,7 @@ class LoginController extends mainController
 
             $query = "SELECT u.*, r.roleName AS rol
           FROM mainUser u
-          JOIN roles r ON u.roleId = r.id
+          JOIN roles r ON u.roleId = r.roleId
           WHERE u.credType = :credType 
           AND u.userDocument = :userDocument
           LIMIT 1";
@@ -58,7 +59,7 @@ class LoginController extends mainController
 
             if ($user && password_verify($userPassword, $user['userPassword'])) {
                 // Contraseña válida, el usuario ha sido autenticado
-                $_SESSION["ByFrost_id"] = $user['id'];   // Guarda el ID
+                $_SESSION["ByFrost_id"] = $user['userId'];   // Guarda el ID
                 $_SESSION["ByFrost_role"] = $user['rol']; // Guarda el rol en una clave diferente
 
                 // No reveles el hash de la contraseña al cliente
@@ -74,7 +75,7 @@ class LoginController extends mainController
                     $redirectPage = 'login.php';
                 }
                 $_SESSION['ByFrost_redirect'] = $redirectPage;
-                header("Location: " . url . "views/system/loading.php"); // Ajusta ruta real
+                header("Location: " . url . "views/index/charger.php"); // Ajusta ruta real
                 exit;
                 // Redirige al usuario a la página correspondiente según su rol
                 $response = [
