@@ -17,9 +17,17 @@ ALTER TABLE mainUser ADD UNIQUE (userDocument);
 
 CREATE INDEX idx_userDocument ON mainUser (userDocument);
 
-CREATE TABLE roleUser (
-    roleId INT PRIMARY KEY AUTO_INCREMENT,
-    roleName VARCHAR(50) NOT NULL UNIQUE,
-    userId INT NOT NULL,
-    FOREIGN KEY (userId) REFERENCES user_main(user_main_id)
-)
+CREATE TABLE
+    roles (
+        roleId INT PRIMARY KEY AUTO_INCREMENT,
+        roleName VARCHAR(50) NOT NULL UNIQUE
+    );
+ALTER TABLE mainUser ADD roleId INT;
+ALTER TABLE mainUser ADD FOREIGN KEY (roleId) REFERENCES roles(roleId);
+
+//Consulta de usuario por rol
+
+SELECT u.userId, u.userDocument, r.roleName
+FROM mainUser u
+JOIN roles r ON u.roleId = r.roleId
+WHERE u.userDocument = :userDocument AND u.userPassword = :userPassword
