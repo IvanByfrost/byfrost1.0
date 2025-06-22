@@ -10,7 +10,7 @@ if (!defined('ROOT')) {
             <li><a href="<?php ROOT; ?>#"><i data-lucide="school"></i>Colegios</a></li>
             <li><a href="<?php ROOT; ?>#"><i data-lucide="users"></i>Rectores</a>
                 <ul class="submenu">
-                    <li><a href="#" onclick="loadView('views/headMaster/createHmaster.php')">Registrar Rector</a></li>
+                    <li><a href="#" onclick="loadView('headMaster/createHmaster')">Registrar Rector</a></li>
                     <li><a href="<?php echo url . 'views/headMaster/editHmaster.php'; ?>">Editar el perfil</a></li>
                 </ul>
             </li>

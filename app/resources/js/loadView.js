@@ -1,17 +1,20 @@
 console.log("Script cargado");
-function loadView(url) {
-  fetch('<?php echo url; ?>' + url)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Error al cargar la vista');
-      }
-      return response.text();
-    })
-    .then(html => {
-      document.getElementById('mainContent').innerHTML = html;
-      lucide.createIcons(); // Si tu vista tiene íconos
-    })
-    .catch(error => {
-      document.getElementById('mainContent').innerHTML = `<p style="color:red;">${error}</p>`;
-    });
+function loadView(viewName) {
+    fetch(`<?= url . rq ?>app/scripts/viewRouter.php?view=${viewName}`)
+        .then(response => {
+            if (!response.ok) throw new Error("Vista no encontrada.");
+            return response.text();
+        })
+        .then(html => {
+            document.getElementById("main-content").innerHTML = html;
+        })
+        .catch(err => {
+            console.error(err);
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudo cargar la vista.',
+                icon: 'error',
+                timer: 4000
+            });
+        });
 }
