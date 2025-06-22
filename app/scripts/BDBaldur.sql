@@ -10,7 +10,9 @@ CREATE TABLE
         userPassword VARBINARY(255) NOT NULL,
         userStatus BIT NOT NULL DEFAULT 1,
         userPhone text NOT null,
-        UserEmail text NOT null
+        UserEmail text NOT null,
+        roleId INT NULL,
+        FOREIGN KEY (roleId) REFERENCES roles(roleId);
     );
 
 ALTER TABLE mainUser ADD UNIQUE (userDocument);
