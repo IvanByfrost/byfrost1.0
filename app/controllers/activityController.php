@@ -1,0 +1,233 @@
+<?php
+require_once "app/models/activityModel.php";
+
+// Controlador para manejar las operaciones relacionadas con las actividades
+class ActivityController extends MainController
+{
+    protected $activityModel;
+    
+    // Constructor que inicializa el modelo de actividades
+    public function __construct($dbConn)
+    {
+        parent::__construct($dbConn);
+        $this->activityModel = new ActivityModel();
+    }
+    
+    // Mostrar dashboard de actividades
+    public function showDashboard()
+    {
+        $activities = $this->activityModel->getActivities();
+        $this->render('activity/dashboard', ['activities' => $activities]);
+    }
+    
+    // Mostrar formulario para crear actividad
+    public function showCreateForm()
+    {
+        $activityTypes = $this->activityModel->getActivityTypes();
+        $classGroups = $this->activityModel->getClassGroups();
+        $academicTerms = $this->activityModel->getAcademicTerms();
+        
+        $this->render('activity/create', [
+            'activityTypes' => $activityTypes,
+            'classGroups' => $classGroups,
+            'academicTerms' => $academicTerms
+        ]);
+    }
+    
+    // Crear una nueva actividad
+    public function createActivity()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Validar datos requeridos
+            $requiredFields = ['activity_name', 'professor_subject_id', 'activity_type_id', 
+                              'class_group_id', 'term_id', 'max_score', 'due_date'];
+            
+            foreach ($requiredFields as $field) {
+                if (empty($_POST[$field])) {
+                    echo json_encode([
+                        'status' => 'error',
+                        'msg' => "El campo $field es obligatorio"
+                    ]);
+                    return;
+                }
+            }
+            
+            // Preparar datos
+            $data = [
+                'activity_name' => $_POST['activity_name'],
+                'professor_subject_id' => $_POST['professor_subject_id'],
+                'activity_type_id' => $_POST['activity_type_id'],
+                'class_group_id' => $_POST['class_group_id'],
+                'term_id' => $_POST['term_id'],
+                'max_score' => $_POST['max_score'],
+                'due_date' => $_POST['due_date'],
+                'description' => $_POST['description'] ?? '',
+                'created_by_user_id' => $_SESSION['user_id'] ?? 1 // Usar ID del usuario logueado
+            ];
+            
+            try {
+                $success = $this->activityModel->createActivity($data);
+                
+                if ($success) {
+                    echo json_encode([
+                        'status' => 'success',
+                        'msg' => 'Actividad creada exitosamente'
+                    ]);
+                } else {
+                    echo json_encode([
+                        'status' => 'error',
+                        'msg' => 'No se pudo crear la actividad'
+                    ]);
+                }
+            } catch (Exception $e) {
+                echo json_encode([
+                    'status' => 'error',
+                    'msg' => $e->getMessage()
+                ]);
+            }
+        }
+    }
+    
+    // Mostrar formulario para editar actividad
+    public function showEditForm($activityId)
+    {
+        $activity = $this->activityModel->getActivityById($activityId);
+        
+        if (!$activity) {
+            $this->render('Error/error', ['message' => 'Actividad no encontrada']);
+            return;
+        }
+        
+        $activityTypes = $this->activityModel->getActivityTypes();
+        $classGroups = $this->activityModel->getClassGroups();
+        $academicTerms = $this->activityModel->getAcademicTerms();
+        
+        $this->render('activity/edit', [
+            'activity' => $activity,
+            'activityTypes' => $activityTypes,
+            'classGroups' => $classGroups,
+            'academicTerms' => $academicTerms
+        ]);
+    }
+    
+    // Actualizar una actividad
+    public function updateActivity($activityId)
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Validar datos requeridos
+            $requiredFields = ['activity_name', 'professor_subject_id', 'activity_type_id', 
+                              'class_group_id', 'term_id', 'max_score', 'due_date'];
+            
+            foreach ($requiredFields as $field) {
+                if (empty($_POST[$field])) {
+                    echo json_encode([
+                        'status' => 'error',
+                        'msg' => "El campo $field es obligatorio"
+                    ]);
+                    return;
+                }
+            }
+            
+            // Preparar datos
+            $data = [
+                'activity_name' => $_POST['activity_name'],
+                'professor_subject_id' => $_POST['professor_subject_id'],
+                'activity_type_id' => $_POST['activity_type_id'],
+                'class_group_id' => $_POST['class_group_id'],
+                'term_id' => $_POST['term_id'],
+                'max_score' => $_POST['max_score'],
+                'due_date' => $_POST['due_date'],
+                'description' => $_POST['description'] ?? ''
+            ];
+            
+            try {
+                $success = $this->activityModel->updateActivity($activityId, $data);
+                
+                if ($success) {
+                    echo json_encode([
+                        'status' => 'success',
+                        'msg' => 'Actividad actualizada exitosamente'
+                    ]);
+                } else {
+                    echo json_encode([
+                        'status' => 'error',
+                        'msg' => 'No se pudo actualizar la actividad'
+                    ]);
+                }
+            } catch (Exception $e) {
+                echo json_encode([
+                    'status' => 'error',
+                    'msg' => $e->getMessage()
+                ]);
+            }
+        }
+    }
+    
+    // Eliminar una actividad
+    public function deleteActivity($activityId)
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                $success = $this->activityModel->deleteActivity($activityId);
+                
+                if ($success) {
+                    echo json_encode([
+                        'status' => 'success',
+                        'msg' => 'Actividad eliminada exitosamente'
+                    ]);
+                } else {
+                    echo json_encode([
+                        'status' => 'error',
+                        'msg' => 'No se pudo eliminar la actividad'
+                    ]);
+                }
+            } catch (Exception $e) {
+                echo json_encode([
+                    'status' => 'error',
+                    'msg' => $e->getMessage()
+                ]);
+            }
+        }
+    }
+    
+    // Ver detalles de una actividad
+    public function viewActivity($activityId)
+    {
+        $activity = $this->activityModel->getActivityById($activityId);
+        
+        if (!$activity) {
+            $this->render('Error/error', ['message' => 'Actividad no encontrada']);
+            return;
+        }
+        
+        $this->render('activity/view', ['activity' => $activity]);
+    }
+    
+    // Obtener actividades por grupo (AJAX)
+    public function getActivitiesByGroup($classGroupId)
+    {
+        $activities = $this->activityModel->getActivitiesByGroup($classGroupId);
+        echo json_encode($activities);
+    }
+    
+    // Obtener actividades por profesor (AJAX)
+    public function getActivitiesByProfessor($professorUserId)
+    {
+        $activities = $this->activityModel->getActivitiesByProfessor($professorUserId);
+        echo json_encode($activities);
+    }
+    
+    // Obtener materias de un profesor (AJAX)
+    public function getProfessorSubjects($professorUserId)
+    {
+        $subjects = $this->activityModel->getProfessorSubjects($professorUserId);
+        echo json_encode($subjects);
+    }
+    
+    // Listar todas las actividades (AJAX)
+    public function listActivities()
+    {
+        $activities = $this->activityModel->getActivities();
+        echo json_encode($activities);
+    }
+}

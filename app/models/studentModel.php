@@ -1,10 +1,11 @@
 <?php
-class studentModel extends MainModel
+require_once 'mainModel.php';
+
+class studentModel extends mainModel
 {
-    protected $dbConn;
-    public function __construct($dbConn)
+    public function __construct()
     {
-        $this->dbConn = $dbConn;
+        parent::__construct();
     }
 
     //Función para crear un estudiante

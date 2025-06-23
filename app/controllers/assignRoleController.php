@@ -9,7 +9,7 @@ class assignRoleController {
     }
 
     public function assign($userId, $roleId) {
-        $userModel = new userModel($this->db);
+        $userModel = new userModel();
         return $userModel->assignRole($userId, $roleId);
     }
 }

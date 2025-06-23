@@ -39,7 +39,7 @@ class registerController extends mainController
             // 2. Llamar al modelo dentro de un try-catch
             try {
                 require_once ROOT . '/app/models/userModel.php';
-                $userModel = new userModel($this->dbConn);
+                $userModel = new userModel();
                 $success = $userModel->createUser($data);
 
                 if ($success) {
@@ -66,7 +66,7 @@ class registerController extends mainController
     public function getUser()
     {
         require_once 'app/models/userModel.php';
-        $userModel = new userModel($this->$dbConn);
+        $userModel = new userModel();
         $success = $userModel->getUser($data);
     }
 }

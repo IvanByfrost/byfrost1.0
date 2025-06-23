@@ -7,7 +7,7 @@ class CoordinatorController {
 
     public function __construct($dbConn) {
         $this->dbConn = $dbConn;
-        $this->model = new CoordinatorModel($this->dbConn);
+        $this->model = new CoordinatorModel();
     }
 
     public function showDashCoord() {

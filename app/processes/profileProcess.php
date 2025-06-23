@@ -6,7 +6,7 @@ require_once ROOT . '/app/scripts/connection.php';
 require_once ROOT . '/app/models/userModel.php';
 
 $dbConn = getConnection();
-$userModel = new userModel($dbConn);
+$userModel = new userModel();
 
 // Obtener y validar
 $data = [

@@ -1,9 +1,10 @@
 <?php
-class CoordinatorModel extends MainModel {
-    protected $dbConn;
-    public function __construct($dbConn)
+require_once 'mainModel.php';
+
+class CoordinatorModel extends mainModel {
+    public function __construct()
     {
-        $this->dbConn = $dbConn;
+        parent::__construct();
     }
 
     //Función para obtener los datos del coordinador

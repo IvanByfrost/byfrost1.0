@@ -1,9 +1,10 @@
 <?php
-class SchoolModel extends MainModel {
-        protected $dbConn;
-    public function __construct($dbConn)
+require_once 'mainModel.php';
+
+class SchoolModel extends mainModel {
+    public function __construct()
     {
-        $this->dbConn = $dbConn;
+        parent::__construct();
     }
 
     //Función para crear un colegio

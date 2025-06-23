@@ -1,11 +1,13 @@
 <?php
+require_once __DIR__ . '/../scripts/connection.php';
 
 // Modelo principal para manejar la conexión a la base de datos
 class mainModel {
     protected $dbConn;
-    public function __construct($dbConn)
+    
+    public function __construct()
     {
-        $this->dbConn = $dbConn;
+        $this->dbConn = DatabaseConnection::getInstance()->getConnection();
     }
 
     // Función para Consultar todos los registros
@@ -24,6 +26,7 @@ class mainModel {
         $stmt->execute(['id' => $id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    
     // Función para insertar un registro
     public function insert($table, $data)
     {
@@ -33,4 +36,4 @@ class mainModel {
         $stmt = $this->dbConn->prepare($query);
         return $stmt->execute($data);
     }
-} 
+}

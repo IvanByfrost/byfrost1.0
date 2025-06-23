@@ -1,11 +1,12 @@
 <?php
-class RootModel extends MainModel
+require_once 'mainModel.php';
+
+class RootModel extends mainModel
 {
     //Constructor de la clase.
-    protected $dbConn;
-    public function __construct($dbConn)
+    public function __construct()
     {
-        $this->dbConn = $dbConn;
+        parent::__construct();
     }
 
     //Función para obtener los datos del usuario.

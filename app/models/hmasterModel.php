@@ -1,26 +1,21 @@
 <?php
+require_once 'mainModel.php';
+
 // software_academico/app/models/RectorModel.php
 
-class hmasterModel
+class hmasterModel extends mainModel
 {
-    protected $dbConn;
-    public function __construct($dbConn)
+    public function __construct()
     {
-        $this->dbConn = $dbConn;
+        parent::__construct();
     }
 
     // Obtener todos los rectores
     public function getAllHmaster()
     {
         $sql = "SELECT * FROM headmaster";
-        $result = $this->dbConn->query($sql);
-        $headMaster = [];
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $headMaster[] = $row;
-            }
-        }
-        return $headMaster;
+        $stmt = $this->dbConn->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     // Obtener un rector por ID
@@ -28,43 +23,44 @@ class hmasterModel
     {
         $sql = "SELECT * FROM headmaster WHERE doc_hmaster = :document";
         $stmt = $this->dbConn->prepare($sql);
-        $stmt->bind_param("i", $document);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_assoc();
+        $stmt->execute(['document' => $document]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     // Insertar un nuevo rector
     public function createHmaster($userName, $userLastName, $userEmail, $password, $phoneUser = null)
     {
         // Se asume que la contraseña ya viene hasheada desde el controlador
-        $sql = "INSERT INTO rectores (nombre, apellido, email, password, telefono) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO rectores (nombre, apellido, email, password, telefono) VALUES (:userName, :userLastName, :userEmail, :password, :phoneUser)";
         $stmt = $this->dbConn->prepare($sql);
-        $stmt->bind_param("sssss", $userName, $userLastName, $userEmail, $password, $phoneUser);
-        return $stmt->execute();
+        return $stmt->execute([
+            'userName' => $userName,
+            'userLastName' => $userLastName,
+            'userEmail' => $userEmail,
+            'password' => $password,
+            'phoneUser' => $phoneUser
+        ]);
     }
 
     // Actualizar un rector
     public function headMasterUpdate($id, $userName, $userLastName, $userEmail, $phoneUser = null)
     {
-        $sql = "UPDATE rectores SET nombre = ?, apellido = ?, email = ?, telefono = ? WHERE id_rector = ?";
+        $sql = "UPDATE rectores SET nombre = :userName, apellido = :userLastName, email = :userEmail, telefono = :phoneUser WHERE id_rector = :id";
         $stmt = $this->dbConn->prepare($sql);
-        $stmt->bind_param("ssssi", $userName, $userLastName, $userEmail, $phoneUser, $id);
-        return $stmt->execute();
+        return $stmt->execute([
+            'userName' => $userName,
+            'userLastName' => $userLastName,
+            'userEmail' => $userEmail,
+            'phoneUser' => $phoneUser,
+            'id' => $id
+        ]);
     }
 
     // Eliminar un rector
     public function deleteHeadMaster($id)
     {
-        $sql = "DELETE FROM rectores WHERE id_rector = ?";
+        $sql = "DELETE FROM rectores WHERE id_rector = :id";
         $stmt = $this->dbConn->prepare($sql);
-        $stmt->bind_param("i", $id);
-        return $stmt->execute();
+        return $stmt->execute(['id' => $id]);
     }
-
-    public function __destruct()
-    {
-        $this->dbConn->close();
-    }
-
 }

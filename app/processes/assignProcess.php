@@ -1,7 +1,6 @@
 <?php
 require_once '../app/models/userModel.php';
-$db = getConnection();
-$model = new userModel($db);
+$model = new userModel();
 
 $userId = $_POST['userId'];
 $roleId = $_POST['roleId'];

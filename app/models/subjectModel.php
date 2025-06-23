@@ -1,10 +1,11 @@
 <?php
+require_once 'mainModel.php';
+
 class subjectModel extends mainModel
 {
-    protected $dbConn;
-    public function __construct($dbConn)
+    public function __construct()
     {
-        $this->dbConn = $dbConn;
+        parent::__construct();
     }
 
     //Función para obtener todas las asignaturas
@@ -15,10 +16,12 @@ class subjectModel extends mainModel
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
     // Función para crear una asignatura
     public function createSubject(){
         //
     }
+    
     // Función para actualizar una asignatura
     // Función para eliminar una asignatura
 }

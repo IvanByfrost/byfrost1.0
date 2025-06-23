@@ -9,7 +9,7 @@ class TeacherController extends MainController
     public function __construct($dbConn)
     {
         parent::__construct($dbConn);
-        $this->teacherModel = new TeacherModel($dbConn);
+        $this->teacherModel = new TeacherModel();
     }
     public function showDashTeacher()
     {

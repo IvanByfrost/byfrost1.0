@@ -3,10 +3,9 @@ require_once 'mainModel.php';
 class UserModel extends mainModel
 {
     // Constructor de la clase 
-    protected $dbConn;
-    public function __construct($dbConn)
+    public function __construct()
     {
-        $this->dbConn = $dbConn;
+        parent::__construct();
     }
 
     // Función para consultar a todos los usuarios
@@ -88,7 +87,6 @@ class UserModel extends mainModel
     }
 
     //Función para asignar un rol a un usuario
-        //Función para asignar un rol. 
     public function assignRole($userId, $roleId)
     {
         $query = "UPDATE mainUser SET roleId = :roleId WHERE mainUser = :userId";
