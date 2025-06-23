@@ -3,8 +3,8 @@ function getConnection() {
 
     $host = 'localhost';
     $dbName = 'baldur-test';
-    $user = 'root';
-    $pass = ''; 
+    $user = 'user_baldur';
+    $pass = '123456'; 
 
     $dsn = "mysql:host=$host;dbname=$dbName;charset=utf8";
 
