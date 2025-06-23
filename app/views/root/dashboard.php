@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (!isset($_SESSION["ByFrost_id"])) {
+    header("Location: " . url . "views/index/login.php");
+    exit;
+}
 if (!defined('ROOT')) {
   define('ROOT', dirname(dirname(dirname(__DIR__))));
 }

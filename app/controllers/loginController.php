@@ -97,5 +97,13 @@ class LoginController extends mainController
     }
 
     // Cierra la sesión y vuelve al login
-    public function logout() {}
+    public function logout()
+{
+    session_start();
+    session_unset();    // Limpia todas las variables de sesión
+    session_destroy();  // Destruye la sesión actual
+
+    header("Location: " . url . "views/index/login.php");
+    exit;
+}
 }
