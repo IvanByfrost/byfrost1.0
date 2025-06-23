@@ -208,10 +208,7 @@
 
 .sidebar {
     width: 250px;
-    background-color: #1e293b;
-    /* azul oscuro tailwind */
     color: white;
-    padding: 20px;
     flex-shrink: 0;
 }
 
