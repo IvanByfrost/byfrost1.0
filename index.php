@@ -1,6 +1,8 @@
 <?php
 define('ROOT', __DIR__);
-require_once 'config.php';
+
+// Incluye las constantes y configuraciones
+require_once __DIR__ . '/config.php';
 
 // Autocarga
 spl_autoload_register(function ($class) {
