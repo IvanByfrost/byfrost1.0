@@ -59,6 +59,7 @@ class UserModel extends mainModel
               SET userName = :userName,
                lastnameUser = :lastnameUser,
                   userPhone = :userPhone, 
+                  dob = :dob,
                   addressUser = :addressUser
               WHERE userDocument = :userDocument";
 
@@ -67,6 +68,7 @@ class UserModel extends mainModel
             ':userName'      => $data['userName'],
             ':lastnameUser'  => $data['lastnameUser'],
             ':userPhone'     => $data['userPhone'],
+            ':dob'           => $data['dob'],
             ':addressUser'   => $data['addressUser'],
             ':userDocument'  => $data['userDocument']
         ]);

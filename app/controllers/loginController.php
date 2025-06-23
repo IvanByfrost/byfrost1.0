@@ -27,11 +27,12 @@ class LoginController extends mainController
     public function authUser()
     {
         //Verifica que se hayan enviado los datos necesarios
-        if (!isset($_POST['subject'], $_POST['credType'], $_POST['userDocument'], $_POST['userPassword'])) {
-            return [
+        if (empty($_POST['subject']) || empty($_POST['credType']) || empty($_POST['userDocument']) || empty($_POST['userPassword'])) {
+            echo json_encode([
                 "status" => "error",
-                "msg" => "Faltan datos en la solicitud."
-            ];
+                "msg" => "Faltan uno o más datos obligatorios. Revisa el tipo de documento, el número o la contraseña."
+            ]);
+            exit;
         }
         $subject = $_POST['subject'];
         if ($subject == "login") {
@@ -53,53 +54,44 @@ class LoginController extends mainController
             ]);
 
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
-            //$counter = count($user);
 
-            $response = [];
-
-            if ($user && password_verify($userPassword, $user['userPassword'])) {
-                // Contraseña válida, el usuario ha sido autenticado
-                $_SESSION["ByFrost_id"] = $user['userId'];   // Guarda el ID
-                $_SESSION["ByFrost_role"] = $user['rol']; // Guarda el rol en una clave diferente
-
-                // No reveles el hash de la contraseña al cliente
-                unset($user['userPassword']);
-
-                $_SESSION["ByFrost_userName"] = $user['userName'];
-
-                $validRoles = ['root', 'teacher', 'student', 'headmaster', 'coordinator', 'treasurer', 'parent'];
-
-                if (in_array($user['rol'], $validRoles)) {
-                    $redirectPage = "{$user['rol']}/dashboard.php";
-                } else {
-                    $redirectPage = 'login.php';
+            if ($user !== false) {
+                if (is_null($user['roleId'])) {
+                    echo json_encode([
+                        "status" => "error",
+                        "msg" => "El usuario no se encuentra activado. Por favor, contacta con Byfrost."
+                    ]);
+                    exit;
                 }
-                $_SESSION['ByFrost_redirect'] = $redirectPage;
-                
-                //header('Content-Type: application/json');
-                echo json_encode([
-                    "status" => "ok",
-                    "msg" => "Login correcto.",
-                    "redirect" => url . "views/index/charger.php"
-                ]);
-                exit;
 
-                // Redirige al usuario a la página correspondiente según su rol
-                $response = [
-                    "status"      => "ok",
-                    "msg"         => "¡Bienvenido, " . $user['userName'] . "!",
-                    "redirection" => $redirectPage,
-                    "userData"    => $user // Puedes enviar datos del usuario si es necesario
-                ];
-            } else {
-                $response = [
-                    "status" => "error",
-                    "msg" => "Credenciales inválidas."
-                ];
+                if (password_verify($userPassword, $user['userPassword'])) {
+                    // Contraseña válida, el usuario ha sido autenticado
+                    $_SESSION["ByFrost_id"] = $user['userId'];
+                    $_SESSION["ByFrost_role"] = $user['rol'];
+                    $_SESSION["ByFrost_userName"] = $user['userName'];
+                    unset($user['userPassword']);
+
+                    $validRoles = ['root', 'teacher', 'student', 'headmaster', 'coordinator', 'treasurer', 'parent'];
+                    $redirectPage = in_array($user['rol'], $validRoles)
+                        ? "{$user['rol']}/dashboard.php"
+                        : 'login.php';
+
+                    $_SESSION['ByFrost_redirect'] = $redirectPage;
+
+                    echo json_encode([
+                        "status" => "ok",
+                        "msg" => "Has iniciado sesión",
+                        "redirect" => url . "views/index/charger.php"
+                    ]);
+                    exit;
+                }
             }
 
-            header('Content-Type: application/json');
-            echo json_encode($response);
+            // Si no se encontró el usuario o la contraseña es incorrecta
+            echo json_encode([
+                "status" => "error",
+                "msg" => "Credenciales inválidas."
+            ]);
             exit;
         }
     }

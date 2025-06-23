@@ -13,11 +13,12 @@ $data = [
     'userDocument' => $_POST['userDocument'] ?? '',
     'userName' => $_POST['userName'] ?? '',
     'lastnameUser' => $_POST['lastnameUser'] ?? '',
+    'dob' => $_POST['dob'] ?? '',
     'userPhone' => $_POST['userPhone'] ?? '',
     'addressUser' => $_POST['addressUser'] ?? ''
 ];
 
-if (empty($data['userDocument']) || empty($data['userName']) || empty($data['lastnameUser']) || empty($data['userPhone']) || empty($data['addressUser'])) {
+if (empty($data['userDocument']) || empty($data['userName']) || empty($data['lastnameUser']) || empty($data['dob']) || empty($data['userPhone']) || empty($data['addressUser'])) {
     echo json_encode([
         'status' => 'error',
         'msg' => 'Campos obligatorios faltantes.'

@@ -48,3 +48,8 @@ VALUES
   SELECT u.*, r.roleName AS rol
 FROM mainUser u
 JOIN roles r ON u.roleId = r.id
+
+//Actualizar el rol del usuario
+UPDATE mainuser
+SET roleId = 1
+WHERE userId = 1; 
