@@ -3,10 +3,10 @@
 -- =============================================
 
 -- Crear base de datos
--- CREATE DATABASE IF NOT EXISTS BaldurDB 
+-- CREATE DATABASE IF NOT EXISTS baldur_db 
 -- CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- USE BaldurDB;
+-- USE baldur_db;
 
 -- =============================================
 -- TABLAS CORE DE USUARIOS Y AUTENTICACIÓN

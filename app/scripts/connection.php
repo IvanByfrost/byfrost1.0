@@ -5,7 +5,7 @@ class DatabaseConnection {
     
     private function __construct() {
         $host = 'localhost';
-        $dbName = 'baldur_db';
+        $dbName = 'BaldurDB';
         
         // ✅ Nombres más seguros - Cambiar en producción
         $user = 'byfrost_app_user';
@@ -27,9 +27,9 @@ class DatabaseConnection {
             $this->connection = new PDO($dsn, $user, $pass, $options);
             date_default_timezone_set('America/Bogota');
         } catch (PDOException $e) {
-            // 🔒 No mostrar detalles de error en producción
+            // 🔍 DEBUG TEMPORAL - Mostrar error para diagnóstico
             error_log("Error de conexión a BD: " . $e->getMessage());
-            die("Error de conexión a la base de datos");
+            die("Error de conexión a la base de datos: " . $e->getMessage());
         }
     }
     
