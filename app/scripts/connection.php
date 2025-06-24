@@ -5,7 +5,7 @@ class DatabaseConnection {
     
     private function __construct() {
         $host = 'localhost';
-        $dbName = 'BaldurDB';
+        $dbName = 'baldur_db';
         
         // ✅ Nombres más seguros - Cambiar en producción
         $user = 'byfrost_app_user';

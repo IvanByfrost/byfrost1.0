@@ -22,7 +22,7 @@ require_once __DIR__ . '/../layouts/header.php';
     <div class="our-team">
         <div class="miembro-equipo">
             <div class="photo">
-                <img src="<?php echo url . rq ?>img/team1.jpg" alt="Iván Ruiz">
+                <img src="<?php echo url . app . rq ?>img/team1.jpg" alt="Iván Ruiz">
             </div>
             <div class="desc-member">
                 <h3>Iván Ruiz</h3>
@@ -32,7 +32,7 @@ require_once __DIR__ . '/../layouts/header.php';
         </div>
         <div class="miembro-equipo">
             <div class="photo">
-                <img src="<?php echo url . rq ?>img/team2.jpg" alt="Johan Carrilo">
+                <img src="<?php echo url . app . rq ?>img/team2.jpg" alt="Johan Carrilo">
             </div>
             <div class="desc-member">
                 <h3>Johan Carrillo</h3>
@@ -42,7 +42,7 @@ require_once __DIR__ . '/../layouts/header.php';
         </div>
         <div class="miembro-equipo">
             <div class="photo">
-                <img src="<?php echo url . rq ?>img/team3.jpg" alt="Lucía Nova">
+                <img src="<?php echo url . app . rq ?>img/team3.jpg" alt="Lucía Nova">
             </div>
             <div class="desc-member">
                 <h3>Lucía Nova</h3>
@@ -52,7 +52,7 @@ require_once __DIR__ . '/../layouts/header.php';
         </div>
         <div class="miembro-equipo">
             <div class="photo">
-                <img src="<?php echo url . rq ?>img/team4.jpg" alt="Johan Carrilo">
+                <img src="<?php echo url . app . rq ?>img/team4.jpg" alt="Johan Carrilo">
             </div>
             <div class="desc-member">
                 <h3>Laura Ariza</h3>

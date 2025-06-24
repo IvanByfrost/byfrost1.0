@@ -13,7 +13,7 @@ require_once ROOT . '/app/views/layouts/dashHead.php';
 <header>
     <div class="main-header">
         <a href="#">
-            <img src="<?php echo url . rq ?>img\horizontal-logo.svg" alt="Byfrost Logo" width="200">
+            <img src="<?php echo url . app . rq ?>img/horizontal-logo.svg" alt="Byfrost Logo" width="200">
         </a>
     </div>
 
@@ -26,7 +26,7 @@ require_once ROOT . '/app/views/layouts/dashHead.php';
             <small><?php echo ucfirst($userRole); ?></small>
         </div>
         <hr>
-        <a href="<?php echo url; ?>processes/outProcess.php" style="
+        <a href="<?php echo url . app ?>processes/outProcess.php" style="
         display: block;
         padding: 8px 10px;
         text-decoration: none;

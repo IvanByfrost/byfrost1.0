@@ -39,12 +39,12 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <!-- Scripts personalizados -->
-    <script src="<?php echo url . rq ?>js/bootstrap.bundle.js"></script>
-    <script type="text/javascript" src="<?php echo url . rq ?>js/onlyNumber.js"></script>
-    <script type="text/javascript" src="<?php echo url . rq ?>js/registerFunction.js"></script>
-    <script type="text/javascript" src="<?php echo url . rq ?>js/loginFunctions.js"></script>
-    <script type="text/javascript" src="<?php echo url . rq ?>js/completeProfile.js"></script>
-    <script src="<?php echo url . rq ?>js/slider.js"></script>
+    <script src="<?php echo url . app . rq ?>js/bootstrap.bundle.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/onlyNumber.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/registerFunction.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/loginFunctions.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/completeProfile.js"></script>
+    <script src="<?php echo url . app . rq ?>js/slider.js"></script>
 
     </body>
 
