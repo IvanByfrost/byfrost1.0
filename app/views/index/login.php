@@ -35,13 +35,19 @@ require_once __DIR__ . '/../layouts/header.php';
                     <input type="password" class="inputEstilo1" id="userPassword" name="userPassword" placeholder="Contraseña" required>
                 </div>
 
-                <div class="col-6">
-                    <button type="submit" id="iniciar-sesion" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Iniciar sesión</button>
-                </div>
-                <div class="col-6">
-                    <a href="register.php">
-                        <button type="button" id="register-bttn" class="bg-green-700 hover:bg-green-800 text-yellow-300 font-bold py-2 px-4 rounded" style="color: white;">Crear una nueva cuenta</button>
-                    </a>
+                <div class="row">
+                    <div class="col-6">
+                        <button type="submit" id="iniciar-sesion"
+                            class="btn btn-primary d-block w-100 text-center">
+                            Iniciar sesión
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <a href="register.php" id="register-bttn"
+                           class="btn btn-success d-block w-100 text-center">
+                            Crear una nueva cuenta
+                        </a>
+                    </div>
                 </div>
             </div>
         </form>

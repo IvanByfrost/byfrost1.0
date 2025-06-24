@@ -41,32 +41,26 @@
     font-family: lato, sans-serif;
 }
 
-.login-box button {
+.login-box button,
+#register-bttn {
     background-color: #00b7ff;
     color: #000000;
     padding: 12px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    width: 30%;
     margin-bottom: 10px;
     font-family: lato, sans-serif;
     font-weight: 800;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    width: 100% !important;
 }
 
 #register-bttn {
     background-color: #66FF66;
     color: #000000;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    width: 50%;
     margin-top: 10px;
-    font-family: lato, sans-serif;
     font-weight: 700;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 .login-box a {
