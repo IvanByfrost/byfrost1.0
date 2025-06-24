@@ -1,5 +1,5 @@
 <?php
-
+require_once 'app/controllers/mainController.php';
 class IndexController extends MainController{
     public function __construct($dbConn, $view)
     {

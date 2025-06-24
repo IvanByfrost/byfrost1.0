@@ -1,5 +1,6 @@
 <?php
-class ErrorController extends mainController
+require_once 'app/controllers/MainController.php';
+class ErrorController extends MainController
 {
     public function Error($message = null)
 {

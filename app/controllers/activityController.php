@@ -1,6 +1,6 @@
 <?php
 require_once "app/models/activityModel.php";
-
+require_once 'app/controllers/MainController.php';
 // Controlador para manejar las operaciones relacionadas con las actividades
 class ActivityController extends MainController
 {

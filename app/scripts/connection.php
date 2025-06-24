@@ -5,9 +5,15 @@ class DatabaseConnection {
     
     private function __construct() {
         $host = 'localhost';
-        $dbName = 'school_management';
-        $user = 'user_baldur';
-        $pass = '123456';
+        $dbName = 'BaldurDB';
+        
+        // ✅ Nombres más seguros - Cambiar en producción
+        $user = 'byfrost_app_user';
+        $pass = 'ByFrost2024!Secure#';
+        
+        // 🔒 MEJOR PRÁCTICA: Usar variables de entorno
+        // $user = $_ENV['DB_USER'] ?? 'byfrost_app_user';
+        // $pass = $_ENV['DB_PASS'] ?? 'ByFrost2024!Secure#';
 
         $dsn = "mysql:host=$host;dbname=$dbName;charset=utf8";
 
@@ -21,7 +27,9 @@ class DatabaseConnection {
             $this->connection = new PDO($dsn, $user, $pass, $options);
             date_default_timezone_set('America/Bogota');
         } catch (PDOException $e) {
-            die("Error de conexión: " . $e->getMessage());
+            // 🔒 No mostrar detalles de error en producción
+            error_log("Error de conexión a BD: " . $e->getMessage());
+            die("Error de conexión a la base de datos");
         }
     }
     

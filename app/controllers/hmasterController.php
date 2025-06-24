@@ -1,7 +1,6 @@
 <?php
-// software_academico/app/controllers/RectorController.php
-
-require_once 'hmasterModel.php';
+require_once 'app/models/hmasterModel.php';
+require_once 'app/controllers/mainController.php';
 
 class hmasterController extends MainController {
     protected $dbConn;

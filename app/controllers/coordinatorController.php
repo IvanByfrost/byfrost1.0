@@ -1,6 +1,6 @@
 <?php
 require_once 'app/models/coordinatorModel.php';
-require_once 'app/controllers/mainController.php';
+require_once 'app/controllers/MainController.php';
 
 class CoordinatorController extends MainController {
     protected $model;
