@@ -103,7 +103,8 @@ class LoginController extends mainController
     session_unset();    // Limpia todas las variables de sesión
     session_destroy();  // Destruye la sesión actual
 
-    header("Location: " . url . "views/index/login.php");
+    header("Location: " . url . app . "views/index/login.php");
     exit;
 }
 }
+
