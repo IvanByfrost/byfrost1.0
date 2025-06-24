@@ -2,36 +2,80 @@
 require_once "app/models/activityModel.php";
 
 // Controlador para manejar las operaciones relacionadas con las actividades
-class ActivityController extends MainController
+class ActivityController extends mainController
 {
     protected $activityModel;
     
     // Constructor que inicializa el modelo de actividades
-    public function __construct($dbConn)
+    public function __construct($dbConn, $view)
     {
-        parent::__construct($dbConn);
+        parent::__construct($dbConn, $view);
         $this->activityModel = new ActivityModel();
     }
     
     // Mostrar dashboard de actividades
     public function showDashboard()
     {
-        $activities = $this->activityModel->getActivities();
-        $this->render('activity/dashboard', ['activities' => $activities]);
+        try {
+            $activities = $this->activityModel->getActivities();
+            
+            // Debug temporal
+            error_log("DEBUG showDashboard - activities count: " . count($activities));
+            error_log("DEBUG showDashboard - type of activities: " . gettype($activities));
+            
+            // Asegurar que activities sea siempre un array
+            if (!is_array($activities)) {
+                error_log("ERROR showDashboard - activities no es un array: " . gettype($activities));
+                $activities = [];
+            }
+            
+            $this->render('activity', 'dashboard', ['activities' => $activities]);
+            
+        } catch (Exception $e) {
+            error_log("ERROR showDashboard: " . $e->getMessage());
+            $this->render('activity/dashboard', 'error', [
+                'message' => 'Error al cargar el dashboard de actividades: ' . $e->getMessage()
+            ]);
+        }
     }
     
     // Mostrar formulario para crear actividad
     public function showCreateForm()
     {
-        $activityTypes = $this->activityModel->getActivityTypes();
-        $classGroups = $this->activityModel->getClassGroups();
-        $academicTerms = $this->activityModel->getAcademicTerms();
-        
-        $this->render('activity/create', [
-            'activityTypes' => $activityTypes,
-            'classGroups' => $classGroups,
-            'academicTerms' => $academicTerms
-        ]);
+        try {
+            $activityTypes = $this->activityModel->getActivityTypes();
+            $classGroups = $this->activityModel->getClassGroups();
+            $academicTerms = $this->activityModel->getAcademicTerms();
+            
+            // Verificar si hay datos necesarios
+            $missingData = [];
+            if (empty($activityTypes)) {
+                $missingData[] = 'tipos de actividad';
+            }
+            if (empty($classGroups)) {
+                $missingData[] = 'grupos de clase';
+            }
+            if (empty($academicTerms)) {
+                $missingData[] = 'períodos académicos';
+            }
+            
+            if (!empty($missingData)) {
+                error_log("WARNING showCreateForm - Faltan datos: " . implode(', ', $missingData));
+            }
+            
+            $this->render('activity', 'create', [
+                'activityTypes' => $activityTypes,
+                'classGroups' => $classGroups,
+                'academicTerms' => $academicTerms,
+                'missingData' => $missingData
+            ]);
+            
+        } catch (Exception $e) {
+            error_log("ERROR showCreateForm: " . $e->getMessage());
+            $this->render('activity/dashboard', 'error', [
+                'message' => 'Error al cargar el formulario de creación: ' . $e->getMessage()
+            ]);
+        }
     }
     
     // Crear una nueva actividad
@@ -94,7 +138,7 @@ class ActivityController extends MainController
         $activity = $this->activityModel->getActivityById($activityId);
         
         if (!$activity) {
-            $this->render('Error/error', ['message' => 'Actividad no encontrada']);
+            $this->render('Error', 'error', ['message' => 'Actividad no encontrada']);
             return;
         }
         
@@ -102,7 +146,7 @@ class ActivityController extends MainController
         $classGroups = $this->activityModel->getClassGroups();
         $academicTerms = $this->activityModel->getAcademicTerms();
         
-        $this->render('activity/edit', [
+        $this->render('activity', 'edit', [
             'activity' => $activity,
             'activityTypes' => $activityTypes,
             'classGroups' => $classGroups,
@@ -196,11 +240,11 @@ class ActivityController extends MainController
         $activity = $this->activityModel->getActivityById($activityId);
         
         if (!$activity) {
-            $this->render('Error/error', ['message' => 'Actividad no encontrada']);
+            $this->render('Error', 'error', ['message' => 'Actividad no encontrada']);
             return;
         }
         
-        $this->render('activity/view', ['activity' => $activity]);
+        $this->render('activity', 'view', ['activity' => $activity]);
     }
     
     // Obtener actividades por grupo (AJAX)

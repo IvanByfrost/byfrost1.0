@@ -10,6 +10,24 @@
                     </h4>
                 </div>
                 <div class="card-body">
+                    <?php if (!empty($missingData)): ?>
+                        <div class="alert alert-warning" role="alert">
+                            <h5 class="alert-heading">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Datos faltantes
+                            </h5>
+                            <p>Para crear actividades, necesitas tener configurados los siguientes elementos:</p>
+                            <ul class="mb-0">
+                                <?php foreach ($missingData as $data): ?>
+                                    <li><strong><?= ucfirst($data) ?></strong></li>
+                                <?php endforeach; ?>
+                            </ul>
+                            <hr>
+                            <p class="mb-0">
+                                <small>Contacta al administrador del sistema para configurar estos datos.</small>
+                            </p>
+                        </div>
+                    <?php endif; ?>
+                    
                     <form id="createActivityForm" method="POST" action="activity/createActivity">
                         <div class="row">
                             <div class="col-md-6">

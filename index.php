@@ -17,7 +17,7 @@ spl_autoload_register(function ($class) {
 });
 
 // Conexión a la base de datos
-require_once app .'/scripts/connection.php';
+require_once ROOT . '/app/scripts/connection.php';
 $dbConn = getConnection();
 
 // Instancia de la clase de vistas

@@ -2,7 +2,7 @@
 // Modelo para manejar a las actividades
 require_once 'mainModel.php';
 
-class ActivityModel extends MainModel
+class ActivityModel extends mainModel
 {
     // Constructor de la clase 
     public function __construct()
@@ -51,30 +51,50 @@ class ActivityModel extends MainModel
     // Función para consultar todas las actividades
     public function getActivities()
     {
-        $query = "SELECT 
-            a.activity_id,
-            a.activity_name,
-            a.max_score,
-            a.due_date,
-            a.description,
-            at.type_name as activity_type,
-            ps.professor_subject_id,
-            u.first_name,
-            u.last_name,
-            cg.group_name,
-            g.grade_name,
-            s.school_name
-        FROM activities a
-        LEFT JOIN activity_types at ON a.activity_type_id = at.activity_type_id
-        LEFT JOIN professor_subjects ps ON a.professor_subject_id = ps.professor_subject_id
-        LEFT JOIN users u ON ps.professor_user_id = u.user_id
-        LEFT JOIN class_groups cg ON a.class_group_id = cg.class_group_id
-        LEFT JOIN grades g ON cg.grade_id = g.grade_id
-        LEFT JOIN schools s ON g.school_id = s.school_id
-        ORDER BY a.due_date DESC";
-        
-        $stmt = $this->dbConn->query($query);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            // Primero verificar si la tabla activities existe y tiene datos
+            $checkQuery = "SELECT COUNT(*) FROM activities";
+            $checkStmt = $this->dbConn->query($checkQuery);
+            $activityCount = $checkStmt->fetchColumn();
+            
+            if ($activityCount == 0) {
+                error_log("DEBUG getActivities - No hay actividades en la base de datos");
+                return [];
+            }
+            
+            $query = "SELECT 
+                a.activity_id,
+                a.activity_name,
+                a.max_score,
+                a.due_date,
+                a.description,
+                COALESCE(at.type_name, 'Sin tipo') as activity_type,
+                ps.professor_subject_id,
+                COALESCE(u.first_name, '') as first_name,
+                COALESCE(u.last_name, '') as last_name,
+                COALESCE(cg.group_name, 'Sin grupo') as group_name,
+                COALESCE(g.grade_name, 'Sin grado') as grade_name,
+                COALESCE(s.school_name, 'Sin escuela') as school_name
+            FROM activities a
+            LEFT JOIN activity_types at ON a.activity_type_id = at.activity_type_id
+            LEFT JOIN professor_subjects ps ON a.professor_subject_id = ps.professor_subject_id
+            LEFT JOIN users u ON ps.professor_user_id = u.user_id
+            LEFT JOIN class_groups cg ON a.class_group_id = cg.class_group_id
+            LEFT JOIN grades g ON cg.grade_id = g.grade_id
+            LEFT JOIN schools s ON g.school_id = s.school_id
+            ORDER BY a.due_date DESC";
+            
+            $stmt = $this->dbConn->query($query);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            error_log("DEBUG getActivities - result count: " . count($result));
+            return $result;
+            
+        } catch (Exception $e) {
+            error_log("ERROR getActivities: " . $e->getMessage());
+            error_log("ERROR getActivities - Stack trace: " . $e->getTraceAsString());
+            return [];
+        }
     }
     
     // Función para consultar una actividad por ID
@@ -189,51 +209,95 @@ class ActivityModel extends MainModel
     // Función para obtener tipos de actividad
     public function getActivityTypes()
     {
-        $query = "SELECT * FROM activity_types ORDER BY type_name";
-        $stmt = $this->dbConn->query($query);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $query = "SELECT * FROM activity_types ORDER BY type_name";
+            $stmt = $this->dbConn->query($query);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            if (empty($result)) {
+                error_log("WARNING getActivityTypes - No hay tipos de actividad en la base de datos");
+            }
+            
+            return $result;
+        } catch (Exception $e) {
+            error_log("ERROR getActivityTypes: " . $e->getMessage());
+            return [];
+        }
     }
     
     // Función para obtener grupos de clase
     public function getClassGroups()
     {
-        $query = "SELECT 
-            cg.class_group_id,
-            cg.group_name,
-            g.grade_name,
-            s.school_name
-        FROM class_groups cg
-        LEFT JOIN grades g ON cg.grade_id = g.grade_id
-        LEFT JOIN schools s ON g.school_id = s.school_id
-        ORDER BY g.grade_name, cg.group_name";
-        
-        $stmt = $this->dbConn->query($query);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $query = "SELECT 
+                cg.class_group_id,
+                cg.group_name,
+                COALESCE(g.grade_name, 'Sin grado') as grade_name,
+                COALESCE(s.school_name, 'Sin escuela') as school_name
+            FROM class_groups cg
+            LEFT JOIN grades g ON cg.grade_id = g.grade_id
+            LEFT JOIN schools s ON g.school_id = s.school_id
+            ORDER BY g.grade_name, cg.group_name";
+            
+            $stmt = $this->dbConn->query($query);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            if (empty($result)) {
+                error_log("WARNING getClassGroups - No hay grupos de clase en la base de datos");
+            }
+            
+            return $result;
+        } catch (Exception $e) {
+            error_log("ERROR getClassGroups: " . $e->getMessage());
+            return [];
+        }
     }
     
     // Función para obtener períodos académicos
     public function getAcademicTerms()
     {
-        $query = "SELECT * FROM academic_terms ORDER BY start_date DESC";
-        $stmt = $this->dbConn->query($query);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $query = "SELECT * FROM academic_terms ORDER BY start_date DESC";
+            $stmt = $this->dbConn->query($query);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            if (empty($result)) {
+                error_log("WARNING getAcademicTerms - No hay períodos académicos en la base de datos");
+            }
+            
+            return $result;
+        } catch (Exception $e) {
+            error_log("ERROR getAcademicTerms: " . $e->getMessage());
+            return [];
+        }
     }
     
     // Función para obtener materias de un profesor
     public function getProfessorSubjects($professorUserId)
     {
-        $query = "SELECT 
-            ps.professor_subject_id,
-            s.subject_name,
-            sch.school_name
-        FROM professor_subjects ps
-        LEFT JOIN subjects s ON ps.subject_id = s.subject_id
-        LEFT JOIN schools sch ON ps.school_id = sch.school_id
-        WHERE ps.professor_user_id = :professor_user_id AND ps.is_active = 1
-        ORDER BY s.subject_name";
-        
-        $stmt = $this->dbConn->prepare($query);
-        $stmt->execute(['professor_user_id' => $professorUserId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $query = "SELECT 
+                ps.professor_subject_id,
+                COALESCE(s.subject_name, 'Sin materia') as subject_name,
+                COALESCE(sch.school_name, 'Sin escuela') as school_name
+            FROM professor_subjects ps
+            LEFT JOIN subjects s ON ps.subject_id = s.subject_id
+            LEFT JOIN schools sch ON ps.school_id = sch.school_id
+            WHERE ps.professor_user_id = :professor_user_id AND ps.is_active = 1
+            ORDER BY s.subject_name";
+            
+            $stmt = $this->dbConn->prepare($query);
+            $stmt->execute(['professor_user_id' => $professorUserId]);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            if (empty($result)) {
+                error_log("WARNING getProfessorSubjects - No hay materias para el profesor ID: " . $professorUserId);
+            }
+            
+            return $result;
+        } catch (Exception $e) {
+            error_log("ERROR getProfessorSubjects: " . $e->getMessage());
+            return [];
+        }
     }
 }

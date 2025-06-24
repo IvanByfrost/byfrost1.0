@@ -1,5 +1,5 @@
 <?php
-class ErrorController extends MainController
+class ErrorController extends mainController
 {
     public function Error($message = null)
 {
