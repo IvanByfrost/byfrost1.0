@@ -1,7 +1,7 @@
 <?php
 require_once ROOT . '/app/models/userModel.php';
-
-class assignRoleController {
+require_once 'MainController.php';
+class assignRoleController extends MainController {
     private $db;
 
     public function __construct($dbConn) {

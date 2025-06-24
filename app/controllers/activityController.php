@@ -2,7 +2,7 @@
 require_once "app/models/activityModel.php";
 
 // Controlador para manejar las operaciones relacionadas con las actividades
-class ActivityController extends mainController
+class ActivityController extends MainController
 {
     protected $activityModel;
     
@@ -20,19 +20,19 @@ class ActivityController extends mainController
             $activities = $this->activityModel->getActivities();
             
             // Debug temporal
-            error_log("DEBUG showDashboard - activities count: " . count($activities));
-            error_log("DEBUG showDashboard - type of activities: " . gettype($activities));
+            //error_log("DEBUG showDashboard - activities count: " . count($activities));
+            //error_log("DEBUG showDashboard - type of activities: " . gettype($activities));
             
             // Asegurar que activities sea siempre un array
             if (!is_array($activities)) {
-                error_log("ERROR showDashboard - activities no es un array: " . gettype($activities));
+                //error_log("ERROR showDashboard - activities no es un array: " . gettype($activities));
                 $activities = [];
             }
             
             $this->render('activity', 'dashboard', ['activities' => $activities]);
             
         } catch (Exception $e) {
-            error_log("ERROR showDashboard: " . $e->getMessage());
+            //error_log("ERROR showDashboard: " . $e->getMessage());
             $this->render('activity/dashboard', 'error', [
                 'message' => 'Error al cargar el dashboard de actividades: ' . $e->getMessage()
             ]);

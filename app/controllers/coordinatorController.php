@@ -1,18 +1,18 @@
 <?php
-require_once 'models/coordinatorModel.php';
+require_once 'app/models/coordinatorModel.php';
+require_once 'app/controllers/mainController.php';
 
-class CoordinatorController {
+class CoordinatorController extends MainController {
     protected $model;
-    protected $dbConn;
 
-    public function __construct($dbConn) {
-        $this->dbConn = $dbConn;
+    public function __construct($dbConn, $view) {
+        parent::__construct($dbConn, $view);
         $this->model = new CoordinatorModel();
     }
 
     public function showDashCoord() {
         $data = $this->model->getData();
-        require './vista/coordinator/dashboard.php';
+        $this->render('coordinator', 'dashboard', ['data' => $data]);
     }
 
     //Función para crear un coordinador

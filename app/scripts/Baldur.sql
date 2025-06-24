@@ -3,10 +3,10 @@
 -- =============================================
 
 -- Crear base de datos
--- CREATE DATABASE IF NOT EXISTS school_management 
+-- CREATE DATABASE IF NOT EXISTS BaldurDB 
 -- CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- USE school_management;
+-- USE BaldurDB;
 
 -- =============================================
 -- TABLAS CORE DE USUARIOS Y AUTENTICACIÓN

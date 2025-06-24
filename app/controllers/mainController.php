@@ -14,8 +14,8 @@ class mainController
     protected function render($folder, $file = 'index', $data = [])
     {
         // Debug temporal
-        error_log("DEBUG render - folder: " . var_export($folder, true) . ", file: " . var_export($file, true));
-        error_log("DEBUG render - folder type: " . gettype($folder) . ", file type: " . gettype($file));
+        //error_log("DEBUG render - folder: " . var_export($folder, true) . ", file: " . var_export($file, true));
+        //error_log("DEBUG render - folder type: " . gettype($folder) . ", file type: " . gettype($file));
         
         // Validar que folder y file sean strings
         if (!is_string($folder)) {
@@ -24,7 +24,7 @@ class mainController
         }
         
         if (!is_string($file)) {
-            error_log("Error: file debe ser string, se recibió: " . gettype($file));
+            //error_log("Error: file debe ser string, se recibió: " . gettype($file));
             $file = 'error';
         }
         
@@ -42,9 +42,21 @@ class mainController
             echo "Vista no encontrada: {$folder}/{$file}.php";
         }
     }
-    protected function redirect($url) {
-
-    }
-
     
+    /**
+     * Redirige a una URL específica
+     * 
+     * @param string $url URL de destino
+     * @return void
+     */
+    protected function redirect($url) 
+    {
+        if (!headers_sent()) {
+            header("Location: " . $url);
+            exit();
+        } else {
+            echo "<script>window.location.href = '" . htmlspecialchars($url) . "';</script>";
+            echo "<noscript><meta http-equiv='refresh' content='0;url=" . htmlspecialchars($url) . "'></noscript>";
+        }
+    }
 }
