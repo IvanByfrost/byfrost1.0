@@ -19,7 +19,7 @@ require_once ROOT . '/app/views/layouts/dashHead.php';
 
     <div class="user-menu-container" style="position: relative;">
         <div class="user-menu-trigger" onclick="toggleUserMenu()">
-            <img src="<?php echo url; ?>img/avatar-default.png" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; cursor: pointer;">
+            <img src="<?php echo url . app . rq ?>img/user-photo.png" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; cursor: pointer;">
         </div>
         <div style="text-align: center; padding: 10px;">
             <strong><?php echo htmlspecialchars($userName); ?></strong><br>

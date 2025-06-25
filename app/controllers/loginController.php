@@ -91,9 +91,9 @@ class LoginController extends mainController
                     $_SESSION["ByFrost_userName"] = $user['first_name'] . ' ' . $user['last_name'];
                     unset($user['password_hash']);
 
-                    $validRoles = ['professor', 'student', 'headmaster', 'coordinator', 'treasurer', 'parent'];
+                    $validRoles = ['professor', 'student', 'headmaster', 'coordinator', 'treasurer', 'parent', 'root'];
                     $redirectPage = in_array($user['rol'], $validRoles)
-                        ? "{$user['rol']}/dashboard.php"
+                        ? "{$user['rol']}/dashboard"
                         : 'login.php';
 
                     $_SESSION['ByFrost_redirect'] = $redirectPage;
@@ -101,7 +101,7 @@ class LoginController extends mainController
                     echo json_encode([
                         "status" => "ok",
                         "msg" => "Has iniciado sesión",
-                        "redirect" => url . "views/index/charger.php"
+                        "redirect" => url . "app/views/index/charger.php"
                     ]);
                     exit;
                 }

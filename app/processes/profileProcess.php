@@ -2,51 +2,25 @@
 if (!defined('ROOT')) {
     define('ROOT', dirname(dirname(__DIR__)));
 }
+
 require_once ROOT . '/app/scripts/connection.php';
-require_once ROOT . '/app/models/userModel.php';
+require_once ROOT . '/app/controllers/registerController.php';
 
 $dbConn = getConnection();
-$userModel = new UserModel();
+$controller = new RegisterController($dbConn);
 
-// Obtener y validar datos
-$data = [
-    'credential_number' => $_POST['userDocument'] ?? '',
-    'first_name' => $_POST['userName'] ?? '',
-    'last_name' => $_POST['lastnameUser'] ?? '',
-    'date_of_birth' => $_POST['dob'] ?? '',
-    'phone' => $_POST['userPhone'] ?? '',
-    'address' => $_POST['addressUser'] ?? ''
-];
-
-// Validar campos obligatorios
-if (empty($data['credential_number']) || empty($data['first_name']) || 
-    empty($data['last_name']) || empty($data['date_of_birth']) || 
-    empty($data['phone']) || empty($data['address'])) {
-    echo json_encode([
-        'status' => 'error',
-        'msg' => 'Todos los campos son obligatorios.'
-    ]);
-    exit;
-}
-
-try {
-    // Actualizar en la BD
-    $success = $userModel->completeProfile($data);
-
-    if ($success) {
-        echo json_encode([
-            'status' => 'ok',
-            'msg' => 'Perfil actualizado correctamente.'
-        ]);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject'])) {
+    if ($_POST['subject'] === 'completeProfile') {
+        $controller->completeProfile();
     } else {
         echo json_encode([
             'status' => 'error',
-            'msg' => 'No se pudo guardar el perfil.'
+            'msg' => 'Acción no válida'
         ]);
     }
-} catch (Exception $e) {
+} else {
     echo json_encode([
         'status' => 'error',
-        'msg' => 'Error: ' . $e->getMessage()
+        'msg' => 'Método no permitido o datos incompletos'
     ]);
 }

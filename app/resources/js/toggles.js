@@ -10,15 +10,17 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function toggleUserMenu() {
-  const menu = document.getElementById('userMenu');
-  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+  const menu = document.querySelector('.user-menu-container');
+  if (menu) {
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+  }
 }
 
 // Opcional: cerrar al hacer clic fuera
 document.addEventListener('click', function(event) {
   const trigger = document.querySelector('.user-menu-trigger');
-  const menu = document.getElementById('userMenu');
-  if (!trigger.contains(event.target) && !menu.contains(event.target)) {
+  const menu = document.querySelector('.user-menu-container');
+  if (trigger && menu && !trigger.contains(event.target) && !menu.contains(event.target)) {
     menu.style.display = 'none';
   }
 });
