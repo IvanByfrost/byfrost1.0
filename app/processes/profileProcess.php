@@ -6,39 +6,47 @@ require_once ROOT . '/app/scripts/connection.php';
 require_once ROOT . '/app/models/userModel.php';
 
 $dbConn = getConnection();
-$userModel = new userModel();
+$userModel = new UserModel();
 
-// Obtener y validar
+// Obtener y validar datos
 $data = [
-    'userDocument' => $_POST['userDocument'] ?? '',
-    'userName' => $_POST['userName'] ?? '',
-    'lastnameUser' => $_POST['lastnameUser'] ?? '',
-    'dob' => $_POST['dob'] ?? '',
-    'userPhone' => $_POST['userPhone'] ?? '',
-    'addressUser' => $_POST['addressUser'] ?? ''
+    'credential_number' => $_POST['userDocument'] ?? '',
+    'first_name' => $_POST['userName'] ?? '',
+    'last_name' => $_POST['lastnameUser'] ?? '',
+    'date_of_birth' => $_POST['dob'] ?? '',
+    'phone' => $_POST['userPhone'] ?? '',
+    'address' => $_POST['addressUser'] ?? ''
 ];
 
-if (empty($data['userDocument']) || empty($data['userName']) || empty($data['lastnameUser']) || empty($data['dob']) || empty($data['userPhone']) || empty($data['addressUser'])) {
+// Validar campos obligatorios
+if (empty($data['credential_number']) || empty($data['first_name']) || 
+    empty($data['last_name']) || empty($data['date_of_birth']) || 
+    empty($data['phone']) || empty($data['address'])) {
     echo json_encode([
         'status' => 'error',
-        'msg' => 'Campos obligatorios faltantes.'
+        'msg' => 'Todos los campos son obligatorios.'
     ]);
     exit;
 }
 
-// Actualizar en la BD
-$success = $userModel->completeProfile($data); // Crea esta función en tu modelo
+try {
+    // Actualizar en la BD
+    $success = $userModel->completeProfile($data);
 
-if ($success) {
-    header('Content-Type: application/json');
-    echo json_encode([
-        'status' => 'ok',
-        'msg' => 'Perfil actualizado correctamente.'
-    ]);
-} else {
-    header('Content-Type: application/json');
+    if ($success) {
+        echo json_encode([
+            'status' => 'ok',
+            'msg' => 'Perfil actualizado correctamente.'
+        ]);
+    } else {
+        echo json_encode([
+            'status' => 'error',
+            'msg' => 'No se pudo guardar el perfil.'
+        ]);
+    }
+} catch (Exception $e) {
     echo json_encode([
         'status' => 'error',
-        'msg' => 'No se pudo guardar el perfil.'
+        'msg' => 'Error: ' . $e->getMessage()
     ]);
 }

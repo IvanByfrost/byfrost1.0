@@ -3,11 +3,25 @@
 
     $("#registerForm").on("submit", function(e) {
         e.preventDefault();
-        var userEmail = $('#userEmail').val();
+        
+        // Obtener solo los campos que existen en el formulario
         var credType = $('#credType').val();
         var userDocument = $('#userDocument').val();
+        var userEmail = $('#userEmail').val();
         var userPassword = $('#userPassword').val();
         var passwordConf = $('#passwordConf').val();
+
+        // Validaciones básicas
+        if (!credType) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Debe seleccionar un tipo de documento',
+                icon: 'error',
+                position: 'center',
+                timer: 5000
+            });
+            return false;
+        }
 
         if (userDocument.length < 4 || userDocument.length > 12) {
             var textoError1 = "";
@@ -19,6 +33,17 @@
             Swal.fire({
                 title: 'Error',
                 text: textoError1,
+                icon: 'error',
+                position: 'center',
+                timer: 5000
+            });
+            return false;
+        }
+
+        if (!userEmail) {
+            Swal.fire({
+                title: 'Error',
+                text: 'El correo electrónico es obligatorio',
                 icon: 'error',
                 position: 'center',
                 timer: 5000
@@ -56,12 +81,12 @@
 
         $.ajax({
             type: 'POST',
-            url: ROOT + 'processes/registerProcess.php',
+            url: ROOT + 'app/processes/registerProcess.php',
             dataType: "JSON",
             data: {
-                "userEmail": userEmail,
                 "credType": credType,
                 "userDocument": userDocument,
+                "userEmail": userEmail,
                 "userPassword": userPassword,
                 "subject": "register",
             },
@@ -70,7 +95,7 @@
                 console.log(response);
                 if (response["status"] == "ok") {
                     Swal.fire({
-                        title: 'Ok',
+                        title: '¡Registro exitoso!',
                         text: response["msg"],
                         icon: 'success',
                         position: 'center',
@@ -93,6 +118,13 @@
 
             error: function(response) {
                 console.log(response['responseText']);
+                Swal.fire({
+                    title: 'Error de conexión',
+                    text: 'No se pudo conectar con el servidor. Inténtalo de nuevo.',
+                    icon: 'error',
+                    position: 'center',
+                    timer: 5000
+                });
             }
         });
     });
