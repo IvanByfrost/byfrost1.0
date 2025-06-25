@@ -1,14 +1,21 @@
 console.log("Script de olvidé contraseña cargado");
 
 $(document).ready(function() {
+    console.log("Document ready ejecutado");
+    console.log("ROOT disponible:", ROOT);
+    
     // Manejar clic en el enlace de olvidé contraseña
     $("#forgotPassword").on("click", function(e) {
+        console.log("Clic en olvidé contraseña detectado");
         e.preventDefault();
-        window.location.href = ROOT + "app/views/index/forgotPassword.php";
+        const targetUrl = ROOT + "app/views/index/forgotPassword.php";
+        console.log("Redirigiendo a:", targetUrl);
+        window.location.href = targetUrl;
     });
 
     // Manejar formulario de solicitud de restablecimiento
     $("#forgotPasswordForm").on("submit", function(e) {
+        console.log("Formulario de olvidé contraseña enviado");
         e.preventDefault();
         
         const formData = {
@@ -17,6 +24,8 @@ $(document).ready(function() {
             userEmail: $('#userEmail').val(),
             subject: 'requestReset'
         };
+
+        console.log("Datos del formulario:", formData);
 
         // Validaciones
         if (!formData.credType || !formData.userDocument || !formData.userEmail) {
@@ -33,13 +42,16 @@ $(document).ready(function() {
         const originalText = submitBtn.text();
         submitBtn.text('Enviando...').prop('disabled', true);
 
+        const processUrl = ROOT + 'app/processes/forgotPasswordProcess.php';
+        console.log("Enviando a:", processUrl);
+
         $.ajax({
             type: 'POST',
-            url: ROOT + 'app/processes/forgotPasswordProcess.php',
+            url: processUrl,
             data: formData,
             dataType: 'json',
             success: function(response) {
-                console.log('Respuesta:', response);
+                console.log('Respuesta recibida:', response);
                 
                 if (response.status === 'ok') {
                     Swal.fire({
@@ -78,7 +90,7 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr, status, error) {
-                console.error('Error:', error);
+                console.error('Error AJAX:', xhr.responseText, status, error);
                 Swal.fire({
                     title: 'Error de conexión',
                     text: 'No se pudo conectar con el servidor. Inténtalo de nuevo.',
@@ -94,6 +106,7 @@ $(document).ready(function() {
 
     // Manejar formulario de restablecimiento de contraseña
     $("#resetPasswordForm").on("submit", function(e) {
+        console.log("Formulario de reset password enviado");
         e.preventDefault();
         
         const formData = {
@@ -102,6 +115,8 @@ $(document).ready(function() {
             confirmPassword: $('#confirmPassword').val(),
             subject: 'resetPassword'
         };
+
+        console.log("Datos del formulario reset:", formData);
 
         // Validaciones
         if (!formData.newPassword || !formData.confirmPassword) {
@@ -136,13 +151,16 @@ $(document).ready(function() {
         const originalText = submitBtn.text();
         submitBtn.text('Cambiando...').prop('disabled', true);
 
+        const processUrl = ROOT + 'app/processes/forgotPasswordProcess.php';
+        console.log("Enviando reset a:", processUrl);
+
         $.ajax({
             type: 'POST',
-            url: ROOT + 'app/processes/forgotPasswordProcess.php',
+            url: processUrl,
             data: formData,
             dataType: 'json',
             success: function(response) {
-                console.log('Respuesta:', response);
+                console.log('Respuesta reset recibida:', response);
                 
                 if (response.status === 'ok') {
                     Swal.fire({
@@ -162,7 +180,7 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr, status, error) {
-                console.error('Error:', error);
+                console.error('Error AJAX reset:', xhr.responseText, status, error);
                 Swal.fire({
                     title: 'Error de conexión',
                     text: 'No se pudo conectar con el servidor. Inténtalo de nuevo.',
