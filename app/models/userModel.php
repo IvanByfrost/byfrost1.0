@@ -37,9 +37,8 @@ class UserModel extends mainModel
             throw new Exception("Ya existe un usuario con ese email.");
         }
 
-        // 3. Generar salt y hash de contraseña
-        $salt = bin2hex(random_bytes(32));
-        $passwordHash = hash('sha256', $data['password'] . $salt);
+        // 3. Generar hash de contraseña usando password_hash
+        $passwordHash = password_hash($data['password'], PASSWORD_DEFAULT);
 
         // 4. Insertar usuario
         $query = "INSERT INTO users (credential_type, credential_number, first_name, last_name, 
@@ -58,7 +57,7 @@ class UserModel extends mainModel
             'phone' => $data['phone'] ?? null,
             'address' => $data['address'] ?? null,
             'password_hash' => $passwordHash,
-            'salt_password' => $salt
+            'salt_password' => '' // Ya no necesitamos salt con password_hash
         ]);
 
         if ($result) {
@@ -144,8 +143,7 @@ class UserModel extends mainModel
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user) {
-            $hashedPassword = hash('sha256', $password . $user['salt_password']);
-            return ($hashedPassword === $user['password_hash']) ? $user : false;
+            return password_verify($password, $user['password_hash']) ? $user : false;
         }
         
         return false;
