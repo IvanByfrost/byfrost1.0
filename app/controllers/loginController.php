@@ -40,23 +40,24 @@ class LoginController extends mainController
             $userDocument = $_POST['userDocument'];
             $userPassword = $_POST['userPassword'];
 
-            $query = "SELECT u.*, r.roleName AS rol
-          FROM mainUser u
-          JOIN roles r ON u.roleId = r.roleId
-          WHERE u.credType = :credType 
-          AND u.userDocument = :userDocument
+            $query = "SELECT u.*, r.role_type AS rol
+          FROM users u
+          JOIN user_roles r ON u.user_id = r.user_id
+          WHERE u.credential_type = :credType 
+          AND u.credential_number = :userDocument
+          AND r.is_active = 1
+          AND u.is_active = 1
           LIMIT 1";
             $stmt = $this->dbConn->prepare($query);
             $stmt->execute([
                 ':credType'     => $credType,
                 ':userDocument'  => $userDocument,
-                //':userPassword' => $userPassword  // ¡No olvides este!
             ]);
 
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($user !== false) {
-                if (is_null($user['roleId'])) {
+                if (is_null($user['rol'])) {
                     echo json_encode([
                         "status" => "error",
                         "msg" => "El usuario no se encuentra activado. Por favor, contacta con Byfrost."
@@ -64,14 +65,14 @@ class LoginController extends mainController
                     exit;
                 }
 
-                if (password_verify($userPassword, $user['userPassword'])) {
+                if (password_verify($userPassword, $user['password_hash'])) {
                     // Contraseña válida, el usuario ha sido autenticado
-                    $_SESSION["ByFrost_id"] = $user['userId'];
+                    $_SESSION["ByFrost_id"] = $user['user_id'];
                     $_SESSION["ByFrost_role"] = $user['rol'];
-                    $_SESSION["ByFrost_userName"] = $user['userName'];
-                    unset($user['userPassword']);
+                    $_SESSION["ByFrost_userName"] = $user['first_name'] . ' ' . $user['last_name'];
+                    unset($user['password_hash']);
 
-                    $validRoles = ['root', 'teacher', 'student', 'headmaster', 'coordinator', 'treasurer', 'parent'];
+                    $validRoles = ['professor', 'student', 'headmaster', 'coordinator', 'treasurer', 'parent'];
                     $redirectPage = in_array($user['rol'], $validRoles)
                         ? "{$user['rol']}/dashboard.php"
                         : 'login.php';

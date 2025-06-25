@@ -22,24 +22,33 @@ class registerController extends mainController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // 1. Recolectar y validar los datos
             $data = [
-                'credType' => $_POST['credType'] ?? '',
-                'userDocument' => $_POST['userDocument'] ?? '',
-                'userEmail' => $_POST['userEmail'] ?? '',
-                'userPassword' => $_POST['userPassword'] ?? ''
+                'credential_type' => $_POST['credType'] ?? '',
+                'credential_number' => $_POST['userDocument'] ?? '',
+                'first_name' => $_POST['firstName'] ?? '',
+                'last_name' => $_POST['lastName'] ?? '',
+                'date_of_birth' => $_POST['dateOfBirth'] ?? '',
+                'email' => $_POST['userEmail'] ?? '',
+                'password' => $_POST['userPassword'] ?? '',
+                'phone' => $_POST['userPhone'] ?? '',
+                'address' => $_POST['userAddress'] ?? ''
             ];
 
-            if (empty($data['userDocument']) || empty($data['userEmail']) || empty($data['userPassword'])) {
-                echo json_encode([
-                    'status' => 'error',
-                    'msg' => 'Todos los campos son obligatorios'
-                ]);
-                return;
+            // Validar campos obligatorios
+            $requiredFields = ['credential_number', 'first_name', 'last_name', 'date_of_birth', 'email', 'password'];
+            foreach ($requiredFields as $field) {
+                if (empty($data[$field])) {
+                    echo json_encode([
+                        'status' => 'error',
+                        'msg' => 'Todos los campos obligatorios deben estar completos'
+                    ]);
+                    return;
+                }
             }
 
             // 2. Llamar al modelo dentro de un try-catch
             try {
                 require_once ROOT . '/app/models/userModel.php';
-                $userModel = new userModel();
+                $userModel = new UserModel();
                 $success = $userModel->createUser($data);
 
                 if ($success) {
