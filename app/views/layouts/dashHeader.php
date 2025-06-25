@@ -17,21 +17,23 @@ require_once ROOT . '/app/views/layouts/dashHead.php';
         </a>
     </div>
 
-    <div class="user-menu-container" style="position: relative;">
+    <div class="user-menu">
         <div class="user-menu-trigger" onclick="toggleUserMenu()">
             <img src="<?php echo url . app . rq ?>img/user-photo.png" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; cursor: pointer;">
         </div>
-        <div style="text-align: center; padding: 10px;">
-            <strong><?php echo htmlspecialchars($userName); ?></strong><br>
-            <small><?php echo ucfirst($userRole); ?></small>
+        <div class="user-menu-container">
+            <div style="text-align: center; padding: 10px;">
+                <strong><?php echo htmlspecialchars($userName); ?></strong><br>
+                <small><?php echo ucfirst($userRole); ?></small>
+            </div>
+            <hr>
+            <a href="<?php echo url . app ?>processes/outProcess.php" style="
+            display: block;
+            padding: 8px 10px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+          ">Cerrar sesión</a>
         </div>
-        <hr>
-        <a href="<?php echo url . app ?>processes/outProcess.php" style="
-        display: block;
-        padding: 8px 10px;
-        text-decoration: none;
-        color: #333;
-        font-weight: bold;
-      ">Cerrar sesión</a>
     </div>
 </header>

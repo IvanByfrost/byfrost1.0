@@ -232,3 +232,35 @@
     min-width: 200px;
     z-index: 1000;
 }
+
+.has-submenu .submenu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.3s;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  
+  .has-submenu.active .submenu {
+    max-height: 500px; /* Ajusta según el contenido máximo esperado */
+    opacity: 1;
+    padding-top: 8px;   /* Ajusta según tu diseño */
+    padding-bottom: 8px;
+  }
+
+  .user-menu-container {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 50px; /* Ajusta según tu header */
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    border-radius: 8px;
+    min-width: 180px;
+    z-index: 100;
+  }
+  
+  .user-menu-container.active {
+    display: block;
+  }
