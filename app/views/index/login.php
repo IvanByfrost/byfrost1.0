@@ -34,6 +34,13 @@ require_once __DIR__ . '/../layouts/header.php';
                 <div class="col-12">
                     <input type="password" class="inputEstilo1" id="userPassword" name="userPassword" placeholder="Contraseña" required>
                 </div>
+                
+                <!-- Enlace de olvidé contraseña -->
+                <div class="col-12 text-center mb-3">
+                    <a href="#" id="forgotPassword" class="text-primary" style="text-decoration: none; font-size: 14px;">
+                        ¿Olvidaste tu contraseña?
+                    </a>
+                </div>
 
                 <div class="row">
                     <div class="col-6">
