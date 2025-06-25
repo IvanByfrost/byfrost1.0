@@ -5,6 +5,7 @@ require_once __DIR__ . '/../layouts/header.php';
 ?>
 <script>
     const ROOT = "<?php echo url ?>";
+    console.log("ROOT definido como:", ROOT);
 </script>
 <body>
     <br>
@@ -68,4 +69,8 @@ require_once __DIR__ . '/../layouts/header.php';
     
     <!-- Scripts específicos -->
     <script src="<?php echo url . rq ?>js/forgotPassword.js"></script>
+    <script>
+        console.log("Página de login cargada");
+        console.log("URL del script:", "<?php echo url . rq ?>js/forgotPassword.js");
+    </script>
 </body>
