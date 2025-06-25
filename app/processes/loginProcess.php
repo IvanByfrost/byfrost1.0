@@ -8,7 +8,12 @@ require_once ROOT . '/app/controllers/loginController.php';
 
 $dbConn = getConnection();
 
-$controller = new loginController($dbConn);
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['subject'] === 'login') {
+$controller = new LoginController($dbConn);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && $_POST['subject'] === 'login') {
     $controller->authUser(); 
+} else {
+    echo json_encode([
+        'status' => 'error',
+        'msg' => 'Método no permitido o datos incompletos'
+    ]);
 }

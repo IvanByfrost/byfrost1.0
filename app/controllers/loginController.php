@@ -40,6 +40,25 @@ class LoginController extends mainController
             $userDocument = $_POST['userDocument'];
             $userPassword = $_POST['userPassword'];
 
+            // Primero verificar si el usuario existe
+            $queryCheck = "SELECT COUNT(*) FROM users WHERE credential_type = :credType AND credential_number = :userDocument";
+            $stmtCheck = $this->dbConn->prepare($queryCheck);
+            $stmtCheck->execute([
+                ':credType' => $credType,
+                ':userDocument' => $userDocument
+            ]);
+            $userExists = $stmtCheck->fetchColumn() > 0;
+
+            if (!$userExists) {
+                // Usuario no registrado
+                echo json_encode([
+                    "status" => "not_registered",
+                    "msg" => "No tienes una cuenta registrada. ¿Te gustaría crear una?",
+                    "redirect" => url . "app/views/index/register.php"
+                ]);
+                exit;
+            }
+
             $query = "SELECT u.*, r.role_type AS rol
           FROM users u
           JOIN user_roles r ON u.user_id = r.user_id

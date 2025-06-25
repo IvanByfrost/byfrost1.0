@@ -46,7 +46,7 @@ $("#loginForm").on("submit", function (e) {
     formData.append("userPassword", userPassword);
     formData.append("subject", "login");
 
-    fetch(ROOT + 'processes/loginProcess.php', {
+    fetch(ROOT + 'app/processes/loginProcess.php', {
         method: 'POST',
         body: formData
     })
@@ -55,13 +55,29 @@ $("#loginForm").on("submit", function (e) {
             console.log(data);
             if (data.status === 'ok') {
                 Swal.fire({
-                    title: 'Ok',
+                    title: '¡Bienvenido!',
                     text: data.msg,
                     icon: 'success',
                     position: 'center',
                     timer: 2000
                 }).then(() => {
                     window.location.href = data.redirect;
+                });
+            } else if (data.status === 'not_registered') {
+                // Usuario no registrado - mostrar opción de registro
+                Swal.fire({
+                    title: 'Usuario no encontrado',
+                    text: data.msg,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, registrarme',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = data.redirect;
+                    }
                 });
             } else {
                 Swal.fire({
@@ -75,5 +91,12 @@ $("#loginForm").on("submit", function (e) {
         })
         .catch(error => {
             console.error("Error en la solicitud:", error);
+            Swal.fire({
+                title: 'Error de conexión',
+                text: 'No se pudo conectar con el servidor. Inténtalo de nuevo.',
+                icon: 'error',
+                position: 'center',
+                timer: 5000
+            });
         });
 });
