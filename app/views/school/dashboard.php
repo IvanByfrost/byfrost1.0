@@ -8,7 +8,7 @@ if (!defined('ROOT')) {
   define('ROOT', dirname(dirname(dirname(__DIR__))));
 }
 require_once ROOT . '/config.php';
-require_once ROOT . '/app/views/layouts/dashHeader.php';
+require_once ROOT . '/app/views/layouts/scHeader.php';
 ?>
 <script>
   const BASE_URL = "<?php echo url ?>";
@@ -21,7 +21,7 @@ require_once ROOT . '/app/views/layouts/dashHeader.php';
 <div class="dashboard-container">
   <aside class="sidebar">
         <?php
-    require_once 'hmasterSidebar.php';
+    require_once 'rootSidebar.php';
     ?>
   </aside>
     <div id="mainContent">

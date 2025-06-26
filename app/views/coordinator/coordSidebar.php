@@ -2,10 +2,11 @@
     <div class="root-sidebar">
         <ul>
             <li><a href="#"><i data-lucide="home"></i>Inicio</a></li>
-            <li class="has-submenu"><a href="<?php echo url; ?>#"><i data-lucide="school"></i>Colegios</a>
+            <li class="has-submenu"><a href="<?php echo url; ?>#"><i data-lucide="users"></i>Estudiantes</a>
                 <ul class="submenu">
-                    <li><a href="#" onclick="loadView('headMaster/createHmaster')">Registrar Colegio</a></li>
-                    <li><a href="#" onclick="loadView('headMaster/editHmaster')">Reportes</a></li>
+                    <li><a href="#" onclick="loadView('student/createHmaster')">Registrar estudiantes</a></li>
+                    <li><a href="#" onclick="loadView('headMaster/editHmaster')">Editar estudiantes</a></li>
+                    <li><a href="#" onclick="loadView('headMaster/editHmaster')">Eliminar estudiantes</a></li>
                 </ul>
             </li>
             <li class="has-submenu"><a href="#"><i data-lucide="users"></i>Rectores</a>
