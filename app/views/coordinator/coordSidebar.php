@@ -1,43 +1,44 @@
-<div class="root-dashboard">
-    <div class="root-sidebar">
+<div class="coordinator-dashboard">
+    <div class="coordinator-sidebar">
         <ul>
-            <li><a href="#"><i data-lucide="home"></i>Inicio</a></li>
-            <li class="has-submenu"><a href="<?php echo url; ?>#"><i data-lucide="users"></i>Estudiantes</a>
+            <li><a href="#" onclick="loadView('coordinator/dashboard')"><i data-lucide="home"></i>Inicio</a></li>
+            <li class="has-submenu"><a href="#"><i data-lucide="users"></i>Estudiantes</a>
                 <ul class="submenu">
-                    <li><a href="#" onclick="loadView('student/createHmaster')">Registrar estudiantes</a></li>
-                    <li><a href="#" onclick="loadView('headMaster/editHmaster')">Editar estudiantes</a></li>
-                    <li><a href="#" onclick="loadView('headMaster/editHmaster')">Eliminar estudiantes</a></li>
+                    <li><a href="#" onclick="loadView('student/createStudent')">Registrar estudiantes</a></li>
+                    <li><a href="#" onclick="loadView('student/readStudent')">Consultar estudiantes</a></li>
+                    <li><a href="#" onclick="loadView('student/editStudent')">Editar estudiantes</a></li>
                 </ul>
             </li>
-            <li class="has-submenu"><a href="#"><i data-lucide="users"></i>Rectores</a>
+            <li class="has-submenu"><a href="#"><i data-lucide="graduation-cap"></i>Profesores</a>
                 <ul class="submenu">
-                    <li><a href="#" onclick="loadView('headMaster/createHmaster')">Registrar Rector</a></li>
-                    <li><a href="#" onclick="loadView('headMaster/editHmaster')">Editar el perfil</a></li>
-                    <li><a href="#" onclick="loadView('headMaster/hmasterLists')">Consultar Rector</a></li>
+                    <li><a href="#" onclick="loadView('teacher/createTeacher')">Registrar Profesor</a></li>
+                    <li><a href="#" onclick="loadView('teacher/readTeacher')">Consultar Profesores</a></li>
+                    <li><a href="#" onclick="loadView('teacher/editTeacher')">Editar Profesores</a></li>
+                </ul>
+            </li>
+            <li class="has-submenu"><a href="#"><i data-lucide="book-open"></i>Materias</a>
+                <ul class="submenu">
+                    <li><a href="#" onclick="loadView('subject/createSubject')">Registrar Materia</a></li>
+                    <li><a href="#" onclick="loadView('subject/readSubject')">Consultar Materias</a></li>
+                    <li><a href="#" onclick="loadView('subject/editSubject')">Editar Materias</a></li>
                 </ul>
             </li>
             <li class="has-submenu">
-                <a href="#"><i data-lucide="user"></i>Usuarios</a>
+                <a href="#"><i data-lucide="calendar"></i>Horarios</a>
                 <ul class="submenu">
-                    <li><a href="#" onclick="loadView('headMaster/createHmaster')">Registrar Usuario</a></li>
-                    <li><a href="#" onclick="loadView('headMaster/editHmaster')">Asignar rol Administrador</a></li>
-                </ul>
-            </li>
-            <li class="has-submenu">
-                <a href="#"><i data-lucide="key"></i>Permisos</a>
-                <ul class="submenu">
-                    <li><a href="#" onclick="loadView('headMaster/editHmaster')">Asignar permisos</a></li>
-                    <li><a href="#" onclick="loadView('headMaster/createHmaster')">Editar permisos</a></li>
+                    <li><a href="#" onclick="loadView('schedule/createSchedule')">Crear Horario</a></li>
+                    <li><a href="#" onclick="loadView('schedule/readSchedule')">Consultar Horarios</a></li>
+                    <li><a href="#" onclick="loadView('schedule/editSchedule')">Editar Horarios</a></li>
                 </ul>
             </li>
             <li class="has-submenu">
                 <a href="#"><i data-lucide="bar-chart-2"></i>Reportes</a>
                 <ul class="submenu">
-                    <li><a href="#" onclick="loadView('headMaster/editHmaster')">Crear reporte</a></li>
-                    <li><a href="#" onclick="loadView('headMaster/createHmaster')">Consultar reporte</a></li>
-                    <li><a href="#" onclick="loadView('headMaster/createHmaster')">Consultar estadística</a></li>
+                    <li><a href="#" onclick="loadView('reports/academic')">Reportes Académicos</a></li>
+                    <li><a href="#" onclick="loadView('reports/attendance')">Reportes de Asistencia</a></li>
+                    <li><a href="#" onclick="loadView('reports/statistics')">Estadísticas</a></li>
                 </ul>
             </li>
-            <li class="has-submenu"><a href="#"><i data-lucide="settings"></i>Configuración</a></li>
+            <li class="has-submenu"><a href="#" onclick="loadView('coordinator/settings')"><i data-lucide="settings"></i>Configuración</a></li>
         </ul>
     </div>
