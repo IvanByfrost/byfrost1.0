@@ -1,78 +1,75 @@
 /* Contact - Form */
-    .form-container {
-      max-width: 700px;
-      background-color: #ffffff;
-      padding: 20px;
-      margin: auto;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    .form-group {
-      margin-bottom: 15px;
-    }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-bottom: 5px;
-    }
-    input, textarea, select {
-      width: 100%;
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    input:focus, textarea:focus {
-      border-color: #007BFF;
-      outline: none;
-    }
-    .submit-btn {
-      background-color: #007BFF;
-      color: white;
-      border: none;
-      padding: 12px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    .submit-btn:hover {
-      background-color: #0056b3;
-    }
+/* Using shared styles from shared.css */
 
-    .form-container {
-      max-width: 500px;
-      background-color: white;
-      padding: 30px;
-      margin: auto;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    .form-group {
-      margin-bottom: 15px;
-    }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-bottom: 5px;
-    }
-    input, textarea, select {
-      width: 100%;
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    input:focus, textarea:focus {
-      border-color: #007BFF;
-      outline: none;
-    }
-    .submit-btn {
-      background-color: #007BFF;
-      color: white;
-      border: none;
-      padding: 12px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    .submit-btn:hover {
-      background-color: #0056b3;
-    }
+/* Contact specific styles */
+.contact-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.contact-info {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.contact-info h3 {
+  color: #007BFF;
+  margin-bottom: 15px;
+}
+
+.contact-info p {
+  margin-bottom: 10px;
+  color: #666;
+}
+
+.contact-info i {
+  margin-right: 10px;
+  color: #007BFF;
+}
+
+.form-container {
+  max-width: 600px;
+  background-color: #ffffff;
+  padding: 30px;
+  margin: auto;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+input:focus, textarea:focus {
+  border-color: #007BFF;
+  outline: none;
+}
+
+.submit-btn {
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.submit-btn:hover {
+  background-color: #0056b3;
+}
