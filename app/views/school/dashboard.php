@@ -21,7 +21,7 @@ require_once ROOT . '/app/views/layouts/dashHeader.php';
 <div class="dashboard-container">
   <aside class="sidebar">
         <?php
-    require_once 'hmasterSidebar.php';
+    require_once 'rootSidebar.php';
     ?>
   </aside>
     <div id="mainContent">

@@ -26,8 +26,8 @@ $parts = explode('/', $view);
 // Validar carpeta permitida
 $allowedDirs = ['root', 'teacher', 'headMaster', 'student', 'coordinator', 'treasurer'];
 
-// Si no está en carpetas permitidas
-if (!in_array($parts[0], $allowedDirs)) {
+// Si no está en carpetas permitidas (comparación insensible a mayúsculas/minúsculas)
+if (!in_array(strtolower($parts[0]), array_map('strtolower', $allowedDirs))) {
     http_response_code(403);
     echo "<h2>Error 403</h2><p>No tienes permiso para acceder a esta vista.</p>";
     exit;
