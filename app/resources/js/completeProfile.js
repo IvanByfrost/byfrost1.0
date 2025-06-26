@@ -8,12 +8,13 @@
             
             // Obtener los datos del formulario
             let formData = {
-                userDocument: $('#userDocument').val(),
+                userDocument: $('input[name="userDocument"]').val(),
                 userName: $('#userName').val(),
                 lastnameUser: $('#lastnameUser').val(),
                 dob: $('#dob').val(),
                 userPhone: $('#userPhone').val(),
-                addressUser: $('#addressUser').val()
+                addressUser: $('#addressUser').val(),
+                subject: 'completeProfile'
             };
 
             // Validaciones básicas

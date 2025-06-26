@@ -6,7 +6,7 @@ window.loadView = function(viewName) {
     }
 
     console.log("Cargando vista:", viewName);
-    fetch(`${BASE_URL}/scripts/routerView.php?view=${viewName}`)
+    fetch(`${BASE_URL}app/scripts/routerView.php?view=${viewName}`)
         .then(response => {
             if (!response.ok) throw new Error("Vista no encontrada.");
             return response.text();

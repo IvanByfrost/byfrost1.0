@@ -73,6 +73,55 @@ class RegisterController extends MainController
         }
     }
 
+    public function completeProfile()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Recolectar datos del formulario de completar perfil
+            $data = [
+                'credential_number' => $_POST['userDocument'] ?? '',
+                'first_name' => $_POST['userName'] ?? '',
+                'last_name' => $_POST['lastnameUser'] ?? '',
+                'date_of_birth' => $_POST['dob'] ?? '',
+                'phone' => $_POST['userPhone'] ?? '',
+                'address' => $_POST['addressUser'] ?? ''
+            ];
+
+            // Validar campos obligatorios
+            if (empty($data['credential_number']) || empty($data['first_name']) || 
+                empty($data['last_name']) || empty($data['date_of_birth']) || 
+                empty($data['phone']) || empty($data['address'])) {
+                echo json_encode([
+                    'status' => 'error',
+                    'msg' => 'Todos los campos son obligatorios para completar el perfil'
+                ]);
+                return;
+            }
+
+            try {
+                require_once ROOT . '/app/models/userModel.php';
+                $userModel = new UserModel();
+                $success = $userModel->completeProfile($data);
+
+                if ($success) {
+                    echo json_encode([
+                        'status' => 'ok',
+                        'msg' => 'Perfil completado exitosamente'
+                    ]);
+                } else {
+                    echo json_encode([
+                        'status' => 'error',
+                        'msg' => 'No se pudo completar el perfil'
+                    ]);
+                }
+            } catch (Exception $e) {
+                echo json_encode([
+                    'status' => 'error',
+                    'msg' => $e->getMessage()
+                ]);
+            }
+        }
+    }
+
     public function getUser($userId)
     {
         require_once ROOT . '/app/models/userModel.php';

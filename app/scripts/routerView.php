@@ -1,9 +1,15 @@
 <?php
 if (!defined('ROOT')) {
-    define('ROOT', dirname(__DIR__) . '/');
+    define('ROOT', dirname(dirname(__DIR__)) . '/');
 }
 
 $view = $_GET['view'] ?? '';
+
+// Debug: mostrar la ruta que se está construyendo
+$viewPath = ROOT . "/app/views/" . $view . ".php";
+echo "<!-- Debug: ROOT = " . ROOT . " -->";
+echo "<!-- Debug: viewPath = " . $viewPath . " -->";
+echo "<!-- Debug: file_exists = " . (file_exists($viewPath) ? 'true' : 'false') . " -->";
 
 // Seguridad extendida
 if (
@@ -27,10 +33,8 @@ if (!in_array($parts[0], $allowedDirs)) {
     exit;
 }
 
-
-
 // Construir la ruta al archivo
-$viewPath = ROOT . "/views/" . $view . ".php";
+$viewPath = ROOT . "/app/views/" . $view . ".php";
 
 // Si existe, mostrarla
 if (file_exists($viewPath)) {
@@ -38,4 +42,5 @@ if (file_exists($viewPath)) {
 } else {
     http_response_code(404);
     echo "<h2>Error 404</h2><p>La vista <code>$view</code> no existe.</p>";
+    echo "<p>Ruta buscada: <code>$viewPath</code></p>";
 }

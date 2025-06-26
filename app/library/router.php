@@ -13,6 +13,12 @@ class Router
         $this->dbConn = $dbConn;
         $this->view = $view;
 
+        // Si hay un parámetro 'view', usar el routerView
+        if (isset($_GET['view'])) {
+            require_once ROOT . '/app/scripts/routerView.php';
+            return;
+        }
+
         $this->parseUrl();
         $this->loadController();
         if (isset($_GET['error'])) {
