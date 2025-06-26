@@ -1,4 +1,5 @@
 <?php
+
 require_once 'app/models/coordinatorModel.php';
 require_once 'app/controllers/MainController.php';
 
