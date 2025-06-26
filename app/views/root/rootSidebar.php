@@ -12,6 +12,7 @@
                 <ul class="submenu">
                     <li><a href="#" onclick="loadView('headMaster/createHmaster')">Registrar Rector</a></li>
                     <li><a href="#" onclick="loadView('headMaster/editHmaster')">Editar el perfil</a></li>
+                    <li><a href="#" onclick="loadView('headMaster/hmasterLists')">Consultar Rector</a></li>
                 </ul>
             </li>
             <li class="has-submenu">
