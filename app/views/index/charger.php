@@ -23,12 +23,13 @@ require_once ROOT . '/config.php';
 
 <body>
   <div class="loading-cont">
-    <img class="BYFROST" src="<?php echo url . app . rq ?>img/Byfrost-logo.svg" alt="loading-logo" />
+    <img class="logo" src="<?php echo url . app . rq ?>img/Byfrost-logo.svg" alt="loading-logo" />
     <h1>BYFROST</h1>
-    <p>¡Hola de vuelta, <span id="userName"><?php echo htmlspecialchars($_SESSION["ByFrost_userName"] ?? 'Usuario'); ?></span>! ! Que tengas un buen día 😊</p>
+    <p>¡Hola de vuelta, <span id="userName"><?php echo htmlspecialchars($_SESSION["ByFrost_userName"] ?? 'Usuario'); ?></span>! ¡Que tengas un buen día 😊</p>
 
 
   </div>
 </body>
 
 </html>
+
