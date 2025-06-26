@@ -4,7 +4,7 @@
             <li><a href="#"><i data-lucide="home"></i>Inicio</a></li>
             <li class="has-submenu"><a href="#"><i data-lucide="school"></i>Colegios</a>
                 <ul class="submenu">
-                    <li><a href="#" onclick="loadView('headMaster/createHmaster')">Registrar Colegio</a></li>
+                    <li><a href="#" onclick="loadView('school/createSchool')">Registrar Colegio</a></li>
                     <li><a href="#" onclick="loadView('headMaster/hmasterLists')">Ver Colegios</a></li>
                     <li><a href="#" onclick="loadView('headMaster/editHmaster')">Editar Colegios</a></li>
                 </ul>
