@@ -30,7 +30,6 @@
         </button>
       </div>
     </ul>
-<<<<<<< HEAD
 
     <h2>📍 Ubicación</h2>
     <ul>
