@@ -6,7 +6,7 @@ if (!defined('ROOT')) {
 require_once ROOT . '/config.php';
 //require ROOT . '/app/scripts/connection.php';
 require_once 'mainController.php';
-class LoginController extends mainController
+class LoginController extends MainController
 {
     protected $dbConn;
 

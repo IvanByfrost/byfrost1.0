@@ -11,6 +11,12 @@ class SchoolController extends MainController
         $this->schoolModel = new SchoolModel();
     }
 
+    public function index()
+    {
+        // Renderizar la vista de creación de colegio
+        $this->render('school', 'dashboard');
+    }
+
     public function createSchool()
     {
         //1. Captar los datos del formulario.
@@ -41,7 +47,7 @@ class SchoolController extends MainController
                     echo json_encode([
                         'status' => 'success',
                         'msg' => 'Colegio creado exitosamente'
-                    ]);                    
+                    ]);
                 } else {
                     echo json_encode([
                         'status' => 'error',

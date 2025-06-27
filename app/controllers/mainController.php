@@ -1,5 +1,5 @@
 <?php
-class mainController
+class MainController
 {
     //Conexión a la base de datos.
     protected $dbConn;
