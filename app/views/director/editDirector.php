@@ -1,12 +1,4 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Rector</title>
-    <link rel="stylesheet" href="/software_academico/public/css/style.css">
-</head>
-<body>
+
     <h1>Editar Rector</h1>
     <a href="/software_academico/rector/listar">Volver al Listado</a>
     <br><br>
@@ -31,5 +23,3 @@
     <?php else: ?>
         <p>Rector no encontrado para editar.</p>
     <?php endif; ?>
-</body>
-</html>
