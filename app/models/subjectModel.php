@@ -19,7 +19,12 @@ class subjectModel extends mainModel
     
     // Función para crear una asignatura
     public function createSubject(){
-        //
+        //Aquí se implementa la lógica para crear una asignatura.
+        $query = "INSERT INTO subjects 
+        ";
+        $stmt = $this->dbConn->prepare($query);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
     }
     
     // Función para actualizar una asignatura
