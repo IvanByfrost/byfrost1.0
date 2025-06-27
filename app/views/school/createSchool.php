@@ -1,28 +1,55 @@
   <form class="dash-form">
-    <h2>Información General del Colegio</h2>
+    <h2>Información general del colegio</h2>
+    <p>Por favor, completa la siguiente información para crear un nuevo colegio.</p>
     <ul>
-      <li class="input-group">
-        <label for="nombre">Nombre</label>
-        <input type="text" id="nombre" name="nombre" required>
-      </li>
-      <li class="input-group">
-        <label for="codigoDANE">Código DANE</label>
-        <input type="text" id="codigoDANE" name="codigoDANE">
-      </li>
-      <li class="input-group">
-        <label for="nit">NIT:</label>
-        <input type="text" id="nit" name="nit">
-      </li>
-      <li class="input-group">
-        <label>Nivel Educativo ofrecido:</label>
-        <div class="checkbox-group">
-          <label><input type="checkbox" name="nivel[]" value="preescolar"> Preescolar</label>
-          <label><input type="checkbox" name="nivel[]" value="primaria"> Básica Primaria</label>
-          <label><input type="checkbox" name="nivel[]" value="secundaria"> Básica Secundaria</label>
-          <label><input type="checkbox" name="nivel[]" value="media"> Media (Bachillerato)</label>
-          <label><input type="checkbox" name="nivel[]" value="tecnica"> Técnica / Técnica laboral</label>
+      <div class="col- 12 input-group">
+        <input type="text" id="nombre" name="nombre" class="inputEstilo1" placeholder="Nombre del colegio" required">
+      </div>
+      <div class="input-group">
+        <input type="text" id="codigoDANE" name="codigoDANE" class="inputEstilo1" placeholder="Código DANE del colegio" required>
+      </div>
+      <div class="input-group">
+        <input type="text" id="nit" name="nit" class="inputEstilo1" placeholder="NIT del colegio" required>
+      </div>
+      <fieldset class="mb-3">
+        <legend class="form-label">Nivel educativo ofrecido:</legend>
+
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="nivel[]" id="nivelPreescolar" value="preescolar">
+          <label class="form-check-label" for="nivelPreescolar">
+            Preescolar
+          </label>
         </div>
-      </li>
+
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="nivel[]" id="nivelPrimaria" value="primaria">
+          <label class="form-check-label" for="nivelPrimaria">
+            Básica Primaria
+          </label>
+        </div>
+
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="nivel[]" id="nivelSecundaria" value="secundaria">
+          <label class="form-check-label" for="nivelSecundaria">
+            Básica Secundaria
+          </label>
+        </div>
+
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="nivel[]" id="nivelMedia" value="media">
+          <label class="form-check-label" for="nivelMedia">
+            Media (Bachillerato)
+          </label>
+        </div>
+
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="nivel[]" id="nivelTecnica" value="tecnica">
+          <label class="form-check-label" for="nivelTecnica">
+            Técnica / Técnica laboral
+          </label>
+        </div>
+      </fieldset>
+
     </ul>
     <div class="col-6">
       <button type="submit" id="iniciar-sesion" class="btn btn-primary d-block w-100 text-center">

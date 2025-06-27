@@ -211,7 +211,7 @@
 .mainContent {
     flex: 1;
     padding: 20px;
-    background-color: #f8fafc;
+    /* background-color: #f8fafc;
     /* fondo claro tailwind */
     margin-top: 20px;
 }
@@ -279,4 +279,26 @@ header {
     display: flex;
     flex-direction: column;
     margin-bottom: 15px;
+}
+
+footer {
+  background-color: #ffffff;
+  color: #000000;
+  text-align: center;
+}
+
+.inputEstilo1 {
+    width: 100%;
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 16px;
+    font-family: lato, sans-serif;
+}
+
+.checkbox-group label {
+  display: block;
+  margin-bottom: 5px;
 }
