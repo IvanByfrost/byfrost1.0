@@ -37,7 +37,7 @@ OBJETIVO: Preparar el entorno para las mejoras
 
 COMANDOS INICIALES:
 git init
-git remote add origin https://github.com/tu-usuario/byfrost1.0.git
+git remote add origin https://github.com/IvanByfrost/byfrost1.0.git
 git checkout -b develop
 git push origin develop
 
