@@ -9,3 +9,11 @@
 - Crear la función de crear profesores.
 - Diseñar a Odín. 
 - En las consultas, hacer el div para consultar y un formulario para que muestre los resultados. 
+
+###Funciones para agregar. 
+- Crear Observador de estudiante.
+- Crear evaluación de docencia.
+- Función creacion de actividades, profesor.
+- Función de reportes académicos, admin.
+- Función de soporte / ayuda
+- Función advertisements, anuncios/eventos.

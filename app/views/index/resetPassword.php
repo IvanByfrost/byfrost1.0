@@ -63,4 +63,4 @@ if (empty($token)) {
     ?>
     
     <!-- Scripts específicos -->
-    <script src="<?php echo url . rq ?>js/forgotPassword.js"></script> 
+    <script src="<?php echo url . app .rq ?>js/forgotPassword.js"></script> 

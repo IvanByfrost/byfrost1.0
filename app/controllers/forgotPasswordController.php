@@ -16,7 +16,7 @@ class ForgotPasswordController extends MainController
 
     public function index()
     {
-        require_once app . views . 'index/forgotPassword.php';
+        require_once url . app . views . 'index/forgotPassword.php';
     }
 
     public function requestReset()

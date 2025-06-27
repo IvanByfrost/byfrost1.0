@@ -8,6 +8,9 @@
 
 -- USE baldur_db;
 
+-- CREATE USER 'byfrost_app_user'@'localhost' IDENTIFIED BY 'ByFrost2024!Secure#';
+-- GRANT ALL PRIVILEGES ON baldur_db.* TO 'byfrost_app_user'@'localhost';
+-- FLUSH PRIVILEGES;
 -- =============================================
 -- TABLAS CORE DE USUARIOS Y AUTENTICACIÓN
 -- =============================================
