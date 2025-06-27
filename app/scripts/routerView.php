@@ -24,7 +24,7 @@ if (
 $parts = explode('/', $view);
 
 // Validar carpeta permitida
-$allowedDirs = ['root', 'teacher', 'headMaster', 'student', 'coordinator', 'treasurer', 'school'];
+$allowedDirs = ['root', 'teacher', 'director', 'student', 'coordinator', 'treasurer', 'school'];
 
 // Si no está en carpetas permitidas (comparación insensible a mayúsculas/minúsculas)
 if (!in_array(strtolower($parts[0]), array_map('strtolower', $allowedDirs))) {

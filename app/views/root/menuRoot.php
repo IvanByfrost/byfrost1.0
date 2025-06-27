@@ -24,10 +24,10 @@
                 <h4 class="card-title">Rectores</h4>
                 <p class="card-text">Registra y gestiona la información de los rectores.</p>
                 <div class="d-grid gap-2">
-                    <button class="btn btn-outline-success" onclick="loadView('headMaster/createHmaster')">
+                    <button class="btn btn-outline-success" onclick="loadView('director/createDirector')">
                         <i class="fa fa-plus"></i> Registrar Rectores
                     </button>
-                    <a href="#" class="btn btn-outline-primary" onclick="loadView('headMaster/editHmaster')">
+                    <a href="#" class="btn btn-outline-primary" onclick="loadView('director/editDirector')">
                         Reportes
                     </a>
                 </div>

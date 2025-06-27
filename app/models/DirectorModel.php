@@ -11,7 +11,7 @@ class DirectorModel extends MainModel
     }
 
     // Obtener todos los rectores
-    public function getAllHmaster()
+    public function getAllDirector()
     {
         $sql = "SELECT * FROM headmaster";
         $stmt = $this->dbConn->query($sql);
@@ -28,7 +28,7 @@ class DirectorModel extends MainModel
     }
 
     // Insertar un nuevo rector
-    public function createHmaster($userName, $userLastName, $userEmail, $password, $phoneUser = null)
+    public function createDirector($userName, $userLastName, $userEmail, $password, $phoneUser = null)
     {
         // Se asume que la contraseña ya viene hasheada desde el controlador
         $sql = "INSERT INTO rectores (nombre, apellido, email, password, telefono) VALUES (:userName, :userLastName, :userEmail, :password, :phoneUser)";
@@ -43,7 +43,7 @@ class DirectorModel extends MainModel
     }
 
     // Actualizar un rector
-    public function headMasterUpdate($id, $userName, $userLastName, $userEmail, $phoneUser = null)
+    public function directorUpdate($id, $userName, $userLastName, $userEmail, $phoneUser = null)
     {
         $sql = "UPDATE rectores SET nombre = :userName, apellido = :userLastName, email = :userEmail, telefono = :phoneUser WHERE id_rector = :id";
         $stmt = $this->dbConn->prepare($sql);
