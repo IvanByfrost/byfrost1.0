@@ -17,3 +17,4 @@
 - Función de reportes académicos, admin.
 - Función de soporte / ayuda
 - Función advertisements, anuncios/eventos.
+- En todos los formularios, agregar un lapicito para hacer un modal y hacer el update, en vez de un formulario completo.
