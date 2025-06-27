@@ -1,14 +1,4 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Crear Nuevo Rector</title>
-    
-</head>
-<body>
     <h1>Crear Nuevo Rector</h1>
-    <a href="xampp">Volver al Listado</a>
     <br><br>
     <form action="/software_academico/rector/guardar" method="POST">
         <label for="nombre">Nombre:</label><br>
@@ -28,5 +18,9 @@
 
         <button type="submit">Guardar Rector</button>
     </form>
-</body>
-</html>
+
+    <div class="container-fluid" style="margin-top: 20px;">
+        <button class="btn btn-outline-primary" onclick="loadView('root/mainRoot')">
+            <i class="fa fa-home"></i> Volver al Inicio
+        </button>
+    </div>

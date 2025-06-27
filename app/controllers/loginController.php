@@ -118,13 +118,55 @@ class LoginController extends mainController
 
     // Cierra la sesión y vuelve al login
     public function logout()
-{
-    session_start();
-    session_unset();    // Limpia todas las variables de sesión
-    session_destroy();  // Destruye la sesión actual
-
-    header("Location: " . url . app . "views/index/login.php");
-    exit;
-}
+    {
+        // Debug: mostrar información antes del logout
+        error_log("=== INICIO DEL LOGOUT ===");
+        error_log("Estado de sesión: " . session_status());
+        error_log("ID de sesión: " . session_id());
+        error_log("Variables de sesión: " . print_r($_SESSION, true));
+        
+        // Iniciar sesión si no está iniciada
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+            error_log("Sesión iniciada");
+        }
+        
+        // Limpiar todas las variables de sesión
+        $sessionCount = count($_SESSION);
+        $_SESSION = array();
+        error_log("Variables de sesión limpiadas ($sessionCount eliminadas)");
+        
+        // Destruir la cookie de sesión si existe
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            $cookieDestroyed = setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
+            error_log("Cookie destruida: " . ($cookieDestroyed ? 'SÍ' : 'NO'));
+        }
+        
+        // Destruir la sesión
+        $sessionDestroyed = session_destroy();
+        error_log("Sesión destruida: " . ($sessionDestroyed ? 'SÍ' : 'NO'));
+        
+        // Limpiar cualquier variable de sesión que pueda quedar
+        unset($_SESSION);
+        error_log("Variable \$_SESSION eliminada");
+        
+        // URL de redirección
+        $loginUrl = url . "app/views/index/login.php";
+        error_log("URL de redirección: $loginUrl");
+        error_log("Constantes usadas:");
+        error_log("  - url = " . url);
+        error_log("  - app = " . app);
+        error_log("  - views = " . views);
+        error_log("URL completa construida: " . url . "app/views/index/login.php");
+        error_log("=== FIN DEL LOGOUT ===");
+        
+        // Redirigir al login
+        header("Location: " . $loginUrl);
+        exit;
+    }
 }
 

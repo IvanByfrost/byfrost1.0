@@ -3,7 +3,7 @@
     <ul>
       <li>
         <label for="nombre">Nombre</label>
-        <input type="text" id="nombre" name="nombre">
+        <input type="text" id="nombre" name="nombre" required>
       </li>
       <li>
         <label for="codigoDANE">Código DANE</label>
@@ -23,12 +23,6 @@
           <label><input type="checkbox" name="nivel[]" value="tecnica"> Técnica / Técnica laboral</label>
         </div>
       </li>
-      <div class="col-6">
-        <button type="submit" id="iniciar-sesion"
-          class="btn btn-primary d-block w-100 text-center">
-          Registrar Colegio
-        </button>
-      </div>
     </ul>
 
     <h2>📍 Ubicación</h2>
@@ -54,8 +48,10 @@
         <input type="email" id="correo" name="correo">
       </li>
     </ul>
-  </div>
-</body>
-</html>
-=======
+
+    <div class="col-6">
+      <button type="submit" id="iniciar-sesion" class="btn btn-primary d-block w-100 text-center">
+        Registrar Colegio
+      </button>
+    </div>
   </form>

@@ -16,6 +16,10 @@
     <script>
         // Inicializar Lucide
         lucide.createIcons();
+        
+        // Variable global con la URL base para JavaScript
+        window.BYFROST_BASE_URL = '<?php echo url . app ?>';
+        console.log('Base URL configurada:', window.BYFROST_BASE_URL);
     </script>
     </body>
 
