@@ -9,8 +9,8 @@
                 <button class="btn btn-outline-success" onclick="loadView('school/createSchool')">
                     <i class="fa fa-plus"></i> Registrar Colegio
                 </button>
-                <a href="#" class="btn btn-outline-primary" onclick="loadView('headMaster/editHmaster')">
-                    Reportes
+                <a href="#" class="btn btn-outline-primary" onclick="loadView('school/editSchool')">
+                    Consultar Colegios
                 </a>
             </div>
         </div>
