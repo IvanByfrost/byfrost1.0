@@ -4,8 +4,8 @@
             <li><a href="#" onclick="loadView('root/mainRoot')"><i data-lucide="home"></i>Inicio</a></li>
             <li class="has-submenu"><a href="#"><i data-lucide="school"></i>Colegios</a>
                 <ul class="submenu">
-                    <li><a href="#" onclick="loadView('headMaster/createHmaster')">Registrar Colegio</a></li>
-                    <li><a href="#" onclick="loadView('headMaster/editHmaster')">Reportes</a></li>
+                    <li><a href="#" onclick="loadView('school/createSchool')">Registrar Colegio</a></li>
+                    <li><a href="#" onclick="loadView('headMaster/editHmaster')">Consultar Colegio</a></li>
                 </ul>
             </li>
             <li class="has-submenu"><a href="#"><i data-lucide="users"></i>Rectores</a>
