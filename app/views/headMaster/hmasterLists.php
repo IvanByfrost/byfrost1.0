@@ -1,13 +1,5 @@
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Listado de Rectores</title>
-        <link rel="stylesheet" href="/software_academico/public/css/style.css"> </head>
-    <body>
         <h1>Listado de Rectores</h1>
-        <a href="/software_academico/rector/crear">Agregar Nuevo Rector</a>
+        <a href="#" onclick="loadView('headMaster/createHmaster')">Agregar Nuevo Rector</a>
         <br><br>
         <table border="1">
             <thead>
@@ -42,5 +34,3 @@
                 <?php endif; ?>
             </tbody>
         </table>
-    </body>
-    </html>
