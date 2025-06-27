@@ -1,0 +1,108 @@
+GUÍA: IMPLEMENTACIÓN DE VALIDACIÓN CENTRALIZADA
+================================================
+
+PASO 1: CREAR LA CLASE VALIDATOR
+--------------------------------
+Ubicación: app/library/Validator.php
+
+Estructura básica recomendada:
+
+class Validator {
+    private $errors = [];
+    
+    // Métodos de validación básicos
+    public function isRequired($value, $fieldName) { }
+    public function isEmail($email) { }
+    public function isDate($date) { }
+    public function isNumeric($value) { }
+    public function minLength($value, $min) { }
+    public function maxLength($value, $max) { }
+    
+    // Métodos de sanitización
+    public function sanitizeString($string) { }
+    public function sanitizeEmail($email) { }
+    
+    // Gestión de errores
+    public function getErrors() { }
+    public function hasErrors() { }
+}
+
+PASO 2: IMPLEMENTAR MÉTODOS DE VALIDACIÓN
+-----------------------------------------
+Usar funciones nativas de PHP:
+- filter_var() para emails, URLs, etc.
+- preg_match() para patrones personalizados
+- strlen() para longitudes
+- is_numeric() para números
+
+PASO 3: REFACTORIZAR CONTROLADORES
+----------------------------------
+ANTES:
+if (empty($_POST['email']) || !filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+    // manejo de error
+}
+
+DESPUÉS:
+$validator = new Validator();
+$validator->isRequired($_POST['email'], 'email');
+$validator->isEmail($_POST['email']);
+
+if ($validator->hasErrors()) {
+    // manejo de errores centralizado
+}
+
+PASO 4: CREAR REGLAS DE VALIDACIÓN ESPECÍFICAS
+----------------------------------------------
+Para cada tipo de formulario:
+- Login: email, contraseña
+- Registro: nombre, email, contraseña, confirmación
+- Perfil: datos personales, teléfono, dirección
+
+PASO 5: IMPLEMENTAR SANITIZACIÓN
+--------------------------------
+Antes de usar cualquier dato:
+- Sanear strings con htmlspecialchars()
+- Validar tipos de datos
+- Escapar para SQL (aunque uses prepared statements)
+
+PASO 6: DOCUMENTAR REGLAS
+-------------------------
+Crear un archivo de documentación:
+- Lista de métodos disponibles
+- Ejemplos de uso
+- Reglas de validación por módulo
+
+PUNTOS CLAVE PARA EL EQUIPO:
+============================
+
+1. No uses librerías externas al principio - aprende con PHP nativo
+2. Empieza con validaciones básicas (required, email, length)
+3. Prueba cada método antes de refactorizar todo
+4. Mantén consistencia en los mensajes de error
+5. Documenta todo - tu equipo futuro te lo agradecerá
+
+CHECKLIST DE IMPLEMENTACIÓN:
+============================
+
+[ ] Crear clase Validator básica
+[ ] Implementar 5 métodos de validación esenciales
+[ ] Refactorizar 1 controlador como prueba
+[ ] Probar con datos válidos e inválidos
+[ ] Documentar métodos y ejemplos
+[ ] Refactorizar resto de controladores gradualmente
+
+NOTAS IMPORTANTES:
+==================
+
+- Empieza pequeño y crece gradualmente
+- Prueba cada cambio antes de continuar
+- Mantén un registro de los cambios realizados
+- Comunica al equipo los avances y problemas encontrados
+- No tengas miedo de refactorizar si algo no funciona bien
+
+RECURSOS ÚTILES:
+================
+
+- Documentación PHP: filter_var(), preg_match()
+- Ejemplos de validación en internet
+- Patrones de validación comunes para formularios web 
