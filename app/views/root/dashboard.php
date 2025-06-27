@@ -16,7 +16,6 @@ require_once ROOT . '/app/views/layouts/dashHeader.php';
 </script>
 
 <script type="text/javascript" src="<?php echo url . app. rq ?>js/loadView.js"></script>
-
 <body>
 <div class="dashboard-container">
   <aside class="sidebar">
@@ -24,8 +23,8 @@ require_once ROOT . '/app/views/layouts/dashHeader.php';
     require_once 'rootSidebar.php';
     ?>
   </aside>
+  
     <div id="mainContent">
-
   </div>
 </div>
 </body>

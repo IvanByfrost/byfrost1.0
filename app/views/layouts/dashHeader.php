@@ -39,26 +39,6 @@ require_once ROOT . '/app/views/layouts/dashHead.php';
             color: #333;
             font-weight: bold;
           ">Cerrar sesión</a>
-            <hr>
-            <a href="<?php echo url . app ?>processes/simpleSessionCheck.php" target="_blank" style="
-            display: block;
-            padding: 8px 10px;
-            text-decoration: none;
-            color: #666;
-            font-size: 12px;
-          ">Verificar sesión</a>
-            <hr>
-            <button onclick="checkSession()" style="
-            display: block;
-            width: 100%;
-            padding: 8px 10px;
-            background: none;
-            border: none;
-            text-align: left;
-            color: #666;
-            font-size: 12px;
-            cursor: pointer;
-          ">Verificar sesión (JS)</button>
         </div>
     </div>
 </header>
