@@ -24,7 +24,7 @@ require_once ROOT . '/app/views/layouts/dashHeader.php';
     ?>
   </aside>
   
-    <div id="mainContent">
+    <div id="mainContent" class="mainContent">
   </div>
 </div>
 </body>
