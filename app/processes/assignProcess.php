@@ -1,6 +1,5 @@
 <?php
 require_once '../app/models/UserModel.php';
-require_once '../app/models/SchoolModel.php';
 $model = new userModel();
 
 $userId = $_POST['userId'];

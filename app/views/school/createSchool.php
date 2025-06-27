@@ -1,9 +1,9 @@
-  <form class="dash-form">
+  <form method = "POST" action = "<?php echo url . rq ?>app/processes/schoolProcess.php" class="dash-form">
     <h2>Información general del colegio</h2>
     <p>Por favor, completa la siguiente información para crear un nuevo colegio.</p>
     <ul>
       <div class="col- 12 input-group">
-        <input type="text" id="nombre" name="nombre" class="inputEstilo1" placeholder="Nombre del colegio" required">
+        <input type="text" id="school_name" name="school_name" class="inputEstilo1" placeholder="Nombre del colegio" required">
       </div>
       <div class="input-group">
         <input type="text" id="codigoDANE" name="codigoDANE" class="inputEstilo1" placeholder="Código DANE del colegio" required>
