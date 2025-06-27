@@ -220,9 +220,9 @@ VALUES -- Administradores
 -- Insertar roles de usuario
 INSERT INTO user_roles (user_id, role_type, is_active)
 VALUES -- Administrador
-    (1, 'headmaster', 1),
+    (1, 'director', 1),
     -- Rector
-    (2, 'headmaster', 1),
+    (2, 'director', 1),
     -- Coordinador
     (3, 'coordinator', 1),
     -- Profesores
@@ -244,7 +244,7 @@ VALUES -- Administrador
 INSERT INTO schools (
         school_name,
         total_quota,
-        headmaster_user_id,
+        director_user_id,
         coordinator_user_id,
         address,
         phone,

@@ -91,7 +91,7 @@ class LoginController extends MainController
                     $_SESSION["ByFrost_userName"] = $user['first_name'] . ' ' . $user['last_name'];
                     unset($user['password_hash']);
 
-                    $validRoles = ['professor', 'student', 'headmaster', 'coordinator', 'treasurer', 'parent', 'root'];
+                    $validRoles = ['professor', 'student', 'director', 'coordinator', 'treasurer', 'parent', 'root'];
                     $redirectPage = in_array($user['rol'], $validRoles)
                         ? "{$user['rol']}/dashboard"
                         : 'login.php';

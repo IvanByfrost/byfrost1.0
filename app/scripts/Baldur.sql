@@ -37,7 +37,7 @@ CREATE TABLE users (
 CREATE TABLE user_roles (
     user_role_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    role_type ENUM('student', 'parent', 'professor', 'coordinator', 'headmaster', 'treasurer', 'root') NOT NULL,
+    role_type ENUM('student', 'parent', 'professor', 'coordinator', 'director', 'treasurer', 'root') NOT NULL,
     is_active BIT NOT NULL DEFAULT 1,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     
@@ -53,14 +53,14 @@ CREATE TABLE schools (
     school_id INT AUTO_INCREMENT PRIMARY KEY,
     school_name VARCHAR(100) NOT NULL COMMENT 'Incluye sede: Colegio ABC - Sede Norte',
     total_quota SMALLINT NOT NULL,
-    headmaster_user_id INT NOT NULL,
+    director_user_id INT NOT NULL,
     coordinator_user_id INT NOT NULL,
     address VARCHAR(200),
     phone VARCHAR(20),
     email VARCHAR(100),
     is_active BIT NOT NULL DEFAULT 1,
     
-    FOREIGN KEY (headmaster_user_id) REFERENCES users(user_id),
+    FOREIGN KEY (director_user_id) REFERENCES users(user_id),
     FOREIGN KEY (coordinator_user_id) REFERENCES users(user_id)
 ) ENGINE=InnoDB;
 
