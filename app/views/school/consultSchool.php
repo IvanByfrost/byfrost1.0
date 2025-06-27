@@ -1,6 +1,6 @@
 <form method = "POST" id = "consultSchool" class="dash-form">
     <h2>Información general del colegio</h2>
-    <p>Por favor, completa la siguiente información para consultar un nuevo colegio.</p>
+    <p>Por favor, completa la siguiente información para consultar un colegio.</p>
     <ul>
 
       <div class="col- 12 input-group">
