@@ -3,6 +3,8 @@ if (!defined('ROOT')) {
     define('ROOT', dirname(dirname(__DIR__)) . '/');
 }
 
+require_once ROOT . '/config.php';
+
 $view = $_GET['view'] ?? '';
 
 // Debug: mostrar la ruta que se está construyendo

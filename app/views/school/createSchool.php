@@ -1,4 +1,4 @@
-<form method = "POST" id = "completeSchool" class="dash-form">
+<form method = "POST" id = "completeSchool" class="dash-form" action ="<?php echo url . rq ?>app/processes/schoolProcess.php">
     <h2>Información general del colegio</h2>
     <p>Por favor, completa la siguiente información para crear un nuevo colegio.</p>
     <ul>
