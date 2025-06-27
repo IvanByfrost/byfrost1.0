@@ -2,7 +2,7 @@
 // Modelo para manejar a las actividades
 require_once 'mainModel.php';
 
-class ActivityModel extends mainModel
+class ActivityModel extends MainModel
 {
     // Constructor de la clase 
     public function __construct()

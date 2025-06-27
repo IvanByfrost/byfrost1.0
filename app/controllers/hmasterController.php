@@ -1,8 +1,8 @@
 <?php
-require_once 'app/models/hmasterModel.php';
+require_once 'app/models/DirectorModel.php';
 require_once 'app/controllers/mainController.php';
 
-class hmasterController extends MainController {
+class DirectorController extends MainController {
     protected $dbConn;
     protected $view;
     public function __construct($dbConn)
@@ -12,25 +12,25 @@ class hmasterController extends MainController {
     }
 
     // Acción por defecto: Lista de rectores
-    public function headMasterList() {
+    public function directorList() {
         $this->listAction();
     }
 
     // Mostrar la lista de rectores
     public function listAction() {
-        $headMaster = $this->dbConn->getAllRectores();
+        $director = $this->dbConn->getAllRectores();
         // Cargar la vista
-        require_once app.views . 'headMaster/hmasterLists.php';
+        require_once app.views . 'director/directorLists.php';
     }
 
     // Mostrar el formulario para agregar un nuevo rector
-    public function newHeadMaster() {
+    public function newDirector() {
         // Cargar la vista del formulario
-        require_once app.views . 'headMaster/createHmaster.php';
+        require_once app.views . 'director/createDirector.php';
     }
 
     // Procesar la adición de un nuevo rector
-    public function addHeadMaster() {
+    public function addDirector() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $userName = $_POST['userName'] ?? '';
             $userLastName = $_POST['userLastName'] ?? '';
@@ -47,7 +47,7 @@ class hmasterController extends MainController {
                 return;
             }
 
-            if ($this->dbConn->createHmaster($userName, $userLastName, $userEmail, $hashedPassword, $phoneUser)) {
+            if ($this->dbConn->createDirector($userName, $userLastName, $userEmail, $hashedPassword, $phoneUser)) {
                 header('Location: /software_academico/rector/listar'); // Redirigir a la lista
                 exit();
             } else {
@@ -60,11 +60,11 @@ class hmasterController extends MainController {
     }
 
     // Mostrar el formulario para editar un rector existente
-    public function editHeadMaster() {
+    public function editDirector() {
         $id = $_GET['id'] ?? null; // Obtener ID de la URL
         if ($id) {
-            $headMaster = $this->dbConn->getRectorById($id);
-            if ($headMaster) {
+            $director = $this->dbConn->getRectorById($id);
+            if ($director) {
                 require_once app.views. 'rector/editar.php';
             } else {
                 echo "Rector no encontrado.";
@@ -75,7 +75,7 @@ class hmasterController extends MainController {
     }
 
     // Procesar la actualización de un rector
-    public function headMasterUpdate() {
+    public function directorUpdate() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id = $_POST['id_rector'] ?? null;
             $userName = $_POST['userName'] ?? '';
@@ -84,7 +84,7 @@ class hmasterController extends MainController {
             $phoneUser = $_POST['phoneUser'] ?? null;
 
             $userEmail = $_POST['email'] ?? '';
-            if ($id && $this->dbConn->updateHeadMaster($id, $userName, $userLastName, $userEmail, $phoneUser)) {
+            if ($id && $this->dbConn->updateDirector($id, $userName, $userLastName, $userEmail, $phoneUser)) {
                 header('Location: /software_academico/rector/listar');
                 exit();
             } else {
@@ -97,10 +97,10 @@ class hmasterController extends MainController {
     }
 
     // Eliminar un rector
-    public function deleteHeadMaster() {
+    public function deleteDirector() {
         $id = $_GET['id'] ?? null;
         if ($id) {
-            if ($this->dbConn->deleteHeadMaster($id)) {
+            if ($this->dbConn->deleteDirector($id)) {
                 header('Location: /software_academico/rector/listar');
                 exit();
             } else {

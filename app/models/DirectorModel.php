@@ -3,7 +3,7 @@ require_once 'mainModel.php';
 
 // software_academico/app/models/RectorModel.php
 
-class hmasterModel extends mainModel
+class DirectorModel extends MainModel
 {
     public function __construct()
     {

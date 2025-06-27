@@ -1,7 +1,7 @@
 <?php
 require_once 'mainModel.php';
 
-class CoordinatorModel extends mainModel {
+class CoordinatorModel extends MainModel {
     public function __construct()
     {
         parent::__construct();

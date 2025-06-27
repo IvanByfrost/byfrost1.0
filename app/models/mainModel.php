@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../scripts/connection.php';
 
 // Modelo principal para manejar la conexión a la base de datos
-class mainModel {
+class MainModel {
     protected $dbConn;
     
     public function __construct()
