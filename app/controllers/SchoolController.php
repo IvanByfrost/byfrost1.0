@@ -1,6 +1,7 @@
 <?php
-require_once "app/models/SchoolModel.php";
-require_once 'app/controllers/MainController.php';
+require_once __DIR__ . '/../models/SchoolModel.php';
+
+require_once __DIR__ . '/MainController.php';
 class SchoolController extends MainController
 {
     protected $schoolModel;
