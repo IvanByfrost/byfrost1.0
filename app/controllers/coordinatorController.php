@@ -6,8 +6,8 @@ require_once 'app/controllers/MainController.php';
 class CoordinatorController extends MainController {
     protected $model;
 
-    public function __construct($dbConn, $view) {
-        parent::__construct($dbConn, $view);
+    public function __construct($dbConn) {
+        parent::__construct($dbConn);
         $this->model = new CoordinatorModel();
     }
 

@@ -2,7 +2,7 @@
 require_once ROOT . '/app/models/userModel.php';
 require_once 'app/controllers/MainController.php';
 class assignRoleController extends MainController {
-    private $db;
+    protected $db;
 
     public function __construct($dbConn) {
         $this->db = $dbConn;

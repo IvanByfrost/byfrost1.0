@@ -7,9 +7,9 @@ class ActivityController extends MainController
     protected $activityModel;
     
     // Constructor que inicializa el modelo de actividades
-    public function __construct($dbConn, $view)
+    public function __construct($dbConn)
     {
-        parent::__construct($dbConn, $view);
+        parent::__construct($dbConn);
         $this->activityModel = new ActivityModel();
     }
     

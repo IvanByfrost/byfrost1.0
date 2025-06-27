@@ -5,9 +5,9 @@ class SchoolController extends MainController
 {
     protected $schoolModel;
 
-    public function __construct($dbConn, $view)
+    public function __construct($dbConn)
     {
-        parent::__construct($dbConn, $view);
+        parent::__construct($dbConn);
         $this->schoolModel = new SchoolModel();
     }
 

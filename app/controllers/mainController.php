@@ -4,10 +4,9 @@ class MainController
     //Conexión a la base de datos.
     protected $dbConn;
     protected $view;
-    public function __construct($dbConn, $view)
+    public function __construct($dbConn)
     {
         $this->dbConn = $dbConn;
-        $this->view = $view;
     }
 
     // Función para renderizar vistas
