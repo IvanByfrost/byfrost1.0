@@ -1,5 +1,6 @@
 <?php
-require_once '../app/models/userModel.php';
+require_once '../app/models/UserModel.php';
+require_once '../app/models/SchoolModel.php';
 $model = new userModel();
 
 $userId = $_POST['userId'];
@@ -11,4 +12,7 @@ echo json_encode([
     'status' => $ok ? 'ok' : 'error',
     'msg' => $ok ? 'Rol asignado con éxito' : 'Error al asignar rol'
 ]);
+
+
+
 ?>

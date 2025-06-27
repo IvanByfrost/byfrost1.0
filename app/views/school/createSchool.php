@@ -1,5 +1,5 @@
   <form class="dash-form">
-    <h2>🏫 Información General del Colegio</h2>
+    <h2>Información General del Colegio</h2>
     <ul>
       <li class="input-group">
         <label for="nombre">Nombre</label>
