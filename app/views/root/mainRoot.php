@@ -37,7 +37,7 @@
                 <button class="btn btn-outline-success" onclick="loadView('user/consultUser')">
                     <i class="fa fa-plus"></i> Consultar usuarios
                 </button>
-                <a href="#" class="btn btn-outline-primary" onclick="loadView('headMaster/editHmaster')">
+                <a href="#" class="btn btn-outline-primary" onclick="loadView('user/assignRole')">
                     Asignar roles de usuario
                 </a>
             </div>
