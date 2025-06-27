@@ -1,0 +1,226 @@
+GUÍA: MANEJO DE RAMAS EN GITHUB Y GESTIÓN DE REPOSITORIOS
+==========================================================
+
+CONCEPTOS BÁSICOS
+=================
+
+RAMA (BRANCH): Una línea de desarrollo independiente que permite trabajar en 
+funcionalidades sin afectar el código principal.
+
+REPOSITORIO: El lugar donde se almacena todo el código del proyecto.
+
+COMMIT: Un punto de guardado en la historia del código con cambios específicos.
+
+PUSH: Subir cambios locales al repositorio remoto.
+
+PULL: Descargar cambios del repositorio remoto.
+
+MERGE: Combinar cambios de una rama con otra.
+
+ESTRUCTURA DE RAMAS RECOMENDADA
+===============================
+
+main/master (Rama principal)
+├── develop (Rama de desarrollo)
+├── feature/nombre-funcionalidad (Ramas de características)
+├── bugfix/nombre-error (Ramas de corrección de errores)
+├── hotfix/nombre-urgencia (Ramas de correcciones urgentes)
+└── release/version-x.x.x (Ramas de lanzamiento)
+
+FLUJO DE TRABAJO GIT FLOW
+=========================
+
+1. RAMA MAIN/MASTER
+   - Contiene solo código estable y listo para producción
+   - NUNCA se trabaja directamente en esta rama
+   - Solo recibe merges de develop o hotfix
+
+2. RAMA DEVELOP
+   - Rama de integración para desarrollo
+   - Contiene todas las funcionalidades en desarrollo
+   - Se crea desde main al inicio del proyecto
+
+3. RAMAS FEATURE
+   - Se crean desde develop
+   - Para desarrollar nuevas funcionalidades
+   - Nomenclatura: feature/nombre-descriptivo
+   - Ejemplo: feature/user-authentication
+
+4. RAMAS BUGFIX
+   - Se crean desde develop
+   - Para corregir errores encontrados en desarrollo
+   - Nomenclatura: bugfix/descripcion-error
+   - Ejemplo: bugfix/login-validation
+
+5. RAMAS HOTFIX
+   - Se crean desde main
+   - Para correcciones urgentes en producción
+   - Nomenclatura: hotfix/descripcion-urgencia
+   - Ejemplo: hotfix/security-vulnerability
+
+6. RAMAS RELEASE
+   - Se crean desde develop
+   - Para preparar una nueva versión
+   - Nomenclatura: release/version-x.x.x
+   - Ejemplo: release/v1.2.0
+
+COMANDOS BÁSICOS
+================
+
+CREAR Y CAMBIAR DE RAMA:
+git checkout -b nombre-rama
+git checkout nombre-rama
+git branch nombre-rama
+
+VER RAMAS:
+git branch (ramas locales)
+git branch -r (ramas remotas)
+git branch -a (todas las ramas)
+
+ACTUALIZAR RAMA LOCAL:
+git pull origin nombre-rama
+git fetch origin
+git merge origin/nombre-rama
+
+SUBIR CAMBIOS:
+git add .
+git commit -m "descripción del cambio"
+git push origin nombre-rama
+
+ELIMINAR RAMA:
+git branch -d nombre-rama (local)
+git push origin --delete nombre-rama (remota)
+
+FLUJO DE TRABAJO DIARIO
+=======================
+
+1. ACTUALIZAR DESARROLLO LOCAL:
+   git checkout develop
+   git pull origin develop
+
+2. CREAR RAMA PARA NUEVA FUNCIONALIDAD:
+   git checkout -b feature/nueva-funcionalidad
+
+3. TRABAJAR Y HACER COMMITS:
+   git add .
+   git commit -m "feat: añadir validación de email"
+   git commit -m "fix: corregir error en login"
+   git commit -m "docs: actualizar documentación"
+
+4. SUBIR RAMA AL REPOSITORIO:
+   git push origin feature/nueva-funcionalidad
+
+5. CREAR PULL REQUEST:
+   - Ir a GitHub
+   - Crear Pull Request desde feature/nueva-funcionalidad hacia develop
+   - Describir cambios realizados
+   - Asignar revisores
+
+6. MERGE Y LIMPIEZA:
+   - Después de aprobación, hacer merge
+   - Eliminar rama feature local y remota
+
+CONVENCIONES DE COMMITS
+=======================
+
+feat: nueva funcionalidad
+fix: corrección de error
+docs: cambios en documentación
+style: cambios de formato (espacios, etc.)
+refactor: refactorización de código
+test: añadir o modificar tests
+chore: tareas de mantenimiento
+
+Ejemplos:
+git commit -m "feat: implementar sistema de validación"
+git commit -m "fix: corregir error en autenticación"
+git commit -m "docs: actualizar README del proyecto"
+
+GESTIÓN DE CONFLICTOS
+=====================
+
+1. DETECTAR CONFLICTOS:
+   - Al hacer merge o pull aparecen conflictos
+   - Git marca las líneas conflictivas
+
+2. RESOLVER CONFLICTOS:
+   - Abrir archivos con conflictos
+   - Elegir qué cambios mantener
+   - Eliminar marcadores de conflicto
+
+3. COMPLETAR MERGE:
+   git add .
+   git commit -m "resolve: conflictos en archivo.php"
+
+BEST PRACTICES
+==============
+
+1. NUNCA trabajar directamente en main/master
+2. Hacer commits pequeños y descriptivos
+3. Actualizar develop antes de crear nuevas ramas
+4. Eliminar ramas después del merge
+5. Usar Pull Requests para revisión de código
+6. Mantener ramas actualizadas con develop
+7. Documentar cambios importantes
+
+HERRAMIENTAS ÚTILES
+===================
+
+- GitHub Desktop: Interfaz gráfica para Git
+- GitKraken: Cliente Git avanzado
+- SourceTree: Cliente Git de Atlassian
+- VS Code: Editor con integración Git
+
+COMANDOS AVANZADOS
+==================
+
+VER HISTORIAL:
+git log --oneline
+git log --graph --oneline --all
+
+DESHACER CAMBIOS:
+git reset --hard HEAD~1 (último commit)
+git revert commit-hash (crear commit que deshace)
+
+STASH (guardar cambios temporalmente):
+git stash
+git stash pop
+git stash list
+
+REBASE (reorganizar commits):
+git rebase develop
+
+TAGS (marcar versiones):
+git tag v1.0.0
+git push origin v1.0.0
+
+CONFIGURACIÓN ÚTIL
+==================
+
+Configurar usuario:
+git config --global user.name "Tu Nombre"
+git config --global user.email "tu@email.com"
+
+Alias útiles:
+git config --global alias.st status
+git config --global alias.co checkout
+git config --global alias.br branch
+
+NOTAS IMPORTANTES
+=================
+
+- Siempre hacer backup antes de operaciones complejas
+- Comunicar al equipo antes de hacer cambios grandes
+- Mantener un registro de las ramas activas
+- Revisar código antes de hacer merge a develop
+- Usar mensajes de commit descriptivos
+- No hacer force push en ramas compartidas
+
+RECURSOS ADICIONALES
+====================
+
+- Documentación oficial de Git
+- GitHub Guides
+- Git Flow workflow
+- Conventional Commits
+- GitHub Flow vs Git Flow 

@@ -1,0 +1,277 @@
+INTEGRACIÓN: METODOLOGÍA SCRUM + GITHUB WORKFLOW
+================================================
+
+CONCEPTOS BÁSICOS DE INTEGRACIÓN
+================================
+
+SCRUM: Metodología ágil que organiza el trabajo en sprints (iteraciones) 
+de 1-4 semanas con roles definidos (Product Owner, Scrum Master, Team).
+
+GITHUB WORKFLOW: Flujo de trabajo con ramas para desarrollo colaborativo 
+y control de versiones.
+
+INTEGRACIÓN: Combinar ambos para tener un desarrollo ágil y controlado.
+
+ESTRUCTURA DE RAMAS PARA SCRUM
+==============================
+
+main/master (Producción estable)
+├── develop (Integración de sprint actual)
+├── sprint/sprint-1 (Rama del sprint actual)
+├── feature/PBI-123-nombre-funcionalidad (Ramas de historias de usuario)
+├── bugfix/PBI-456-correccion-error (Ramas de correcciones)
+├── hotfix/urgente-produccion (Correcciones críticas)
+└── release/sprint-1-v1.0 (Preparación de release)
+
+ROLES Y RESPONSABILIDADES EN GITHUB
+===================================
+
+PRODUCT OWNER:
+- Crear y gestionar Issues/User Stories
+- Priorizar backlog en GitHub Projects
+- Aprobar Pull Requests de funcionalidades
+- Crear Milestones para sprints
+
+SCRUM MASTER:
+- Configurar GitHub Projects board
+- Gestionar flujo de Pull Requests
+- Facilitar resolución de conflictos
+- Mantener documentación del proceso
+
+DEVELOPMENT TEAM:
+- Crear ramas feature desde sprint actual
+- Desarrollar funcionalidades
+- Crear Pull Requests
+- Revisar código de compañeros
+
+FLUJO DE TRABAJO INTEGRADO
+==========================
+
+PLANNING SPRINT (Inicio de Sprint):
+1. Product Owner crea Milestone en GitHub
+2. Asigna Issues/User Stories al Milestone
+3. Team estima y asigna Issues a miembros
+4. Se crea rama sprint/sprint-X desde develop
+
+DESARROLLO DIARIO:
+1. Developer toma Issue del backlog
+2. Crea rama: feature/PBI-123-nombre-funcionalidad
+3. Desarrolla funcionalidad
+4. Hace commits con convención: "feat(PBI-123): descripción"
+5. Crea Pull Request hacia sprint/sprint-X
+6. Code review por otro developer
+7. Merge a sprint/sprint-X
+
+DAILY STANDUP:
+- Revisar Pull Requests pendientes
+- Identificar bloqueos en Issues
+- Actualizar progreso en GitHub Projects
+
+SPRINT REVIEW:
+- Demo de funcionalidades completadas
+- Merge de sprint/sprint-X a develop
+- Crear release/sprint-X-v1.0
+- Merge de develop a main (si está listo)
+
+SPRINT RETROSPECTIVE:
+- Revisar proceso de Pull Requests
+- Identificar mejoras en flujo de trabajo
+- Actualizar documentación del proceso
+
+CONFIGURACIÓN DE GITHUB PROJECTS
+================================
+
+BOARD CONFIGURACIÓN:
+Columnas recomendadas:
+- Backlog (Issues pendientes)
+- Sprint Planning (Issues del sprint actual)
+- In Progress (En desarrollo)
+- Code Review (Pull Requests)
+- Testing (En pruebas)
+- Done (Completado)
+
+AUTOMATIZACIÓN:
+- GitHub Actions para CI/CD
+- Auto-assign de Pull Requests
+- Auto-merge cuando pasa tests
+- Notificaciones automáticas
+
+CONVENCIONES DE NOMBRADO
+========================
+
+ISSUES/STORY NAMES:
+- PBI-123: Login de usuario
+- PBI-124: Validación de formularios
+- PBI-125: Dashboard de administrador
+
+BRANCH NAMES:
+- feature/PBI-123-user-login
+- bugfix/PBI-124-form-validation
+- hotfix/security-vulnerability
+
+COMMIT MESSAGES:
+- feat(PBI-123): implementar login de usuario
+- fix(PBI-124): corregir validación de email
+- docs(PBI-125): actualizar documentación API
+
+PULL REQUEST TITLES:
+- PBI-123: User Login Implementation
+- PBI-124: Fix Form Validation Issues
+- PBI-125: Add Admin Dashboard
+
+COMANDOS ÚTILES PARA SCRUM
+==========================
+
+INICIO DE SPRINT:
+git checkout develop
+git pull origin develop
+git checkout -b sprint/sprint-1
+git push origin sprint/sprint-1
+
+TRABAJAR EN STORY:
+git checkout sprint/sprint-1
+git pull origin sprint/sprint-1
+git checkout -b feature/PBI-123-user-login
+
+ACTUALIZAR STORY CON DEVELOP:
+git checkout feature/PBI-123-user-login
+git rebase develop
+
+FINALIZAR STORY:
+git checkout sprint/sprint-1
+git merge feature/PBI-123-user-login
+git push origin sprint/sprint-1
+git branch -d feature/PBI-123-user-login
+
+FIN DE SPRINT:
+git checkout develop
+git merge sprint/sprint-1
+git push origin develop
+git checkout -b release/sprint-1-v1.0
+
+HERRAMIENTAS DE INTEGRACIÓN
+===========================
+
+GITHUB PROJECTS:
+- Kanban board integrado
+- Automatización de flujo
+- Métricas de sprint
+
+GITHUB ACTIONS:
+- CI/CD automático
+- Tests automáticos
+- Deploy automático
+
+GITHUB APPS:
+- ZenHub (gestión ágil avanzada)
+- Jira integration
+- Slack integration
+
+BEST PRACTICES PARA SCRUM + GITHUB
+==================================
+
+1. SPRINT PLANNING:
+   - Crear Milestone al inicio
+   - Asignar Issues a miembros
+   - Establecer Definition of Done
+
+2. DESARROLLO:
+   - Una rama por Issue/Story
+   - Commits pequeños y frecuentes
+   - Pull Requests tempranos
+
+3. CODE REVIEW:
+   - Revisar código de compañeros
+   - Aprobar solo cuando cumple Definition of Done
+   - Usar templates de Pull Request
+
+4. TESTING:
+   - Tests automáticos en CI/CD
+   - Testing manual antes de merge
+   - Definition of Done checklist
+
+5. DEPLOY:
+   - Deploy automático desde develop
+   - Deploy manual a producción
+   - Rollback plan
+
+MÉTRICAS Y REPORTING
+====================
+
+VELOCITY:
+- Issues completados por sprint
+- Story points entregados
+- Pull Requests mergeados
+
+QUALITY:
+- Code review coverage
+- Test coverage
+- Bug reports por sprint
+
+PROCESS:
+- Cycle time (Issue a Done)
+- Lead time (creación a entrega)
+- Pull Request review time
+
+CONFIGURACIÓN RECOMENDADA
+=========================
+
+GITHUB SETTINGS:
+- Branch protection rules
+- Required reviews
+- Required status checks
+- Auto-delete branches
+
+TEAM SETTINGS:
+- Code owners
+- Review assignments
+- Notification preferences
+
+WORKFLOW SETTINGS:
+- Issue templates
+- Pull request templates
+- Commit message templates
+
+EJEMPLO DE SPRINT COMPLETO
+==========================
+
+SPRINT 1 (2 semanas):
+
+DÍA 1 - PLANNING:
+- Crear Milestone "Sprint 1"
+- Asignar 8 Issues al sprint
+- Crear rama sprint/sprint-1
+
+DÍA 2-9 - DESARROLLO:
+- Developers trabajan en Issues
+- Daily standups revisan progreso
+- Pull Requests y code reviews
+
+DÍA 10 - SPRINT REVIEW:
+- Demo de funcionalidades
+- Merge sprint/sprint-1 a develop
+- Crear release/sprint-1-v1.0
+
+DÍA 10 - RETROSPECTIVE:
+- Revisar proceso
+- Identificar mejoras
+- Planificar siguiente sprint
+
+NOTAS IMPORTANTES
+=================
+
+- Mantener ramas actualizadas con develop
+- Comunicar bloqueos en Daily Standup
+- Documentar decisiones técnicas
+- Usar Definition of Done consistente
+- Automatizar todo lo posible
+- Mantener backlog actualizado
+
+RECURSOS ADICIONALES
+====================
+
+- GitHub Projects documentation
+- Scrum Guide oficial
+- GitHub Actions workflows
+- Agile project management tools
+- Team collaboration best practices 
