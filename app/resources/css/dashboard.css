@@ -87,11 +87,6 @@
     justify-content: space-between;
 }
 
-.card:hover {
-    background-color: #97ff9e;
-    color: rgb(0, 0, 0);
-}
-
 .dash-form {
     display: flex;
     flex-direction: column;
