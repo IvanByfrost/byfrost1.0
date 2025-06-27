@@ -1,4 +1,4 @@
-<form method="POST" id="consultSchool" class="dash-form">
+<form method="GET" id="consultSchool" class="dash-form" action="<?php echo url . rq ?>app/processes/schoolProcess.php">
     <h2>Información general del colegio</h2>
     <p>Por favor, completa la siguiente información para consultar un colegio.</p>
     <ul>

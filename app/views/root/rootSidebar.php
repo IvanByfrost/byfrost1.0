@@ -10,16 +10,15 @@
             </li>
             <li class="has-submenu"><a href="#"><i data-lucide="users"></i>Rectores</a>
                 <ul class="submenu">
-                    <li><a href="#" onclick="loadView('director/createDirector')">Registrar Rector</a></li>
-                    <li><a href="#" onclick="loadView('director/editDirector')">Editar el perfil</a></li>
-                    <li><a href="#" onclick="loadView('director/hmasterLists')">Consultar Rector</a></li>
+                <li><a href="#" onclick="loadView('director/createDirector')">Registrar rector</a></li>    
+                <li><a href="#" onclick="loadView('director/directorLists')">Consultar Rector</a></li>
                 </ul>
             </li>
             <li class="has-submenu">
                 <a href="#"><i data-lucide="user"></i>Usuarios</a>
                 <ul class="submenu">
-                    <li><a href="#" onclick="loadView('director/createDirector')">Registrar Usuario</a></li>
-                    <li><a href="#" onclick="loadView('director/editDirector')">Asignar rol Administrador</a></li>
+                    <li><a href="#" onclick="loadView('user/consultUser')">Consultar Usuario</a></li>
+                    <li><a href="#" onclick="loadView('user/assignRole')">Asignar rol</a></li>
                 </ul>
             </li>
             <li class="has-submenu">
