@@ -104,4 +104,23 @@ class MainController
         return !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
                strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
     }
+
+    /**
+     * Envía una respuesta JSON
+     * 
+     * @param bool $success Indica si la operación fue exitosa
+     * @param string $message Mensaje de respuesta
+     * @param array $data Datos adicionales
+     * @return void
+     */
+    protected function sendJsonResponse($success, $message, $data = [])
+    {
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => $success,
+            'message' => $message,
+            'data' => $data
+        ]);
+        exit;
+    }
 }

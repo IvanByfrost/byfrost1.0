@@ -19,7 +19,7 @@ $coordinators = $coordinators ?? [];
                 </div>
             <?php endif; ?>
 
-            <form method="POST" id="createSchool" class="dash-form" action="?view=school&action=createSchool">
+            <form method="POST" id="createSchool" class="dash-form">
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title">Crear Nueva Escuela</h5>
@@ -44,6 +44,9 @@ $coordinators = $coordinators ?? [];
                                     <input type="text" class="form-control" id="school_name" name="school_name" 
                                            value="<?php echo isset($formData['school_name']) ? htmlspecialchars($formData['school_name']) : ''; ?>" 
                                            required>
+                                    <div class="invalid-feedback">
+                                        El nombre de la escuela es obligatorio.
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -52,6 +55,9 @@ $coordinators = $coordinators ?? [];
                                     <input type="text" class="form-control" id="school_dane" name="school_dane" 
                                            value="<?php echo isset($formData['school_dane']) ? htmlspecialchars($formData['school_dane']) : ''; ?>" 
                                            required>
+                                    <div class="invalid-feedback">
+                                        El código DANE es obligatorio.
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -63,6 +69,9 @@ $coordinators = $coordinators ?? [];
                                     <input type="text" class="form-control" id="school_document" name="school_document" 
                                            value="<?php echo isset($formData['school_document']) ? htmlspecialchars($formData['school_document']) : ''; ?>" 
                                            required>
+                                    <div class="invalid-feedback">
+                                        El NIT es obligatorio.
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -133,13 +142,23 @@ $coordinators = $coordinators ?? [];
                                     <label for="email">Email</label>
                                     <input type="email" class="form-control" id="email" name="email" 
                                            value="<?php echo isset($formData['email']) ? htmlspecialchars($formData['email']) : ''; ?>">
+                                    <div class="invalid-feedback">
+                                        Ingrese un email válido.
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">Crear Escuela</button>
-                            <a href="?view=school&action=consultSchool" class="btn btn-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Crear Escuela
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="cancelCreateSchool()">
+                                <i class="fas fa-times"></i> Cancelar
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="clearCreateSchoolForm()">
+                                <i class="fas fa-eraser"></i> Limpiar
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -171,4 +171,115 @@ class UserModel extends mainModel
     {
         return $this->assignRole($userId, $roleType);
     }
+
+    
+    /**
+     * Busca usuarios por tipo y número de documento
+     * 
+     * @param string $credentialType Tipo de documento (CC, TI, etc.)
+     * @param string $credentialNumber Número de documento
+     * @return array Array de usuarios encontrados
+     */
+    public function searchUsersByDocument($credentialType, $credentialNumber)
+    {
+        try {
+            $query = "SELECT 
+                        u.user_id,
+                        u.credential_type,
+                        u.credential_number,
+                        u.first_name,
+                        u.last_name,
+                        u.email,
+                        u.phone,
+                        u.address,
+                        ur.role_type as current_role
+                      FROM users u
+                      LEFT JOIN user_roles ur ON u.user_id = ur.user_id AND ur.is_active = 1
+                      WHERE u.credential_type = :credential_type 
+                      AND u.credential_number = :credential_number
+                      AND u.is_active = 1
+                      ORDER BY u.first_name, u.last_name";
+            
+            $stmt = $this->dbConn->prepare($query);
+            $stmt->execute([
+                ':credential_type' => $credentialType,
+                ':credential_number' => $credentialNumber
+            ]);
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log("Error en UserModel::searchUsersByDocument: " . $e->getMessage());
+            throw new Exception('Error al buscar usuarios por documento');
+        }
+    }
+
+    /**
+     * Obtiene usuarios sin rol asignado
+     * 
+     * @return array Array de usuarios sin rol
+     */
+    public function getUsersWithoutRole()
+    {
+        try {
+            $query = "SELECT 
+                        u.user_id,
+                        u.credential_type,
+                        u.credential_number,
+                        u.first_name,
+                        u.last_name,
+                        u.email,
+                        u.phone,
+                        u.address
+                      FROM users u
+                      LEFT JOIN user_roles ur ON u.user_id = ur.user_id AND ur.is_active = 1
+                      WHERE ur.user_id IS NULL
+                      AND u.is_active = 1
+                      ORDER BY u.first_name, u.last_name
+                      LIMIT 50";
+            
+            $stmt = $this->dbConn->prepare($query);
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log("Error en UserModel::getUsersWithoutRole: " . $e->getMessage());
+            throw new Exception('Error al obtener usuarios sin rol');
+        }
+    }
+
+    /**
+     * Obtiene usuarios con un rol específico
+     * 
+     * @param string $roleType Tipo de rol
+     * @return array Array de usuarios con el rol especificado
+     */
+    public function getUsersByRole($roleType)
+    {
+        try {
+            $query = "SELECT 
+                        u.user_id,
+                        u.credential_type,
+                        u.credential_number,
+                        u.first_name,
+                        u.last_name,
+                        u.email,
+                        u.phone,
+                        u.address,
+                        ur.role_type
+                      FROM users u
+                      INNER JOIN user_roles ur ON u.user_id = ur.user_id
+                      WHERE ur.role_type = :role_type
+                      AND u.is_active = 1
+                      AND ur.is_active = 1
+                      ORDER BY u.first_name, u.last_name";
+            
+            $stmt = $this->dbConn->prepare($query);
+            $stmt->execute([':role_type' => $roleType]);
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log("Error en UserModel::getUsersByRole: " . $e->getMessage());
+            throw new Exception('Error al obtener usuarios por rol');
+        }
+    }
 }

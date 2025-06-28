@@ -36,13 +36,21 @@ class SchoolController extends MainController
                 }
                 
                 if (!empty($missingFields)) {
-                    $this->loadView('school/createSchool', [
-                        'error' => 'Los siguientes campos son obligatorios: ' . implode(', ', $missingFields),
-                        'formData' => $_POST,
-                        'directors' => $this->schoolModel->getDirectors(),
-                        'coordinators' => $this->schoolModel->getCoordinators()
-                    ]);
-                    return;
+                    $errorMessage = 'Los siguientes campos son obligatorios: ' . implode(', ', $missingFields);
+                    
+                    // Verificar si es una petición AJAX
+                    if ($this->isAjaxRequest()) {
+                        $this->sendJsonResponse(false, $errorMessage);
+                        return;
+                    } else {
+                        $this->loadView('school/createSchool', [
+                            'error' => $errorMessage,
+                            'formData' => $_POST,
+                            'directors' => $this->schoolModel->getDirectors(),
+                            'coordinators' => $this->schoolModel->getCoordinators()
+                        ]);
+                        return;
+                    }
                 }
                 
                 // Preparar los datos
@@ -60,39 +68,63 @@ class SchoolController extends MainController
                 
                 // Validar formato de email si se proporciona
                 if (!empty($data['email']) && !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-                    $this->loadView('school/createSchool', [
-                        'error' => 'El formato del email no es válido',
-                        'formData' => $_POST,
-                        'directors' => $this->schoolModel->getDirectors(),
-                        'coordinators' => $this->schoolModel->getCoordinators()
-                    ]);
-                    return;
+                    $errorMessage = 'El formato del email no es válido';
+                    
+                    if ($this->isAjaxRequest()) {
+                        $this->sendJsonResponse(false, $errorMessage);
+                        return;
+                    } else {
+                        $this->loadView('school/createSchool', [
+                            'error' => $errorMessage,
+                            'formData' => $_POST,
+                            'directors' => $this->schoolModel->getDirectors(),
+                            'coordinators' => $this->schoolModel->getCoordinators()
+                        ]);
+                        return;
+                    }
                 }
                 
                 // Llamar al método del modelo
                 $schoolId = $this->schoolModel->createSchool($data);
                 
                 if ($schoolId) {
-                    // Redirigir a la lista de escuelas con mensaje de éxito
-                    $this->redirect('?view=school&action=consultSchool&success=1&msg=' . urlencode('Escuela creada exitosamente'));
+                    // Éxito
+                    if ($this->isAjaxRequest()) {
+                        $this->sendJsonResponse(true, 'Escuela creada exitosamente', ['school_id' => $schoolId]);
+                    } else {
+                        // Redirigir a la lista de escuelas con mensaje de éxito
+                        $this->redirect('?view=school&action=consultSchool&success=1&msg=' . urlencode('Escuela creada exitosamente'));
+                    }
                 } else {
-                    $this->loadView('school/createSchool', [
-                        'error' => 'Error al crear la escuela. Verifique que los datos sean únicos.',
-                        'formData' => $_POST,
-                        'directors' => $this->schoolModel->getDirectors(),
-                        'coordinators' => $this->schoolModel->getCoordinators()
-                    ]);
+                    $errorMessage = 'Error al crear la escuela. Verifique que los datos sean únicos.';
+                    
+                    if ($this->isAjaxRequest()) {
+                        $this->sendJsonResponse(false, $errorMessage);
+                    } else {
+                        $this->loadView('school/createSchool', [
+                            'error' => $errorMessage,
+                            'formData' => $_POST,
+                            'directors' => $this->schoolModel->getDirectors(),
+                            'coordinators' => $this->schoolModel->getCoordinators()
+                        ]);
+                    }
                 }
                 
             } catch (Exception $e) {
                 error_log("Error en SchoolController::createSchool: " . $e->getMessage());
                 
-                $this->loadView('school/createSchool', [
-                    'error' => 'Error interno del servidor: ' . $e->getMessage(),
-                    'formData' => $_POST,
-                    'directors' => $this->schoolModel->getDirectors(),
-                    'coordinators' => $this->schoolModel->getCoordinators()
-                ]);
+                $errorMessage = 'Error interno del servidor: ' . $e->getMessage();
+                
+                if ($this->isAjaxRequest()) {
+                    $this->sendJsonResponse(false, $errorMessage);
+                } else {
+                    $this->loadView('school/createSchool', [
+                        'error' => $errorMessage,
+                        'formData' => $_POST,
+                        'directors' => $this->schoolModel->getDirectors(),
+                        'coordinators' => $this->schoolModel->getCoordinators()
+                    ]);
+                }
             }
         } else {
             // Si es GET, mostrar el formulario
@@ -133,7 +165,7 @@ class SchoolController extends MainController
 
     // Protección de acceso solo para escuela o tesorero
     private function protectSchool() {
-        if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn() || !$this->sessionManager->hasAnyRole(['director', 'coordinator', 'treasurer'])) {
+        if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn() || !$this->sessionManager->hasAnyRole(['director', 'coordinator', 'treasurer', 'root'])) {
             header('Location: /?view=unauthorized');
             exit;
         }
