@@ -33,17 +33,18 @@ $roles = $roles ?? [];
                     <h5 class="card-title">Buscar Usuario</h5>
                 </div>
                 <div class="card-body">
-                <form id="searchUserForm" action="?view=user&action=assignRole" method="GET">
+                    <form id="searchUserForm" method="POST" action="#" onsubmit="return false;">
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="credential_type">Tipo de Documento</label>
                                     <select class="form-control" id="credential_type" name="credential_type" required>
                                         <option value="">Seleccionar tipo</option>
-                                        <option value="CC" <?php echo (isset($_GET['credential_type']) && $_GET['credential_type'] == 'CC') ? 'selected' : ''; ?>>Cédula de Ciudadanía</option>
-                                        <option value="TI" <?php echo (isset($_GET['credential_type']) && $_GET['credential_type'] == 'TI') ? 'selected' : ''; ?>>Tarjeta de Identidad</option>
-                                        <option value="CE" <?php echo (isset($_GET['credential_type']) && $_GET['credential_type'] == 'CE') ? 'selected' : ''; ?>>Cédula de Extranjería</option>
-                                        <option value="PP" <?php echo (isset($_GET['credential_type']) && $_GET['credential_type'] == 'PP') ? 'selected' : ''; ?>>Pasaporte</option>
+                                        <option value="CC">Cédula de Ciudadanía</option>
+                                        <option value="TI">Tarjeta de Identidad</option>
+                                        <option value="CE">Cédula de Extranjería</option>
+                                        <option value="PP">Pasaporte</option>
+                                        <option value="RC">Registro Civil</option>
                                     </select>
                                 </div>
                             </div>
@@ -51,7 +52,6 @@ $roles = $roles ?? [];
                                 <div class="form-group">
                                     <label for="credential_number">Número de Documento</label>
                                     <input type="text" class="form-control" id="credential_number" name="credential_number" 
-                                           value="<?php echo isset($_GET['credential_number']) ? htmlspecialchars($_GET['credential_number']) : ''; ?>" 
                                            placeholder="Ingrese el número de documento" required>
                                 </div>
                             </div>
@@ -69,65 +69,14 @@ $roles = $roles ?? [];
             </div>
 
             <!-- Resultados de búsqueda -->
-            <?php if (!empty($users)): ?>
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title">Usuarios Encontrados</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Nombre Completo</th>
-                                        <th>Documento</th>
-                                        <th>Email</th>
-                                        <th>Rol Actual</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($users as $user): ?>
-                                        <tr>
-                                            <td><?php echo htmlspecialchars($user['user_id']); ?></td>
-                                            <td>
-                                                <strong><?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?></strong>
-                                            </td>
-                                            <td>
-                                                <span class="badge bg-info">
-                                                    <?php echo htmlspecialchars($user['credential_type'] . ' ' . $user['credential_number']); ?>
-                                                </span>
-                                            </td>
-                                            <td><?php echo htmlspecialchars($user['email'] ?? 'No especificado'); ?></td>
-                                            <td>
-                                                <?php if (!empty($user['user_role'])): ?>
-                                                    <span class="badge bg-success">
-                                                        <?php echo htmlspecialchars(ucfirst($user['user_role'])); ?>
-                                                    </span>
-                                                <?php else: ?>
-                                                    <span class="badge bg-warning">Sin rol</span>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td>
-                                                <button type="button" class="btn btn-sm btn-primary" 
-                                                        onclick="showAssignRoleModal(<?php echo $user['user_id']; ?>, '<?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?>', '<?php echo htmlspecialchars($user['user_role'] ?? ''); ?>')">
-                                                    <i class="fas fa-user-tag"></i> Asignar Rol
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+            <div class="card" id="searchResultsCard" style="display: none;">
+                <div class="card-header">
+                    <h5 class="card-title">Usuarios Encontrados</h5>
                 </div>
-            <?php elseif (isset($_GET['credential_number']) && !empty($_GET['credential_number'])): ?>
-                <div class="alert alert-warning">
-                    <i class="fas fa-search"></i> 
-                    No se encontraron usuarios con el documento especificado.
+                <div class="card-body" id="searchResultsContainer">
+                    <!-- Se llenará via AJAX -->
                 </div>
-            <?php endif; ?>
+            </div>
 
             <!-- Lista de usuarios sin rol -->
             <div class="card mt-4">
@@ -166,7 +115,7 @@ $roles = $roles ?? [];
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="assignRoleForm">
+                <form id="assignRoleForm" onsubmit="return false;">
                     <input type="hidden" id="modal_user_id" name="user_id">
                     
                     <div class="mb-3">
@@ -203,6 +152,3 @@ $roles = $roles ?? [];
         </div>
     </div>
 </div>
-
-<!-- Incluir el archivo JavaScript  -->
-<script src="<?php echo url; ?>app/resources/js/assignRole.js"></script>

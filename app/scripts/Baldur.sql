@@ -37,7 +37,7 @@ CREATE TABLE users (
 CREATE TABLE user_roles (
     user_role_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    role_type ENUM('student', 'parent', 'professor', 'coordinator', 'director', 'treasurer', 'root') NOT NULL,
+    role_type ENUM('student', 'parent', 'professor', 'coordinator', 'director', 'treasurer', 'root') DEFAULT NULL,
     is_active BIT NOT NULL DEFAULT 1,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     

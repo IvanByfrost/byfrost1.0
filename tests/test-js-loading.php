@@ -108,4 +108,146 @@ echo "</ol>";
 echo "<hr>";
 echo "<p><strong>Estado:</strong> 🔍 JavaScript listo para debug</p>";
 echo "<p><strong>Nota:</strong> Si ves errores en la consola, compártelos para diagnosticar el problema.</p>";
+
+// Test para verificar que el JavaScript se carga correctamente
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+echo "<h2>Test de Carga de JavaScript</h2>";
+
+// 1. Verificar que el archivo JS existe
+$jsFile = '../app/resources/js/assignRole.js';
+if (file_exists($jsFile)) {
+    echo "✓ assignRole.js existe<br>";
+    
+    $content = file_get_contents($jsFile);
+    
+    // Verificar que tiene el contenido básico
+    if (strpos($content, 'initializeAssignRole') !== false) {
+        echo "✓ Tiene función initializeAssignRole()<br>";
+    } else {
+        echo "✗ NO tiene función initializeAssignRole()<br>";
+    }
+    
+    if (strpos($content, 'handleSearchSubmit') !== false) {
+        echo "✓ Tiene función handleSearchSubmit()<br>";
+    } else {
+        echo "✗ NO tiene función handleSearchSubmit()<br>";
+    }
+    
+    if (strpos($content, 'searchUsersByDocument') !== false) {
+        echo "✓ Tiene función searchUsersByDocument()<br>";
+    } else {
+        echo "✗ NO tiene función searchUsersByDocument()<br>";
+    }
+    
+    // Verificar que tiene la inicialización automática
+    if (strpos($content, 'DOMContentLoaded') !== false) {
+        echo "✓ Tiene inicialización automática<br>";
+    } else {
+        echo "✗ NO tiene inicialización automática<br>";
+    }
+    
+} else {
+    echo "✗ assignRole.js NO existe<br>";
+}
+
+// 2. Verificar que la vista incluye el JavaScript
+$viewFile = '../app/views/user/assignRole.php';
+if (file_exists($viewFile)) {
+    echo "<h3>Verificación de la Vista</h3>";
+    
+    $content = file_get_contents($viewFile);
+    
+    // Verificar que incluye el script
+    if (strpos($content, 'assignRole.js') !== false) {
+        echo "✓ Incluye assignRole.js<br>";
+        
+        // Extraer la línea donde se incluye
+        $lines = explode("\n", $content);
+        foreach ($lines as $line) {
+            if (strpos($line, 'assignRole.js') !== false) {
+                echo "Línea: " . htmlspecialchars(trim($line)) . "<br>";
+                break;
+            }
+        }
+    } else {
+        echo "✗ NO incluye assignRole.js<br>";
+    }
+    
+    // Verificar que tiene el formulario con ID correcto
+    if (strpos($content, 'id="searchUserForm"') !== false) {
+        echo "✓ Formulario tiene ID correcto<br>";
+    } else {
+        echo "✗ Formulario NO tiene ID correcto<br>";
+    }
+    
+    // Verificar que tiene onsubmit
+    if (strpos($content, 'onsubmit="return false;"') !== false) {
+        echo "✓ Formulario previene envío por defecto<br>";
+    } else {
+        echo "✗ Formulario NO previene envío por defecto<br>";
+    }
+    
+} else {
+    echo "✗ assignRole.php NO existe<br>";
+}
+
+// 3. Crear una página de prueba simple
+echo "<h3>Página de Prueba Simple</h3>";
+echo "Crea este archivo HTML para probar el JavaScript:<br>";
+echo "<textarea style='width: 100%; height: 200px;'>";
+echo "&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Test JavaScript&lt;/title&gt;
+    &lt;script src=\"https://code.jquery.com/jquery-3.6.0.min.js\"&gt;&lt;/script&gt;
+    &lt;script src=\"app/resources/js/assignRole.js\"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Test de JavaScript&lt;/h1&gt;
+    &lt;form id=\"searchUserForm\" method=\"POST\" action=\"#\" onsubmit=\"return false;\"&gt;
+        &lt;select id=\"credential_type\" name=\"credential_type\"&gt;
+            &lt;option value=\"\"&gt;Seleccionar tipo&lt;/option&gt;
+            &lt;option value=\"CC\"&gt;Cédula de Ciudadanía&lt;/option&gt;
+        &lt;/select&gt;
+        &lt;input type=\"text\" id=\"credential_number\" name=\"credential_number\" placeholder=\"Número\"&gt;
+        &lt;button type=\"submit\"&gt;Buscar&lt;/button&gt;
+    &lt;/form&gt;
+    &lt;div id=\"results\"&gt;&lt;/div&gt;
+    
+    &lt;script&gt;
+        console.log('Página cargada');
+        // Verificar si las funciones están disponibles
+        if (typeof initializeAssignRole === 'function') {
+            console.log('✓ initializeAssignRole está disponible');
+        } else {
+            console.log('✗ initializeAssignRole NO está disponible');
+        }
+        
+        if (typeof searchUsersByDocument === 'function') {
+            console.log('✓ searchUsersByDocument está disponible');
+        } else {
+            console.log('✗ searchUsersByDocument NO está disponible');
+        }
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;";
+echo "</textarea>";
+
+echo "<h3>Pasos para Diagnosticar</h3>";
+echo "1. Abre la página de asignación de roles<br>";
+echo "2. Presiona F12 para abrir herramientas de desarrollador<br>";
+echo "3. Ve a la pestaña Console<br>";
+echo "4. Recarga la página<br>";
+echo "5. Dime qué mensajes o errores aparecen en la consola<br>";
+
+echo "<h3>Posibles Problemas</h3>";
+echo "- El archivo JavaScript no se está cargando<br>";
+echo "- Hay un error de sintaxis en el JavaScript<br>";
+echo "- jQuery no está disponible<br>";
+echo "- La URL del archivo JavaScript es incorrecta<br>";
+echo "- El formulario no tiene el ID correcto<br>";
+
+echo "<br><strong>¡Dime qué aparece en la consola del navegador!</strong>";
 ?> 

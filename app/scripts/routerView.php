@@ -68,6 +68,15 @@ $controllerMapping = [
     'schedule' => 'ScheduleController',
     'user' => 'UserController',
     'index' => 'IndexController',
+    'login' => 'IndexController',
+    'register' => 'IndexController',
+    'contact' => 'IndexController',
+    'about' => 'IndexController',
+    'plans' => 'IndexController',
+    'faq' => 'IndexController',
+    'forgotPassword' => 'IndexController',
+    'resetPassword' => 'IndexController',
+    'completeProf' => 'IndexController',
     'unauthorized' => 'ErrorController',
     'Error' => 'ErrorController'
 ];
@@ -102,8 +111,30 @@ if (isset($controllerMapping[$view])) {
                 echo "<p>Métodos disponibles: <code>" . implode(', ', get_class_methods($controller)) . "</code></p>";
             }
         } else {
-            // Si no hay acción, llamar al método por defecto
-            if ($controllerName === 'ErrorController' && $view === 'unauthorized') {
+            // Si no hay acción, determinar la acción basada en la vista
+            $defaultActions = [
+                'login' => 'login',
+                'register' => 'register',
+                'contact' => 'contact',
+                'about' => 'about',
+                'plans' => 'plans',
+                'faq' => 'faq',
+                'forgotPassword' => 'forgotPassword',
+                'resetPassword' => 'resetPassword',
+                'completeProf' => 'completeProf'
+            ];
+            
+            // Si la vista tiene una acción por defecto, usarla
+            if (isset($defaultActions[$view])) {
+                $defaultAction = $defaultActions[$view];
+                if (method_exists($controller, $defaultAction)) {
+                    // echo "<!-- Debug: Llamando acción por defecto: " . $defaultAction . " -->";
+                    $controller->$defaultAction();
+                } else {
+                    http_response_code(404);
+                    echo "<h2>Error 404</h2><p>La acción por defecto <code>" . htmlspecialchars($defaultAction) . "</code> no existe en el controlador <code>" . htmlspecialchars($controllerName) . "</code>.</p>";
+                }
+            } elseif ($controllerName === 'ErrorController' && $view === 'unauthorized') {
                 // Para ErrorController con vista unauthorized, usar el método Error con 'unauthorized'
                 if (method_exists($controller, 'Error')) {
                     $controller->Error('unauthorized');

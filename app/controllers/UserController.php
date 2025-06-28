@@ -38,11 +38,11 @@ class UserController extends MainController
         $message = '';
         $error = '';
         
-        // Si se envió una búsqueda
-        if (isset($_GET['credential_type']) && isset($_GET['credential_number']) && !empty($_GET['credential_number'])) {
-            $credentialType = $_GET['credential_type'];
-            $credentialNumber = $_GET['credential_number'];
-            
+        // Si se envió una búsqueda (GET o POST)
+        $credentialType = $_GET['credential_type'] ?? $_POST['credential_type'] ?? null;
+        $credentialNumber = $_GET['credential_number'] ?? $_POST['credential_number'] ?? null;
+        
+        if ($credentialType && $credentialNumber && !empty($credentialNumber)) {
             try {
                 $users = $this->userModel->searchUsersByDocument($credentialType, $credentialNumber);
                 
@@ -54,6 +54,18 @@ class UserController extends MainController
             }
         }
         
+        // Si es una petición AJAX POST, devolver solo la sección de resultados
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && $this->isAjaxRequest()) {
+            // Renderizar solo la sección de resultados
+            $this->renderPartial('user', 'assignRoleResults', [
+                'users' => $users,
+                'message' => $message,
+                'error' => $error
+            ]);
+            return;
+        }
+        
+        // Para peticiones normales, cargar la vista completa
         $this->loadView('user/assignRole', [
             'users' => $users,
             'message' => $message,

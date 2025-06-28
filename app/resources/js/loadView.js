@@ -45,6 +45,17 @@ window.loadView = function(viewName) {
     })
     .then(html => {
         target.innerHTML = html;
+        
+        // Inicializar JavaScript específico según la vista cargada
+        if (viewName === 'user/assignRole' || viewName.includes('assignRole') || 
+            viewName === 'user/consultUser' || viewName.includes('consultUser')) {
+            console.log('Vista de gestión de usuarios cargada, inicializando JavaScript...');
+            if (typeof initUserManagementAfterLoad === 'function') {
+                initUserManagementAfterLoad();
+            } else {
+                console.warn('Función initUserManagementAfterLoad no encontrada');
+            }
+        }
     })
     .catch(err => {
         console.error("Error al cargar la vista:", err);

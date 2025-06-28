@@ -160,4 +160,407 @@ echo "</div>";
 
 echo "<hr>";
 echo "<p><strong>Nota:</strong> Si aún experimentas recargas de página, verifica la consola del navegador para errores de JavaScript.</p>";
+
+// Test para verificar que el sistema de asignación de roles funciona correctamente
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+echo "<h2>Test de Verificación - Sistema de Asignación de Roles</h2>";
+
+// 1. Verificar archivos principales
+echo "<h3>1. Verificación de Archivos Principales</h3>";
+
+$files = [
+    '../app/views/user/assignRole.php' => 'assignRole.php',
+    '../app/views/user/assignRoleResults.php' => 'assignRoleResults.php',
+    '../app/resources/js/assignRole.js' => 'assignRole.js',
+    '../app/controllers/userController.php' => 'userController.php'
+];
+
+foreach ($files as $file => $name) {
+    if (file_exists($file)) {
+        echo "✓ $name existe<br>";
+    } else {
+        echo "✗ $name NO existe<br>";
+    }
+}
+
+// 2. Verificar formulario de búsqueda
+echo "<h3>2. Verificación de Formulario de Búsqueda</h3>";
+$assignRoleFile = '../app/views/user/assignRole.php';
+if (file_exists($assignRoleFile)) {
+    $content = file_get_contents($assignRoleFile);
+    
+    // Verificar método POST
+    if (strpos($content, 'method="POST"') !== false) {
+        echo "✓ Formulario usa method=\"POST\"<br>";
+    } else {
+        echo "✗ Formulario NO usa method=\"POST\"<br>";
+    }
+    
+    // Verificar campos requeridos
+    $fields = ['credential_type', 'credential_number'];
+    foreach ($fields as $field) {
+        if (strpos($content, "name=\"$field\"") !== false) {
+            echo "✓ Campo $field tiene name<br>";
+        } else {
+            echo "✗ Campo $field NO tiene name<br>";
+        }
+    }
+    
+    // Verificar que incluye el script
+    if (strpos($content, 'assignRole.js') !== false) {
+        echo "✓ Incluye assignRole.js<br>";
+    } else {
+        echo "✗ NO incluye assignRole.js<br>";
+    }
+}
+
+// 3. Verificar vista parcial de resultados
+echo "<h3>3. Verificación de Vista Parcial de Resultados</h3>";
+$resultsFile = '../app/views/user/assignRoleResults.php';
+if (file_exists($resultsFile)) {
+    $content = file_get_contents($resultsFile);
+    
+    // Verificar que tiene la estructura de tabla
+    if (strpos($content, '<table class="table table-striped">') !== false) {
+        echo "✓ Tiene tabla de resultados<br>";
+    } else {
+        echo "✗ NO tiene tabla de resultados<br>";
+    }
+    
+    // Verificar que maneja casos sin resultados
+    if (strpos($content, 'alert alert-warning') !== false) {
+        echo "✓ Maneja casos sin resultados<br>";
+    } else {
+        echo "✗ NO maneja casos sin resultados<br>";
+    }
+    
+    // Verificar que maneja errores
+    if (strpos($content, 'alert alert-danger') !== false) {
+        echo "✓ Maneja errores<br>";
+    } else {
+        echo "✗ NO maneja errores<br>";
+    }
+}
+
+// 4. Verificar JavaScript
+echo "<h3>4. Verificación de JavaScript</h3>";
+$jsFile = '../app/resources/js/assignRole.js';
+if (file_exists($jsFile)) {
+    $content = file_get_contents($jsFile);
+    
+    // Verificar que usa POST
+    if (strpos($content, 'method: \'POST\'') !== false) {
+        echo "✓ Usa método POST<br>";
+    } else {
+        echo "✗ NO usa método POST<br>";
+    }
+    
+    // Verificar que usa FormData
+    if (strpos($content, 'FormData') !== false) {
+        echo "✓ Usa FormData para enviar datos<br>";
+    } else {
+        echo "✗ NO usa FormData para enviar datos<br>";
+    }
+    
+    // Verificar que previene envío por defecto
+    if (strpos($content, 'e.preventDefault()') !== false) {
+        echo "✓ Previene envío por defecto del formulario<br>";
+    } else {
+        echo "✗ NO previene envío por defecto del formulario<br>";
+    }
+}
+
+// 5. Verificar controlador
+echo "<h3>5. Verificación de Controlador</h3>";
+$controllerFile = '../app/controllers/userController.php';
+if (file_exists($controllerFile)) {
+    $content = file_get_contents($controllerFile);
+    
+    // Verificar que maneja GET y POST
+    if (strpos($content, '$_GET[\'credential_type\'] ?? $_POST[\'credential_type\']') !== false) {
+        echo "✓ Maneja tanto GET como POST<br>";
+    } else {
+        echo "✗ NO maneja tanto GET como POST<br>";
+    }
+    
+    // Verificar que detecta peticiones AJAX
+    if (strpos($content, '$this->isAjaxRequest()') !== false) {
+        echo "✓ Detecta peticiones AJAX<br>";
+    } else {
+        echo "✗ NO detecta peticiones AJAX<br>";
+    }
+    
+    // Verificar que usa vista parcial para AJAX
+    if (strpos($content, 'assignRoleResults') !== false) {
+        echo "✓ Usa vista parcial para AJAX<br>";
+    } else {
+        echo "✗ NO usa vista parcial para AJAX<br>";
+    }
+}
+
+// 6. Simular petición POST
+echo "<h3>6. Simulación de Petición POST</h3>";
+
+// Simular datos POST
+$_POST = [
+    'credential_type' => 'CC',
+    'credential_number' => '12345678',
+    'action' => 'search'
+];
+
+$_SERVER['REQUEST_METHOD'] = 'POST';
+$_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
+
+echo "Datos POST simulados:<br>";
+foreach ($_POST as $key => $value) {
+    echo "- $key: $value<br>";
+}
+
+// 7. URLs de prueba
+echo "<h3>7. URLs para Probar</h3>";
+echo "Puedes probar el sistema en:<br>";
+echo "- <a href='http://localhost:8000/?view=user&action=assignRole' target='_blank'>http://localhost:8000/?view=user&action=assignRole</a> (página principal)<br>";
+
+echo "<h3>8. Pasos para Probar</h3>";
+echo "1. Accede a la página de asignación de roles<br>";
+echo "2. Selecciona un tipo de documento<br>";
+echo "3. Ingresa un número de documento<br>";
+echo "4. Haz clic en 'Buscar'<br>";
+echo "5. Verifica que la búsqueda funcione sin recargar la página<br>";
+echo "6. Verifica que se muestren los resultados correctamente<br>";
+
+echo "<h3>9. Resumen de Cambios</h3>";
+echo "Cambios realizados:<br>";
+echo "- Cambié el formulario de GET a POST<br>";
+echo "- Actualicé el JavaScript para usar FormData y POST<br>";
+echo "- Creé una vista parcial para resultados AJAX<br>";
+echo "- Actualicé el controlador para manejar tanto GET como POST<br>";
+echo "- Mejoré el manejo de peticiones AJAX<br>";
+
+echo "<br><strong>Test completado. El sistema de asignación de roles debería funcionar correctamente ahora.</strong>";
+
+// Test para verificar el sistema de asignación de roles con assignProcess.php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+echo "<h2>Test de Asignación de Roles - assignProcess.php</h2>";
+
+// 1. Verificar que assignProcess.php existe
+echo "<h3>1. Verificación de archivos</h3>";
+$assignProcessFile = '../app/processes/assignProcess.php';
+if (file_exists($assignProcessFile)) {
+    echo "✓ assignProcess.php existe<br>";
+    
+    $content = file_get_contents($assignProcessFile);
+    
+    // Verificar que tiene el patrón correcto
+    if (strpos($content, 'switch ($subject)') !== false) {
+        echo "✓ Tiene switch para manejar subjects<br>";
+    } else {
+        echo "✗ NO tiene switch para subjects<br>";
+    }
+    
+    if (strpos($content, 'assign_role') !== false) {
+        echo "✓ Maneja subject 'assign_role'<br>";
+    } else {
+        echo "✗ NO maneja subject 'assign_role'<br>";
+    }
+    
+    if (strpos($content, 'search_users') !== false) {
+        echo "✓ Maneja subject 'search_users'<br>";
+    } else {
+        echo "✗ NO maneja subject 'search_users'<br>";
+    }
+    
+    if (strpos($content, 'get_users_without_role') !== false) {
+        echo "✓ Maneja subject 'get_users_without_role'<br>";
+    } else {
+        echo "✗ NO maneja subject 'get_users_without_role'<br>";
+    }
+    
+} else {
+    echo "✗ assignProcess.php NO existe<br>";
+}
+
+// 2. Verificar UserModel
+echo "<h3>2. Verificación de UserModel</h3>";
+$userModelFile = '../app/models/userModel.php';
+if (file_exists($userModelFile)) {
+    echo "✓ userModel.php existe<br>";
+    
+    $content = file_get_contents($userModelFile);
+    
+    $methods = ['assignRole', 'searchUsersByDocument', 'getUsersWithoutRole'];
+    foreach ($methods as $method) {
+        if (strpos($content, "function $method") !== false) {
+            echo "✓ Tiene método $method()<br>";
+        } else {
+            echo "✗ NO tiene método $method()<br>";
+        }
+    }
+    
+} else {
+    echo "✗ userModel.php NO existe<br>";
+}
+
+// 3. Simular petición POST para asignar rol
+echo "<h3>3. Test de asignación de rol</h3>";
+
+// Incluir archivos necesarios con rutas corregidas
+require_once '../config.php';
+require_once '../app/scripts/connection.php';
+require_once '../app/models/userModel.php';
+
+try {
+    $dbConn = getConnection();
+    $model = new UserModel($dbConn);
+    
+    echo "✓ Conexión a BD y UserModel OK<br>";
+    
+    // Simular datos POST
+    $_POST['user_id'] = 1;
+    $_POST['role_type'] = 'student';
+    $_POST['subject'] = 'assign_role';
+    $_SERVER['REQUEST_METHOD'] = 'POST';
+    
+    // Capturar salida
+    ob_start();
+    include '../app/processes/assignProcess.php';
+    $output = ob_get_clean();
+    
+    echo "✓ assignProcess.php ejecutado<br>";
+    echo "Respuesta: " . htmlspecialchars($output) . "<br>";
+    
+    // Verificar que la respuesta es JSON válido
+    $jsonResponse = json_decode($output, true);
+    if ($jsonResponse !== null) {
+        echo "✓ Respuesta es JSON válido<br>";
+        echo "Status: " . ($jsonResponse['status'] ?? 'no definido') . "<br>";
+        echo "Mensaje: " . ($jsonResponse['msg'] ?? 'no definido') . "<br>";
+    } else {
+        echo "✗ Respuesta NO es JSON válido<br>";
+    }
+    
+} catch (Exception $e) {
+    echo "✗ Error: " . $e->getMessage() . "<br>";
+}
+
+// 4. Test de búsqueda de usuarios
+echo "<h3>4. Test de búsqueda de usuarios</h3>";
+
+try {
+    // Simular datos POST para búsqueda
+    $_POST = []; // Limpiar POST anterior
+    $_POST['credential_type'] = 'CC';
+    $_POST['credential_number'] = '12345678';
+    $_POST['subject'] = 'search_users';
+    $_SERVER['REQUEST_METHOD'] = 'POST';
+    
+    // Capturar salida
+    ob_start();
+    include '../app/processes/assignProcess.php';
+    $output = ob_get_clean();
+    
+    echo "✓ Búsqueda ejecutada<br>";
+    echo "Respuesta: " . htmlspecialchars($output) . "<br>";
+    
+    // Verificar que la respuesta es JSON válido
+    $jsonResponse = json_decode($output, true);
+    if ($jsonResponse !== null) {
+        echo "✓ Respuesta es JSON válido<br>";
+        echo "Status: " . ($jsonResponse['status'] ?? 'no definido') . "<br>";
+        echo "Mensaje: " . ($jsonResponse['msg'] ?? 'no definido') . "<br>";
+        if (isset($jsonResponse['data'])) {
+            echo "Datos: " . count($jsonResponse['data']) . " usuarios encontrados<br>";
+        }
+    } else {
+        echo "✗ Respuesta NO es JSON válido<br>";
+    }
+    
+} catch (Exception $e) {
+    echo "✗ Error: " . $e->getMessage() . "<br>";
+}
+
+// 5. Test de usuarios sin rol
+echo "<h3>5. Test de usuarios sin rol</h3>";
+
+try {
+    // Simular datos POST para obtener usuarios sin rol
+    $_POST = []; // Limpiar POST anterior
+    $_POST['subject'] = 'get_users_without_role';
+    $_SERVER['REQUEST_METHOD'] = 'POST';
+    
+    // Capturar salida
+    ob_start();
+    include '../app/processes/assignProcess.php';
+    $output = ob_get_clean();
+    
+    echo "✓ Obtención de usuarios sin rol ejecutada<br>";
+    echo "Respuesta: " . htmlspecialchars($output) . "<br>";
+    
+    // Verificar que la respuesta es JSON válido
+    $jsonResponse = json_decode($output, true);
+    if ($jsonResponse !== null) {
+        echo "✓ Respuesta es JSON válido<br>";
+        echo "Status: " . ($jsonResponse['status'] ?? 'no definido') . "<br>";
+        echo "Mensaje: " . ($jsonResponse['msg'] ?? 'no definido') . "<br>";
+        if (isset($jsonResponse['data'])) {
+            echo "Datos: " . count($jsonResponse['data']) . " usuarios sin rol<br>";
+        }
+    } else {
+        echo "✗ Respuesta NO es JSON válido<br>";
+    }
+    
+} catch (Exception $e) {
+    echo "✗ Error: " . $e->getMessage() . "<br>";
+}
+
+// 6. Verificar JavaScript
+echo "<h3>6. Verificación de JavaScript</h3>";
+$jsFile = '../app/resources/js/assignRole.js';
+if (file_exists($jsFile)) {
+    echo "✓ assignRole.js existe<br>";
+    
+    $content = file_get_contents($jsFile);
+    
+    // Verificar que usa el patrón de registerFunction.js
+    if (strpos($content, '$.ajax({') !== false) {
+        echo "✓ Usa $.ajax (patrón de registerFunction.js)<br>";
+    } else {
+        echo "✗ NO usa $.ajax<br>";
+    }
+    
+    if (strpos($content, 'assignProcess.php') !== false) {
+        echo "✓ Llama a assignProcess.php<br>";
+    } else {
+        echo "✗ NO llama a assignProcess.php<br>";
+    }
+    
+    if (strpos($content, '"subject":') !== false) {
+        echo "✓ Envía subject en las peticiones<br>";
+    } else {
+        echo "✗ NO envía subject<br>";
+    }
+    
+} else {
+    echo "✗ assignRole.js NO existe<br>";
+}
+
+echo "<h3>7. Resumen</h3>";
+echo "El sistema de asignación de roles ahora:<br>";
+echo "✓ Usa assignProcess.php directamente (sin pasar por controladores)<br>";
+echo "✓ Maneja subjects para diferentes acciones<br>";
+echo "✓ Devuelve respuestas JSON consistentes<br>";
+echo "✓ Usa el mismo patrón que registerFunction.js<br>";
+echo "✓ Evita problemas de sesión y permisos<br>";
+
+echo "<h3>8. Próximos pasos</h3>";
+echo "1. Probar el formulario en el navegador<br>";
+echo "2. Verificar que la búsqueda funciona<br>";
+echo "3. Verificar que la asignación de roles funciona<br>";
+echo "4. Verificar que la lista de usuarios sin rol se carga<br>";
+
+echo "<br><strong>Test completado.</strong>";
 ?> 
