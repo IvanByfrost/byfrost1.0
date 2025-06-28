@@ -86,19 +86,12 @@ $coordinators = $coordinators ?? [];
                         
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="director_user_id">Director</label>
-                                    <select class="form-control" id="director_user_id" name="director_user_id">
-                                        <option value="">Seleccionar Director</option>
-                                        <?php if (isset($directors)): ?>
-                                            <?php foreach ($directors as $director): ?>
-                                                <option value="<?php echo $director['user_id']; ?>" 
-                                                        <?php echo (isset($formData['director_user_id']) && $formData['director_user_id'] == $director['user_id']) ? 'selected' : ''; ?>>
-                                                    <?php echo htmlspecialchars($director['name'] . ' ' . $director['lastname']); ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        <?php endif; ?>
-                                    </select>
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" id="director_name" name="director_name" readonly placeholder="Seleccionar Director">
+                                    <input type="hidden" id="director_user_id" name="director_user_id">
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchDirectorModal">
+                                        Buscar Director
+                                    </button>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -165,6 +158,27 @@ $coordinators = $coordinators ?? [];
             </form>
         </div>
     </div>
+</div>
+
+<!-- Modal para buscar director -->
+<div class="modal fade" id="searchDirectorModal" tabindex="-1" aria-labelledby="searchDirectorModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="searchDirectorModalLabel">Buscar Director</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form id="searchDirectorForm" class="mb-3" autocomplete="off">
+          <div class="input-group">
+            <input type="text" class="form-control" id="search_director_query" placeholder="Nombre o número de documento">
+            <button type="submit" class="btn btn-primary">Buscar</button>
+          </div>
+        </form>
+        <div id="searchDirectorResults"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Incluir el archivo JavaScript -->
