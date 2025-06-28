@@ -49,8 +49,8 @@ $path = trim($path, '/');
 error_log("DEBUG - Path extraído: " . $path);
 
 // Si alguien intenta acceder directamente a archivos PHP, redirigir a 404
-if (strpos($path, '.php') !== false || strpos($path, 'app/views/') === 0) {
-    error_log("DEBUG - Intento de acceso directo a archivo PHP, mostrando 404");
+if (strpos($path, '.php') !== false || strpos($path, 'app/views/') === 0 || strpos($path, 'app/controllers/') === 0 || strpos($path, 'app/models/') === 0 || strpos($path, 'app/library/') === 0) {
+    error_log("DEBUG - Intento de acceso directo a archivo o directorio protegido: " . $path);
     http_response_code(404);
     require_once ROOT . '/app/controllers/errorController.php';
     $error = new ErrorController($dbConn, $view);
