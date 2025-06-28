@@ -71,14 +71,15 @@ function searchUsersByDocument(credentialType, credentialNumber) {
     }
     
     // Construir URL con parámetros
-    const url = `${BASE_URL}?view=user&action=assignRole&credential_type=${encodeURIComponent(credentialType)}&credential_number=${encodeURIComponent(credentialNumber)}`;
+    const url = `${BASE_URL}?view=user&action=assignRole`;
     console.log('URL de búsqueda:', url);
     
     fetch(url, {
-        method: 'GET',
+        method: 'POST',
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
-        }
+        },
+        body: new FormData(document.getElementById('searchUserForm'))
     })
     .then(response => {
         console.log('Respuesta recibida:', response.status);
