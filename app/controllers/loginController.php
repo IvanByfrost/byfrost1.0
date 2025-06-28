@@ -22,7 +22,8 @@ class LoginController extends MainController
         // Si ya está logueado, redirigir al dashboard correspondiente
         if ($this->sessionManager->isLoggedIn()) {
             $userRole = $this->sessionManager->getUserRole();
-            $this->redirect("/$userRole/dashboard");
+            // Usar el formato correcto con ?view= para el sistema de rutas
+            $this->redirect(url . "?view=$userRole/dashboard");
         }
         
         require_once app . views . 'index/login.php';

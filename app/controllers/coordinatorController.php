@@ -14,13 +14,13 @@ class CoordinatorController extends MainController {
     public function showDashCoord() {
         // Verificar si el usuario está logueado
         if (!$this->sessionManager->isLoggedIn()) {
-            $this->redirect('/login');
+            $this->redirect(url . '?view=login');
             return;
         }
         
         // Verificar si el usuario tiene rol de coordinador
         if (!$this->sessionManager->hasRole('coordinator')) {
-            $this->redirect('/unauthorized');
+            $this->redirect(url . '?view=unauthorized');
             return;
         }
         

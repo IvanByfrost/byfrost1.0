@@ -20,8 +20,8 @@ class RegisterController extends MainController
         // Si ya está logueado, redirigir a su dashboard
         if ($this->sessionManager->isLoggedIn()) {
             $userRole = $this->sessionManager->getUserRole();
-            header('Location: /' . $userRole . '/dashboard');
-            exit;
+            // Usar el formato correcto con ?view= para el sistema de rutas
+            $this->redirect(url . "?view=$userRole/dashboard");
         }
         require_once app . views . 'index/register.php';
     }

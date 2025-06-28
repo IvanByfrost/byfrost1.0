@@ -28,7 +28,7 @@ if (
 $parts = explode('/', $view);
 
 // Validar carpeta permitida
-$allowedDirs = ['root', 'teacher', 'director', 'student', 'coordinator', 'treasurer', 'school', 'index', 'activity', 'schedule', 'user'];
+$allowedDirs = ['root', 'teacher', 'director', 'student', 'coordinator', 'treasurer', 'school', 'index', 'activity', 'schedule', 'user', 'parent'];
 
 // Mapeo de roles a directorios
 $roleMapping = [
@@ -38,7 +38,7 @@ $roleMapping = [
     'student' => 'student',
     'root' => 'root',
     'treasurer' => 'treasurer',
-    'parent' => 'user'
+    'parent' => 'parent'
 ];
 
 // Si no está en carpetas permitidas (comparación insensible a mayúsculas/minúsculas)
