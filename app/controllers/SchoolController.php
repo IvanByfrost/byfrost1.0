@@ -22,45 +22,132 @@ class SchoolController extends MainController
     public function createSchool()
     {
         $this->protectSchool();
-        //1. Captar los datos del formulario.
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $requiredFields = ['school_name', 'school_dane', 'school_document'];
-
-            foreach ($requiredFields as $field) {
-                if (empty($_POST[$field])) {
-                    echo json_encode([
+            try {
+                // Validar campos obligatorios
+                $requiredFields = ['school_name', 'school_dane', 'school_document'];
+                $missingFields = [];
+                
+                foreach ($requiredFields as $field) {
+                    if (empty($_POST[$field])) {
+                        $missingFields[] = $field;
+                    }
+                }
+                
+                if (!empty($missingFields)) {
+                    $response = [
                         'status' => 'error',
-                        'msg' => "El campo $field es obligatorio"
+                        'msg' => 'Los siguientes campos son obligatorios: ' . implode(', ', $missingFields)
+                    ];
+                    
+                    if ($this->isAjaxRequest()) {
+                        header('Content-Type: application/json');
+                        echo json_encode($response);
+                        return;
+                    }
+                    
+                    // Si no es AJAX, redirigir con error
+                    $this->loadView('school/createSchool', [
+                        'error' => $response['msg'],
+                        'formData' => $_POST
                     ]);
                     return;
                 }
-            }
-
-            // Prerarar los datos
-            $data = [
-                'school_name' => $_POST['school_name'],
-                'school_dane' => $_POST['school_dane'],
-                'school_document' => $_POST['school_document'],
-                //'school_name' => $_POST['school_name'],
-            ];
-            //2. Llamar al método del modelo. 
-            try {
-                $success = $this->schoolModel->createSchool($data);
-                if ($success) {
-                    echo json_encode([
-                        'status' => 'success',
-                        'msg' => 'Colegio creado exitosamente'
-                    ]);
-                } else {
-                    echo json_encode([
+                
+                // Preparar los datos
+                $data = [
+                    'school_name' => trim($_POST['school_name']),
+                    'school_dane' => trim($_POST['school_dane']),
+                    'school_document' => trim($_POST['school_document']),
+                    'total_quota' => intval($_POST['total_quota'] ?? 0),
+                    'director_user_id' => !empty($_POST['director_user_id']) ? intval($_POST['director_user_id']) : null,
+                    'coordinator_user_id' => !empty($_POST['coordinator_user_id']) ? intval($_POST['coordinator_user_id']) : null,
+                    'address' => trim($_POST['address'] ?? ''),
+                    'phone' => trim($_POST['phone'] ?? ''),
+                    'email' => trim($_POST['email'] ?? '')
+                ];
+                
+                // Validar formato de email si se proporciona
+                if (!empty($data['email']) && !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+                    $response = [
                         'status' => 'error',
-                        'msg' => 'Error al crear el colegio'
+                        'msg' => 'El formato del email no es válido'
+                    ];
+                    
+                    if ($this->isAjaxRequest()) {
+                        header('Content-Type: application/json');
+                        echo json_encode($response);
+                        return;
+                    }
+                    
+                    $this->loadView('school/createSchool', [
+                        'error' => $response['msg'],
+                        'formData' => $_POST
+                    ]);
+                    return;
+                }
+                
+                // Llamar al método del modelo
+                $success = $this->schoolModel->createSchool($data);
+                
+                if ($success) {
+                    $response = [
+                        'status' => 'success',
+                        'msg' => 'Escuela creada exitosamente'
+                    ];
+                    
+                    if ($this->isAjaxRequest()) {
+                        header('Content-Type: application/json');
+                        echo json_encode($response);
+                        return;
+                    }
+                    
+                    // Si no es AJAX, redirigir a la lista de escuelas
+                    $this->redirect('?view=school&action=consultSchool&message=' . urlencode($response['msg']));
+                } else {
+                    $response = [
+                        'status' => 'error',
+                        'msg' => 'Error al crear la escuela. Verifique que los datos sean únicos.'
+                    ];
+                    
+                    if ($this->isAjaxRequest()) {
+                        header('Content-Type: application/json');
+                        echo json_encode($response);
+                        return;
+                    }
+                    
+                    $this->loadView('school/createSchool', [
+                        'error' => $response['msg'],
+                        'formData' => $_POST
                     ]);
                 }
+                
             } catch (Exception $e) {
+                error_log("Error en SchoolController::createSchool: " . $e->getMessage());
+                
+                $response = [
+                    'status' => 'error',
+                    'msg' => 'Error interno del servidor: ' . $e->getMessage()
+                ];
+                
+                if ($this->isAjaxRequest()) {
+                    header('Content-Type: application/json');
+                    echo json_encode($response);
+                    return;
+                }
+                
+                $this->loadView('school/createSchool', [
+                    'error' => $response['msg'],
+                    'formData' => $_POST
+                ]);
             }
-
-            //3. Redirigir a la vista de éxito o error.
+        } else {
+            // Si es GET, mostrar el formulario
+            $this->loadView('school/createSchool', [
+                'directors' => $this->schoolModel->getDirectors(),
+                'coordinators' => $this->schoolModel->getCoordinators()
+            ]);
         }
     }
 

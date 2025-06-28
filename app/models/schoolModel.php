@@ -9,43 +9,76 @@ class SchoolModel extends MainModel
     }
 
     //Función para crear un colegio
-    public function createSchool()
+    public function createSchool($data)
     {
-        //Implementar la lógica para crear un colegio
-        $query = "INSERT INTO schools (
-            school_name,
-            school_dane,
-            school_document,
-            total_quota,
-            director_user_id,
-            coordinator_user_id,
-            address,
-            phone,
-            email
-        )
-        VALUES (
-            :school_name,
-            :school_dane,
-            :school_document,
-            :total_quota,
-            :director_user_id,
-            :coordinator_user_id,
-            :address,
-            :phone,
-            :email
-        )";
-        $stmt = $this->dbConn->prepare($query);
-        return $stmt->execute([
-            ':school_name' => $_POST['school_name'],
-            ':school_dane' => $_POST['school_dane'],
-            ':school_document' => $_POST['school_document'],
-            ':total_quota' => $_POST['total_quota'] ?? 0,
-            ':director_user_id' => $_POST['director_user_id'] ?? null,
-            ':coordinator_user_id' => $_POST['coordinator_user_id'] ?? null,
-            ':address' => $_POST['address'] ?? '',
-            ':phone' => $_POST['phone'] ?? '',
-            ':email' => $_POST['email'] ?? ''
-        ]);
+        try {
+            // Validar que los datos requeridos estén presentes
+            if (empty($data['school_name']) || empty($data['school_dane']) || empty($data['school_document'])) {
+                throw new Exception('Los campos school_name, school_dane y school_document son obligatorios');
+            }
+            
+            // Verificar si ya existe una escuela con el mismo NIT o código DANE
+            $checkQuery = "SELECT school_id FROM schools WHERE school_document = :school_document OR school_dane = :school_dane";
+            $checkStmt = $this->dbConn->prepare($checkQuery);
+            $checkStmt->execute([
+                ':school_document' => $data['school_document'],
+                ':school_dane' => $data['school_dane']
+            ]);
+            
+            if ($checkStmt->fetch()) {
+                throw new Exception('Ya existe una escuela con el mismo NIT o código DANE');
+            }
+            
+            // Insertar la nueva escuela
+            $query = "INSERT INTO schools (
+                school_name,
+                school_dane,
+                school_document,
+                total_quota,
+                director_user_id,
+                coordinator_user_id,
+                address,
+                phone,
+                email,
+                is_active
+            )
+            VALUES (
+                :school_name,
+                :school_dane,
+                :school_document,
+                :total_quota,
+                :director_user_id,
+                :coordinator_user_id,
+                :address,
+                :phone,
+                :email,
+                1
+            )";
+            
+            $stmt = $this->dbConn->prepare($query);
+            $result = $stmt->execute([
+                ':school_name' => $data['school_name'],
+                ':school_dane' => $data['school_dane'],
+                ':school_document' => $data['school_document'],
+                ':total_quota' => $data['total_quota'] ?? 0,
+                ':director_user_id' => $data['director_user_id'] ?? null,
+                ':coordinator_user_id' => $data['coordinator_user_id'] ?? null,
+                ':address' => $data['address'] ?? '',
+                ':phone' => $data['phone'] ?? '',
+                ':email' => $data['email'] ?? ''
+            ]);
+            
+            if ($result) {
+                $schoolId = $this->dbConn->lastInsertId();
+                error_log("Escuela creada exitosamente con ID: " . $schoolId);
+                return $schoolId;
+            }
+            
+            return false;
+        } catch (Exception $e) {
+            error_log("Error en SchoolModel::createSchool: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     //Función para consultar un colegio
