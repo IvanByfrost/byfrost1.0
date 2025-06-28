@@ -1,3 +1,70 @@
+/* Estilos para páginas de error */
+
+/* Estilos generales para contenedores de error */
+.error-container {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.error-content {
+    max-width: 500px;
+}
+
+.error-title {
+    font-size: 6rem;
+    font-weight: bold;
+    color: #dc3545;
+    margin-bottom: 0;
+}
+
+.error-subtitle {
+    font-size: 2rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.error-message {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin-bottom: 2rem;
+}
+
+/* Estilos específicos para página no autorizada */
+.user-info {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid #007bff;
+    margin-top: 1rem;
+}
+
+.error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+/* Responsive design para errores */
+@media (max-width: 768px) {
+    .error-title {
+        font-size: 4rem;
+    }
+    
+    .error-subtitle {
+        font-size: 1.5rem;
+    }
+    
+    .error-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
 .error-container {
     display: flex;
     background-image: url('../img/malla-byfrost.jpg');
@@ -6,16 +73,6 @@
     align-items: center;
     height: calc(100vh - 200px); /* Ajusta la altura para centrar verticalmente */
     text-align: center;
-}
-
-.error-title {
-    font-family: lato, sans-serif;
-    font-weight: 700;
-    font-size: 12em;
-    color: #fe4040;
-    text-decoration: solid;
-    margin-bottom: 20px;
-    
 }
 
 .image-error {

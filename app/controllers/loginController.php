@@ -14,12 +14,19 @@ class LoginController extends MainController
 
     public function __construct($dbConn)
     {
+        parent::__construct($dbConn);
         $this->dbConn = $dbConn;
     }
 
     // Muestra el formulario de login
     public function index()
     {
+        // Si ya está logueado, redirigir al dashboard correspondiente
+        if ($this->sessionManager->isLoggedIn()) {
+            $userRole = $this->sessionManager->getUserRole();
+            $this->redirect("/$userRole/dashboard");
+        }
+        
         require_once app . views . 'index/login.php';
     }
 
@@ -85,25 +92,38 @@ class LoginController extends MainController
                 }
 
                 if (password_verify($userPassword, $user['password_hash'])) {
-                    // Contraseña válida, el usuario ha sido autenticado
-                    $_SESSION["ByFrost_id"] = $user['user_id'];
-                    $_SESSION["ByFrost_role"] = $user['rol'];
-                    $_SESSION["ByFrost_userName"] = $user['first_name'] . ' ' . $user['last_name'];
-                    unset($user['password_hash']);
+                    // Contraseña válida, usar SessionManager para iniciar sesión
+                    $userData = [
+                        'id' => $user['user_id'],
+                        'email' => $user['email'] ?? $user['credential_number'] . '@byfrost.com',
+                        'role' => $user['rol'],
+                        'first_name' => $user['first_name'],
+                        'last_name' => $user['last_name']
+                    ];
+                    
+                    $loginSuccess = $this->sessionManager->login($userData);
+                    
+                    if ($loginSuccess) {
+                        unset($user['password_hash']);
 
-                    $validRoles = ['professor', 'student', 'director', 'coordinator', 'treasurer', 'parent', 'root'];
-                    $redirectPage = in_array($user['rol'], $validRoles)
-                        ? "{$user['rol']}/dashboard"
-                        : 'login.php';
+                        $validRoles = ['professor', 'student', 'director', 'coordinator', 'treasurer', 'parent', 'root'];
+                        $redirectPage = in_array($user['rol'], $validRoles)
+                            ? "{$user['rol']}/dashboard"
+                            : 'login.php';
 
-                    $_SESSION['ByFrost_redirect'] = $redirectPage;
-
-                    echo json_encode([
-                        "status" => "ok",
-                        "msg" => "Has iniciado sesión",
-                        "redirect" => url . "app/views/index/charger.php"
-                    ]);
-                    exit;
+                        echo json_encode([
+                            "status" => "ok",
+                            "msg" => "Has iniciado sesión",
+                            "redirect" => url . "app/views/index/charger.php"
+                        ]);
+                        exit;
+                    } else {
+                        echo json_encode([
+                            "status" => "error",
+                            "msg" => "Error al iniciar sesión. Inténtalo de nuevo."
+                        ]);
+                        exit;
+                    }
                 }
             }
 
@@ -119,50 +139,11 @@ class LoginController extends MainController
     // Cierra la sesión y vuelve al login
     public function logout()
     {
-        // Debug: mostrar información antes del logout
-        error_log("=== INICIO DEL LOGOUT ===");
-        error_log("Estado de sesión: " . session_status());
-        error_log("ID de sesión: " . session_id());
-        error_log("Variables de sesión: " . print_r($_SESSION, true));
-        
-        // Iniciar sesión si no está iniciada
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-            error_log("Sesión iniciada");
-        }
-        
-        // Limpiar todas las variables de sesión
-        $sessionCount = count($_SESSION);
-        $_SESSION = array();
-        error_log("Variables de sesión limpiadas ($sessionCount eliminadas)");
-        
-        // Destruir la cookie de sesión si existe
-        if (ini_get("session.use_cookies")) {
-            $params = session_get_cookie_params();
-            $cookieDestroyed = setcookie(session_name(), '', time() - 42000,
-                $params["path"], $params["domain"],
-                $params["secure"], $params["httponly"]
-            );
-            error_log("Cookie destruida: " . ($cookieDestroyed ? 'SÍ' : 'NO'));
-        }
-        
-        // Destruir la sesión
-        $sessionDestroyed = session_destroy();
-        error_log("Sesión destruida: " . ($sessionDestroyed ? 'SÍ' : 'NO'));
-        
-        // Limpiar cualquier variable de sesión que pueda quedar
-        unset($_SESSION);
-        error_log("Variable \$_SESSION eliminada");
+        // Usar SessionManager para cerrar sesión de forma segura
+        $this->sessionManager->logout();
         
         // URL de redirección
         $loginUrl = url . "app/views/index/login.php";
-        error_log("URL de redirección: $loginUrl");
-        error_log("Constantes usadas:");
-        error_log("  - url = " . url);
-        error_log("  - app = " . app);
-        error_log("  - views = " . views);
-        error_log("URL completa construida: " . url . "app/views/index/login.php");
-        error_log("=== FIN DEL LOGOUT ===");
         
         // Redirigir al login
         header("Location: " . $loginUrl);

@@ -4,10 +4,15 @@ class MainController
     //Conexión a la base de datos.
     protected $dbConn;
     protected $view;
+    protected $sessionManager;
     public function __construct($dbConn, $view = null)
     {
         $this->dbConn = $dbConn;
         $this->view = $view;
+        
+        // Incluir SessionManager explícitamente
+        require_once __DIR__ . '/../library/SessionManager.php';
+        $this->sessionManager = new SessionManager();
     }
 
     // Función para renderizar vistas

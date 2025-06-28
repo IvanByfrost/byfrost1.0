@@ -15,23 +15,36 @@ class ErrorController extends MainController
         header("Expires: 0");
         
         $errorCode = $message ?? $_GET['error'] ?? null;
+        
+        // Obtener datos del usuario si está logueado
+        $user = null;
+        if ($this->sessionManager->isLoggedIn()) {
+            $user = $this->sessionManager->getCurrentUser();
+        }
 
         switch ($errorCode) {
             case '400':
-                $this->render('Error', '400');
+                $this->render('Error', '400', ['user' => $user]);
                 break;
             case '404':
-                $this->render('Error', '404');
+                $this->render('Error', '404', ['user' => $user]);
                 break;
             case '500':
-                $this->render('Error', '500');
+                $this->render('Error', '500', ['user' => $user]);
+                break;
+            case 'unauthorized':
+                $this->render('Error', 'unauthorized', ['user' => $user]);
                 break;
             default:
                 // Si $message es un array, lo pasamos como data, si es string lo convertimos
                 if (is_array($message)) {
+                    $message['user'] = $user;
                     $this->render('Error', 'error', $message);
                 } else {
-                    $this->render('Error', 'error', ['message' => $message]);
+                    $this->render('Error', 'error', [
+                        'message' => $message,
+                        'user' => $user
+                    ]);
                 }
                 break;
         }

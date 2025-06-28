@@ -12,8 +12,26 @@ class CoordinatorController extends MainController {
     }
 
     public function showDashCoord() {
+        // Verificar si el usuario está logueado
+        if (!$this->sessionManager->isLoggedIn()) {
+            $this->redirect('/login');
+            return;
+        }
+        
+        // Verificar si el usuario tiene rol de coordinador
+        if (!$this->sessionManager->hasRole('coordinator')) {
+            $this->redirect('/unauthorized');
+            return;
+        }
+        
+        // Obtener datos del usuario para la vista
+        $user = $this->sessionManager->getCurrentUser();
+        
         $data = $this->model->getData();
-        $this->render('coordinator', 'dashboard', ['data' => $data]);
+        $this->render('coordinator', 'dashboard', [
+            'data' => $data,
+            'user' => $user
+        ]);
     }
 
     //Función para crear un coordinador
