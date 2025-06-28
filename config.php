@@ -3,8 +3,25 @@ if (!defined('ROOT')) {
     define('ROOT', dirname(__DIR__, 2)); // Ruta absoluta al proyecto
 }
 if (!defined('BASE_URL')) {
-    define('BASE_URL', '/byfrost1.0'); // Ruta para redirecciones
+    define('BASE_URL', '/byfrost1.0'); // Volver a usar el prefijo
 }
+
+// Detectar automáticamente la URL base
+function getBaseUrl() {
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    $port = $_SERVER['SERVER_PORT'] ?? '';
+    
+    // Si el puerto es 80 (HTTP) o 443 (HTTPS), no lo incluimos
+    if ($port == '80' || $port == '443') {
+        $port = '';
+    } else {
+        $port = ':' . $port;
+    }
+    
+    return $protocol . '://' . $host . $port . '/byfrost1.0/';
+}
+
 const lbs = 'library/';
 const views = 'views/';
 define ('app', 'app/');
@@ -12,6 +29,6 @@ define ('models', 'models/');
 define ('controllers', 'controllers/');
 define ('dft', 'views/layouts/');
 define ('rq', 'resources/');
-define ('url', 'http://localhost/byfrost1.0/');
+define ('url', getBaseUrl());
 
 ?>

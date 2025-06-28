@@ -4,21 +4,12 @@
     # Establecer la base del directorio
     RewriteBase /byfrost1.0/
     
-    # Redirigir específicamente las rutas que comiencen con app/ a index.php
-    RewriteRule ^app/(.*)$ index.php?url=app/$1 [QSA,L]
-    
     # No reescribir archivos y directorios existentes
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     
     # Redirigir todo a index.php
     RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
-</IfModule>
-
-# Si mod_rewrite no está disponible, usar redirecciones directas
-<IfModule !mod_rewrite.c>
-    ErrorDocument 404 /byfrost1.0/index.php?error=404
-    ErrorDocument 500 /byfrost1.0/index.php?error=500
 </IfModule>
 
 # Redirección de errores a páginas personalizadas
