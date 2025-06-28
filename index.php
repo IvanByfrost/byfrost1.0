@@ -25,7 +25,7 @@ $view = new Views();
 
 // Manejo manual de rutas para evitar problemas con .htaccess
 $requestUri = $_SERVER['REQUEST_URI'] ?? '';
-$basePath = '/byfrost1.0/';
+$basePath = '/byfrost/';
 
 // Debug: mostrar información de la ruta
 error_log("DEBUG - Request URI: " . $requestUri);

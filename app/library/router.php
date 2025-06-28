@@ -31,7 +31,7 @@ class Router
         if (!isset($_GET['url'])) {
             // Obtener la ruta de la URL actual
             $requestUri = $_SERVER['REQUEST_URI'] ?? '';
-            $basePath = '/byfrost1.0/';
+            $basePath = '/byfrost/';
             
             if (strpos($requestUri, $basePath) === 0) {
                 $path = substr($requestUri, strlen($basePath));

@@ -2,7 +2,7 @@
     RewriteEngine On
     
     # Establecer la base del directorio
-    RewriteBase /byfrost1.0/
+    RewriteBase /byfrost/
     
     # No reescribir archivos y directorios existentes
     RewriteCond %{REQUEST_FILENAME} !-f
@@ -13,9 +13,9 @@
 </IfModule>
 
 # Redirección de errores a páginas personalizadas
-ErrorDocument 400 /byfrost1.0/index.php?error=400
-ErrorDocument 404 /byfrost1.0/index.php?error=404
-ErrorDocument 500 /byfrost1.0/index.php?error=500
+ErrorDocument 400 /byfrost/index.php?error=400
+ErrorDocument 404 /byfrost/index.php?error=404
+ErrorDocument 500 /byfrost/index.php?error=500
 
 # Configuración adicional para asegurar que PHP maneje las rutas
 <Files "index.php">

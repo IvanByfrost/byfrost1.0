@@ -3,7 +3,7 @@ if (!defined('ROOT')) {
     define('ROOT', dirname(__DIR__, 2)); // Ruta absoluta al proyecto
 }
 if (!defined('BASE_URL')) {
-    define('BASE_URL', '/byfrost1.0'); // Volver a usar el prefijo
+    define('BASE_URL', '/byfrost'); // Volver a usar el prefijo
 }
 
 // Detectar automáticamente la URL base
@@ -19,7 +19,7 @@ function getBaseUrl() {
         $port = ':' . $port;
     }
     
-    return $protocol . '://' . $host . $port . '/byfrost1.0/';
+    return $protocol . '://' . $host . $port . '/byfrost/';
 }
 
 const lbs = 'library/';
