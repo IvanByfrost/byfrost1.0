@@ -4,15 +4,41 @@ if (!defined('ROOT')) {
 }
 
 require_once ROOT . '/config.php';
+require_once ROOT . '/app/library/SecurityMiddleware.php';
 
 $view = $_GET['view'] ?? '';
+$action = $_GET['action'] ?? '';
+
+// Validar y sanitizar parámetros
+$validation = SecurityMiddleware::validateGetParams($_GET);
+if (!$validation) {
+    http_response_code(400);
+    die('Parámetros inválidos');
+}
+
+// Validar la vista
+$viewValidation = SecurityMiddleware::validatePath($view);
+if (!$viewValidation['valid']) {
+    http_response_code(403);
+    die('Vista no válida: ' . $viewValidation['error']);
+}
+
+$view = $viewValidation['sanitized'];
+
+// Validar la acción
+if (!empty($action)) {
+    $actionValidation = SecurityMiddleware::validatePath($action);
+    if (!$actionValidation['valid']) {
+        http_response_code(403);
+        die('Acción no válida: ' . $actionValidation['error']);
+    }
+    $action = $actionValidation['sanitized'];
+}
 
 // Debug: mostrar la ruta que se está construyendo
-$viewPath = ROOT . "/app/views/" . $view . ".php";
 echo "<!-- Debug: ROOT = " . ROOT . " -->";
 echo "<!-- Debug: view = " . htmlspecialchars($view) . " -->";
-echo "<!-- Debug: viewPath = " . $viewPath . " -->";
-echo "<!-- Debug: file_exists = " . (file_exists($viewPath) ? 'true' : 'false') . " -->";
+echo "<!-- Debug: action = " . htmlspecialchars($action) . " -->";
 
 // Seguridad extendida
 if (
@@ -25,53 +51,89 @@ if (
     exit;
 }
 
-$parts = explode('/', $view);
-
-// Validar carpeta permitida
-$allowedDirs = ['root', 'teacher', 'director', 'student', 'coordinator', 'treasurer', 'school', 'index', 'activity', 'schedule', 'user', 'parent'];
-
-// Mapeo de roles a directorios
-$roleMapping = [
-    'professor' => 'teacher',
-    'coordinator' => 'coordinator',
-    'director' => 'director',
-    'student' => 'student',
-    'root' => 'root',
-    'treasurer' => 'treasurer',
-    'parent' => 'parent'
+// Mapeo de vistas a controladores
+$controllerMapping = [
+    'school' => 'SchoolController',
+    'coordinator' => 'CoordinatorController',
+    'director' => 'DirectorController',
+    'teacher' => 'TeacherController',
+    'student' => 'StudentController',
+    'root' => 'RootController',
+    'parent' => 'ParentController',
+    'activity' => 'ActivityController',
+    'schedule' => 'ScheduleController',
+    'user' => 'UserController',
+    'index' => 'IndexController',
+    'unauthorized' => 'ErrorController',
+    'Error' => 'ErrorController'
 ];
 
-// Si no está en carpetas permitidas (comparación insensible a mayúsculas/minúsculas)
-if (!in_array(strtolower($parts[0]), array_map('strtolower', $allowedDirs))) {
-    // Verificar si es un rol mapeado
-    $mappedDir = $roleMapping[strtolower($parts[0])] ?? null;
-    if ($mappedDir) {
-        // Reemplazar el primer segmento con el directorio mapeado
-        $parts[0] = $mappedDir;
-        $view = implode('/', $parts);
-        $viewPath = ROOT . "/app/views/" . $view . ".php";
-        echo "<!-- Debug: Mapeado de rol - vista mapeada a: " . $view . " -->";
-        echo "<!-- Debug: Nueva viewPath = " . $viewPath . " -->";
+// Verificar si la vista tiene un controlador mapeado
+if (isset($controllerMapping[$view])) {
+    $controllerName = $controllerMapping[$view];
+    $controllerPath = ROOT . "/app/controllers/{$controllerName}.php";
+    
+    echo "<!-- Debug: Controlador mapeado: " . $controllerName . " -->";
+    echo "<!-- Debug: Ruta del controlador: " . $controllerPath . " -->";
+    
+    if (file_exists($controllerPath)) {
+        // Cargar el controlador
+        require_once $controllerPath;
+        
+        // Obtener la conexión a la base de datos
+        require_once ROOT . '/app/scripts/connection.php';
+        $dbConn = getConnection();
+        
+        // Instanciar el controlador
+        $controller = new $controllerName($dbConn, null);
+        
+        // Si hay una acción específica, llamarla
+        if (!empty($action)) {
+            if (method_exists($controller, $action)) {
+                echo "<!-- Debug: Llamando método: " . $action . " -->";
+                $controller->$action();
+            } else {
+                http_response_code(404);
+                echo "<h2>Error 404</h2><p>La acción <code>" . htmlspecialchars($action) . "</code> no existe en el controlador <code>" . htmlspecialchars($controllerName) . "</code>.</p>";
+                echo "<p>Métodos disponibles: <code>" . implode(', ', get_class_methods($controller)) . "</code></p>";
+            }
+        } else {
+            // Si no hay acción, llamar al método por defecto
+            if ($controllerName === 'ErrorController' && $view === 'unauthorized') {
+                // Para ErrorController con vista unauthorized, usar el método Error con 'unauthorized'
+                if (method_exists($controller, 'Error')) {
+                    $controller->Error('unauthorized');
+                } else {
+                    http_response_code(403);
+                    echo "<h2>Error 403</h2><p>Acceso no autorizado.</p>";
+                }
+            } elseif (method_exists($controller, 'index')) {
+                $controller->index();
+            } elseif (method_exists($controller, 'dashboard')) {
+                $controller->dashboard();
+            } else {
+                http_response_code(404);
+                echo "<h2>Error 404</h2><p>No se encontró un método por defecto en el controlador <code>" . htmlspecialchars($controllerName) . "</code>.</p>";
+            }
+        }
     } else {
-        http_response_code(403);
-        echo "<h2>Error 403</h2><p>No tienes permiso para acceder a esta vista.</p>";
-        echo "<p>Directorio solicitado: <code>" . htmlspecialchars($parts[0]) . "</code></p>";
-        echo "<p>Directorios permitidos: <code>" . implode(', ', $allowedDirs) . "</code></p>";
-        echo "<p>Roles mapeados: <code>" . implode(', ', array_keys($roleMapping)) . "</code></p>";
-        exit;
+        http_response_code(404);
+        echo "<h2>Error 404</h2><p>El controlador <code>" . htmlspecialchars($controllerName) . "</code> no existe.</p>";
+        echo "<p>Ruta buscada: <code>" . htmlspecialchars($controllerPath) . "</code></p>";
     }
-}
-
-// Construir la ruta al archivo
-$viewPath = ROOT . "/app/views/" . $view . ".php";
-
-// Si existe, mostrarla
-if (file_exists($viewPath)) {
-    echo "<!-- Debug: Cargando vista: " . $viewPath . " -->";
-    require_once $viewPath;
 } else {
-    http_response_code(404);
-    echo "<h2>Error 404</h2><p>La vista <code>" . htmlspecialchars($view) . "</code> no existe.</p>";
-    echo "<p>Ruta buscada: <code>" . htmlspecialchars($viewPath) . "</code></p>";
-    echo "<p>Verifica que el archivo existe en la ubicación correcta.</p>";
+    // Si no hay controlador mapeado, intentar cargar como vista directa
+    $viewPath = ROOT . "/app/views/" . $view . ".php";
+    
+    echo "<!-- Debug: Intentando cargar como vista directa: " . $viewPath . " -->";
+    
+    if (file_exists($viewPath)) {
+        echo "<!-- Debug: Cargando vista: " . $viewPath . " -->";
+        require_once $viewPath;
+    } else {
+        http_response_code(404);
+        echo "<h2>Error 404</h2><p>La vista <code>" . htmlspecialchars($view) . "</code> no existe.</p>";
+        echo "<p>Ruta buscada: <code>" . htmlspecialchars($viewPath) . "</code></p>";
+        echo "<p>Vistas disponibles: <code>" . implode(', ', array_keys($controllerMapping)) . "</code></p>";
+    }
 }

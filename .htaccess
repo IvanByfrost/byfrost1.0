@@ -1,16 +1,62 @@
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    
-    # Establecer la base del directorio
-    RewriteBase /byfrost/
-    
-    # No reescribir archivos y directorios existentes
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    
-    # Redirigir todo a index.php
-    RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+# Protección de directorios sensibles
+<Files "*.php">
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+# Permitir solo index.php en la raíz
+<Files "index.php">
+    Order Allow,Deny
+    Allow from all
+</Files>
+
+# Proteger directorios específicos
+<Directory "app/">
+    Order Deny,Allow
+    Deny from all
+</Directory>
+
+<Directory "config.php">
+    Order Deny,Allow
+    Deny from all
+</Directory>
+
+# Habilitar rewrite engine
+RewriteEngine On
+
+# Establecer la base del directorio
+RewriteBase /byfrost/
+
+# Bloquear acceso directo a archivos sensibles
+RewriteRule ^(app/|config\.php|\.env|\.htaccess|\.htpasswd|\.sql|\.log|\.bak|\.backup|\.tmp|\.temp) - [F,L]
+
+# Bloquear acceso directo a archivos PHP en directorios sensibles
+RewriteRule ^(app/.*\.php)$ - [F,L]
+
+# Redirigir todo al index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+
+# Deshabilitar listado de directorios
+Options -Indexes
+
+# Headers de seguridad
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>
+
+# Proteger archivos sensibles
+<FilesMatch "\.(php|sql|log|txt|md)$">
+    <IfModule mod_rewrite.c>
+        RewriteEngine On
+        RewriteCond %{REQUEST_URI} !^/index\.php
+        RewriteRule ^(.*)$ index.php [L]
+    </IfModule>
+</FilesMatch>
 
 # Redirección de errores a páginas personalizadas
 ErrorDocument 400 /byfrost/index.php?error=400

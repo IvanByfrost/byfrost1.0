@@ -19,167 +19,128 @@ $coordinators = $coordinators ?? [];
                 </div>
             <?php endif; ?>
 
-            <form method="POST" id="createSchool" class="dash-form">
+            <form method="POST" id="createSchool" class="dash-form" action="?view=school&action=createSchool">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-school"></i> Información General</h5>
+                        <h5 class="card-title">Crear Nueva Escuela</h5>
                     </div>
                     <div class="card-body">
+                        <?php if (isset($error)): ?>
+                            <div class="alert alert-danger" role="alert">
+                                <?php echo htmlspecialchars($error); ?>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <?php if (isset($success)): ?>
+                            <div class="alert alert-success" role="alert">
+                                <?php echo htmlspecialchars($success); ?>
+                            </div>
+                        <?php endif; ?>
+                        
                         <div class="row">
-                            <!-- Nombre de la escuela -->
-                            <div class="col-md-6 mb-3">
-                                <label for="school_name" class="form-label">Nombre de la Escuela *</label>
-                                <input type="text" id="school_name" name="school_name" 
-                                       class="form-control" 
-                                       placeholder="Ej: Colegio San José - Sede Norte"
-                                       value="<?php echo htmlspecialchars($formData['school_name'] ?? ''); ?>"
-                                       required>
-                            </div>
-                            
-                            <!-- Código DANE -->
-                            <div class="col-md-6 mb-3">
-                                <label for="school_dane" class="form-label">Código DANE *</label>
-                                <input type="text" id="school_dane" name="school_dane" 
-                                       class="form-control" 
-                                       placeholder="Ej: 11100123456"
-                                       value="<?php echo htmlspecialchars($formData['school_dane'] ?? ''); ?>"
-                                       maxlength="12"
-                                       required>
-                            </div>
-                            
-                            <!-- NIT -->
-                            <div class="col-md-6 mb-3">
-                                <label for="school_document" class="form-label">NIT *</label>
-                                <input type="text" id="school_document" name="school_document" 
-                                       class="form-control" 
-                                       placeholder="Ej: 900123456-7"
-                                       value="<?php echo htmlspecialchars($formData['school_document'] ?? ''); ?>"
-                                       maxlength="15"
-                                       required>
-                            </div>
-                            
-                            <!-- Cupo total -->
-                            <div class="col-md-6 mb-3">
-                                <label for="total_quota" class="form-label">Cupo Total</label>
-                                <input type="number" id="total_quota" name="total_quota" 
-                                       class="form-control" 
-                                       placeholder="Ej: 500"
-                                       value="<?php echo htmlspecialchars($formData['total_quota'] ?? ''); ?>"
-                                       min="0">
-                            </div>
-                            
-                            <!-- Dirección -->
-                            <div class="col-md-12 mb-3">
-                                <label for="address" class="form-label">Dirección</label>
-                                <input type="text" id="address" name="address" 
-                                       class="form-control" 
-                                       placeholder="Ej: Calle 123 # 45-67, Barrio Centro"
-                                       value="<?php echo htmlspecialchars($formData['address'] ?? ''); ?>">
-                            </div>
-                            
-                            <!-- Teléfono -->
-                            <div class="col-md-6 mb-3">
-                                <label for="phone" class="form-label">Teléfono</label>
-                                <input type="tel" id="phone" name="phone" 
-                                       class="form-control" 
-                                       placeholder="Ej: (1) 2345678"
-                                       value="<?php echo htmlspecialchars($formData['phone'] ?? ''); ?>">
-                            </div>
-                            
-                            <!-- Email -->
-                            <div class="col-md-6 mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" id="email" name="email" 
-                                       class="form-control" 
-                                       placeholder="Ej: info@colegio.edu.co"
-                                       value="<?php echo htmlspecialchars($formData['email'] ?? ''); ?>">
-                            </div>
-                            
-                            <!-- Director -->
-                            <div class="col-md-6 mb-3">
-                                <label for="director_user_id" class="form-label">Director</label>
-                                <select id="director_user_id" name="director_user_id" class="form-select">
-                                    <option value="">Seleccione un director</option>
-                                    <?php foreach ($directors as $director): ?>
-                                        <option value="<?php echo $director['user_id']; ?>"
-                                                <?php echo ($formData['director_user_id'] ?? '') == $director['user_id'] ? 'selected' : ''; ?>>
-                                            <?php echo htmlspecialchars($director['first_name'] . ' ' . $director['last_name']); ?>
-                                            (<?php echo htmlspecialchars($director['email']); ?>)
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            
-                            <!-- Coordinador -->
-                            <div class="col-md-6 mb-3">
-                                <label for="coordinator_user_id" class="form-label">Coordinador</label>
-                                <select id="coordinator_user_id" name="coordinator_user_id" class="form-select">
-                                    <option value="">Seleccione un coordinador</option>
-                                    <?php foreach ($coordinators as $coordinator): ?>
-                                        <option value="<?php echo $coordinator['user_id']; ?>"
-                                                <?php echo ($formData['coordinator_user_id'] ?? '') == $coordinator['user_id'] ? 'selected' : ''; ?>>
-                                            <?php echo htmlspecialchars($coordinator['first_name'] . ' ' . $coordinator['last_name']); ?>
-                                            (<?php echo htmlspecialchars($coordinator['email']); ?>)
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Niveles educativos (para futura implementación) -->
-                <div class="card mt-3">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-graduation-cap"></i> Niveles Educativos</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="nivel[]" id="nivelPreescolar" value="preescolar">
-                                    <label class="form-check-label" for="nivelPreescolar">
-                                        Preescolar
-                                    </label>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="school_name">Nombre de la Escuela *</label>
+                                    <input type="text" class="form-control" id="school_name" name="school_name" 
+                                           value="<?php echo isset($formData['school_name']) ? htmlspecialchars($formData['school_name']) : ''; ?>" 
+                                           required>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="nivel[]" id="nivelPrimaria" value="primaria">
-                                    <label class="form-check-label" for="nivelPrimaria">
-                                        Básica Primaria
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="nivel[]" id="nivelSecundaria" value="secundaria">
-                                    <label class="form-check-label" for="nivelSecundaria">
-                                        Básica Secundaria
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="nivel[]" id="nivelMedia" value="media">
-                                    <label class="form-check-label" for="nivelMedia">
-                                        Media (Bachillerato)
-                                    </label>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="school_dane">Código DANE *</label>
+                                    <input type="text" class="form-control" id="school_dane" name="school_dane" 
+                                           value="<?php echo isset($formData['school_dane']) ? htmlspecialchars($formData['school_dane']) : ''; ?>" 
+                                           required>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                
-                <!-- Botones -->
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Crear Escuela
-                        </button>
-                        <a href="?view=school&action=consultSchool" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Volver
-                        </a>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="school_document">NIT *</label>
+                                    <input type="text" class="form-control" id="school_document" name="school_document" 
+                                           value="<?php echo isset($formData['school_document']) ? htmlspecialchars($formData['school_document']) : ''; ?>" 
+                                           required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="total_quota">Cupo Total</label>
+                                    <input type="number" class="form-control" id="total_quota" name="total_quota" 
+                                           value="<?php echo isset($formData['total_quota']) ? htmlspecialchars($formData['total_quota']) : ''; ?>" 
+                                           min="0">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="director_user_id">Director</label>
+                                    <select class="form-control" id="director_user_id" name="director_user_id">
+                                        <option value="">Seleccionar Director</option>
+                                        <?php if (isset($directors)): ?>
+                                            <?php foreach ($directors as $director): ?>
+                                                <option value="<?php echo $director['user_id']; ?>" 
+                                                        <?php echo (isset($formData['director_user_id']) && $formData['director_user_id'] == $director['user_id']) ? 'selected' : ''; ?>>
+                                                    <?php echo htmlspecialchars($director['name'] . ' ' . $director['lastname']); ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="coordinator_user_id">Coordinador</label>
+                                    <select class="form-control" id="coordinator_user_id" name="coordinator_user_id">
+                                        <option value="">Seleccionar Coordinador</option>
+                                        <?php if (isset($coordinators)): ?>
+                                            <?php foreach ($coordinators as $coordinator): ?>
+                                                <option value="<?php echo $coordinator['user_id']; ?>" 
+                                                        <?php echo (isset($formData['coordinator_user_id']) && $formData['coordinator_user_id'] == $coordinator['user_id']) ? 'selected' : ''; ?>>
+                                                    <?php echo htmlspecialchars($coordinator['name'] . ' ' . $coordinator['lastname']); ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="address">Dirección</label>
+                                    <input type="text" class="form-control" id="address" name="address" 
+                                           value="<?php echo isset($formData['address']) ? htmlspecialchars($formData['address']) : ''; ?>">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="phone">Teléfono</label>
+                                    <input type="text" class="form-control" id="phone" name="phone" 
+                                           value="<?php echo isset($formData['phone']) ? htmlspecialchars($formData['phone']) : ''; ?>">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" 
+                                           value="<?php echo isset($formData['email']) ? htmlspecialchars($formData['email']) : ''; ?>">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Crear Escuela</button>
+                            <a href="?view=school&action=consultSchool" class="btn btn-secondary">Cancelar</a>
+                        </div>
                     </div>
                 </div>
             </form>

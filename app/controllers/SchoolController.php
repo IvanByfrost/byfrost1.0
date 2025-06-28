@@ -36,21 +36,11 @@ class SchoolController extends MainController
                 }
                 
                 if (!empty($missingFields)) {
-                    $response = [
-                        'status' => 'error',
-                        'msg' => 'Los siguientes campos son obligatorios: ' . implode(', ', $missingFields)
-                    ];
-                    
-                    if ($this->isAjaxRequest()) {
-                        header('Content-Type: application/json');
-                        echo json_encode($response);
-                        return;
-                    }
-                    
-                    // Si no es AJAX, redirigir con error
                     $this->loadView('school/createSchool', [
-                        'error' => $response['msg'],
-                        'formData' => $_POST
+                        'error' => 'Los siguientes campos son obligatorios: ' . implode(', ', $missingFields),
+                        'formData' => $_POST,
+                        'directors' => $this->schoolModel->getDirectors(),
+                        'coordinators' => $this->schoolModel->getCoordinators()
                     ]);
                     return;
                 }
@@ -70,76 +60,38 @@ class SchoolController extends MainController
                 
                 // Validar formato de email si se proporciona
                 if (!empty($data['email']) && !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-                    $response = [
-                        'status' => 'error',
-                        'msg' => 'El formato del email no es válido'
-                    ];
-                    
-                    if ($this->isAjaxRequest()) {
-                        header('Content-Type: application/json');
-                        echo json_encode($response);
-                        return;
-                    }
-                    
                     $this->loadView('school/createSchool', [
-                        'error' => $response['msg'],
-                        'formData' => $_POST
+                        'error' => 'El formato del email no es válido',
+                        'formData' => $_POST,
+                        'directors' => $this->schoolModel->getDirectors(),
+                        'coordinators' => $this->schoolModel->getCoordinators()
                     ]);
                     return;
                 }
                 
                 // Llamar al método del modelo
-                $success = $this->schoolModel->createSchool($data);
+                $schoolId = $this->schoolModel->createSchool($data);
                 
-                if ($success) {
-                    $response = [
-                        'status' => 'success',
-                        'msg' => 'Escuela creada exitosamente'
-                    ];
-                    
-                    if ($this->isAjaxRequest()) {
-                        header('Content-Type: application/json');
-                        echo json_encode($response);
-                        return;
-                    }
-                    
-                    // Si no es AJAX, redirigir a la lista de escuelas
-                    $this->redirect('?view=school&action=consultSchool&message=' . urlencode($response['msg']));
+                if ($schoolId) {
+                    // Redirigir a la lista de escuelas con mensaje de éxito
+                    $this->redirect('?view=school&action=consultSchool&success=1&msg=' . urlencode('Escuela creada exitosamente'));
                 } else {
-                    $response = [
-                        'status' => 'error',
-                        'msg' => 'Error al crear la escuela. Verifique que los datos sean únicos.'
-                    ];
-                    
-                    if ($this->isAjaxRequest()) {
-                        header('Content-Type: application/json');
-                        echo json_encode($response);
-                        return;
-                    }
-                    
                     $this->loadView('school/createSchool', [
-                        'error' => $response['msg'],
-                        'formData' => $_POST
+                        'error' => 'Error al crear la escuela. Verifique que los datos sean únicos.',
+                        'formData' => $_POST,
+                        'directors' => $this->schoolModel->getDirectors(),
+                        'coordinators' => $this->schoolModel->getCoordinators()
                     ]);
                 }
                 
             } catch (Exception $e) {
                 error_log("Error en SchoolController::createSchool: " . $e->getMessage());
                 
-                $response = [
-                    'status' => 'error',
-                    'msg' => 'Error interno del servidor: ' . $e->getMessage()
-                ];
-                
-                if ($this->isAjaxRequest()) {
-                    header('Content-Type: application/json');
-                    echo json_encode($response);
-                    return;
-                }
-                
                 $this->loadView('school/createSchool', [
-                    'error' => $response['msg'],
-                    'formData' => $_POST
+                    'error' => 'Error interno del servidor: ' . $e->getMessage(),
+                    'formData' => $_POST,
+                    'directors' => $this->schoolModel->getDirectors(),
+                    'coordinators' => $this->schoolModel->getCoordinators()
                 ]);
             }
         } else {
@@ -153,80 +105,30 @@ class SchoolController extends MainController
 
     public function consultSchool()
     {
-        try {
-            // Obtener datos de búsqueda
-            $searchData = [];
-            
-            if (isset($_POST['nit']) && !empty($_POST['nit'])) {
-                $searchData['nit'] = trim($_POST['nit']);
-            }
-            
-            if (isset($_POST['school_name']) && !empty($_POST['school_name'])) {
-                $searchData['school_name'] = trim($_POST['school_name']);
-            }
-            
-            if (isset($_POST['codigoDANE']) && !empty($_POST['codigoDANE'])) {
-                $searchData['codigoDANE'] = trim($_POST['codigoDANE']);
-            }
-            
-            // Si no hay parámetros específicos, usar búsqueda general
-            if (empty($searchData)) {
-                $searchTerm = $_POST['search'] ?? $_GET['search'] ?? '';
-                if (!empty($searchTerm)) {
-                    $searchData['search'] = trim($searchTerm);
-                }
-            }
-            
-            // Si no hay ningún término de búsqueda, obtener todas las escuelas
-            if (empty($searchData)) {
-                $schools = $this->schoolModel->getAllSchools();
-            } else {
-                $schools = $this->schoolModel->consultSchool($searchData);
-            }
-            
-            // Preparar respuesta
-            $response = [
-                'success' => true,
-                'message' => count($schools) > 0 ? 'Escuelas encontradas' : 'No se encontraron escuelas',
-                'count' => count($schools),
-                'data' => $schools
-            ];
-            
-            // Si es una petición AJAX, devolver JSON
-            if ($this->isAjaxRequest()) {
-                header('Content-Type: application/json');
-                echo json_encode($response);
-                return;
-            }
-            
-            // Si no es AJAX, cargar la vista con los datos
-            $this->loadView('school/consultSchool', [
-                'schools' => $schools,
-                'searchData' => $searchData,
-                'message' => $response['message']
-            ]);
-            
-        } catch (Exception $e) {
-            error_log("Error en SchoolController::consultSchool: " . $e->getMessage());
-            
-            $errorResponse = [
-                'success' => false,
-                'message' => 'Error al consultar las escuelas',
-                'error' => $e->getMessage()
-            ];
-            
-            if ($this->isAjaxRequest()) {
-                header('Content-Type: application/json');
-                echo json_encode($errorResponse);
-                return;
-            }
-            
-            $this->loadView('school/consultSchool', [
-                'schools' => [],
-                'searchData' => [],
-                'error' => 'Error al consultar las escuelas'
-            ]);
+        $this->protectSchool();
+        
+        $search = $_GET['search'] ?? '';
+        $schools = $this->schoolModel->getAllSchools();
+        
+        // Si hay término de búsqueda, filtrar los resultados
+        if (!empty($search)) {
+            $schools = array_filter($schools, function($school) use ($search) {
+                return stripos($school['school_name'], $search) !== false ||
+                       stripos($school['school_dane'], $search) !== false ||
+                       stripos($school['school_document'], $search) !== false;
+            });
         }
+        
+        // Verificar si hay mensaje de éxito
+        $success = $_GET['success'] ?? false;
+        $message = $_GET['msg'] ?? '';
+        
+        $this->loadView('school/consultSchool', [
+            'schools' => $schools,
+            'search' => $search,
+            'success' => $success,
+            'message' => $message
+        ]);
     }
 
     // Protección de acceso solo para escuela o tesorero
