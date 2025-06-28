@@ -31,15 +31,10 @@ class Router
         if (!isset($_GET['url'])) {
             // Obtener la ruta de la URL actual
             $requestUri = $_SERVER['REQUEST_URI'] ?? '';
-            $basePath = '/byfrost/';
+            $path = trim($requestUri, '/');
             
-            if (strpos($requestUri, $basePath) === 0) {
-                $path = substr($requestUri, strlen($basePath));
-                $path = trim($path, '/');
-                
-                if (!empty($path)) {
-                    $_GET['url'] = $path;
-                }
+            if (!empty($path)) {
+                $_GET['url'] = $path;
             }
         }
 

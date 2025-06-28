@@ -23,29 +23,12 @@ $dbConn = getConnection();
 // Instancia de la clase de vistas
 $view = new Views();
 
-// Manejo manual de rutas para evitar problemas con .htaccess
+// Manejo manual de rutas para desarrollo local
 $requestUri = $_SERVER['REQUEST_URI'] ?? '';
-$basePath = '/byfrost/';
+$path = trim($requestUri, '/');
 
 // Debug: mostrar información de la ruta
 error_log("DEBUG - Request URI: " . $requestUri);
-error_log("DEBUG - Base Path: " . $basePath);
-
-// Si la ruta no comienza con la base, puede ser un error 404
-if (strpos($requestUri, $basePath) !== 0) {
-    // Es una ruta que no pertenece a nuestra aplicación
-    error_log("DEBUG - Ruta fuera de la aplicación, mostrando 404");
-    http_response_code(404);
-    require_once ROOT . '/app/controllers/errorController.php';
-    $error = new ErrorController($dbConn, $view);
-    $error->Error('404');
-    exit;
-}
-
-// Extraer la ruta después de la base
-$path = substr($requestUri, strlen($basePath));
-$path = trim($path, '/');
-
 error_log("DEBUG - Path extraído: " . $path);
 
 // Si alguien intenta acceder directamente a archivos PHP, redirigir a 404

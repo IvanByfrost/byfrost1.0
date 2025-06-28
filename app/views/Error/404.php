@@ -33,7 +33,7 @@ header("Expires: 0");
             La página que buscas no existe o no tienes permisos para acceder a ella.<br>
             Si intentaste acceder directamente a un archivo del sistema, usa las rutas correctas de la aplicación.
         </div>
-        <a href="/byfrost/" class="home-link">Volver al inicio</a>
+        <a href="/" class="home-link">Volver al inicio</a>
         
         <div class="debug-info">
             <h3>Información de depuración:</h3>
