@@ -33,7 +33,7 @@ $roles = $roles ?? [];
                     <h5 class="card-title">Buscar Usuario</h5>
                 </div>
                 <div class="card-body">
-                <form id="searchUserForm" action="?view=user&action=assignRole" method="POST">
+                <form id="searchUserForm" action="?view=user&action=assignRole" method="GET">
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">

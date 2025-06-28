@@ -46,7 +46,7 @@ function handleSearchSubmit(e) {
         return;
     }
     
-    // Realizar búsqueda via AJAX
+    // Realizar búsqueda via GET
     searchUsersByDocument(credentialType, credentialNumber);
 }
 
@@ -59,7 +59,7 @@ if (document.readyState === 'loading') {
 }
 
 /**
- * Busca usuarios por documento via AJAX
+ * Busca usuarios por documento via GET
  */
 function searchUsersByDocument(credentialType, credentialNumber) {
     console.log('Buscando usuarios:', credentialType, credentialNumber);
@@ -70,16 +70,15 @@ function searchUsersByDocument(credentialType, credentialNumber) {
         resultsContainer.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Buscando...</div>';
     }
     
-    // Construir URL con parámetros
-    const url = `${BASE_URL}?view=user&action=assignRole`;
+    // Construir URL con parámetros GET
+    const url = `${BASE_URL}?view=user&action=assignRole&credential_type=${encodeURIComponent(credentialType)}&credential_number=${encodeURIComponent(credentialNumber)}`;
     console.log('URL de búsqueda:', url);
     
     fetch(url, {
-        method: 'POST',
+        method: 'GET',
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: new FormData(document.getElementById('searchUserForm'))
+        }
     })
     .then(response => {
         console.log('Respuesta recibida:', response.status);
@@ -166,7 +165,7 @@ function assignRole() {
     formData.append('role_type', roleType);
     
     // Enviar petición AJAX
-    fetch(`${BASE_URL}?view=user&action=processAssignRole`, {
+    fetch(`${BASE_URL}app/processes/assignProcess.php`, {
         method: 'POST',
         headers: {
             'X-Requested-With': 'XMLHttpRequest'

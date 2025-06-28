@@ -6,14 +6,43 @@
  * Proporciona métodos para autenticación, verificación de roles y gestión de datos de sesión.
  */
 class SessionManager {
+    private $sessionStarted = false;
     
     /**
-     * Constructor - Inicia la sesión si no está activa
+     * Constructor - NO inicia la sesión automáticamente
      */
     public function __construct() {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
+        // No iniciar sesión aquí - esto causaba el error
+    }
+    
+    /**
+     * Inicia la sesión de forma segura
+     * 
+     * @return bool True si la sesión se inició correctamente
+     */
+    private function startSessionSafely() {
+        // Si ya está iniciada, no hacer nada
+        if ($this->sessionStarted || session_status() === PHP_SESSION_ACTIVE) {
+            return true;
         }
+        
+        // Verificar si ya se enviaron headers
+        if (headers_sent($file, $line)) {
+            error_log("SessionManager Error: No se puede iniciar sesión - headers ya enviados en {$file} línea {$line}");
+            return false;
+        }
+        
+        try {
+            if (session_start()) {
+                $this->sessionStarted = true;
+                return true;
+            }
+        } catch (Exception $e) {
+            error_log("SessionManager Error: " . $e->getMessage());
+            return false;
+        }
+        
+        return false;
     }
     
     /**
@@ -24,6 +53,11 @@ class SessionManager {
      */
     public function login($userData) {
         try {
+            // Iniciar sesión de forma segura ANTES de usarla
+            if (!$this->startSessionSafely()) {
+                return false;
+            }
+            
             // Validar datos del usuario
             if (empty($userData['id']) || empty($userData['email'])) {
                 return false;
@@ -54,6 +88,9 @@ class SessionManager {
      * @return bool True si el usuario está logueado
      */
     public function isLoggedIn() {
+        if (!$this->startSessionSafely()) {
+            return false;
+        }
         return isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
     }
     
@@ -63,6 +100,9 @@ class SessionManager {
      * @return int|null ID del usuario o null si no está logueado
      */
     public function getUserId() {
+        if (!$this->startSessionSafely()) {
+            return null;
+        }
         return $_SESSION['user_id'] ?? null;
     }
     
@@ -72,6 +112,9 @@ class SessionManager {
      * @return string|null Email del usuario o null si no está logueado
      */
     public function getUserEmail() {
+        if (!$this->startSessionSafely()) {
+            return null;
+        }
         return $_SESSION['user_email'] ?? null;
     }
     
@@ -81,6 +124,9 @@ class SessionManager {
      * @return string|null Rol del usuario o null si no está logueado
      */
     public function getUserRole() {
+        if (!$this->startSessionSafely()) {
+            return null;
+        }
         return $_SESSION['user_role'] ?? null;
     }
     
@@ -90,6 +136,9 @@ class SessionManager {
      * @return string Nombre completo del usuario
      */
     public function getUserFullName() {
+        if (!$this->startSessionSafely()) {
+            return '';
+        }
         $firstName = $_SESSION['user_name'] ?? '';
         $lastName = $_SESSION['user_lastname'] ?? '';
         return trim($firstName . ' ' . $lastName);
@@ -151,7 +200,9 @@ class SessionManager {
      * @param mixed $value Valor del dato
      */
     public function setSessionData($key, $value) {
-        $_SESSION[$key] = $value;
+        if ($this->startSessionSafely()) {
+            $_SESSION[$key] = $value;
+        }
     }
     
     /**
@@ -162,6 +213,9 @@ class SessionManager {
      * @return mixed Valor del dato o el valor por defecto
      */
     public function getSessionData($key, $default = null) {
+        if (!$this->startSessionSafely()) {
+            return $default;
+        }
         return $_SESSION[$key] ?? $default;
     }
     
@@ -171,7 +225,7 @@ class SessionManager {
      * @param string $key Clave del dato a eliminar
      */
     public function removeSessionData($key) {
-        if (isset($_SESSION[$key])) {
+        if ($this->startSessionSafely() && isset($_SESSION[$key])) {
             unset($_SESSION[$key]);
         }
     }
@@ -180,6 +234,10 @@ class SessionManager {
      * Cierra la sesión del usuario
      */
     public function logout() {
+        if (!$this->startSessionSafely()) {
+            return;
+        }
+        
         // Limpiar todos los datos de sesión
         $_SESSION = array();
         
@@ -194,6 +252,7 @@ class SessionManager {
         
         // Destruir la sesión
         session_destroy();
+        $this->sessionStarted = false;
     }
     
     /**

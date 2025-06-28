@@ -1,17 +1,39 @@
 <?php
+// Headers para CORS y JSON
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST');
+header('Access-Control-Allow-Headers: Content-Type, X-Requested-With');
+
 require_once '../app/models/UserModel.php';
-$model = new userModel();
+require_once '../app/scripts/connection.php';
 
-$userId = $_POST['userId'];
-$roleId = $_POST['roleId'];
+// Obtener conexión a la base de datos
+$dbConn = getConnection();
+$model = new UserModel($dbConn);
 
-$ok = $model->assignRole($userId, $roleId);
+$userId = $_POST['user_id'] ?? null;
+$roleType = $_POST['role_type'] ?? null;
 
-echo json_encode([
-    'status' => $ok ? 'ok' : 'error',
-    'msg' => $ok ? 'Rol asignado con éxito' : 'Error al asignar rol'
-]);
+if (!$userId || !$roleType) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Faltan datos requeridos'
+    ]);
+    exit;
+}
 
-
-
+try {
+    $ok = $model->assignRole($userId, $roleType);
+    
+    echo json_encode([
+        'success' => $ok,
+        'message' => $ok ? 'Rol asignado con éxito' : 'Error al asignar rol'
+    ]);
+} catch (Exception $e) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Error: ' . $e->getMessage()
+    ]);
+}
 ?>
