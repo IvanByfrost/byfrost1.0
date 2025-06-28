@@ -2,19 +2,23 @@
  * JavaScript para manejar la asignación de roles
  */
 
+// Definir la URL base
+const BASE_URL = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
+
 document.addEventListener('DOMContentLoaded', function() {
     // Cargar usuarios sin rol al cargar la página
     loadUsersWithoutRole();
     
-    // Configurar validación del formulario de búsqueda
+    // Configurar el formulario de búsqueda para usar AJAX
     const searchForm = document.getElementById('searchUserForm');
     if (searchForm) {
         searchForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevenir envío normal del formulario
+            
             const credentialType = document.getElementById('credential_type').value;
             const credentialNumber = document.getElementById('credential_number').value;
             
             if (!credentialType || !credentialNumber) {
-                e.preventDefault();
                 if (typeof Swal !== "undefined") {
                     Swal.fire({
                         title: 'Campos requeridos',
@@ -24,10 +28,61 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     alert('Por favor, completa todos los campos requeridos.');
                 }
+                return;
             }
+            
+            // Realizar búsqueda via AJAX
+            searchUsersByDocument(credentialType, credentialNumber);
         });
     }
 });
+
+/**
+ * Busca usuarios por documento via AJAX
+ */
+function searchUsersByDocument(credentialType, credentialNumber) {
+    // Mostrar indicador de carga
+    const resultsContainer = document.querySelector('.card:nth-child(3) .card-body');
+    if (resultsContainer) {
+        resultsContainer.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Buscando...</div>';
+    }
+    
+    // Construir URL con parámetros
+    const url = `${BASE_URL}?view=user&action=assignRole&credential_type=${encodeURIComponent(credentialType)}&credential_number=${encodeURIComponent(credentialNumber)}`;
+    
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.text())
+    .then(html => {
+        // Extraer solo la sección de resultados de la respuesta HTML
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const resultsSection = doc.querySelector('.card:nth-child(3)');
+        
+        if (resultsSection) {
+            // Reemplazar la sección de resultados
+            const currentResultsSection = document.querySelector('.card:nth-child(3)');
+            if (currentResultsSection) {
+                currentResultsSection.outerHTML = resultsSection.outerHTML;
+            }
+        } else {
+            // Si no hay resultados, mostrar mensaje
+            if (resultsContainer) {
+                resultsContainer.innerHTML = '<div class="alert alert-warning"><i class="fas fa-search"></i> No se encontraron usuarios con el documento especificado.</div>';
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        if (resultsContainer) {
+            resultsContainer.innerHTML = '<div class="alert alert-danger">Error al buscar usuarios.</div>';
+        }
+    });
+}
 
 /**
  * Muestra el modal para asignar rol
@@ -75,7 +130,7 @@ function assignRole() {
     formData.append('role_type', roleType);
     
     // Enviar petición AJAX
-    fetch(`${BASE_URL}app/scripts/routerView.php?view=user&action=processAssignRole`, {
+    fetch(`${BASE_URL}?view=user&action=processAssignRole`, {
         method: 'POST',
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
@@ -102,14 +157,14 @@ function assignRole() {
                         timer: 3000,
                         showConfirmButton: false
                     }).then(() => {
-                        // Cerrar modal y recargar la página
+                        // Cerrar modal y recargar solo la sección de usuarios sin rol
                         const modal = bootstrap.Modal.getInstance(document.getElementById('assignRoleModal'));
                         modal.hide();
-                        location.reload();
+                        loadUsersWithoutRole();
                     });
                 } else {
                     alert(jsonResponse.message);
-                    location.reload();
+                    loadUsersWithoutRole();
                 }
             } else {
                 // Error
@@ -166,7 +221,7 @@ function loadUsersWithoutRole() {
     // Mostrar indicador de carga
     tableBody.innerHTML = '<tr><td colspan="5" class="text-center"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
     
-    fetch(`${BASE_URL}app/scripts/routerView.php?view=user&action=getUsersWithoutRole`, {
+    fetch(`${BASE_URL}?view=user&action=getUsersWithoutRole`, {
         method: 'GET',
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
@@ -202,6 +257,7 @@ function loadUsersWithoutRole() {
  */
 function displayUsersWithoutRole(users) {
     const tableBody = document.querySelector('#usersWithoutRoleTable tbody');
+    if (!tableBody) return;
     
     if (!users || users.length === 0) {
         tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No hay usuarios sin rol asignado</td></tr>';
@@ -214,11 +270,7 @@ function displayUsersWithoutRole(users) {
             <tr>
                 <td>${user.user_id}</td>
                 <td><strong>${user.first_name} ${user.last_name}</strong></td>
-                <td>
-                    <span class="badge bg-info">
-                        ${user.credential_type} ${user.credential_number}
-                    </span>
-                </td>
+                <td><span class="badge bg-info">${user.credential_type} ${user.credential_number}</span></td>
                 <td>${user.email || 'No especificado'}</td>
                 <td>
                     <button type="button" class="btn btn-sm btn-primary" 
@@ -231,30 +283,6 @@ function displayUsersWithoutRole(users) {
     });
     
     tableBody.innerHTML = html;
-}
-
-/**
- * Busca usuarios por documento
- */
-function searchUsersByDocument() {
-    const credentialType = document.getElementById('credential_type').value;
-    const credentialNumber = document.getElementById('credential_number').value;
-    
-    if (!credentialType || !credentialNumber) {
-        if (typeof Swal !== "undefined") {
-            Swal.fire({
-                title: 'Campos requeridos',
-                text: 'Por favor, selecciona el tipo de documento e ingresa el número.',
-                icon: 'warning'
-            });
-        } else {
-            alert('Por favor, completa todos los campos requeridos.');
-        }
-        return;
-    }
-    
-    // Enviar formulario
-    document.getElementById('searchUserForm').submit();
 }
 
 /**

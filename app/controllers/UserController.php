@@ -9,7 +9,7 @@ class UserController extends MainController
     public function __construct($dbConn)
     {
         parent::__construct($dbConn);
-        $this->userModel = new UserModel();
+        $this->userModel = new UserModel($dbConn);
     }
 
     /**

@@ -1,11 +1,17 @@
 <?php
 require_once 'mainModel.php';
-class UserModel extends mainModel
+class UserModel extends MainModel
 {
     // Constructor de la clase 
-    public function __construct()
+    public function __construct($dbConn = null)
     {
-        parent::__construct();
+        if ($dbConn) {
+            // Si se pasa una conexión, usarla
+            $this->dbConn = $dbConn;
+        } else {
+            // Si no, usar la conexión del MainModel
+            parent::__construct();
+        }
     }
 
     // Función para consultar a todos los usuarios
@@ -183,6 +189,16 @@ class UserModel extends mainModel
     public function searchUsersByDocument($credentialType, $credentialNumber)
     {
         try {
+            // Verificar que tenemos conexión
+            if (!$this->dbConn) {
+                throw new Exception('No hay conexión a la base de datos');
+            }
+            
+            // Verificar parámetros
+            if (empty($credentialType) || empty($credentialNumber)) {
+                throw new Exception('Tipo de documento y número son requeridos');
+            }
+            
             $query = "SELECT 
                         u.user_id,
                         u.credential_type,
@@ -200,16 +216,35 @@ class UserModel extends mainModel
                       AND u.is_active = 1
                       ORDER BY u.first_name, u.last_name";
             
+            // Log de debug
+            error_log("UserModel::searchUsersByDocument - Query: " . $query);
+            error_log("UserModel::searchUsersByDocument - Params: " . $credentialType . ", " . $credentialNumber);
+            
             $stmt = $this->dbConn->prepare($query);
-            $stmt->execute([
+            if (!$stmt) {
+                throw new Exception('Error al preparar la consulta: ' . implode(', ', $this->dbConn->errorInfo()));
+            }
+            
+            $result = $stmt->execute([
                 ':credential_type' => $credentialType,
                 ':credential_number' => $credentialNumber
             ]);
             
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if (!$result) {
+                throw new Exception('Error al ejecutar la consulta: ' . implode(', ', $stmt->errorInfo()));
+            }
+            
+            $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            error_log("UserModel::searchUsersByDocument - Resultados encontrados: " . count($users));
+            
+            return $users;
+            
+        } catch (PDOException $e) {
+            error_log("UserModel::searchUsersByDocument PDO Error: " . $e->getMessage());
+            throw new Exception('Error de base de datos: ' . $e->getMessage());
         } catch (Exception $e) {
-            error_log("Error en UserModel::searchUsersByDocument: " . $e->getMessage());
-            throw new Exception('Error al buscar usuarios por documento');
+            error_log("UserModel::searchUsersByDocument Error: " . $e->getMessage());
+            throw new Exception('Error al buscar usuarios por documento: ' . $e->getMessage());
         }
     }
 

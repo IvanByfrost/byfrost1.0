@@ -1,10 +1,14 @@
 <?php
 if (!defined('ROOT')) {
-    define('ROOT', dirname(dirname(dirname(__DIR__))) . '/');
+    // Desde app/scripts/routerView.php necesitamos subir 3 niveles para llegar al directorio raíz
+    // __DIR__ = F:\xampp\htdocs\byfrost\app\scripts
+    // dirname(__DIR__) = F:\xampp\htdocs\byfrost\app
+    // dirname(dirname(__DIR__)) = F:\xampp\htdocs\byfrost
+    define('ROOT', dirname(dirname(__DIR__)));
 }
 
-require_once ROOT . 'config.php';
-require_once ROOT . 'app/library/SecurityMiddleware.php';
+require_once ROOT . '/config.php';
+require_once ROOT . '/app/library/SecurityMiddleware.php';
 
 $view = $_GET['view'] ?? '';
 $action = $_GET['action'] ?? '';
@@ -71,7 +75,7 @@ $controllerMapping = [
 // Verificar si la vista tiene un controlador mapeado
 if (isset($controllerMapping[$view])) {
     $controllerName = $controllerMapping[$view];
-    $controllerPath = ROOT . "app/controllers/{$controllerName}.php";
+    $controllerPath = ROOT . "/app/controllers/{$controllerName}.php";
     
     echo "<!-- Debug: Controlador mapeado: " . $controllerName . " -->";
     echo "<!-- Debug: Ruta del controlador: " . $controllerPath . " -->";
@@ -81,7 +85,7 @@ if (isset($controllerMapping[$view])) {
         require_once $controllerPath;
         
         // Obtener la conexión a la base de datos
-        require_once ROOT . 'app/scripts/connection.php';
+        require_once ROOT . '/app/scripts/connection.php';
         $dbConn = getConnection();
         
         // Instanciar el controlador
@@ -123,7 +127,7 @@ if (isset($controllerMapping[$view])) {
     }
 } else {
     // Si no hay controlador mapeado, intentar cargar como vista directa
-    $viewPath = ROOT . "app/views/" . $view . ".php";
+    $viewPath = ROOT . "/app/views/" . $view . ".php";
     
     echo "<!-- Debug: Intentando cargar como vista directa: " . $viewPath . " -->";
     

@@ -5,8 +5,8 @@
 
 echo "<h1>Test: Verificación de Rutas</h1>";
 
-// Definir ROOT de la misma manera que en routerView.php
-define('ROOT', dirname(__DIR__) . '/');
+// Definir ROOT correctamente - debe apuntar al directorio del proyecto byfrost
+define('ROOT', __DIR__ . '/');
 
 echo "<h2>1. Información de rutas:</h2>";
 echo "<ul>";
