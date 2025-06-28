@@ -33,7 +33,7 @@ $roles = $roles ?? [];
                     <h5 class="card-title">Buscar Usuario</h5>
                 </div>
                 <div class="card-body">
-                <form id="searchUserForm" action="?view=user&action=assignProcess" method="GET">
+                <form id="searchUserForm" action="?view=user&action=assignRole" method="GET">
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
@@ -204,5 +204,5 @@ $roles = $roles ?? [];
     </div>
 </div>
 
-<!-- Incluir el archivo JavaScript -->
-<script src="<?php echo url; ?>app/resources/js/assignRole.js"></script> 
+<!-- Incluir el archivo JavaScript  -->
+<script src="<?php echo url; ?>app/resources/js/assignRole.js"></script>

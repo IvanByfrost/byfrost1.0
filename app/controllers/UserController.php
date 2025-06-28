@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../models/UserModel.php';
+require_once __DIR__ . '/../library/HeaderManager.php';
 require_once 'MainController.php';
 
 class UserController extends MainController
@@ -112,13 +113,43 @@ class UserController extends MainController
      * Protección de acceso solo para root
      */
     private function protectRoot() {
-        if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn() || !$this->sessionManager->hasRole('root')) {
+        // Verificar si SessionManager está disponible
+        if (!isset($this->sessionManager)) {
+            error_log("UserController::protectRoot - SessionManager no disponible");
             if ($this->isAjaxRequest()) {
-                $this->sendJsonResponse(false, 'No tienes permisos para realizar esta acción');
+                $this->sendJsonResponse(false, 'Error de sesión: SessionManager no disponible');
             } else {
-                header('Location: /?view=unauthorized');
+                HeaderManager::redirect('/?view=index&action=login');
             }
             exit;
         }
+        
+        // Verificar si el usuario está logueado
+        if (!$this->sessionManager->isLoggedIn()) {
+            error_log("UserController::protectRoot - Usuario no logueado");
+            if ($this->isAjaxRequest()) {
+                $this->sendJsonResponse(false, 'No estás logueado. Por favor, inicia sesión.');
+            } else {
+                HeaderManager::redirect('/?view=index&action=login');
+            }
+            exit;
+        }
+        
+        // Verificar si el usuario tiene rol de root
+        if (!$this->sessionManager->hasRole('root')) {
+            $user = $this->sessionManager->getCurrentUser();
+            $userRole = $user['role'] ?? 'sin rol';
+            error_log("UserController::protectRoot - Usuario sin permisos: " . $user['email'] . " (rol: " . $userRole . ")");
+            
+            if ($this->isAjaxRequest()) {
+                $this->sendJsonResponse(false, 'No tienes permisos para realizar esta acción. Necesitas rol de root.');
+            } else {
+                HeaderManager::redirect('/?view=unauthorized');
+            }
+            exit;
+        }
+        
+        // Si llegamos aquí, el usuario tiene permisos
+        error_log("UserController::protectRoot - Acceso autorizado para usuario: " . $this->sessionManager->getCurrentUser()['email']);
     }
 } 

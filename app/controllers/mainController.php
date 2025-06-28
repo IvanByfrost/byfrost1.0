@@ -1,18 +1,24 @@
 <?php
+require_once __DIR__ . '/../library/SessionMiddleware.php';
+
 class MainController
 {
     //Conexión a la base de datos.
     protected $dbConn;
     protected $view;
     protected $sessionManager;
+    
     public function __construct($dbConn, $view = null)
     {
         $this->dbConn = $dbConn;
         $this->view = $view;
         
-        // Incluir SessionManager explícitamente
-        require_once __DIR__ . '/../library/SessionManager.php';
-        $this->sessionManager = new SessionManager();
+        // Usar el middleware de sesión
+        SessionMiddleware::handle(function() {
+            // Incluir SessionManager explícitamente
+            require_once __DIR__ . '/../library/SessionManager.php';
+            $this->sessionManager = new SessionManager();
+        });
     }
 
     // Función para renderizar vistas
@@ -173,12 +179,22 @@ class MainController
      */
     protected function sendJsonResponse($success, $message, $data = [])
     {
-        header('Content-Type: application/json');
-        echo json_encode([
-            'success' => $success,
-            'message' => $message,
-            'data' => $data
-        ]);
+        require_once __DIR__ . '/../library/HeaderManager.php';
+        
+        if (HeaderManager::sendJsonHeaders()) {
+            echo json_encode([
+                'success' => $success,
+                'message' => $message,
+                'data' => $data
+            ]);
+        } else {
+            // Fallback si no se pueden enviar headers
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error: No se pueden enviar headers',
+                'data' => []
+            ]);
+        }
         exit;
     }
 

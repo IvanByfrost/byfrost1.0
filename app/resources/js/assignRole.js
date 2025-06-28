@@ -81,11 +81,31 @@ function searchUsersByDocument(credentialType, credentialNumber) {
         }
     })
     .then(response => {
-        console.log('Respuesta recibida:', response.status);
+        console.log('Respuesta recibida:', response.status, response.statusText);
+        
+        // Verificar si hay redirección
+        if (response.redirected) {
+            console.warn('Detectada redirección a:', response.url);
+            throw new Error('Se detectó una redirección. Posible problema de sesión o permisos.');
+        }
+        
+        // Verificar si la respuesta es HTML (página completa) en lugar de parcial
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('text/html')) {
+            console.log('Respuesta es HTML completo');
+        }
+        
         return response.text();
     })
     .then(html => {
         console.log('HTML recibido, procesando...');
+        console.log('Longitud del HTML:', html.length);
+        
+        // Verificar si el HTML contiene indicadores de redirección
+        if (html.includes('login') || html.includes('Login') || html.includes('unauthorized')) {
+            console.error('Detectada página de login o unauthorized en la respuesta');
+            throw new Error('Se detectó una página de login o unauthorized. Posible problema de sesión.');
+        }
         
         // Extraer solo la sección de resultados de la respuesta HTML
         const parser = new DOMParser();
@@ -109,8 +129,34 @@ function searchUsersByDocument(credentialType, credentialNumber) {
     })
     .catch(error => {
         console.error('Error en búsqueda:', error);
+        
+        let errorMessage = 'Error al buscar usuarios: ' + error.message;
+        
+        // Mostrar mensaje específico según el tipo de error
+        if (error.message.includes('redirección') || error.message.includes('login')) {
+            errorMessage = 'Problema de sesión detectado. Por favor, <a href="' + BASE_URL + '?view=index&action=login" target="_blank">inicia sesión</a> nuevamente.';
+        }
+        
         if (resultsContainer) {
-            resultsContainer.innerHTML = '<div class="alert alert-danger">Error al buscar usuarios: ' + error.message + '</div>';
+            resultsContainer.innerHTML = '<div class="alert alert-danger">' + errorMessage + '</div>';
+        }
+        
+        // Mostrar alerta adicional para errores críticos
+        if (error.message.includes('redirección') || error.message.includes('login')) {
+            if (typeof Swal !== "undefined") {
+                Swal.fire({
+                    title: 'Problema de Sesión',
+                    text: 'Se detectó un problema con tu sesión. Por favor, inicia sesión nuevamente.',
+                    icon: 'warning',
+                    confirmButtonText: 'Ir al Login'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = BASE_URL + '?view=index&action=login';
+                    }
+                });
+            } else {
+                alert('Problema de sesión detectado. Por favor, inicia sesión nuevamente.');
+            }
         }
     });
 }
