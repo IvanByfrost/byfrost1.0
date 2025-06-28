@@ -7,9 +7,9 @@
 echo "<h1>🔍 Diagnóstico Completo: Sistema AssignRole</h1>";
 
 // Incluir dependencias
-require_once 'config.php';
-require_once 'app/library/SessionManager.php';
-require_once 'app/scripts/connection.php';
+require_once '../config.php';
+require_once '../app/library/SessionManager.php';
+require_once '../app/scripts/connection.php';
 
 // Obtener conexión
 $dbConn = getConnection();
@@ -35,11 +35,11 @@ if (!$sessionManager->isLoggedIn()) {
 
 echo "<h2>2. Verificación de Archivos Críticos</h2>";
 $files = [
-    'app/controllers/UserController.php' => 'Controlador principal',
-    'app/models/UserModel.php' => 'Modelo de usuarios',
-    'app/views/user/assignRole.php' => 'Vista de asignación',
-    'app/resources/js/assignRole.js' => 'JavaScript AJAX',
-    'app/controllers/MainController.php' => 'Controlador base'
+    '../app/controllers/UserController.php' => 'Controlador principal',
+    '../app/models/UserModel.php' => 'Modelo de usuarios',
+    '../app/views/user/assignRole.php' => 'Vista de asignación',
+    '../app/resources/js/assignRole.js' => 'JavaScript AJAX',
+    '../app/controllers/MainController.php' => 'Controlador base'
 ];
 
 foreach ($files as $file => $description) {
@@ -75,7 +75,7 @@ try {
 
 echo "<h2>4. Test de UserController</h2>";
 try {
-    require_once 'app/controllers/UserController.php';
+    require_once '../app/controllers/UserController.php';
     $userController = new UserController($dbConn);
     echo "<div class='alert alert-success'>✅ UserController cargado correctamente</div>";
     
@@ -97,7 +97,7 @@ try {
 
 echo "<h2>5. Test de UserModel</h2>";
 try {
-    require_once 'app/models/UserModel.php';
+    require_once '../app/models/UserModel.php';
     $userModel = new UserModel($dbConn);
     echo "<div class='alert alert-success'>✅ UserModel cargado correctamente</div>";
     
@@ -117,7 +117,7 @@ echo "<h2>6. Test de URLs</h2>";
 echo "<div>URLs para probar:</div>";
 echo "<ul>";
 echo "<li><a href='http://localhost:8000/?view=user&action=assignRole' target='_blank'>AssignRole (sin parámetros)</a></li>";
-echo "<li><a href='http://localhost:8000/?view=user&action=assignRole&credential_type=CC&credential_number=1031180139' target='_blank'>AssignRole (con búsqueda)</a></li>";
+echo "<li><a href='http://localhost:8000/?view=user&action=assignRole&credential_type=CC&credential_number=1031180139' target='_blank'>AssignRole (con parámetros)</a></li>";
 echo "<li><a href='http://localhost:8000/?view=root&action=dashboard' target='_blank'>Dashboard Root</a></li>";
 echo "</ul>";
 

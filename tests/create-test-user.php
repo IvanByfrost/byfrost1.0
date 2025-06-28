@@ -6,9 +6,9 @@
 echo "<h1>👤 Crear Usuario de Prueba</h1>";
 
 // Incluir dependencias
-require_once 'config.php';
-require_once 'app/scripts/connection.php';
-require_once 'app/models/UserModel.php';
+require_once '../config.php';
+require_once '../app/scripts/connection.php';
+require_once '../app/models/UserModel.php';
 
 $dbConn = getConnection();
 

@@ -113,4 +113,65 @@ class IndexController extends MainController
         header('Location: ' . $url);
         exit;
     }
+
+    /**
+     * Carga una vista parcial vía AJAX
+     * Útil para cargar contenido en dashboards sin header y footer
+     */
+    public function loadPartial()
+    {
+        // Obtener parámetros
+        $view = $_POST['view'] ?? $_GET['view'] ?? '';
+        $action = $_POST['action'] ?? $_GET['action'] ?? 'index';
+        $force = isset($_POST['force']) || isset($_GET['force']); // Permitir forzar la carga
+        
+        // Verificar que sea una petición AJAX o esté forzada
+        if (!$this->isAjaxRequest() && !$force) {
+            // Si no es AJAX, mostrar un mensaje de error más informativo
+            if (empty($view)) {
+                echo '<div class="alert alert-warning">Vista no especificada. Use: ?view=index&action=loadPartial&view=nombreVista&action=accion</div>';
+                return;
+            }
+            
+            // Si se especifica una vista, cargarla directamente
+            $viewPath = $view . '/' . $action;
+            $fullPath = ROOT . "/app/views/{$viewPath}.php";
+            
+            if (!file_exists($fullPath)) {
+                echo '<div class="alert alert-danger">Vista no encontrada: ' . htmlspecialchars($viewPath) . '</div>';
+                return;
+            }
+            
+            // Cargar la vista parcial directamente
+            try {
+                $this->loadPartialView($viewPath);
+            } catch (Exception $e) {
+                echo '<div class="alert alert-danger">Error al cargar la vista: ' . htmlspecialchars($e->getMessage()) . '</div>';
+            }
+            return;
+        }
+        
+        if (empty($view)) {
+            $this->sendJsonResponse(false, 'Vista no especificada');
+            return;
+        }
+        
+        // Construir la ruta de la vista
+        $viewPath = $view . '/' . $action;
+        
+        // Verificar que el archivo existe
+        $fullPath = ROOT . "/app/views/{$viewPath}.php";
+        
+        if (!file_exists($fullPath)) {
+            $this->sendJsonResponse(false, "Vista no encontrada: {$viewPath}");
+            return;
+        }
+        
+        // Cargar la vista parcial
+        try {
+            $this->loadPartialView($viewPath);
+        } catch (Exception $e) {
+            $this->sendJsonResponse(false, 'Error al cargar la vista: ' . $e->getMessage());
+        }
+    }
 }

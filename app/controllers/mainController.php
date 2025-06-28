@@ -52,6 +52,41 @@ class MainController
     }
     
     /**
+     * Renderiza una vista parcial sin header y footer
+     * Útil para cargar contenido en dashboards o AJAX
+     */
+    protected function renderPartial($folder, $file = 'index', $data = [])
+    {
+        $viewPath = ROOT . "/app/views/{$folder}/{$file}.php";
+        
+        if (file_exists($viewPath)) {
+            extract($data);
+            require $viewPath;
+        } else {
+            echo "Vista parcial no encontrada: $viewPath";
+        }
+    }
+    
+    /**
+     * Renderiza solo el contenido de la vista sin ningún layout
+     * Retorna el contenido como string
+     */
+    protected function renderContent($folder, $file = 'index', $data = [])
+    {
+        $viewPath = ROOT . "/app/views/{$folder}/{$file}.php";
+        
+        if (file_exists($viewPath)) {
+            extract($data);
+            ob_start();
+            require $viewPath;
+            $content = ob_get_clean();
+            return $content;
+        } else {
+            return "Vista no encontrada: $viewPath";
+        }
+    }
+    
+    /**
      * Redirige a una URL específica
      * 
      * @param string $url URL de destino
@@ -101,8 +136,31 @@ class MainController
      */
     protected function isAjaxRequest()
     {
-        return !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
-               strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+        // Método 1: Verificar HTTP_X_REQUESTED_WITH
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            return true;
+        }
+        
+        // Método 2: Verificar si es una petición fetch moderna
+        if (!empty($_SERVER['HTTP_ACCEPT']) && 
+            strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false) {
+            return true;
+        }
+        
+        // Método 3: Verificar si hay parámetros específicos de AJAX
+        if (isset($_POST['ajax']) || isset($_GET['ajax'])) {
+            return true;
+        }
+        
+        // Método 4: Verificar Content-Type para peticiones POST
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && 
+            !empty($_SERVER['CONTENT_TYPE']) && 
+            strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
+            return true;
+        }
+        
+        return false;
     }
 
     /**
@@ -122,5 +180,25 @@ class MainController
             'data' => $data
         ]);
         exit;
+    }
+
+    /**
+     * Carga una vista parcial sin header y footer
+     * Útil para cargar contenido en dashboards o AJAX
+     * 
+     * @param string $viewPath Ruta de la vista (ej: 'school/consultSchool')
+     * @param array $data Datos a pasar a la vista
+     * @return void
+     */
+    protected function loadPartialView($viewPath, $data = [])
+    {
+        $viewPath = ROOT . "/app/views/{$viewPath}.php";
+        
+        if (file_exists($viewPath)) {
+            extract($data);
+            require $viewPath;
+        } else {
+            echo "Vista parcial no encontrada: $viewPath";
+        }
     }
 }

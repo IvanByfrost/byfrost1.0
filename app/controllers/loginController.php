@@ -105,10 +105,8 @@ class LoginController extends MainController
                     if ($loginSuccess) {
                         unset($user['password_hash']);
 
-                        $validRoles = ['professor', 'student', 'director', 'coordinator', 'treasurer', 'parent', 'root'];
-                        $redirectPage = in_array($user['rol'], $validRoles)
-                            ? "{$user['rol']}/dashboard"
-                            : 'login.php';
+                        // Guardar el rol en la sesión para que charger.php sepa a dónde redirigir
+                        $this->sessionManager->setSessionData('ByFrost_redirect', $user['rol'] . '&action=dashboard');
 
                         echo json_encode([
                             "status" => "ok",
