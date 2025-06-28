@@ -1,7 +1,9 @@
 <?php
+// Definir ROOT solo si no está definido
 if (!defined('ROOT')) {
-    define('ROOT', dirname(__DIR__, 2)); // Ruta absoluta al proyecto
+    define('ROOT', __DIR__);
 }
+
 if (!defined('BASE_URL')) {
     define('BASE_URL', '/'); // Sin prefijo para desarrollo local
 }

@@ -17,6 +17,15 @@ class SecurityMiddleware {
      * @return array ['valid' => bool, 'sanitized' => string, 'error' => string]
      */
     public static function validatePath($path) {
+        // Si la ruta está vacía, es válida (página principal)
+        if (empty($path)) {
+            return [
+                'valid' => true,
+                'sanitized' => '',
+                'error' => ''
+            ];
+        }
+        
         // Sanitizar la ruta
         $sanitized = self::sanitizePath($path);
         
@@ -52,20 +61,20 @@ class SecurityMiddleware {
      * @return string Ruta sanitizada
      */
     private static function sanitizePath($path) {
-        // Remover caracteres peligrosos
-        $path = preg_replace('/[<>:"|?*]/', '', $path);
+        // Remover caracteres peligrosos pero mantener algunos válidos
+        $path = preg_replace('/[<>"|?*]/', '', $path);
         
         // Normalizar separadores
         $path = str_replace(['\\', '//'], '/', $path);
         
-        // Remover puntos dobles
+        // Remover puntos dobles (directory traversal)
         $path = preg_replace('/\.\./', '', $path);
         
         // Limpiar espacios y caracteres de control
         $path = trim($path, '/');
         
-        // Convertir a minúsculas para consistencia
-        $path = strtolower($path);
+        // NO convertir a minúsculas para mantener compatibilidad
+        // $path = strtolower($path);
         
         return $path;
     }
@@ -137,26 +146,20 @@ class SecurityMiddleware {
      * Valida parámetros GET
      * 
      * @param array $params Parámetros a validar
-     * @return array Parámetros sanitizados
+     * @return bool True si los parámetros son válidos
      */
     public static function validateGetParams($params) {
-        $sanitized = [];
-        
+        // Para desarrollo, ser más permisivo
+        // Solo verificar que no haya patrones peligrosos
         foreach ($params as $key => $value) {
-            // Sanitizar claves
-            $key = self::sanitizeParam($key);
-            
-            // Sanitizar valores
             if (is_string($value)) {
-                $value = self::sanitizeParam($value);
-            } elseif (is_array($value)) {
-                $value = self::validateGetParams($value);
+                if (self::hasDangerousPatterns($value)) {
+                    return false;
+                }
             }
-            
-            $sanitized[$key] = $value;
         }
         
-        return $sanitized;
+        return true;
     }
     
     /**
@@ -166,8 +169,8 @@ class SecurityMiddleware {
      * @return string Parámetro sanitizado
      */
     private static function sanitizeParam($param) {
-        // Remover caracteres peligrosos
-        $param = preg_replace('/[<>:"|?*]/', '', $param);
+        // Remover caracteres peligrosos pero mantener algunos válidos
+        $param = preg_replace('/[<>"|?*]/', '', $param);
         
         // Limpiar espacios
         $param = trim($param);

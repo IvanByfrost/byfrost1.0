@@ -134,5 +134,5 @@ if (!isset($_GET['url']) && !empty($path)) {
     error_log("DEBUG - Establecido _GET['url'] = " . $path);
 }
 
-// Iniciar enrutador
-$router = new Router($dbConn, $view);
+// Incluir el router principal
+require_once ROOT . '/app/scripts/routerView.php';
