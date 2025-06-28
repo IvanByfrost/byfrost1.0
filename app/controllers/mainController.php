@@ -67,4 +67,41 @@ class MainController
             echo "<noscript><meta http-equiv='refresh' content='0;url=" . htmlspecialchars($url) . "'></noscript>";
         }
     }
+
+    /**
+     * Carga una vista específica con datos
+     * 
+     * @param string $viewPath Ruta de la vista (ej: 'school/consultSchool')
+     * @param array $data Datos a pasar a la vista
+     * @return void
+     */
+    protected function loadView($viewPath, $data = [])
+    {
+        $viewPath = ROOT . "/app/views/{$viewPath}.php";
+        
+        if (file_exists($viewPath)) {
+            extract($data);
+            require ROOT . '/app/views/layouts/head.php';
+            require ROOT . '/app/views/layouts/header.php';
+            require $viewPath;
+            require ROOT . '/app/views/layouts/footer.php';
+        } else {
+            // Redirigir a la página de error 404
+            http_response_code(404);
+            require_once ROOT . '/app/controllers/errorController.php';
+            $error = new ErrorController($this->dbConn);
+            $error->Error('404');
+        }
+    }
+
+    /**
+     * Verifica si la petición es AJAX
+     * 
+     * @return bool
+     */
+    protected function isAjaxRequest()
+    {
+        return !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+               strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+    }
 }

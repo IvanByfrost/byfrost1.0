@@ -64,9 +64,87 @@ class SchoolController extends MainController
         }
     }
 
+    public function consultSchool()
+    {
+        try {
+            // Obtener datos de búsqueda
+            $searchData = [];
+            
+            if (isset($_POST['nit']) && !empty($_POST['nit'])) {
+                $searchData['nit'] = trim($_POST['nit']);
+            }
+            
+            if (isset($_POST['school_name']) && !empty($_POST['school_name'])) {
+                $searchData['school_name'] = trim($_POST['school_name']);
+            }
+            
+            if (isset($_POST['codigoDANE']) && !empty($_POST['codigoDANE'])) {
+                $searchData['codigoDANE'] = trim($_POST['codigoDANE']);
+            }
+            
+            // Si no hay parámetros específicos, usar búsqueda general
+            if (empty($searchData)) {
+                $searchTerm = $_POST['search'] ?? $_GET['search'] ?? '';
+                if (!empty($searchTerm)) {
+                    $searchData['search'] = trim($searchTerm);
+                }
+            }
+            
+            // Si no hay ningún término de búsqueda, obtener todas las escuelas
+            if (empty($searchData)) {
+                $schools = $this->schoolModel->getAllSchools();
+            } else {
+                $schools = $this->schoolModel->consultSchool($searchData);
+            }
+            
+            // Preparar respuesta
+            $response = [
+                'success' => true,
+                'message' => count($schools) > 0 ? 'Escuelas encontradas' : 'No se encontraron escuelas',
+                'count' => count($schools),
+                'data' => $schools
+            ];
+            
+            // Si es una petición AJAX, devolver JSON
+            if ($this->isAjaxRequest()) {
+                header('Content-Type: application/json');
+                echo json_encode($response);
+                return;
+            }
+            
+            // Si no es AJAX, cargar la vista con los datos
+            $this->loadView('school/consultSchool', [
+                'schools' => $schools,
+                'searchData' => $searchData,
+                'message' => $response['message']
+            ]);
+            
+        } catch (Exception $e) {
+            error_log("Error en SchoolController::consultSchool: " . $e->getMessage());
+            
+            $errorResponse = [
+                'success' => false,
+                'message' => 'Error al consultar las escuelas',
+                'error' => $e->getMessage()
+            ];
+            
+            if ($this->isAjaxRequest()) {
+                header('Content-Type: application/json');
+                echo json_encode($errorResponse);
+                return;
+            }
+            
+            $this->loadView('school/consultSchool', [
+                'schools' => [],
+                'searchData' => [],
+                'error' => 'Error al consultar las escuelas'
+            ]);
+        }
+    }
+
     // Protección de acceso solo para escuela o tesorero
     private function protectSchool() {
-        if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn() || !$this->sessionManager->hasAnyRole(['school', 'treasurer'])) {
+        if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn() || !$this->sessionManager->hasAnyRole(['director', 'coordinator', 'treasurer'])) {
             header('Location: /?view=unauthorized');
             exit;
         }
