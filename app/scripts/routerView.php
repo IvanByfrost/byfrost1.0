@@ -40,9 +40,9 @@ if (!empty($action)) {
 }
 
 // Debug: mostrar la ruta que se está construyendo
-echo "<!-- Debug: ROOT = " . ROOT . " -->";
-echo "<!-- Debug: view = " . htmlspecialchars($view) . " -->";
-echo "<!-- Debug: action = " . htmlspecialchars($action) . " -->";
+// echo "<!-- Debug: ROOT = " . ROOT . " -->";
+// echo "<!-- Debug: view = " . htmlspecialchars($view) . " -->";
+// echo "<!-- Debug: action = " . htmlspecialchars($action) . " -->";
 
 // Seguridad extendida
 if (
@@ -77,8 +77,8 @@ if (isset($controllerMapping[$view])) {
     $controllerName = $controllerMapping[$view];
     $controllerPath = ROOT . "/app/controllers/{$controllerName}.php";
     
-    echo "<!-- Debug: Controlador mapeado: " . $controllerName . " -->";
-    echo "<!-- Debug: Ruta del controlador: " . $controllerPath . " -->";
+    // echo "<!-- Debug: Controlador mapeado: " . $controllerName . " -->";
+    // echo "<!-- Debug: Ruta del controlador: " . $controllerPath . " -->";
     
     if (file_exists($controllerPath)) {
         // Cargar el controlador
@@ -94,7 +94,7 @@ if (isset($controllerMapping[$view])) {
         // Si hay una acción específica, llamarla
         if (!empty($action)) {
             if (method_exists($controller, $action)) {
-                echo "<!-- Debug: Llamando método: " . $action . " -->";
+                // echo "<!-- Debug: Llamando método: " . $action . " -->";
                 $controller->$action();
             } else {
                 http_response_code(404);
@@ -129,10 +129,10 @@ if (isset($controllerMapping[$view])) {
     // Si no hay controlador mapeado, intentar cargar como vista directa
     $viewPath = ROOT . "/app/views/" . $view . ".php";
     
-    echo "<!-- Debug: Intentando cargar como vista directa: " . $viewPath . " -->";
+    // echo "<!-- Debug: Intentando cargar como vista directa: " . $viewPath . " -->";
     
     if (file_exists($viewPath)) {
-        echo "<!-- Debug: Cargando vista: " . $viewPath . " -->";
+        // echo "<!-- Debug: Cargando vista: " . $viewPath . " -->";
         require_once $viewPath;
     } else {
         http_response_code(404);

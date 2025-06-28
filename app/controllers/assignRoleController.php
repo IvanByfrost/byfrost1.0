@@ -13,4 +13,9 @@ class AssignRoleController extends MainController {
         $userModel = new UserModel($this->db);
         return $userModel->assignRole($userId, $roleType);
     }
+
+        public function searchUsersByDocument($credentialType, $credentialNumber) {
+        $userModel = new UserModel($this->db);
+        return $userModel->searchUsersByDocument($credentialType, $credentialNumber);
+    }
 }

@@ -36,4 +36,18 @@ try {
         'message' => 'Error: ' . $e->getMessage()
     ]);
 }
+
+try {
+    $ok = $model->searchUsersByDocument($credentialType, $credentialNumber);
+    
+    echo json_encode([
+        'success' => $ok,
+        'message' => $ok ? 'Usuario encontrado' : 'Error al asignar rol'
+    ]);
+} catch (Exception $e) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Error: ' . $e->getMessage()
+    ]);
+}
 ?>
