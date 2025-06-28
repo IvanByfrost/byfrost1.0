@@ -1,17 +1,15 @@
 <?php
-session_start();
 if (!defined('ROOT')) {
     define('ROOT', dirname(dirname((__DIR__))));
 }
 require_once ROOT . '/config.php';
-//require ROOT . '/app/scripts/connection.php';
-require_once 'mainController.php';
+require_once 'MainController.php';
+
 class LoginController extends MainController
 {
     protected $dbConn;
 
     // Constructor de la clase 
-
     public function __construct($dbConn)
     {
         parent::__construct($dbConn);
@@ -149,5 +147,4 @@ class LoginController extends MainController
         header("Location: " . $loginUrl);
         exit;
     }
-}
-
+} 

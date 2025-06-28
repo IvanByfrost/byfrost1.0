@@ -1,23 +1,26 @@
 <?php
-session_start();
-
-// Verificar sesión
-if (!isset($_SESSION["ByFrost_id"]) || !isset($_SESSION["ByFrost_role"])) {
-    header("Location: " . url . "app/views/index/login.php");
-    exit;
-}
-
-// Verificar que sea un usuario root
-if ($_SESSION["ByFrost_role"] !== 'root') {
-    header("Location: " . url . "app/views/index/login.php");
-    exit;
-}
-
 if (!defined('ROOT')) {
     define('ROOT', dirname(dirname(dirname(__DIR__))));
 }
 
 require_once ROOT . '/config.php';
+require_once ROOT . '/app/library/SessionManager.php';
+
+// Inicializar SessionManager
+$sessionManager = new SessionManager();
+
+// Verificar si el usuario está logueado
+if (!$sessionManager->isLoggedIn()) {
+    header("Location: " . url . "?view=login");
+    exit;
+}
+
+// Verificar que sea un usuario root
+if (!$sessionManager->hasRole('root')) {
+    header("Location: " . url . "?view=unauthorized");
+    exit;
+}
+
 require_once ROOT . '/app/views/layouts/dashHeader.php';
 ?>
 

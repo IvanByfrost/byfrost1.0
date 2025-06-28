@@ -52,6 +52,8 @@ CREATE TABLE user_roles (
 CREATE TABLE schools (
     school_id INT AUTO_INCREMENT PRIMARY KEY,
     school_name VARCHAR(100) NOT NULL COMMENT 'Incluye sede: Colegio ABC - Sede Norte',
+    school_dane VARCHAR(10) NOT NULL,
+    school_document VARCHAR(10) NOT NULL,
     total_quota SMALLINT NOT NULL,
     director_user_id INT NOT NULL,
     coordinator_user_id INT NOT NULL,

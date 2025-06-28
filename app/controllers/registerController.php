@@ -11,11 +11,18 @@ class RegisterController extends MainController
 
     public function __construct($dbConn)
     {
+        parent::__construct($dbConn);
         $this->dbConn = $dbConn;
     }
 
     public function index()
     {
+        // Si ya está logueado, redirigir a su dashboard
+        if ($this->sessionManager->isLoggedIn()) {
+            $userRole = $this->sessionManager->getUserRole();
+            header('Location: /' . $userRole . '/dashboard');
+            exit;
+        }
         require_once app . views . 'index/register.php';
     }
 

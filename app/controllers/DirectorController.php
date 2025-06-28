@@ -7,17 +7,19 @@ class DirectorController extends MainController {
     protected $view;
     public function __construct($dbConn)
     {
+        parent::__construct($dbConn);
         $this->dbConn = $dbConn;
-
     }
 
     // Acción por defecto: Lista de rectores
     public function directorList() {
+        $this->protectDirector();
         $this->listAction();
     }
 
     // Mostrar la lista de rectores
     public function listAction() {
+        $this->protectDirector();
         $director = $this->dbConn->getAllRectores();
         // Cargar la vista
         require_once app.views . 'director/directorLists.php';
@@ -25,12 +27,14 @@ class DirectorController extends MainController {
 
     // Mostrar el formulario para agregar un nuevo rector
     public function newDirector() {
+        $this->protectDirector();
         // Cargar la vista del formulario
         require_once app.views . 'director/createDirector.php';
     }
 
     // Procesar la adición de un nuevo rector
     public function addDirector() {
+        $this->protectDirector();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $userName = $_POST['userName'] ?? '';
             $userLastName = $_POST['userLastName'] ?? '';
@@ -61,6 +65,7 @@ class DirectorController extends MainController {
 
     // Mostrar el formulario para editar un rector existente
     public function editDirector() {
+        $this->protectDirector();
         $id = $_GET['id'] ?? null; // Obtener ID de la URL
         if ($id) {
             $director = $this->dbConn->getRectorById($id);
@@ -76,6 +81,7 @@ class DirectorController extends MainController {
 
     // Procesar la actualización de un rector
     public function directorUpdate() {
+        $this->protectDirector();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id = $_POST['id_rector'] ?? null;
             $userName = $_POST['userName'] ?? '';
@@ -98,6 +104,7 @@ class DirectorController extends MainController {
 
     // Eliminar un rector
     public function deleteDirector() {
+        $this->protectDirector();
         $id = $_GET['id'] ?? null;
         if ($id) {
             if ($this->dbConn->deleteDirector($id)) {
@@ -108,6 +115,14 @@ class DirectorController extends MainController {
             }
         } else {
             echo "ID de rector no proporcionado para eliminar.";
+        }
+    }
+
+    // Protección de acceso solo para directores
+    private function protectDirector() {
+        if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn() || !$this->sessionManager->hasRole('director')) {
+            header('Location: /?view=unauthorized');
+            exit;
         }
     }
 }

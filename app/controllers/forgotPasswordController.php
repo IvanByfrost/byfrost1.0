@@ -11,6 +11,7 @@ class ForgotPasswordController extends MainController
 
     public function __construct($dbConn)
     {
+        parent::__construct($dbConn);
         $this->dbConn = $dbConn;
     }
 

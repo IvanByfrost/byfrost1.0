@@ -1,17 +1,20 @@
 <?php
-// Verificar que la sesión esté iniciada
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-$userName = $_SESSION["ByFrost_userName"] ?? 'Usuario';
-$userRole = $_SESSION["ByFrost_role"] ?? 'Usuario';
-
 // Define the ROOT constant if it is not already defined
 if (!defined('ROOT')) {
     define('ROOT', dirname(dirname(dirname(__DIR__))));
 }
+
 require_once ROOT . '/config.php';
+require_once ROOT . '/app/library/SessionManager.php';
+
+// Inicializar SessionManager
+$sessionManager = new SessionManager();
+
+// Obtener datos del usuario actual
+$currentUser = $sessionManager->getCurrentUser();
+$userName = $currentUser['full_name'] ?: 'Usuario';
+$userRole = $currentUser['role'] ?: 'Usuario';
+
 require_once ROOT . '/app/views/layouts/dashHead.php';
 ?>
 

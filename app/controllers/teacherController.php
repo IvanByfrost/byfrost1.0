@@ -13,6 +13,7 @@ class TeacherController extends MainController
     }
     public function showDashTeacher()
     {
+        $this->protectTeacher();
         $teachers = $this->teacherModel->getTeachers();
         $this->render('teacher/dashboard', ['teachers' => $teachers]);
     }
@@ -20,6 +21,7 @@ class TeacherController extends MainController
     // Función para crear un profesor
     public function createTeacher($data)
     {
+        $this->protectTeacher();
         //Implementar la lógica para crear un profesor
         if (empty($data['name']) || empty($data['email'])) {
             $this->render('teacher/error', ['message' => 'Faltan campos obligatorios']);
@@ -36,4 +38,11 @@ class TeacherController extends MainController
     // Función para actualizar un profesor
     // Función para eliminar un profesor
     
+    // Protección de acceso solo para profesores
+    private function protectTeacher() {
+        if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn() || !$this->sessionManager->hasRole('teacher')) {
+            header('Location: /?view=unauthorized');
+            exit;
+        }
+    }
 }

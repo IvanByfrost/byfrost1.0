@@ -14,12 +14,14 @@ class SchoolController extends MainController
 
     public function index()
     {
+        $this->protectSchool();
         // Renderizar la vista de creación de colegio
         $this->render('school', 'dashboard');
     }
 
     public function createSchool()
     {
+        $this->protectSchool();
         //1. Captar los datos del formulario.
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $requiredFields = ['school_name', 'school_dane', 'school_document'];
@@ -59,6 +61,14 @@ class SchoolController extends MainController
             }
 
             //3. Redirigir a la vista de éxito o error.
+        }
+    }
+
+    // Protección de acceso solo para escuela o tesorero
+    private function protectSchool() {
+        if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn() || !$this->sessionManager->hasAnyRole(['school', 'treasurer'])) {
+            header('Location: /?view=unauthorized');
+            exit;
         }
     }
 }
