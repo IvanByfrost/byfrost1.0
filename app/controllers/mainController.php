@@ -4,9 +4,10 @@ class MainController
     //Conexión a la base de datos.
     protected $dbConn;
     protected $view;
-    public function __construct($dbConn)
+    public function __construct($dbConn, $view = null)
     {
         $this->dbConn = $dbConn;
+        $this->view = $view;
     }
 
     // Función para renderizar vistas
@@ -37,8 +38,11 @@ class MainController
             require $viewPath;
             require ROOT . '/app/views/layouts/footer.php';
         } else {
-            http_response_code(500);
-            echo "Vista no encontrada: {$folder}/{$file}.php";
+            // Redirigir a la página de error 404
+            http_response_code(404);
+            require_once ROOT . '/app/controllers/errorController.php';
+            $error = new ErrorController($this->dbConn);
+            $error->Error('404');
         }
     }
     

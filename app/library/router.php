@@ -8,9 +8,18 @@ class Router
     protected $dbConn;
     protected $view;
 
-    public function __construct($dbConn)
+    public function __construct($dbConn, $view = null)
     {
         $this->dbConn = $dbConn;
+        $this->view = $view;
+
+        // Verificar errores primero
+        if (isset($_GET['error'])) {
+            require_once ROOT.'/app/controllers/errorController.php';
+            $error = new ErrorController($this->dbConn, $this->view);
+            $error->Error($_GET['error']);
+            return;
+        }
 
         // Si hay un parámetro 'view', usar el routerView
         if (isset($_GET['view'])) {
@@ -18,14 +27,24 @@ class Router
             return;
         }
 
+        // Si no hay parámetro 'url', puede ser una ruta no manejada por Apache
+        if (!isset($_GET['url'])) {
+            // Obtener la ruta de la URL actual
+            $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+            $basePath = '/byfrost1.0/';
+            
+            if (strpos($requestUri, $basePath) === 0) {
+                $path = substr($requestUri, strlen($basePath));
+                $path = trim($path, '/');
+                
+                if (!empty($path)) {
+                    $_GET['url'] = $path;
+                }
+            }
+        }
+
         $this->parseUrl();
         $this->loadController();
-        if (isset($_GET['error'])) {
-            require_once ROOT.'/app/controllers/errorController.php';
-            $error = new ErrorController($this->dbConn, $this->view);
-            $error->Error($_GET['error']);
-            return;
-        }
     }
 
     protected function parseUrl()
@@ -58,6 +77,7 @@ class Router
                 $this->handleError("Método '{$this->method}' no encontrado.");
             }
         } else {
+            // Si el controlador no existe, redirigir a 404
             $this->handleError("Controlador '{$this->controller}' no encontrado.");
         }
     }
@@ -79,7 +99,7 @@ class Router
                 break;
             case 404:
             default:
-                $error->Error($message); // mensaje personalizado o código
+                $error->Error('404'); // Siempre usar '404' para errores de página no encontrada
                 break;
         }
     }
