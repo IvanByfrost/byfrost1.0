@@ -6,7 +6,11 @@ window.loadView = function(viewName) {
     }
 
     console.log("Cargando vista:", viewName);
-    fetch(`${BASE_URL}app/scripts/routerView.php?view=${viewName}`)
+    
+    // Mostrar indicador de carga
+    target.innerHTML = '<div class="text-center p-4"><i class="fas fa-spinner fa-spin"></i> Cargando...</div>';
+    
+    fetch(`${BASE_URL}?view=${viewName}`)
         .then(response => {
             if (!response.ok) throw new Error("Vista no encontrada.");
             return response.text();
@@ -16,6 +20,8 @@ window.loadView = function(viewName) {
         })
         .catch(err => {
             console.error("Error al cargar la vista:", err);
+            target.innerHTML = '<div class="alert alert-danger">Error al cargar la vista: ' + err.message + '</div>';
+            
             if (typeof Swal !== "undefined") {
                 Swal.fire({
                     title: 'Error',

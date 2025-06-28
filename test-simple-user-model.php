@@ -24,7 +24,7 @@ try {
     
     if (!empty($searchResults)) {
         echo "<div style='color: blue;'>📋 Usuario encontrado: " . $searchResults[0]['first_name'] . " " . $searchResults[0]['last_name'] . "</div>";
-        echo "<div style='color: blue;'>📋 Rol actual: " . ($searchResults[0]['current_role'] ?? 'Sin rol') . "</div>";
+        echo "<div style='color: blue;'>📋 Rol actual: " . ($searchResults[0]['user_role'] ?? 'Sin rol') . "</div>";
     } else {
         echo "<div style='color: orange;'>⚠️ No se encontró el usuario 1031180139</div>";
     }

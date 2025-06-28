@@ -208,7 +208,7 @@ class UserModel extends MainModel
                         u.email,
                         u.phone,
                         u.address,
-                        ur.role_type as current_role
+                        ur.role_type as user_role
                       FROM users u
                       LEFT JOIN user_roles ur ON u.user_id = ur.user_id AND ur.is_active = 1
                       WHERE u.credential_type = :credential_type 

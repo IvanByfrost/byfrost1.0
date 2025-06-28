@@ -98,7 +98,7 @@ try {
                     u.email,
                     u.phone,
                     u.address,
-                    ur.role_type as current_role
+                    ur.role_type as user_role
                   FROM users u
                   LEFT JOIN user_roles ur ON u.user_id = ur.user_id AND ur.is_active = 1
                   WHERE u.credential_type = 'CC' 
@@ -117,6 +117,7 @@ try {
         
         if (!empty($results)) {
             echo "<div style='color: blue;'>📋 Usuario encontrado: " . $results[0]['first_name'] . " " . $results[0]['last_name'] . "</div>";
+            echo "<div style='color: blue;'>📋 Rol actual: " . ($results[0]['user_role'] ?? 'Sin rol') . "</div>";
         } else {
             echo "<div style='color: orange;'>⚠️ No se encontró el usuario 1031180139</div>";
         }

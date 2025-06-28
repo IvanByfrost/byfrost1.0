@@ -104,9 +104,9 @@ $roles = $roles ?? [];
                                             </td>
                                             <td><?php echo htmlspecialchars($user['email'] ?? 'No especificado'); ?></td>
                                             <td>
-                                                <?php if (!empty($user['current_role'])): ?>
+                                                <?php if (!empty($user['user_role'])): ?>
                                                     <span class="badge bg-success">
-                                                        <?php echo htmlspecialchars(ucfirst($user['current_role'])); ?>
+                                                        <?php echo htmlspecialchars(ucfirst($user['user_role'])); ?>
                                                     </span>
                                                 <?php else: ?>
                                                     <span class="badge bg-warning">Sin rol</span>
@@ -114,7 +114,7 @@ $roles = $roles ?? [];
                                             </td>
                                             <td>
                                                 <button type="button" class="btn btn-sm btn-primary" 
-                                                        onclick="showAssignRoleModal(<?php echo $user['user_id']; ?>, '<?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?>', '<?php echo htmlspecialchars($user['current_role'] ?? ''); ?>')">
+                                                        onclick="showAssignRoleModal(<?php echo $user['user_id']; ?>, '<?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?>', '<?php echo htmlspecialchars($user['user_role'] ?? ''); ?>')">
                                                     <i class="fas fa-user-tag"></i> Asignar Rol
                                                 </button>
                                             </td>
