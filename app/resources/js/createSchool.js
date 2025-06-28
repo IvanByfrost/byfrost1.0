@@ -67,54 +67,69 @@ document.addEventListener('DOMContentLoaded', function() {
  * Valida el formulario completo
  */
 function validateForm() {
-    const schoolName = document.getElementById('school_name').value.trim();
-    const schoolDane = document.getElementById('school_dane').value.trim();
-    const schoolDocument = document.getElementById('school_document').value.trim();
-    const email = document.getElementById('email').value.trim();
+    // Obtener elementos del formulario
+    const schoolNameInput = document.getElementById('school_name');
+    const schoolDaneInput = document.getElementById('school_dane');
+    const schoolDocumentInput = document.getElementById('school_document');
+    const emailInput = document.getElementById('email');
+    const quotaInput = document.getElementById('total_quota');
+    
+    // Verificar que los elementos existan
+    if (!schoolNameInput || !schoolDaneInput || !schoolDocumentInput) {
+        console.error('Elementos del formulario no encontrados');
+        showError('Error: Formulario incompleto');
+        return false;
+    }
+    
+    // Obtener valores
+    const schoolName = schoolNameInput.value.trim();
+    const schoolDane = schoolDaneInput.value.trim();
+    const schoolDocument = schoolDocumentInput.value.trim();
+    const email = emailInput ? emailInput.value.trim() : '';
+    const quota = quotaInput ? quotaInput.value : '';
     
     // Validar campos obligatorios
     if (!schoolName) {
         showError('El nombre de la escuela es obligatorio');
-        document.getElementById('school_name').focus();
+        schoolNameInput.focus();
         return false;
     }
     
     if (!schoolDane) {
         showError('El código DANE es obligatorio');
-        document.getElementById('school_dane').focus();
+        schoolDaneInput.focus();
         return false;
     }
     
     if (schoolDane.length < 10) {
         showError('El código DANE debe tener al menos 10 dígitos');
-        document.getElementById('school_dane').focus();
+        schoolDaneInput.focus();
         return false;
     }
     
     if (!schoolDocument) {
         showError('El NIT es obligatorio');
-        document.getElementById('school_document').focus();
+        schoolDocumentInput.focus();
         return false;
     }
     
     if (schoolDocument.length < 8) {
         showError('El NIT debe tener al menos 8 caracteres');
-        document.getElementById('school_document').focus();
+        schoolDocumentInput.focus();
         return false;
     }
     
     // Validar formato de email si se proporciona
     if (email && !isValidEmail(email)) {
         showError('Por favor ingrese un formato de email válido');
-        document.getElementById('email').focus();
+        emailInput.focus();
         return false;
     }
     
     // Validar que el cupo total sea un número válido
-    const quota = document.getElementById('total_quota').value;
     if (quota && (isNaN(quota) || quota < 0)) {
         showError('El cupo total debe ser un número positivo');
-        document.getElementById('total_quota').focus();
+        quotaInput.focus();
         return false;
     }
     
@@ -147,7 +162,17 @@ function isValidEmail(email) {
  */
 function submitForm() {
     const form = document.getElementById('createSchool');
+    if (!form) {
+        console.error('Formulario no encontrado');
+        return;
+    }
+    
     const submitBtn = form.querySelector('button[type="submit"]');
+    if (!submitBtn) {
+        console.error('Botón de envío no encontrado');
+        return;
+    }
+    
     const originalText = submitBtn.innerHTML;
     
     // Deshabilitar botón y mostrar loading
@@ -162,7 +187,12 @@ function submitForm() {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error de red: ' + response.status);
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.status === 'success') {
             showSuccess(data.msg);
@@ -171,7 +201,7 @@ function submitForm() {
                 window.location.href = '?view=school&action=consultSchool';
             }, 2000);
         } else {
-            showError(data.msg);
+            showError(data.msg || 'Error al crear la escuela');
             // Habilitar botón
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
@@ -201,14 +231,19 @@ function showError(message) {
     `;
     
     const container = document.querySelector('.container');
-    container.insertBefore(alertDiv, container.firstChild);
-    
-    // Auto-remover después de 5 segundos
-    setTimeout(() => {
-        if (alertDiv.parentNode) {
-            alertDiv.remove();
-        }
-    }, 5000);
+    if (container) {
+        container.insertBefore(alertDiv, container.firstChild);
+        
+        // Auto-remover después de 5 segundos
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    } else {
+        // Si no hay container, usar alert
+        alert(message);
+    }
 }
 
 /**
@@ -226,7 +261,12 @@ function showSuccess(message) {
     `;
     
     const container = document.querySelector('.container');
-    container.insertBefore(alertDiv, container.firstChild);
+    if (container) {
+        container.insertBefore(alertDiv, container.firstChild);
+    } else {
+        // Si no hay container, usar alert
+        alert(message);
+    }
 }
 
 /**
