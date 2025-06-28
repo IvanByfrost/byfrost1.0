@@ -8,10 +8,9 @@ class Router
     protected $dbConn;
     protected $view;
 
-    public function __construct($dbConn, $view)
+    public function __construct($dbConn)
     {
         $this->dbConn = $dbConn;
-        $this->view = $view;
 
         // Si hay un parámetro 'view', usar el routerView
         if (isset($_GET['view'])) {
