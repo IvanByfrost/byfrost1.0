@@ -11,7 +11,7 @@ class IndexController extends MainController
     /**
      * Página principal
      */
-    public function Index() 
+    public function index() 
     {
         $this->render('index', 'index');
     }

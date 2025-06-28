@@ -8,24 +8,39 @@
 class SessionMiddleware {
     
     /**
+     * Rutas públicas que no requieren sesión
+     */
+    private static $publicRoutes = [
+        'index' => ['index', 'login', 'register', 'contact', 'about', 'plans', 'faq', 'forgotPassword', 'resetPassword', 'completeProf'],
+        'Error' => ['404', '403', '500', 'unauthorized']
+    ];
+    
+    /**
      * Ejecuta el middleware de sesión
      * 
      * @param callable $next Función a ejecutar después del middleware
      * @return mixed Resultado de la función next
      */
     public static function handle($next) {
-        // Iniciar sesión de forma segura
+        // Verificar si es una ruta pública
+        if (self::isPublicRoute()) {
+            // Para rutas públicas, solo asegurar que la sesión esté iniciada
+            self::ensureSessionStarted();
+            return $next();
+        }
+        
+        // Para rutas privadas, verificar sesión completa
         self::ensureSessionStarted();
         
         // Verificar si la sesión está activa
         if (!self::isSessionActive()) {
-            error_log("SessionMiddleware: Sesión no activa");
+            error_log("SessionMiddleware: Sesión no activa en ruta privada");
             return self::handleSessionError();
         }
         
         // Verificar si la sesión ha expirado
         if (self::isSessionExpired()) {
-            error_log("SessionMiddleware: Sesión expirada");
+            error_log("SessionMiddleware: Sesión expirada en ruta privada");
             return self::handleSessionExpired();
         }
         
@@ -34,6 +49,29 @@ class SessionMiddleware {
         
         // Ejecutar la función siguiente
         return $next();
+    }
+    
+    /**
+     * Verifica si la ruta actual es pública
+     */
+    private static function isPublicRoute() {
+        $view = $_GET['view'] ?? '';
+        $action = $_GET['action'] ?? 'index';
+        
+        // Si no hay view, considerar como pública
+        if (empty($view)) {
+            return true;
+        }
+        
+        // Verificar si la vista está en las rutas públicas
+        if (isset(self::$publicRoutes[$view])) {
+            // Si la acción está en la lista de acciones públicas para esta vista
+            if (in_array($action, self::$publicRoutes[$view])) {
+                return true;
+            }
+        }
+        
+        return false;
     }
     
     /**
@@ -163,7 +201,10 @@ class SessionMiddleware {
             'session_save_path' => session_save_path(),
             'session_data' => $_SESSION ?? [],
             'headers_sent' => headers_sent(),
-            'is_ajax' => self::isAjaxRequest()
+            'is_ajax' => self::isAjaxRequest(),
+            'is_public_route' => self::isPublicRoute(),
+            'current_view' => $_GET['view'] ?? '',
+            'current_action' => $_GET['action'] ?? ''
         ];
     }
 } 

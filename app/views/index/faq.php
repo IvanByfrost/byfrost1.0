@@ -1,5 +1,10 @@
 <?php
-// Página de Preguntas Frecuentes
+if (!defined('ROOT')) {
+    define('ROOT', dirname(dirname(dirname(__DIR__))));
+}
+require_once ROOT . '/config.php';
+require_once __DIR__ . '/../layouts/head.php';
+require_once __DIR__ . '/../layouts/header.php';
 ?>
 
 <div class="container mt-5">
