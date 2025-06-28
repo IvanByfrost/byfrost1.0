@@ -5,42 +5,65 @@
 // Definir la URL base
 const BASE_URL = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
 
-document.addEventListener('DOMContentLoaded', function() {
+// Función para inicializar cuando el DOM esté listo
+function initializeAssignRole() {
+    console.log('Inicializando sistema de asignación de roles...');
+    
     // Cargar usuarios sin rol al cargar la página
     loadUsersWithoutRole();
     
     // Configurar el formulario de búsqueda para usar AJAX
     const searchForm = document.getElementById('searchUserForm');
     if (searchForm) {
-        searchForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // Prevenir envío normal del formulario
-            
-            const credentialType = document.getElementById('credential_type').value;
-            const credentialNumber = document.getElementById('credential_number').value;
-            
-            if (!credentialType || !credentialNumber) {
-                if (typeof Swal !== "undefined") {
-                    Swal.fire({
-                        title: 'Campos requeridos',
-                        text: 'Por favor, selecciona el tipo de documento e ingresa el número.',
-                        icon: 'warning'
-                    });
-                } else {
-                    alert('Por favor, completa todos los campos requeridos.');
-                }
-                return;
-            }
-            
-            // Realizar búsqueda via AJAX
-            searchUsersByDocument(credentialType, credentialNumber);
-        });
+        console.log('Formulario de búsqueda encontrado, configurando eventos...');
+        
+        // Remover eventos previos para evitar duplicados
+        searchForm.removeEventListener('submit', handleSearchSubmit);
+        searchForm.addEventListener('submit', handleSearchSubmit);
+    } else {
+        console.error('Formulario de búsqueda no encontrado');
     }
-});
+}
+
+// Manejador del envío del formulario
+function handleSearchSubmit(e) {
+    e.preventDefault(); // Prevenir envío normal del formulario
+    console.log('Formulario enviado, procesando búsqueda...');
+    
+    const credentialType = document.getElementById('credential_type').value;
+    const credentialNumber = document.getElementById('credential_number').value;
+    
+    if (!credentialType || !credentialNumber) {
+        if (typeof Swal !== "undefined") {
+            Swal.fire({
+                title: 'Campos requeridos',
+                text: 'Por favor, selecciona el tipo de documento e ingresa el número.',
+                icon: 'warning'
+            });
+        } else {
+            alert('Por favor, completa todos los campos requeridos.');
+        }
+        return;
+    }
+    
+    // Realizar búsqueda via AJAX
+    searchUsersByDocument(credentialType, credentialNumber);
+}
+
+// Inicializar cuando el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeAssignRole);
+} else {
+    // Si el DOM ya está listo, inicializar inmediatamente
+    initializeAssignRole();
+}
 
 /**
  * Busca usuarios por documento via AJAX
  */
 function searchUsersByDocument(credentialType, credentialNumber) {
+    console.log('Buscando usuarios:', credentialType, credentialNumber);
+    
     // Mostrar indicador de carga
     const resultsContainer = document.querySelector('.card:nth-child(3) .card-body');
     if (resultsContainer) {
@@ -49,6 +72,7 @@ function searchUsersByDocument(credentialType, credentialNumber) {
     
     // Construir URL con parámetros
     const url = `${BASE_URL}?view=user&action=assignRole&credential_type=${encodeURIComponent(credentialType)}&credential_number=${encodeURIComponent(credentialNumber)}`;
+    console.log('URL de búsqueda:', url);
     
     fetch(url, {
         method: 'GET',
@@ -56,8 +80,13 @@ function searchUsersByDocument(credentialType, credentialNumber) {
             'X-Requested-With': 'XMLHttpRequest'
         }
     })
-    .then(response => response.text())
+    .then(response => {
+        console.log('Respuesta recibida:', response.status);
+        return response.text();
+    })
     .then(html => {
+        console.log('HTML recibido, procesando...');
+        
         // Extraer solo la sección de resultados de la respuesta HTML
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
@@ -68,18 +97,20 @@ function searchUsersByDocument(credentialType, credentialNumber) {
             const currentResultsSection = document.querySelector('.card:nth-child(3)');
             if (currentResultsSection) {
                 currentResultsSection.outerHTML = resultsSection.outerHTML;
+                console.log('Resultados actualizados');
             }
         } else {
             // Si no hay resultados, mostrar mensaje
             if (resultsContainer) {
                 resultsContainer.innerHTML = '<div class="alert alert-warning"><i class="fas fa-search"></i> No se encontraron usuarios con el documento especificado.</div>';
             }
+            console.log('No se encontraron resultados');
         }
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error('Error en búsqueda:', error);
         if (resultsContainer) {
-            resultsContainer.innerHTML = '<div class="alert alert-danger">Error al buscar usuarios.</div>';
+            resultsContainer.innerHTML = '<div class="alert alert-danger">Error al buscar usuarios: ' + error.message + '</div>';
         }
     });
 }
@@ -88,6 +119,8 @@ function searchUsersByDocument(credentialType, credentialNumber) {
  * Muestra el modal para asignar rol
  */
 function showAssignRoleModal(userId, userName, currentRole) {
+    console.log('Mostrando modal para usuario:', userId, userName, currentRole);
+    
     document.getElementById('modal_user_id').value = userId;
     document.getElementById('modal_user_name').value = userName;
     document.getElementById('modal_current_role').value = currentRole || 'Sin rol asignado';
@@ -104,6 +137,8 @@ function showAssignRoleModal(userId, userName, currentRole) {
 function assignRole() {
     const userId = document.getElementById('modal_user_id').value;
     const roleType = document.getElementById('modal_role_type').value;
+    
+    console.log('Asignando rol:', roleType, 'al usuario:', userId);
     
     if (!roleType) {
         if (typeof Swal !== "undefined") {
@@ -215,8 +250,13 @@ function assignRole() {
  * Carga usuarios sin rol asignado
  */
 function loadUsersWithoutRole() {
+    console.log('Cargando usuarios sin rol...');
+    
     const tableBody = document.querySelector('#usersWithoutRoleTable tbody');
-    if (!tableBody) return;
+    if (!tableBody) {
+        console.error('Tabla de usuarios sin rol no encontrada');
+        return;
+    }
     
     // Mostrar indicador de carga
     tableBody.innerHTML = '<tr><td colspan="5" class="text-center"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';

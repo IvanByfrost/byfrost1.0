@@ -9,14 +9,14 @@ require_once ROOT . '/app/library/SessionManager.php';
 // Inicializar SessionManager
 $sessionManager = new SessionManager();
 
-// Verificar si el usuario está logueado
-if (!$sessionManager->isLoggedIn()) {
-    header("Location: " . url . "?view=login");
+// Verificar que el usuario esté logueado y sea root
+// Esta verificación ya se hace en el controlador, pero por seguridad la mantenemos aquí también
+if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn()) {
+    header("Location: " . url . "?view=index&action=login");
     exit;
 }
 
-// Verificar que sea un usuario root
-if (!$sessionManager->hasRole('root')) {
+if (!$this->sessionManager->hasRole('root')) {
     header("Location: " . url . "?view=unauthorized");
     exit;
 }
@@ -31,7 +31,6 @@ console.log("Valor de BASE_URL: ", BASE_URL);
 
 <script type="text/javascript" src="<?php echo url . app . rq ?>js/loadView.js"></script>
 
-<body>
 <div class="dashboard-container">
     <aside class="sidebar">
         <?php require_once __DIR__ . '/rootSidebar.php'; ?>
@@ -44,6 +43,3 @@ console.log("Valor de BASE_URL: ", BASE_URL);
         </div>
     </div>
 </div>
-</body>
-
-<?php require_once __DIR__ . '/../layouts/dashFooter.php'; ?>
