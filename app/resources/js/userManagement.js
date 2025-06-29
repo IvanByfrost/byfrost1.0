@@ -263,22 +263,45 @@ function searchRoleHistory(credentialType, credentialNumber) {
     }
     
     $.ajax({
-        type: 'GET',
-        url: window.USER_MANAGEMENT_BASE_URL + 'index.php',
-        dataType: "html",
+        type: 'POST',
+        url: window.USER_MANAGEMENT_BASE_URL + 'app/processes/assignProcess.php',
+        dataType: "JSON",
         data: {
-            controller: 'User',
-            action: 'showRoleHistory',
-            credential_type: credentialType,
-            credential_number: credentialNumber,
-            ajax: 1
+            "credential_type": credentialType,
+            "credential_number": credentialNumber,
+            "subject": "search_role_history"
         },
         success: function(response) {
             console.log('Respuesta de historial de roles:', response);
             
-            if (resultsContainer) {
-                // Mostrar la respuesta completa en el contenedor
-                resultsContainer.innerHTML = response;
+            if (response.status === 'ok') {
+                if (response.data && response.data.length > 0) {
+                    // Mostrar historial de roles
+                    displayRoleHistory(response.data, response.userInfo);
+                } else if (response.data === null) {
+                    // No se encontró el usuario
+                    if (resultsContainer) {
+                        resultsContainer.innerHTML = '<div class="alert alert-warning"><i class="fas fa-search"></i> ' + response.msg + '</div>';
+                    }
+                } else {
+                    // Usuario encontrado pero sin historial
+                    if (resultsContainer) {
+                        let html = '';
+                        if (response.userInfo) {
+                            html += '<div class="alert alert-info mb-3">';
+                            html += '<strong>Usuario encontrado:</strong> ' + response.userInfo.first_name + ' ' + response.userInfo.last_name;
+                            html += ' (' + response.userInfo.credential_type + ' ' + response.userInfo.credential_number + ')';
+                            html += '</div>';
+                        }
+                        html += '<div class="alert alert-info">No hay historial de roles para este usuario.</div>';
+                        resultsContainer.innerHTML = html;
+                    }
+                }
+            } else {
+                // Error
+                if (resultsContainer) {
+                    resultsContainer.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle"></i> ' + response.msg + '</div>';
+                }
             }
         },
         error: function(xhr, status, error) {
@@ -584,6 +607,71 @@ function displayConsultResults(users) {
                 <td>
                     <span class="badge bg-success">Activo</span>
                 </td>
+            </tr>
+        `;
+    });
+    
+    html += `
+                </tbody>
+            </table>
+        </div>
+    `;
+    
+    resultsContainer.innerHTML = html;
+}
+
+/**
+ * Muestra el historial de roles de un usuario
+ */
+function displayRoleHistory(roleHistory, userInfo) {
+    const resultsContainer = document.getElementById('searchResultsContainer');
+    if (!resultsContainer) return;
+    
+    let html = '';
+    
+    // Mostrar información del usuario si está disponible
+    if (userInfo) {
+        html += '<div class="alert alert-info mb-3">';
+        html += '<strong>Usuario encontrado:</strong> ' + userInfo.first_name + ' ' + userInfo.last_name;
+        html += ' (' + userInfo.credential_type + ' ' + userInfo.credential_number + ')';
+        html += '</div>';
+    }
+    
+    // Mostrar tabla de historial
+    html += `
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                        <th>Fecha de Asignación</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+    
+    roleHistory.forEach(rol => {
+        const roleNames = {
+            'student': 'Estudiante',
+            'parent': 'Padre/Acudiente',
+            'professor': 'Profesor',
+            'coordinator': 'Coordinador',
+            'director': 'Director/Rector',
+            'treasurer': 'Tesorero',
+            'root': 'Administrador'
+        };
+        
+        const roleName = roleNames[rol.role_type] || rol.role_type;
+        const statusBadge = rol.is_active ? 
+            '<span class="badge bg-success">Activo</span>' : 
+            '<span class="badge bg-secondary">Inactivo</span>';
+        
+        html += `
+            <tr>
+                <td><strong>${roleName}</strong></td>
+                <td>${statusBadge}</td>
+                <td>${rol.created_at}</td>
             </tr>
         `;
     });

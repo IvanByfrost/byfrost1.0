@@ -163,14 +163,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             break;
             
+        case 'search_role_history':
+            // Buscar historial de roles por documento
+            $credentialType = $_POST['credential_type'] ?? null;
+            $credentialNumber = $_POST['credential_number'] ?? null;
+            
+            if (!$credentialType || !$credentialNumber) {
+                error_log("DEBUG assignProcess - Faltan datos para búsqueda de historial");
+                echo json_encode([
+                    'status' => 'error',
+                    'msg' => 'Faltan datos requeridos: credential_type y credential_number'
+                ]);
+                exit;
+            }
+            
+            try {
+                // Primero buscar el usuario por documento
+                $users = $model->searchUsersByDocument($credentialType, $credentialNumber);
+                
+                if (empty($users)) {
+                    error_log("DEBUG assignProcess - No se encontró usuario para historial");
+                    echo json_encode([
+                        'status' => 'ok',
+                        'msg' => 'No se encontró ningún usuario con ese documento',
+                        'data' => null,
+                        'userInfo' => null
+                    ]);
+                    exit;
+                }
+                
+                $userInfo = $users[0];
+                $userId = $userInfo['user_id'];
+                
+                // Obtener el historial de roles
+                $roleHistory = $model->getRoleHistory($userId);
+                
+                error_log("DEBUG assignProcess - Historial de roles obtenido para usuario ID: " . $userId);
+                echo json_encode([
+                    'status' => 'ok',
+                    'msg' => 'Historial de roles obtenido',
+                    'data' => $roleHistory,
+                    'userInfo' => $userInfo
+                ]);
+            } catch (Exception $e) {
+                error_log("DEBUG assignProcess - Excepción en búsqueda de historial: " . $e->getMessage());
+                echo json_encode([
+                    'status' => 'error',
+                    'msg' => 'Error al buscar historial de roles: ' . $e->getMessage()
+                ]);
+            }
+            break;
+            
         default:
             error_log("DEBUG assignProcess - Subject inválido: " . $subject);
             echo json_encode([
                 'status' => 'error',
-                'msg' => 'Subject inválido. Valores permitidos: assign_role, search_users, search_users_by_role, get_users_without_role',
+                'msg' => 'Subject inválido. Valores permitidos: assign_role, search_users, search_users_by_role, get_users_without_role, search_role_history',
                 'debug' => [
                     'received_subject' => $subject,
-                    'expected_subjects' => ['assign_role', 'search_users', 'search_users_by_role', 'get_users_without_role']
+                    'expected_subjects' => ['assign_role', 'search_users', 'search_users_by_role', 'get_users_without_role', 'search_role_history']
                 ]
             ]);
             break;
