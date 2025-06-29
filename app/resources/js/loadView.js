@@ -48,7 +48,9 @@ window.loadView = function(viewName) {
         
         // Inicializar JavaScript específico según la vista cargada
         if (viewName === 'user/assignRole' || viewName.includes('assignRole') || 
-            viewName === 'user/consultUser' || viewName.includes('consultUser')) {
+            viewName === 'user/consultUser' || viewName.includes('consultUser') ||
+            viewName === 'user/showRoleHistory' || viewName.includes('showRoleHistory') ||
+            viewName === 'user/roleHistory' || viewName.includes('roleHistory')) {
             console.log('Vista de gestión de usuarios cargada, inicializando JavaScript...');
             if (typeof initUserManagementAfterLoad === 'function') {
                 initUserManagementAfterLoad();

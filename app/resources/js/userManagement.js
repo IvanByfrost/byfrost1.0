@@ -1,5 +1,5 @@
 /**
- * JavaScript para manejar la gestión de usuarios (asignación de roles y consulta)
+ * JavaScript para manejar la gestión de usuarios (asignación de roles, consulta e historial)
  */
 
 // Definir la URL base solo si no está definida
@@ -19,33 +19,45 @@ function initializeUserManagement() {
     
     // Verificar que los elementos necesarios existan
     const searchForm = document.getElementById('searchUserForm');
+    const roleHistoryForm = document.getElementById('roleHistoryForm');
     const usersTable = document.getElementById('usersWithoutRoleTable');
     const modal = document.getElementById('assignRoleModal');
     
     console.log('Elementos encontrados:', {
         searchForm: !!searchForm,
+        roleHistoryForm: !!roleHistoryForm,
         usersTable: !!usersTable,
         modal: !!modal
     });
     
-    // Si no encontramos el formulario de búsqueda, probablemente no estamos en la página correcta
-    if (!searchForm) {
+    // Si no encontramos ningún formulario, probablemente no estamos en la página correcta
+    if (!searchForm && !roleHistoryForm) {
         console.log('No estamos en una página de gestión de usuarios. Saltando inicialización.');
         return;
     }
     
-    // Configurar el formulario de búsqueda para usar AJAX
-    console.log('Configurando eventos del formulario de búsqueda...');
+    // Configurar formularios para usar AJAX
+    if (searchForm) {
+        console.log('Configurando eventos del formulario de búsqueda...');
+        searchForm.removeEventListener('submit', handleSearchSubmit);
+        searchForm.addEventListener('submit', handleSearchSubmit);
+    }
     
-    // Remover eventos previos para evitar duplicados
-    searchForm.removeEventListener('submit', handleSearchSubmit);
-    searchForm.addEventListener('submit', handleSearchSubmit);
+    if (roleHistoryForm) {
+        console.log('Configurando eventos del formulario de historial de roles...');
+        roleHistoryForm.removeEventListener('submit', handleRoleHistorySubmit);
+        roleHistoryForm.addEventListener('submit', handleRoleHistorySubmit);
+    }
     
     // Determinar qué tipo de página es y inicializar específicamente
     if (usersTable && modal) {
         // Es la página de asignación de roles
         console.log('Detectada página de asignación de roles...');
         initializeAssignRole();
+    } else if (roleHistoryForm) {
+        // Es la página de historial de roles
+        console.log('Detectada página de historial de roles...');
+        initializeRoleHistory();
     } else {
         // Es la página de consulta de usuarios
         console.log('Detectada página de consulta de usuarios...');
@@ -84,6 +96,12 @@ function initializeAssignRole() {
     loadUsersWithoutRole();
 }
 
+// Inicializar específicamente para historial de roles
+function initializeRoleHistory() {
+    console.log('Inicializando funcionalidad de historial de roles...');
+    console.log('Formulario de historial de roles configurado correctamente');
+}
+
 // Inicializar específicamente para consulta de usuarios
 function initializeConsultUser() {
     console.log('Inicializando funcionalidad de consulta de usuarios...');
@@ -118,7 +136,7 @@ function toggleSearchFields() {
     }
 }
 
-// Manejador del envío del formulario
+// Manejador del envío del formulario de búsqueda general
 function handleSearchSubmit(e) {
     e.preventDefault(); // Prevenir envío normal del formulario
     console.log('Formulario enviado, procesando búsqueda...');
@@ -173,6 +191,23 @@ function handleSearchSubmit(e) {
     }
 }
 
+// Manejador del envío del formulario de historial de roles
+function handleRoleHistorySubmit(e) {
+    e.preventDefault(); // Prevenir envío normal del formulario
+    console.log('Formulario de historial enviado, procesando búsqueda...');
+    
+    const credentialType = document.getElementById('credential_type').value;
+    const credentialNumber = document.getElementById('credential_number').value;
+    
+    if (!credentialType || !credentialNumber) {
+        showError('Por favor, selecciona el tipo de documento e ingresa el número.');
+        return;
+    }
+    
+    console.log('Realizando búsqueda de historial de roles...');
+    searchRoleHistory(credentialType, credentialNumber);
+}
+
 // Función para mostrar errores
 function showError(message) {
     if (typeof Swal !== "undefined") {
@@ -186,7 +221,7 @@ function showError(message) {
     }
 }
 
-// Inicializar cuando el DOM esté completamente listo (para páginas que se cargan directamente)
+// Función para inicializar cuando el DOM esté completamente listo (para páginas que se cargan directamente)
 function waitForDOM() {
     if (document.readyState === 'complete') {
         console.log('DOM completamente cargado, verificando si estamos en una página de gestión de usuarios...');
@@ -201,8 +236,60 @@ function waitForDOM() {
 }
 
 // Iniciar el proceso de espera solo si no estamos usando loadViews.js
-if (!window.location.search.includes('view=index&action=loadPartial')) {
+// Verificar si estamos en una página que usa loadViews.js
+const isLoadViewsPage = window.location.search.includes('view=index&action=loadPartial') || 
+                       document.getElementById('mainContent') !== null;
+
+if (!isLoadViewsPage) {
+    console.log('Página de carga directa detectada, iniciando waitForDOM...');
     waitForDOM();
+} else {
+    console.log('Página con loadViews.js detectada, esperando inicialización manual...');
+}
+
+/**
+ * Busca el historial de roles de un usuario
+ */
+function searchRoleHistory(credentialType, credentialNumber) {
+    console.log('Buscando historial de roles:', credentialType, credentialNumber);
+    
+    // Mostrar indicador de carga
+    const resultsContainer = document.getElementById('searchResultsContainer');
+    const resultsCard = document.getElementById('searchResultsCard');
+    
+    if (resultsContainer && resultsCard) {
+        resultsCard.style.display = 'block';
+        resultsContainer.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Buscando historial de roles...</div>';
+    }
+    
+    $.ajax({
+        type: 'GET',
+        url: window.USER_MANAGEMENT_BASE_URL + 'index.php',
+        dataType: "html",
+        data: {
+            controller: 'User',
+            action: 'showRoleHistory',
+            credential_type: credentialType,
+            credential_number: credentialNumber,
+            ajax: 1
+        },
+        success: function(response) {
+            console.log('Respuesta de historial de roles:', response);
+            
+            if (resultsContainer) {
+                // Mostrar la respuesta completa en el contenedor
+                resultsContainer.innerHTML = response;
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error en búsqueda de historial:', error);
+            console.log('Respuesta del servidor:', xhr.responseText);
+            
+            if (resultsContainer) {
+                resultsContainer.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle"></i> Error al buscar el historial de roles. Detalles: ' + error + '</div>';
+            }
+        }
+    });
 }
 
 /**
@@ -220,7 +307,6 @@ function searchUsersByDocument(credentialType, credentialNumber) {
         resultsContainer.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Buscando...</div>';
     }
     
-    // Usar el patrón de registerFunction.js
     $.ajax({
         type: 'POST',
         url: window.USER_MANAGEMENT_BASE_URL + 'app/processes/assignProcess.php',
@@ -709,6 +795,20 @@ function refreshUsersWithoutRole() {
  * Limpia el formulario de búsqueda
  */
 function clearSearchForm() {
+    document.getElementById('credential_type').value = '';
+    document.getElementById('credential_number').value = '';
+    
+    // Ocultar resultados de búsqueda
+    const resultsCard = document.getElementById('searchResultsCard');
+    if (resultsCard) {
+        resultsCard.style.display = 'none';
+    }
+}
+
+/**
+ * Limpia el formulario de historial de roles
+ */
+function clearRoleHistoryForm() {
     document.getElementById('credential_type').value = '';
     document.getElementById('credential_number').value = '';
     
