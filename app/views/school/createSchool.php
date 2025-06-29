@@ -67,21 +67,27 @@ $coordinators = $coordinators ?? [];
                     </div>
                 </div>
                 <div class="col-md-6 col-12">
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" id="director_name" name="director_name" readonly placeholder="Seleccionar Director">
+                    <div class="form-group">
+                        <label for="director_name"><strong>Director</strong></label>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" id="director_name" name="director_name" readonly placeholder="Seleccionar Director">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchDirectorModal">
+                                Buscar Director
+                            </button>
+                        </div>
                         <input type="hidden" id="director_user_id" name="director_user_id">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchDirectorModal">
-                            Buscar Director
-                        </button>
                     </div>
                 </div>
                 <div class="col-md-6 col-12">
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" id="coordinator_name" name="coordinator_name" readonly placeholder="Seleccionar Coordinador">
+                    <div class="form-group">
+                        <label for="coordinator_name">Coordinador</label>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" id="coordinator_name" name="coordinator_name" readonly placeholder="Seleccionar Coordinador">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchCoordinatorModal">
+                                Buscar Coordinador
+                            </button>
+                        </div>
                         <input type="hidden" id="coordinator_user_id" name="coordinator_user_id">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchCoordinatorModal">
-                            Buscar Coordinador
-                        </button>
                     </div>
                 </div>
             </div>
