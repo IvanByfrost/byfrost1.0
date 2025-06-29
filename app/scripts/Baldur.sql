@@ -59,7 +59,7 @@ CREATE TABLE schools (
     school_document VARCHAR(10) NOT NULL,
     total_quota SMALLINT NOT NULL,
     director_user_id INT NOT NULL,
-    coordinator_user_id INT NOT NULL,
+    coordinator_user_id INT NULL,
     address VARCHAR(200),
     phone VARCHAR(20),
     email VARCHAR(100),

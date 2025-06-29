@@ -367,6 +367,52 @@ class UserModel extends MainModel
     }
 
     /**
+     * Busca usuarios por rol y criterio de búsqueda
+     * 
+     * @param string $roleType Tipo de rol
+     * @param string $query Criterio de búsqueda (nombre o documento)
+     * @return array Array de usuarios encontrados
+     */
+    public function searchUsersByRole($roleType, $query)
+    {
+        try {
+            $searchQuery = "SELECT 
+                            u.user_id,
+                            u.credential_type,
+                            u.credential_number,
+                            u.first_name,
+                            u.last_name,
+                            u.email,
+                            u.phone,
+                            u.address,
+                            ur.role_type
+                          FROM users u
+                          INNER JOIN user_roles ur ON u.user_id = ur.user_id
+                          WHERE ur.role_type = :role_type
+                          AND u.is_active = 1
+                          AND ur.is_active = 1
+                          AND (u.first_name LIKE :search 
+                               OR u.last_name LIKE :search 
+                               OR u.credential_number LIKE :search
+                               OR CONCAT(u.first_name, ' ', u.last_name) LIKE :search)
+                          ORDER BY u.first_name, u.last_name
+                          LIMIT 10";
+            
+            $stmt = $this->dbConn->prepare($searchQuery);
+            $searchTerm = '%' . $query . '%';
+            $stmt->execute([
+                ':role_type' => $roleType,
+                ':search' => $searchTerm
+            ]);
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log("Error en UserModel::searchUsersByRole: " . $e->getMessage());
+            throw new Exception('Error al buscar usuarios por rol');
+        }
+    }
+
+    /**
      * Obtiene el historial de roles de un usuario
      * @param int $userId
      * @return array

@@ -17,6 +17,11 @@ class SchoolModel extends MainModel
                 throw new Exception('Los campos Nombre del colegio, DANE y NIT son obligatorios');
             }
             
+            // Validar que se haya proporcionado un director
+            if (empty($data['director_user_id'])) {
+                throw new Exception('Debe seleccionar un director para la escuela');
+            }
+            
             // Verificar si ya existe una escuela con el mismo NIT o código DANE
             $checkQuery = "SELECT school_id FROM schools WHERE school_document = :school_document OR school_dane = :school_dane";
             $checkStmt = $this->dbConn->prepare($checkQuery);
@@ -27,6 +32,32 @@ class SchoolModel extends MainModel
             
             if ($checkStmt->fetch()) {
                 throw new Exception('Ya existe una escuela con el mismo NIT o código DANE');
+            }
+            
+            // Verificar que el director existe y tiene el rol correcto
+            $directorQuery = "SELECT u.user_id FROM users u 
+                             INNER JOIN user_roles ur ON u.user_id = ur.user_id 
+                             WHERE u.user_id = :director_id AND ur.role_type = 'director' 
+                             AND u.is_active = 1 AND ur.is_active = 1";
+            $directorStmt = $this->dbConn->prepare($directorQuery);
+            $directorStmt->execute([':director_id' => $data['director_user_id']]);
+            
+            if (!$directorStmt->fetch()) {
+                throw new Exception('El director seleccionado no existe o no tiene el rol correcto');
+            }
+            
+            // Verificar que el coordinador existe y tiene el rol correcto (si se proporciona)
+            if (!empty($data['coordinator_user_id'])) {
+                $coordinatorQuery = "SELECT u.user_id FROM users u 
+                                   INNER JOIN user_roles ur ON u.user_id = ur.user_id 
+                                   WHERE u.user_id = :coordinator_id AND ur.role_type = 'coordinator' 
+                                   AND u.is_active = 1 AND ur.is_active = 1";
+                $coordinatorStmt = $this->dbConn->prepare($coordinatorQuery);
+                $coordinatorStmt->execute([':coordinator_id' => $data['coordinator_user_id']]);
+                
+                if (!$coordinatorStmt->fetch()) {
+                    throw new Exception('El coordinador seleccionado no existe o no tiene el rol correcto');
+                }
             }
             
             // Insertar la nueva escuela
@@ -61,7 +92,7 @@ class SchoolModel extends MainModel
                 ':school_dane' => $data['school_dane'],
                 ':school_document' => $data['school_document'],
                 ':total_quota' => $data['total_quota'] ?? 0,
-                ':director_user_id' => $data['director_user_id'] ?? null,
+                ':director_user_id' => $data['director_user_id'],
                 ':coordinator_user_id' => $data['coordinator_user_id'] ?? null,
                 ':address' => $data['address'] ?? '',
                 ':phone' => $data['phone'] ?? '',

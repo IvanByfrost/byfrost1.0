@@ -25,7 +25,7 @@ class SchoolController extends MainController
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
-                // Validar campos obligatorios
+                // Validar campos obligatorios del formulario principal
                 $requiredFields = ['school_name', 'school_dane', 'school_document'];
                 $missingFields = [];
                 
@@ -35,10 +35,17 @@ class SchoolController extends MainController
                     }
                 }
                 
+                // Validar campos obligatorios del modal
+                $modalRequiredFields = ['departamento', 'municipio', 'direccion', 'telefono', 'correo'];
+                foreach ($modalRequiredFields as $field) {
+                    if (empty($_POST[$field])) {
+                        $missingFields[] = $field;
+                    }
+                }
+                
                 if (!empty($missingFields)) {
                     $errorMessage = 'Los siguientes campos son obligatorios: ' . implode(', ', $missingFields);
                     
-                    // Verificar si es una petición AJAX
                     if ($this->isAjaxRequest()) {
                         $this->sendJsonResponse(false, $errorMessage);
                         return;
@@ -53,21 +60,8 @@ class SchoolController extends MainController
                     }
                 }
                 
-                // Preparar los datos
-                $data = [
-                    'school_name' => trim($_POST['school_name']),
-                    'school_dane' => trim($_POST['school_dane']),
-                    'school_document' => trim($_POST['school_document']),
-                    'total_quota' => intval($_POST['total_quota'] ?? 0),
-                    'director_user_id' => !empty($_POST['director_user_id']) ? intval($_POST['director_user_id']) : null,
-                    'coordinator_user_id' => !empty($_POST['coordinator_user_id']) ? intval($_POST['coordinator_user_id']) : null,
-                    'address' => trim($_POST['address'] ?? ''),
-                    'phone' => trim($_POST['phone'] ?? ''),
-                    'email' => trim($_POST['email'] ?? '')
-                ];
-                
-                // Validar formato de email si se proporciona
-                if (!empty($data['email']) && !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+                // Validar formato de email
+                if (!empty($_POST['correo']) && !filter_var($_POST['correo'], FILTER_VALIDATE_EMAIL)) {
                     $errorMessage = 'El formato del email no es válido';
                     
                     if ($this->isAjaxRequest()) {
@@ -82,6 +76,44 @@ class SchoolController extends MainController
                         ]);
                         return;
                     }
+                }
+                
+                // Validar que se haya seleccionado un director
+                if (empty($_POST['director_user_id'])) {
+                    $errorMessage = 'Debe seleccionar un director para la escuela';
+                    
+                    if ($this->isAjaxRequest()) {
+                        $this->sendJsonResponse(false, $errorMessage);
+                        return;
+                    } else {
+                        $this->loadView('school/createSchool', [
+                            'error' => $errorMessage,
+                            'formData' => $_POST,
+                            'directors' => $this->schoolModel->getDirectors(),
+                            'coordinators' => $this->schoolModel->getCoordinators()
+                        ]);
+                        return;
+                    }
+                }
+                
+                // Preparar los datos mapeando correctamente los campos del modal
+                $data = [
+                    'school_name' => trim($_POST['school_name']),
+                    'school_dane' => trim($_POST['school_dane']),
+                    'school_document' => trim($_POST['school_document']),
+                    'total_quota' => intval($_POST['total_quota'] ?? 0),
+                    'director_user_id' => intval($_POST['director_user_id']),
+                    'coordinator_user_id' => !empty($_POST['coordinator_user_id']) ? intval($_POST['coordinator_user_id']) : null,
+                    'address' => trim($_POST['direccion'] ?? ''), // Mapear desde el modal
+                    'phone' => trim($_POST['telefono'] ?? ''), // Mapear desde el modal
+                    'email' => trim($_POST['correo'] ?? '') // Mapear desde el modal
+                ];
+                
+                // Construir dirección completa con departamento y municipio
+                if (!empty($_POST['departamento']) && !empty($_POST['municipio'])) {
+                    $data['address'] = trim($_POST['direccion'] ?? '') . ', ' . 
+                                     trim($_POST['municipio']) . ', ' . 
+                                     trim($_POST['departamento']);
                 }
                 
                 // Llamar al método del modelo

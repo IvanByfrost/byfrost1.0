@@ -10,17 +10,20 @@ $coordinators = $coordinators ?? [];
 <div class="card-body">
             <h2>Crear Nueva Escuela</h2>
             <p>Complete la información para crear una nueva escuela.</p>
+            
             <?php if (!empty($error)): ?>
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <i class="fas fa-exclamation-triangle"></i> <?php echo htmlspecialchars($error); ?>
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             <?php endif; ?>
+            
             <?php if (isset($success)): ?>
                 <div class="alert alert-success" role="alert">
                     <?php echo htmlspecialchars($success); ?>
                 </div>
             <?php endif; ?>
+            
             <div class="row g-3">
                 <div class="col-md-6 col-12">
                     <div class="form-group">
@@ -38,7 +41,7 @@ $coordinators = $coordinators ?? [];
                         <label for="school_dane">Código DANE *</label>
                         <input type="text" class="form-control" id="school_dane" name="school_dane" 
                                value="<?php echo isset($formData['school_dane']) ? htmlspecialchars($formData['school_dane']) : ''; ?>" 
-                               required>
+                               required maxlength="10">
                         <div class="invalid-feedback">
                             El código DANE es obligatorio.
                         </div>
@@ -49,7 +52,7 @@ $coordinators = $coordinators ?? [];
                         <label for="school_document">NIT *</label>
                         <input type="text" class="form-control" id="school_document" name="school_document" 
                                value="<?php echo isset($formData['school_document']) ? htmlspecialchars($formData['school_document']) : ''; ?>" 
-                               required>
+                               required maxlength="10">
                         <div class="invalid-feedback">
                             El NIT es obligatorio.
                         </div>
@@ -58,31 +61,37 @@ $coordinators = $coordinators ?? [];
                 <div class="col-md-6 col-12">
                     <div class="form-group">
                         <label for="total_quota">Cupo Total</label>
-                        <input type="number" class="form-control" id="total_quota" name="total_quota" title="Only Numbers" onkeyup="onlyNumbers('total_quota',value);" autocomplete="off"
+                        <input type="number" class="form-control" id="total_quota" name="total_quota" 
+                               title="Only Numbers" onkeyup="onlyNumbers('total_quota',value);" autocomplete="off"
                                value="<?php echo isset($formData['total_quota']) ? htmlspecialchars($formData['total_quota']) : ''; ?>" 
                                min="0">
-                               <div class="invalid-feedback">
-                            El cupo es obligatorio.
+                        <div class="invalid-feedback">
+                            El cupo debe ser un número válido.
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6 col-12">
                     <div class="form-group">
-                        <label for="director_name"><strong>Director</strong></label>
+                        <label for="director_name"><strong>Director *</strong></label>
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control" id="director_name" name="director_name" readonly placeholder="Seleccionar Director">
+                            <input type="text" class="form-control" id="director_name" name="director_name" 
+                                   readonly placeholder="Seleccionar Director" required>
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchDirectorModal">
                                 Buscar Director
                             </button>
                         </div>
-                        <input type="hidden" id="director_user_id" name="director_user_id">
+                        <input type="hidden" id="director_user_id" name="director_user_id" required>
+                        <div class="invalid-feedback">
+                            Debe seleccionar un director.
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-6 col-12">
                     <div class="form-group">
-                        <label for="coordinator_name">Coordinador</label>
+                        <label for="coordinator_name">Coordinador (Opcional)</label>
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control" id="coordinator_name" name="coordinator_name" readonly placeholder="Seleccionar Coordinador">
+                            <input type="text" class="form-control" id="coordinator_name" name="coordinator_name" 
+                                   readonly placeholder="Seleccionar Coordinador">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchCoordinatorModal">
                                 Buscar Coordinador
                             </button>
@@ -189,16 +198,26 @@ $coordinators = $coordinators ?? [];
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
-        <div class="list-group">
-          <?php if (isset($coordinators) && count($coordinators) > 0): ?>
-            <?php foreach ($coordinators as $coordinator): ?>
-              <button type="button" class="list-group-item list-group-item-action" onclick="selectCoordinator('<?php echo $coordinator['user_id']; ?>', '<?php echo htmlspecialchars($coordinator['name'] . ' ' . $coordinator['lastname']); ?>')">
-                <?php echo htmlspecialchars($coordinator['name'] . ' ' . $coordinator['lastname']); ?>
-              </button>
-            <?php endforeach; ?>
-          <?php else: ?>
-            <div class="alert alert-info">No hay coordinadores disponibles.</div>
-          <?php endif; ?>
+        <form id="searchCoordinatorForm" class="mb-3" autocomplete="off">
+          <div class="input-group">
+            <input type="text" class="form-control" id="search_coordinator_query" placeholder="Nombre o número de documento">
+            <button type="submit" class="btn btn-primary">Buscar</button>
+          </div>
+        </form>
+        <div id="searchCoordinatorResults">
+          <div class="list-group">
+            <?php if (isset($coordinators) && count($coordinators) > 0): ?>
+              <?php foreach ($coordinators as $coordinator): ?>
+                <button type="button" class="list-group-item list-group-item-action" 
+                        onclick="selectCoordinator('<?php echo $coordinator['user_id']; ?>', '<?php echo htmlspecialchars($coordinator['first_name'] . ' ' . $coordinator['last_name']); ?>')">
+                  <?php echo htmlspecialchars($coordinator['first_name'] . ' ' . $coordinator['last_name']); ?> 
+                  - <?php echo htmlspecialchars($coordinator['email']); ?>
+                </button>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="alert alert-info">No hay coordinadores disponibles. Use la búsqueda para encontrar coordinadores.</div>
+            <?php endif; ?>
+          </div>
         </div>
       </div>
     </div>

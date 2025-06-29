@@ -236,4 +236,41 @@ class UserController extends MainController
             'userInfo' => $userInfo
         ]);
     }
+
+    /**
+     * Busca usuarios por rol y criterio de búsqueda
+     */
+    public function searchUsers()
+    {
+        $this->protectSchool();
+        
+        $role = $_GET['role'] ?? '';
+        $query = $_GET['query'] ?? '';
+        
+        if (empty($role) || empty($query)) {
+            $this->sendJsonResponse(false, 'Faltan parámetros requeridos');
+            return;
+        }
+        
+        try {
+            $users = $this->userModel->searchUsersByRole($role, $query);
+            $this->sendJsonResponse(true, 'Usuarios encontrados', ['users' => $users]);
+        } catch (Exception $e) {
+            $this->sendJsonResponse(false, 'Error al buscar usuarios: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Protección de acceso para escuela (director, coordinador, tesorero, root)
+     */
+    private function protectSchool() {
+        if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn() || !$this->sessionManager->hasAnyRole(['director', 'coordinator', 'treasurer', 'root'])) {
+            if ($this->isAjaxRequest()) {
+                $this->sendJsonResponse(false, 'No tienes permisos para realizar esta acción');
+            } else {
+                header('Location: /?view=unauthorized');
+            }
+            exit;
+        }
+    }
 } 
