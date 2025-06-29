@@ -1,7 +1,8 @@
 (function(){
     console.log("Script cargado");
 
-    $("#registerForm").on("submit", function(e) {
+    // Asegurarse de que el evento submit solo se registre una vez
+    $("#registerForm").off("submit").on("submit", function(e) {
         e.preventDefault();
         
         // Obtener solo los campos que existen en el formulario
@@ -79,6 +80,10 @@
             return false;
         }
 
+        // Deshabilitar el botón de submit para evitar doble envío
+        var $submitBtn = $("#registerForm button[type=submit]");
+        $submitBtn.prop("disabled", true);
+
         $.ajax({
             type: 'POST',
             url: ROOT + 'app/processes/registerProcess.php',
@@ -92,7 +97,13 @@
             },
 
             success: function(response) {
-                console.log(response);
+                console.log("=== DEBUG REGISTRO ===");
+                console.log("Respuesta completa:", response);
+                console.log("Tipo de respuesta:", typeof response);
+                console.log("Status:", response["status"]);
+                console.log("Mensaje:", response["msg"]);
+                console.log("=====================");
+                
                 if (response["status"] == "ok") {
                     Swal.fire({
                         title: '¡Registro exitoso!',
@@ -101,6 +112,8 @@
                         position: 'center',
                         timer: 5000
                     });
+                    // Deshabilitar el botón para evitar doble submit
+                    $submitBtn.prop("disabled", true);
                     setTimeout(function () {
                         // Redirigir al formulario de completar perfil con el documento
                         window.location.href = "completeProf.php?user=" + encodeURIComponent(userDocument);
@@ -113,11 +126,29 @@
                         position: 'center',
                         timer: 5000
                     });
+                    // Rehabilitar el botón si hubo error
+                    $submitBtn.prop("disabled", false);
+                } else {
+                    console.error("Status inesperado:", response["status"]);
+                    Swal.fire({
+                        title: 'Error inesperado',
+                        text: 'Respuesta del servidor no reconocida: ' + response["status"],
+                        icon: 'error',
+                        position: 'center',
+                        timer: 5000
+                    });
+                    $submitBtn.prop("disabled", false);
                 }
             },
 
-            error: function(response) {
-                console.log(response['responseText']);
+            error: function(xhr, status, error) {
+                console.log("=== ERROR AJAX ===");
+                console.log("Status:", status);
+                console.log("Error:", error);
+                console.log("Response Text:", xhr.responseText);
+                console.log("Response Status:", xhr.status);
+                console.log("==================");
+                
                 Swal.fire({
                     title: 'Error de conexión',
                     text: 'No se pudo conectar con el servidor. Inténtalo de nuevo.',
@@ -125,6 +156,8 @@
                     position: 'center',
                     timer: 5000
                 });
+                // Rehabilitar el botón si hubo error de conexión
+                $submitBtn.prop("disabled", false);
             }
         });
     });

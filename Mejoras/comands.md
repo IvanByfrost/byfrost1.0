@@ -1,6 +1,8 @@
 cd C:\xampp1\htdocs\byfrost
 php -S localhost:8000
 
--- Cuentas 
+-- Cuentas de prueba
 CC 1031180139 12345678
 TI 1029280209 12345678
+CC 1028956785 12345678
+CC 1028936785 12345678

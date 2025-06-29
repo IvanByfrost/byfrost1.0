@@ -45,6 +45,9 @@ CREATE TABLE user_roles (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+-- Comando para cambiar el valor por defecto en base de datos existente
+-- ALTER TABLE user_roles MODIFY COLUMN role_type ENUM('student', 'parent', 'professor', 'coordinator', 'director', 'treasurer', 'root') DEFAULT 'student';
+
 -- =============================================
 -- ESTRUCTURA ACADÉMICA
 -- =============================================

@@ -27,53 +27,71 @@ class UserModel extends MainModel
     // Función para crear un usuario
     public function createUser($data)
     {
-        // 1. Verificar si el documento ya existe
-        $queryCheck = "SELECT COUNT(*) FROM users WHERE credential_number = :credential_number";
-        $stmtCheck = $this->dbConn->prepare($queryCheck);
-        $stmtCheck->execute([':credential_number' => $data['credential_number']]);
-        if ($stmtCheck->fetchColumn() > 0) {
-            throw new Exception("Ya existe un usuario con ese documento.");
-        }
-
-        // 2. Verificar si el email ya existe
-        $queryCheckEmail = "SELECT COUNT(*) FROM users WHERE email = :email";
-        $stmtCheckEmail = $this->dbConn->prepare($queryCheckEmail);
-        $stmtCheckEmail->execute([':email' => $data['email']]);
-        if ($stmtCheckEmail->fetchColumn() > 0) {
-            throw new Exception("Ya existe un usuario con ese email.");
-        }
-
-        // 3. Generar hash de contraseña usando password_hash
-        $passwordHash = password_hash($data['password'], PASSWORD_DEFAULT);
-
-        // 4. Insertar usuario
-        $query = "INSERT INTO users (credential_type, credential_number, first_name, last_name, 
-                                    date_of_birth, email, phone, address, password_hash, salt_password) 
-                  VALUES (:credential_type, :credential_number, :first_name, :last_name, 
-                          :date_of_birth, :email, :phone, :address, :password_hash, :salt_password)";
+        // Iniciar transacción
+        $this->dbConn->beginTransaction();
         
-        $stmt = $this->dbConn->prepare($query);
-        $result = $stmt->execute([
-            'credential_type' => $data['credential_type'],
-            'credential_number' => $data['credential_number'],
-            'first_name' => $data['first_name'],
-            'last_name' => $data['last_name'],
-            'date_of_birth' => $data['date_of_birth'],
-            'email' => $data['email'],
-            'phone' => $data['phone'] ?? null,
-            'address' => $data['address'] ?? null,
-            'password_hash' => $passwordHash,
-            'salt_password' => '' // Ya no necesitamos salt con password_hash
-        ]);
+        try {
+            // 1. Verificar si el documento ya existe
+            $queryCheck = "SELECT COUNT(*) FROM users WHERE credential_number = :credential_number";
+            $stmtCheck = $this->dbConn->prepare($queryCheck);
+            $stmtCheck->execute([':credential_number' => $data['credential_number']]);
+            if ($stmtCheck->fetchColumn() > 0) {
+                throw new Exception("Ya existe un usuario con ese documento.");
+            }
 
-        if ($result) {
+            // 2. Verificar si el email ya existe
+            $queryCheckEmail = "SELECT COUNT(*) FROM users WHERE email = :email";
+            $stmtCheckEmail = $this->dbConn->prepare($queryCheckEmail);
+            $stmtCheckEmail->execute([':email' => $data['email']]);
+            if ($stmtCheckEmail->fetchColumn() > 0) {
+                throw new Exception("Ya existe un usuario con ese email.");
+            }
+
+            // 3. Generar hash de contraseña usando password_hash
+            $passwordHash = password_hash($data['password'], PASSWORD_DEFAULT);
+
+            // 4. Insertar usuario
+            $query = "INSERT INTO users (credential_type, credential_number, first_name, last_name, 
+                                        date_of_birth, email, phone, address, password_hash, salt_password) 
+                      VALUES (:credential_type, :credential_number, :first_name, :last_name, 
+                              :date_of_birth, :email, :phone, :address, :password_hash, :salt_password)";
+            
+            $stmt = $this->dbConn->prepare($query);
+            $result = $stmt->execute([
+                'credential_type' => $data['credential_type'],
+                'credential_number' => $data['credential_number'],
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
+                'date_of_birth' => $data['date_of_birth'],
+                'email' => $data['email'],
+                'phone' => $data['phone'] ?? null,
+                'address' => $data['address'] ?? null,
+                'password_hash' => $passwordHash,
+                'salt_password' => '' // Ya no necesitamos salt con password_hash
+            ]);
+
+            if (!$result) {
+                throw new Exception("Error al insertar el usuario en la base de datos.");
+            }
+
             $userId = $this->dbConn->lastInsertId();
-            // Por defecto, asignar rol de estudiante (puedes cambiar esto)
-            $this->assignDefaultRole($userId, 'student');
+            
+            // 5. Asignar rol por defecto
+            $roleResult = $this->assignDefaultRole($userId, 'student');
+            if (!$roleResult) {
+                throw new Exception("Error al asignar el rol por defecto al usuario.");
+            }
+
+            // Si todo salió bien, confirmar la transacción
+            $this->dbConn->commit();
             return true;
+            
+        } catch (Exception $e) {
+            // Si algo salió mal, revertir la transacción
+            $this->dbConn->rollBack();
+            error_log("Error en UserModel::createUser: " . $e->getMessage());
+            throw $e; // Re-lanzar la excepción para que el controlador la maneje
         }
-        
-        return false;
     }
 
     // Función para consultar un usuario
@@ -158,18 +176,48 @@ class UserModel extends MainModel
     // Función para asignar un rol a un usuario
     public function assignRole($userId, $roleType)
     {
-        // Primero desactivar roles existentes
-        $queryDeactivate = "UPDATE user_roles SET is_active = 0 WHERE user_id = :user_id";
-        $stmtDeactivate = $this->dbConn->prepare($queryDeactivate);
-        $stmtDeactivate->execute([':user_id' => $userId]);
+        try {
+            // Verificar que el usuario existe
+            $checkUser = "SELECT user_id FROM users WHERE user_id = :user_id AND is_active = 1";
+            $stmtCheck = $this->dbConn->prepare($checkUser);
+            $stmtCheck->execute([':user_id' => $userId]);
+            if (!$stmtCheck->fetch()) {
+                throw new Exception("El usuario especificado no existe o no está activo.");
+            }
 
-        // Luego insertar el nuevo rol
-        $query = "INSERT INTO user_roles (user_id, role_type, is_active) VALUES (:user_id, :role_type, 1)";
-        $stmt = $this->dbConn->prepare($query);
-        return $stmt->execute([
-            ':user_id' => $userId,
-            ':role_type' => $roleType
-        ]);
+            // Verificar que el tipo de rol es válido
+            $validRoles = ['student', 'parent', 'professor', 'coordinator', 'director', 'treasurer', 'root'];
+            if (!in_array($roleType, $validRoles)) {
+                throw new Exception("Tipo de rol inválido: " . $roleType);
+            }
+
+            // Primero desactivar roles existentes
+            $queryDeactivate = "UPDATE user_roles SET is_active = 0 WHERE user_id = :user_id";
+            $stmtDeactivate = $this->dbConn->prepare($queryDeactivate);
+            $deactivateResult = $stmtDeactivate->execute([':user_id' => $userId]);
+            
+            if (!$deactivateResult) {
+                throw new Exception("Error al desactivar roles existentes.");
+            }
+
+            // Luego insertar el nuevo rol
+            $query = "INSERT INTO user_roles (user_id, role_type, is_active) VALUES (:user_id, :role_type, 1)";
+            $stmt = $this->dbConn->prepare($query);
+            $insertResult = $stmt->execute([
+                ':user_id' => $userId,
+                ':role_type' => $roleType
+            ]);
+
+            if (!$insertResult) {
+                throw new Exception("Error al insertar el nuevo rol.");
+            }
+
+            return true;
+            
+        } catch (Exception $e) {
+            error_log("Error en UserModel::assignRole: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     // Función para asignar rol por defecto
