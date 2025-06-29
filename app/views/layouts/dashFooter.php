@@ -13,6 +13,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/toggles.js"></script>
     <script src="<?php echo url; ?>app/resources/js/userManagement.js"></script>
+    <script src="<?php echo url; ?>app/resources/js/roleHistory.js"></script>
     <script>
         // Inicializar Lucide
         lucide.createIcons();

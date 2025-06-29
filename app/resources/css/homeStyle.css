@@ -228,17 +228,33 @@ footer a:hover {
   /* flex-direction: column;*/
   align-items: center;
   text-align: center;
-  padding: 20px;
+  padding: 30px;
   /* background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);*/
 }
 
 .mvcard {
-  background-color: #d9ffe8;
-  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background-color: #d9fcff;
+  padding: 30px;
   margin: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.mvcard h1, .mvcard h2 {
+  min-width: 200px;
+  margin-right: 30px;
+  text-align: left;
+}
+
+.mvcard p {
+  text-align: left;
+  margin: 0;
+  padding: 0;
+  flex: 1;
 }

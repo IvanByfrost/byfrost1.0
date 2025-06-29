@@ -14,7 +14,7 @@ class SchoolModel extends MainModel
         try {
             // Validar que los datos requeridos estén presentes
             if (empty($data['school_name']) || empty($data['school_dane']) || empty($data['school_document'])) {
-                throw new Exception('Los campos school_name, school_dane y school_document son obligatorios');
+                throw new Exception('Los campos Nombre del colegio, DANE y NIT son obligatorios');
             }
             
             // Verificar si ya existe una escuela con el mismo NIT o código DANE

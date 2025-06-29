@@ -164,4 +164,76 @@ class UserController extends MainController
         // Si llegamos aquí, el usuario tiene permisos
         error_log("UserController::protectRoot - Acceso autorizado para usuario: " . $this->sessionManager->getCurrentUser()['email']);
     }
+
+    /**
+     * Muestra el historial de roles de un usuario o permite buscarlo por documento
+     */
+    public function showRoleHistory($userId = null)
+    {
+        $this->protectRoot();
+        $roleHistory = [];
+        $searchError = '';
+        $userInfo = null;
+
+        // Si se envía el formulario de búsqueda
+        $credentialType = $_GET['credential_type'] ?? null;
+        $credentialNumber = $_GET['credential_number'] ?? null;
+        
+        if ($credentialType && $credentialNumber) {
+            // Buscar usuario por documento
+            try {
+                $users = $this->userModel->searchUsersByDocument($credentialType, $credentialNumber);
+                if (!empty($users)) {
+                    $userInfo = $users[0];
+                    $userId = $users[0]['user_id'];
+                    $roleHistory = $this->userModel->getRoleHistory($userId);
+                } else {
+                    $searchError = 'No se encontró ningún usuario con ese documento.';
+                }
+            } catch (Exception $e) {
+                $searchError = 'Error al buscar usuario: ' . $e->getMessage();
+            }
+        } elseif ($userId) {
+            // Si se pasa el userId directamente
+            $roleHistory = $this->userModel->getRoleHistory($userId);
+        }
+
+        // Si es una petición AJAX, devolver solo el contenido de la tabla
+        if ($this->isAjaxRequest()) {
+            if ($searchError) {
+                echo '<div class="alert alert-danger">' . htmlspecialchars($searchError) . '</div>';
+            } elseif (empty($roleHistory)) {
+                echo '<div class="alert alert-info">No hay historial de roles para este usuario.</div>';
+            } else {
+                // Mostrar información del usuario si está disponible
+                if ($userInfo) {
+                    echo '<div class="alert alert-info mb-3">';
+                    echo '<strong>Usuario encontrado:</strong> ' . htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']);
+                    echo ' (' . htmlspecialchars($userInfo['credential_type'] . ' ' . $userInfo['credential_number']) . ')';
+                    echo '</div>';
+                }
+                
+                echo '<table class="table table-bordered">';
+                echo '<thead><tr><th>Rol</th><th>Activo</th><th>Fecha de Asignación</th></tr></thead>';
+                echo '<tbody>';
+                foreach ($roleHistory as $rol) {
+                    echo '<tr>';
+                    echo '<td>' . htmlspecialchars($rol['role_type']) . '</td>';
+                    echo '<td>' . ($rol['is_active'] ? 'Sí' : 'No') . '</td>';
+                    echo '<td>' . htmlspecialchars($rol['created_at']) . '</td>';
+                    echo '</tr>';
+                }
+                echo '</tbody></table>';
+            }
+            return;
+        }
+
+        // Para peticiones normales, cargar la vista completa
+        $this->loadView('user/roleHistory', [
+            'roleHistory' => $roleHistory,
+            'userId' => $userId,
+            'searchError' => $searchError,
+            'userInfo' => $userInfo
+        ]);
+    }
 } 

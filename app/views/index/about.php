@@ -11,11 +11,11 @@ require_once __DIR__ . '/../layouts/header.php';
     <div class="mision">
         <div class="mvcard">
             <h1>Nuestra Misión</h1>
-            <p>Somos una plataforma educativa enfocada en la inclusión de las distintas comunidades para mejorar la calidad de la educación.</p>
+            <p>Somos una plataforma enfocada en la inclusión de las distintas comunidades para mejorar la calidad de la educación. Promovemos el acceso a recursos, herramientas y oportunidades de aprendizaje para todos.</p>
         </div>
         <div class="mvcard">
             <h1> Nuestra Visión </h1>
-            <p>Ser la plataforma líder en gestión de proyectos, ofreciendo herramientas innovadoras y un entorno colaborativo que potencie la productividad y el éxito de nuestros usuarios.</p>
+            <p>Ser la plataforma líder en gestión de proyectos, ofreciendo herramientas innovadoras y un entorno colaborativo que potencie la productividad y el éxito de nuestros usuarios y conocemos que la educación es la clave para el éxito.</p>
         </div>
     </div>
     <h1>Nuestro equipo</h1>

@@ -365,4 +365,16 @@ class UserModel extends MainModel
             throw new Exception('Error al obtener usuarios por rol');
         }
     }
+
+    /**
+     * Obtiene el historial de roles de un usuario
+     * @param int $userId
+     * @return array
+     */
+    public function getRoleHistory($userId) {
+        $query = "SELECT role_type, is_active, created_at FROM user_roles WHERE user_id = :user_id ORDER BY created_at DESC";
+        $stmt = $this->dbConn->prepare($query);
+        $stmt->execute([':user_id' => $userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
