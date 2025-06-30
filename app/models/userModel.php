@@ -423,4 +423,36 @@ class UserModel extends MainModel
         $stmt->execute([':user_id' => $userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function searchUsersByRoleAndDocument($roleType, $credentialNumber)
+    {
+        try {
+            $query = "SELECT 
+                        u.user_id,
+                        u.credential_type,
+                        u.credential_number,
+                        u.first_name,
+                        u.last_name,
+                        u.email,
+                        u.phone,
+                        u.address,
+                        ur.role_type
+                      FROM users u
+                      INNER JOIN user_roles ur ON u.user_id = ur.user_id
+                      WHERE LOWER(ur.role_type) = LOWER(:role_type)
+                      AND u.is_active = 1
+                      AND ur.is_active = 1
+                      AND u.credential_number = :credential_number
+                      ORDER BY u.first_name, u.last_name
+                      LIMIT 10";
+            $stmt = $this->dbConn->prepare($query);
+            $stmt->execute([
+                ':role_type' => $roleType,
+                ':credential_number' => $credentialNumber
+            ]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            throw new Exception('Error al buscar usuarios por rol y documento');
+        }
+    }
 }

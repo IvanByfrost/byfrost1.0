@@ -286,83 +286,6 @@ window.initCreateSchoolForm = function() {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     }
-    
-    // --- FUNCIÓN REUTILIZABLE PARA BÚSQUEDA DE USUARIOS POR ROL EN MODALES ---
-    window.searchUsersForModal = function(roleType, query, resultsContainerId, selectCallback) {
-        const resultsContainer = document.getElementById(resultsContainerId);
-        if (resultsContainer) {
-            resultsContainer.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Buscando...</div>';
-        }
-
-        $.ajax({
-            type: 'POST',
-            url: window.USER_MANAGEMENT_BASE_URL + 'app/processes/assignProcess.php',
-            dataType: "JSON",
-            data: {
-                "role_type": roleType,
-                "query": query,
-                "subject": "search_users_by_role"
-            },
-            success: function(response) {
-                if (response.status === 'ok' && response.data && response.data.length > 0) {
-                    resultsContainer.innerHTML = `<div class="list-group">` +
-                        response.data.map(user => `
-                            <button type="button" class="list-group-item list-group-item-action"
-                                onclick="${selectCallback}('${user.user_id}', '${user.first_name} ${user.last_name}')">
-                                ${user.first_name} ${user.last_name} - ${user.email}
-                            </button>
-                        `).join('') +
-                        `</div>`;
-                } else {
-                    resultsContainer.innerHTML = `<div class="alert alert-warning"><i class="fas fa-search"></i> ${response.msg}</div>`;
-                }
-            },
-            error: function(xhr, status, error) {
-                resultsContainer.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle"></i> Error de conexión. Inténtalo de nuevo.</div>';
-            }
-        });
-    }
-
-    // Delegación de eventos para búsqueda de director y coordinador (usando la nueva función)
-    if (!window._delegatedSearchListeners) {
-        document.body.addEventListener('submit', function(e) {
-            if (e.target && e.target.id === 'searchDirectorForm') {
-                e.preventDefault();
-                const query = document.getElementById('search_director_query').value.trim();
-                if (!query) {
-                    if (typeof Swal !== "undefined") {
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'Por favor ingrese un término de búsqueda',
-                            icon: 'warning'
-                        });
-                    } else {
-                        alert('Por favor ingrese un término de búsqueda');
-                    }
-                    return;
-                }
-                searchUsersForModal('director', query, 'searchDirectorResults', 'selectDirector');
-            }
-            if (e.target && e.target.id === 'searchCoordinatorForm') {
-                e.preventDefault();
-                const query = document.getElementById('search_coordinator_query').value.trim();
-                if (!query) {
-                    if (typeof Swal !== "undefined") {
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'Por favor ingrese un término de búsqueda',
-                            icon: 'warning'
-                        });
-                    } else {
-                        alert('Por favor ingrese un término de búsqueda');
-                    }
-                    return;
-                }
-                searchUsersForModal('coordinator', query, 'searchCoordinatorResults', 'selectCoordinator');
-            }
-        });
-        window._delegatedSearchListeners = true;
-    }
 };
 
 // Función para seleccionar director
@@ -370,7 +293,7 @@ function selectDirector(id, name) {
     document.getElementById('director_user_id').value = id;
     document.getElementById('selectedDirectorName').textContent = name;
     // Cerrar modal
-    const modal = bootstrap.Modal.getInstance(document.getElementById('searchDirectorModal'));
+    const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('searchDirectorModal'));
     if (modal) {
         modal.hide();
     }
@@ -381,7 +304,7 @@ function selectCoordinator(id, name) {
     document.getElementById('coordinator_user_id').value = id;
     document.getElementById('selectedCoordinatorName').textContent = name;
     // Cerrar modal
-    const modal = bootstrap.Modal.getInstance(document.getElementById('searchCoordinatorModal'));
+    const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('searchCoordinatorModal'));
     if (modal) {
         modal.hide();
     }
@@ -419,5 +342,5 @@ function clearCreateSchoolForm() {
 
 // Función para cancelar y volver a la consulta
 function cancelCreateSchool() {
-    loadView('school/consultSchool');
+    loadView('root/menuRoot');
 } 

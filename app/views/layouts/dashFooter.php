@@ -20,6 +20,7 @@
     <script type="text/javascript" src="<?php echo url; ?>app/resources/js/onlyNumber.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/toggles.js"></script>
     <script type="text/javascript" src="<?php echo url; ?>app/resources/js/loadView.js"></script>
+    <script type="text/javascript" src="<?php echo url; ?>app/resources/js/userSearch.js"></script>
     <script type="text/javascript" src="<?php echo url; ?>app/resources/js/createSchool.js"></script>
     <script type="text/javascript" src="<?php echo url; ?>app/resources/js/userManagement.js"></script>
     
