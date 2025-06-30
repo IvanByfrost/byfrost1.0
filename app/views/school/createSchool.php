@@ -99,7 +99,7 @@ $coordinators = $coordinators ?? [];
                 </div>
             </div>
             <div class="form-actions mt-4">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#completeSchoolForm">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#completeSchoolModal">
                     <i class="fas fa-save"></i> Completar registro
                 </button>
                 <button type="button" class="btn btn-secondary" onclick="cancelCreateSchool()">

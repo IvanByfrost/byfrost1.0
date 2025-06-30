@@ -906,3 +906,43 @@ function clearRoleHistoryForm() {
         resultsCard.style.display = 'none';
     }
 }
+
+if (!window._delegatedSearchListeners) {
+    document.body.addEventListener('submit', function(e) {
+        if (e.target && e.target.id === 'searchDirectorForm') {
+            e.preventDefault();
+            const query = document.getElementById('search_director_query').value.trim();
+            if (!query) {
+                if (typeof Swal !== "undefined") {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Por favor ingrese un término de búsqueda',
+                        icon: 'warning'
+                    });
+                } else {
+                    alert('Por favor ingrese un término de búsqueda');
+                }
+                return;
+            }
+            searchUsersForModal('director', query, 'searchDirectorResults', 'selectDirector');
+        }
+        if (e.target && e.target.id === 'searchCoordinatorForm') {
+            e.preventDefault();
+            const query = document.getElementById('search_coordinator_query').value.trim();
+            if (!query) {
+                if (typeof Swal !== "undefined") {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Por favor ingrese un término de búsqueda',
+                        icon: 'warning'
+                    });
+                } else {
+                    alert('Por favor ingrese un término de búsqueda');
+                }
+                return;
+            }
+            searchUsersForModal('coordinator', query, 'searchCoordinatorResults', 'selectCoordinator');
+        }
+    });
+    window._delegatedSearchListeners = true;
+}

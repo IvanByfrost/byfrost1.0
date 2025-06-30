@@ -287,7 +287,43 @@ window.initCreateSchoolForm = function() {
         return emailRegex.test(email);
     }
     
-    // Delegación de eventos para búsqueda de director y coordinador
+    // --- FUNCIÓN REUTILIZABLE PARA BÚSQUEDA DE USUARIOS POR ROL EN MODALES ---
+    window.searchUsersForModal = function(roleType, query, resultsContainerId, selectCallback) {
+        const resultsContainer = document.getElementById(resultsContainerId);
+        if (resultsContainer) {
+            resultsContainer.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Buscando...</div>';
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: window.USER_MANAGEMENT_BASE_URL + 'app/processes/assignProcess.php',
+            dataType: "JSON",
+            data: {
+                "role_type": roleType,
+                "query": query,
+                "subject": "search_users_by_role"
+            },
+            success: function(response) {
+                if (response.status === 'ok' && response.data && response.data.length > 0) {
+                    resultsContainer.innerHTML = `<div class="list-group">` +
+                        response.data.map(user => `
+                            <button type="button" class="list-group-item list-group-item-action"
+                                onclick="${selectCallback}('${user.user_id}', '${user.first_name} ${user.last_name}')">
+                                ${user.first_name} ${user.last_name} - ${user.email}
+                            </button>
+                        `).join('') +
+                        `</div>`;
+                } else {
+                    resultsContainer.innerHTML = `<div class="alert alert-warning"><i class="fas fa-search"></i> ${response.msg}</div>`;
+                }
+            },
+            error: function(xhr, status, error) {
+                resultsContainer.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle"></i> Error de conexión. Inténtalo de nuevo.</div>';
+            }
+        });
+    }
+
+    // Delegación de eventos para búsqueda de director y coordinador (usando la nueva función)
     if (!window._delegatedSearchListeners) {
         document.body.addEventListener('submit', function(e) {
             if (e.target && e.target.id === 'searchDirectorForm') {
@@ -305,34 +341,7 @@ window.initCreateSchoolForm = function() {
                     }
                     return;
                 }
-                fetch(`${url}app/scripts/routerView.php?view=user&action=searchUsers&role=director&query=${encodeURIComponent(query)}`, {
-                    method: 'GET',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    const resultsDiv = document.getElementById('searchDirectorResults');
-                    if (data.success && data.users && data.users.length > 0) {
-                        let html = '<div class="list-group">';
-                        data.users.forEach(user => {
-                            html += `<button type="button" class="list-group-item list-group-item-action" 
-                                       onclick="selectDirector('${user.user_id}', '${user.first_name} ${user.last_name}')">
-                                       ${user.first_name} ${user.last_name} - ${user.credential_number}
-                                   </button>`;
-                        });
-                        html += '</div>';
-                        resultsDiv.innerHTML = html;
-                    } else {
-                        resultsDiv.innerHTML = '<div class="alert alert-info">No se encontraron directores con ese criterio.</div>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('searchDirectorResults').innerHTML = 
-                        '<div class="alert alert-danger">Error al buscar directores.</div>';
-                });
+                searchUsersForModal('director', query, 'searchDirectorResults', 'selectDirector');
             }
             if (e.target && e.target.id === 'searchCoordinatorForm') {
                 e.preventDefault();
@@ -349,34 +358,7 @@ window.initCreateSchoolForm = function() {
                     }
                     return;
                 }
-                fetch(`${url}app/scripts/routerView.php?view=user&action=searchUsers&role=coordinator&query=${encodeURIComponent(query)}`, {
-                    method: 'GET',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    const resultsDiv = document.getElementById('searchCoordinatorResults');
-                    if (data.success && data.users && data.users.length > 0) {
-                        let html = '<div class="list-group">';
-                        data.users.forEach(user => {
-                            html += `<button type="button" class="list-group-item list-group-item-action" 
-                                       onclick="selectCoordinator('${user.user_id}', '${user.first_name} ${user.last_name}')">
-                                       ${user.first_name} ${user.last_name} - ${user.credential_number}
-                                   </button>`;
-                        });
-                        html += '</div>';
-                        resultsDiv.innerHTML = html;
-                    } else {
-                        resultsDiv.innerHTML = '<div class="alert alert-info">No se encontraron coordinadores con ese criterio.</div>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('searchCoordinatorResults').innerHTML = 
-                        '<div class="alert alert-danger">Error al buscar coordinadores.</div>';
-                });
+                searchUsersForModal('coordinator', query, 'searchCoordinatorResults', 'selectCoordinator');
             }
         });
         window._delegatedSearchListeners = true;
