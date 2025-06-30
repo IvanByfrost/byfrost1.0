@@ -388,7 +388,7 @@ class UserModel extends MainModel
                             ur.role_type
                           FROM users u
                           INNER JOIN user_roles ur ON u.user_id = ur.user_id
-                          WHERE ur.role_type = :role_type
+                          WHERE LOWER(ur.role_type) = LOWER(:role_type)
                           AND u.is_active = 1
                           AND ur.is_active = 1
                           AND (u.first_name LIKE :search 

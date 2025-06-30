@@ -65,7 +65,7 @@ class RootController extends MainController
     public function menuRoot()
     {
         $this->protectRoot();
-        $this->loadView('root/menuRoot');
+        $this->loadPartialView('root/menuRoot');
     }
 
     /**

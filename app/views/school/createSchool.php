@@ -72,13 +72,12 @@ $coordinators = $coordinators ?? [];
                 </div>
                 <div class="col-md-6 col-12">
                     <div class="form-group">
-                        <label for="director_name"><strong>Director *</strong></label>
-                        <div class="input-group mb-3">
-                            <input type="text" class="form-control" id="director_name" name="director_name" 
-                                   readonly placeholder="Seleccionar Director" required>
+                        <label><strong>Director *</strong></label>
+                        <div class="d-flex align-items-center gap-2">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchDirectorModal">
                                 Buscar Director
                             </button>
+                            <span id="selectedDirectorName" class="ms-2 text-success"></span>
                         </div>
                         <input type="hidden" id="director_user_id" name="director_user_id" required>
                         <div class="invalid-feedback">
@@ -88,21 +87,20 @@ $coordinators = $coordinators ?? [];
                 </div>
                 <div class="col-md-6 col-12">
                     <div class="form-group">
-                        <label for="coordinator_name">Coordinador (Opcional)</label>
-                        <div class="input-group mb-3">
-                            <input type="text" class="form-control" id="coordinator_name" name="coordinator_name" 
-                                   readonly placeholder="Seleccionar Coordinador">
+                        <label>Coordinador</label>
+                        <div class="d-flex align-items-center gap-2">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchCoordinatorModal">
                                 Buscar Coordinador
                             </button>
+                            <span id="selectedCoordinatorName" class="ms-2 text-success"></span>
                         </div>
                         <input type="hidden" id="coordinator_user_id" name="coordinator_user_id">
                     </div>
                 </div>
             </div>
             <div class="form-actions mt-4">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#completeSchoolModal">
-                    <i class="fas fa-save"></i> Crear Escuela
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#completeSchoolForm">
+                    <i class="fas fa-save"></i> Completar registro
                 </button>
                 <button type="button" class="btn btn-secondary" onclick="cancelCreateSchool()">
                     <i class="fas fa-times"></i> Cancelar
@@ -179,7 +177,7 @@ $coordinators = $coordinators ?? [];
       <div class="modal-body">
         <form id="searchDirectorForm" class="mb-3" autocomplete="off">
           <div class="input-group">
-            <input type="text" class="form-control" id="search_director_query" placeholder="Nombre o número de documento">
+            <input type="text" class="form-control w-100" id="search_director_query" placeholder="Número de documento">
             <button type="submit" class="btn btn-primary">Buscar</button>
           </div>
         </form>
@@ -200,7 +198,7 @@ $coordinators = $coordinators ?? [];
       <div class="modal-body">
         <form id="searchCoordinatorForm" class="mb-3" autocomplete="off">
           <div class="input-group">
-            <input type="text" class="form-control" id="search_coordinator_query" placeholder="Nombre o número de documento">
+            <input type="text" class="form-control w-100" id="search_coordinator_query" placeholder="Número de documento">
             <button type="submit" class="btn btn-primary">Buscar</button>
           </div>
         </form>
@@ -224,16 +222,11 @@ $coordinators = $coordinators ?? [];
   </div>
 </div>
 
-<!-- Incluir el archivo JavaScript -->
-<script>
-    const url = '<?php echo url; ?>';
-</script>
-<script src="<?php echo url; ?>app/resources/js/createSchool.js"></script>
-<script>
-function selectCoordinator(id, name) {
-    document.getElementById('coordinator_user_id').value = id;
-    document.getElementById('coordinator_name').value = name;
-    var modal = bootstrap.Modal.getInstance(document.getElementById('searchCoordinatorModal'));
-    if (modal) { modal.hide(); }
+<!-- Estilos para scroll en resultados de búsqueda de director y coordinador -->
+<style>
+#searchDirectorResults .list-group, #searchCoordinatorResults .list-group {
+    max-height: 300px;
+    overflow-y: auto;
 }
-</script>
+</style>
+

@@ -37,9 +37,6 @@ console.log("Valor de BASE_URL: ", BASE_URL);
     </aside>
     
     <div id="mainContent" class="mainContent">
-        <div class="welcome-message">
-            <h1>Bienvenido al Dashboard de Administrador</h1>
-            <p>Selecciona una opción del menú lateral para comenzar.</p>
-        </div>
+        <?php require_once 'menuRoot.php'; ?>
     </div>
-</div>
+</div> 

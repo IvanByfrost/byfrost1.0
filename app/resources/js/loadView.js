@@ -35,6 +35,11 @@ window.loadView = function(viewName) {
         target.innerHTML = html;
         
         // Inicializar JavaScript específico según la vista cargada
+        if (viewName === 'school/createSchool') {
+            if (typeof window.initCreateSchoolForm === 'function') {
+                window.initCreateSchoolForm();
+            }
+        }
         if (viewName === 'user/assignRole' || viewName.includes('assignRole') || 
             viewName === 'user/consultUser' || viewName.includes('consultUser') ||
             viewName === 'user/showRoleHistory' || viewName.includes('showRoleHistory') ||

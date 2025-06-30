@@ -2,9 +2,10 @@
  * JavaScript para manejar el formulario de crear escuela dentro del dashboard
  */
 
-document.addEventListener('DOMContentLoaded', function() {
+window.initCreateSchoolForm = function() {
     const form = document.getElementById('createSchool');
     const completeForm = document.getElementById('completeSchoolForm');
+    const completeSchoolModal = document.getElementById('completeSchoolModal');
     
     if (form) {
         // Remover el event listener del formulario principal ya que ahora se maneja desde el modal
@@ -14,7 +15,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Validar formulario principal antes de abrir el modal usando el evento de Bootstrap
-    const completeSchoolModal = document.getElementById('completeSchoolModal');
     if (completeSchoolModal) {
         completeSchoolModal.addEventListener('show.bs.modal', function(e) {
             // Validar que el formulario principal esté completo
@@ -184,12 +184,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Validar que se haya seleccionado un director
         const directorUserId = document.getElementById('director_user_id');
-        const directorName = document.getElementById('director_name');
-        if (directorUserId && (!directorUserId.value.trim() || !directorName.value.trim())) {
+        const directorNameSpan = document.getElementById('selectedDirectorName');
+        if (directorUserId && !directorUserId.value.trim()) {
             errors.push('director_user_id');
-            directorName.classList.add('is-invalid');
-        } else if (directorName) {
-            directorName.classList.remove('is-invalid');
+            if (directorNameSpan) directorNameSpan.classList.add('text-danger');
+        } else {
+            if (directorNameSpan) directorNameSpan.classList.remove('text-danger');
         }
         
         return errors;
@@ -287,117 +287,106 @@ document.addEventListener('DOMContentLoaded', function() {
         return emailRegex.test(email);
     }
     
-    // Manejar búsqueda de directores
-    const searchDirectorForm = document.getElementById('searchDirectorForm');
-    if (searchDirectorForm) {
-        searchDirectorForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const query = document.getElementById('search_director_query').value.trim();
-            
-            if (!query) {
-                if (typeof Swal !== "undefined") {
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'Por favor ingrese un término de búsqueda',
-                        icon: 'warning'
-                    });
-                } else {
-                    alert('Por favor ingrese un término de búsqueda');
+    // Delegación de eventos para búsqueda de director y coordinador
+    if (!window._delegatedSearchListeners) {
+        document.body.addEventListener('submit', function(e) {
+            if (e.target && e.target.id === 'searchDirectorForm') {
+                e.preventDefault();
+                const query = document.getElementById('search_director_query').value.trim();
+                if (!query) {
+                    if (typeof Swal !== "undefined") {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Por favor ingrese un término de búsqueda',
+                            icon: 'warning'
+                        });
+                    } else {
+                        alert('Por favor ingrese un término de búsqueda');
+                    }
+                    return;
                 }
-                return;
+                fetch(`${url}app/scripts/routerView.php?view=user&action=searchUsers&role=director&query=${encodeURIComponent(query)}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const resultsDiv = document.getElementById('searchDirectorResults');
+                    if (data.success && data.users && data.users.length > 0) {
+                        let html = '<div class="list-group">';
+                        data.users.forEach(user => {
+                            html += `<button type="button" class="list-group-item list-group-item-action" 
+                                       onclick="selectDirector('${user.user_id}', '${user.first_name} ${user.last_name}')">
+                                       ${user.first_name} ${user.last_name} - ${user.credential_number}
+                                   </button>`;
+                        });
+                        html += '</div>';
+                        resultsDiv.innerHTML = html;
+                    } else {
+                        resultsDiv.innerHTML = '<div class="alert alert-info">No se encontraron directores con ese criterio.</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('searchDirectorResults').innerHTML = 
+                        '<div class="alert alert-danger">Error al buscar directores.</div>';
+                });
             }
-            
-            // Buscar directores
-            fetch(`${url}app/scripts/routerView.php?view=user&action=searchUsers&role=director&query=${encodeURIComponent(query)}`, {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+            if (e.target && e.target.id === 'searchCoordinatorForm') {
+                e.preventDefault();
+                const query = document.getElementById('search_coordinator_query').value.trim();
+                if (!query) {
+                    if (typeof Swal !== "undefined") {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Por favor ingrese un término de búsqueda',
+                            icon: 'warning'
+                        });
+                    } else {
+                        alert('Por favor ingrese un término de búsqueda');
+                    }
+                    return;
                 }
-            })
-            .then(response => response.json())
-            .then(data => {
-                const resultsDiv = document.getElementById('searchDirectorResults');
-                if (data.success && data.users && data.users.length > 0) {
-                    let html = '<div class="list-group">';
-                    data.users.forEach(user => {
-                        html += `<button type="button" class="list-group-item list-group-item-action" 
-                                   onclick="selectDirector('${user.user_id}', '${user.first_name} ${user.last_name}')">
-                                   ${user.first_name} ${user.last_name} - ${user.credential_number}
-                               </button>`;
-                    });
-                    html += '</div>';
-                    resultsDiv.innerHTML = html;
-                } else {
-                    resultsDiv.innerHTML = '<div class="alert alert-info">No se encontraron directores con ese criterio.</div>';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('searchDirectorResults').innerHTML = 
-                    '<div class="alert alert-danger">Error al buscar directores.</div>';
-            });
-        });
-    }
-    
-    // Manejar búsqueda de coordinadores
-    const searchCoordinatorForm = document.getElementById('searchCoordinatorForm');
-    if (searchCoordinatorForm) {
-        searchCoordinatorForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const query = document.getElementById('search_coordinator_query').value.trim();
-            
-            if (!query) {
-                if (typeof Swal !== "undefined") {
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'Por favor ingrese un término de búsqueda',
-                        icon: 'warning'
-                    });
-                } else {
-                    alert('Por favor ingrese un término de búsqueda');
-                }
-                return;
+                fetch(`${url}app/scripts/routerView.php?view=user&action=searchUsers&role=coordinator&query=${encodeURIComponent(query)}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const resultsDiv = document.getElementById('searchCoordinatorResults');
+                    if (data.success && data.users && data.users.length > 0) {
+                        let html = '<div class="list-group">';
+                        data.users.forEach(user => {
+                            html += `<button type="button" class="list-group-item list-group-item-action" 
+                                       onclick="selectCoordinator('${user.user_id}', '${user.first_name} ${user.last_name}')">
+                                       ${user.first_name} ${user.last_name} - ${user.credential_number}
+                                   </button>`;
+                        });
+                        html += '</div>';
+                        resultsDiv.innerHTML = html;
+                    } else {
+                        resultsDiv.innerHTML = '<div class="alert alert-info">No se encontraron coordinadores con ese criterio.</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('searchCoordinatorResults').innerHTML = 
+                        '<div class="alert alert-danger">Error al buscar coordinadores.</div>';
+                });
             }
-            
-            // Buscar coordinadores
-            fetch(`${url}app/scripts/routerView.php?view=user&action=searchUsers&role=coordinator&query=${encodeURIComponent(query)}`, {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                const resultsDiv = document.getElementById('searchCoordinatorResults');
-                if (data.success && data.users && data.users.length > 0) {
-                    let html = '<div class="list-group">';
-                    data.users.forEach(user => {
-                        html += `<button type="button" class="list-group-item list-group-item-action" 
-                                   onclick="selectCoordinator('${user.user_id}', '${user.first_name} ${user.last_name}')">
-                                   ${user.first_name} ${user.last_name} - ${user.credential_number}
-                               </button>`;
-                    });
-                    html += '</div>';
-                    resultsDiv.innerHTML = html;
-                } else {
-                    resultsDiv.innerHTML = '<div class="alert alert-info">No se encontraron coordinadores con ese criterio.</div>';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('searchCoordinatorResults').innerHTML = 
-                    '<div class="alert alert-danger">Error al buscar coordinadores.</div>';
-            });
         });
+        window._delegatedSearchListeners = true;
     }
-});
+};
 
 // Función para seleccionar director
 function selectDirector(id, name) {
     document.getElementById('director_user_id').value = id;
-    document.getElementById('director_name').value = name;
-    document.getElementById('director_name').classList.remove('is-invalid');
-    
+    document.getElementById('selectedDirectorName').textContent = name;
     // Cerrar modal
     const modal = bootstrap.Modal.getInstance(document.getElementById('searchDirectorModal'));
     if (modal) {
@@ -408,8 +397,7 @@ function selectDirector(id, name) {
 // Función para seleccionar coordinador
 function selectCoordinator(id, name) {
     document.getElementById('coordinator_user_id').value = id;
-    document.getElementById('coordinator_name').value = name;
-    
+    document.getElementById('selectedCoordinatorName').textContent = name;
     // Cerrar modal
     const modal = bootstrap.Modal.getInstance(document.getElementById('searchCoordinatorModal'));
     if (modal) {
