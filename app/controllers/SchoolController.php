@@ -50,7 +50,7 @@ class SchoolController extends MainController
                         $this->sendJsonResponse(false, $errorMessage);
                         return;
                     } else {
-                        $this->loadView('school/createSchool', [
+                        $this->loadPartialView('school/createSchool', [
                             'error' => $errorMessage,
                             'formData' => $_POST,
                             'directors' => $this->schoolModel->getDirectors(),
@@ -68,7 +68,7 @@ class SchoolController extends MainController
                         $this->sendJsonResponse(false, $errorMessage);
                         return;
                     } else {
-                        $this->loadView('school/createSchool', [
+                        $this->loadPartialView('school/createSchool', [
                             'error' => $errorMessage,
                             'formData' => $_POST,
                             'directors' => $this->schoolModel->getDirectors(),
@@ -86,7 +86,7 @@ class SchoolController extends MainController
                         $this->sendJsonResponse(false, $errorMessage);
                         return;
                     } else {
-                        $this->loadView('school/createSchool', [
+                        $this->loadPartialView('school/createSchool', [
                             'error' => $errorMessage,
                             'formData' => $_POST,
                             'directors' => $this->schoolModel->getDirectors(),
@@ -133,7 +133,7 @@ class SchoolController extends MainController
                     if ($this->isAjaxRequest()) {
                         $this->sendJsonResponse(false, $errorMessage);
                     } else {
-                        $this->loadView('school/createSchool', [
+                        $this->loadPartialView('school/createSchool', [
                             'error' => $errorMessage,
                             'formData' => $_POST,
                             'directors' => $this->schoolModel->getDirectors(),
@@ -150,7 +150,7 @@ class SchoolController extends MainController
                 if ($this->isAjaxRequest()) {
                     $this->sendJsonResponse(false, $errorMessage);
                 } else {
-                    $this->loadView('school/createSchool', [
+                    $this->loadPartialView('school/createSchool', [
                         'error' => $errorMessage,
                         'formData' => $_POST,
                         'directors' => $this->schoolModel->getDirectors(),
@@ -160,7 +160,7 @@ class SchoolController extends MainController
             }
         } else {
             // Si es GET, mostrar el formulario
-            $this->loadView('school/createSchool', [
+            $this->loadPartialView('school/createSchool', [
                 'directors' => $this->schoolModel->getDirectors(),
                 'coordinators' => $this->schoolModel->getCoordinators()
             ]);
@@ -187,7 +187,7 @@ class SchoolController extends MainController
         $success = $_GET['success'] ?? false;
         $message = $_GET['msg'] ?? '';
         
-        $this->loadView('school/consultSchool', [
+        $this->loadPartialView('school/consultSchool', [
             'schools' => $schools,
             'search' => $search,
             'success' => $success,

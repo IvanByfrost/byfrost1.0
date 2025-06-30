@@ -10,34 +10,22 @@ window.loadView = function(viewName) {
     // Mostrar indicador de carga
     target.innerHTML = '<div class="text-center p-4"><i class="fas fa-spinner fa-spin"></i> Cargando...</div>';
     
-    // Construir la URL para cargar vista parcial
+    // Si la vista tiene formato 'controller/action', construye la URL
     let url;
-    let formData = new FormData();
-    
     if (viewName.includes('/')) {
-        // Si la vista tiene formato 'controller/action'
-        const parts = viewName.split('/');
-        const controller = parts[0];
-        const action = parts[1];
-        formData.append('view', controller);
-        formData.append('action', action);
+        const [controller, action] = viewName.split('/');
+        url = `${BASE_URL}?view=${controller}&action=${action}`;
     } else {
-        // Si solo es el nombre de la vista
-        formData.append('view', viewName);
-        formData.append('action', 'index');
+        url = `${BASE_URL}?view=${viewName}`;
     }
-    
-    // Usar el endpoint de vistas parciales
-    url = `${BASE_URL}?view=index&action=loadPartial`;
     
     console.log("URL construida:", url);
     
     fetch(url, {
-        method: 'POST',
+        method: 'GET',
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: formData
+        }
     })
     .then(response => {
         if (!response.ok) throw new Error("Vista no encontrada.");

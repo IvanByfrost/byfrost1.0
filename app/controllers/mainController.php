@@ -217,4 +217,6 @@ class MainController
             echo "Vista parcial no encontrada: $viewPath";
         }
     }
+
+    
 }

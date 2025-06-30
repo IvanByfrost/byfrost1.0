@@ -22,7 +22,7 @@ class UserController extends MainController
         
         $users = $this->userModel->getUsers();
         
-        $this->loadView('user/consultUser', [
+        $this->loadPartialView('user/consultUser', [
             'users' => $users
         ]);
     }
@@ -66,7 +66,7 @@ class UserController extends MainController
         }
         
         // Para peticiones normales, cargar la vista completa
-        $this->loadView('user/assignRole', [
+        $this->loadPartialView('user/assignRole', [
             'users' => $users,
             'message' => $message,
             'error' => $error
@@ -198,43 +198,22 @@ class UserController extends MainController
             $roleHistory = $this->userModel->getRoleHistory($userId);
         }
 
-        // Si es una petición AJAX, devolver solo el contenido de la tabla
+        // Si es una petición AJAX, cargar solo la vista parcial
         if ($this->isAjaxRequest()) {
-            if ($searchError) {
-                echo '<div class="alert alert-danger">' . htmlspecialchars($searchError) . '</div>';
-            } elseif (empty($roleHistory)) {
-                echo '<div class="alert alert-info">No hay historial de roles para este usuario.</div>';
-            } else {
-                // Mostrar información del usuario si está disponible
-                if ($userInfo) {
-                    echo '<div class="alert alert-info mb-3">';
-                    echo '<strong>Usuario encontrado:</strong> ' . htmlspecialchars($userInfo['first_name'] . ' ' . $userInfo['last_name']);
-                    echo ' (' . htmlspecialchars($userInfo['credential_type'] . ' ' . $userInfo['credential_number']) . ')';
-                    echo '</div>';
-                }
-                
-                echo '<table class="table table-bordered">';
-                echo '<thead><tr><th>Rol</th><th>Activo</th><th>Fecha de Asignación</th></tr></thead>';
-                echo '<tbody>';
-                foreach ($roleHistory as $rol) {
-                    echo '<tr>';
-                    echo '<td>' . htmlspecialchars($rol['role_type']) . '</td>';
-                    echo '<td>' . ($rol['is_active'] ? 'Sí' : 'No') . '</td>';
-                    echo '<td>' . htmlspecialchars($rol['created_at']) . '</td>';
-                    echo '</tr>';
-                }
-                echo '</tbody></table>';
-            }
-            return;
+            $this->loadPartialView('user/roleHistory', [
+                'roleHistory' => $roleHistory,
+                'userId' => $userId,
+                'searchError' => $searchError,
+                'userInfo' => $userInfo
+            ]);
+        } else {
+            $this->loadView('user/roleHistory', [
+                'roleHistory' => $roleHistory,
+                'userId' => $userId,
+                'searchError' => $searchError,
+                'userInfo' => $userInfo
+            ]);
         }
-
-        // Para peticiones normales, cargar la vista completa
-        $this->loadView('user/roleHistory', [
-            'roleHistory' => $roleHistory,
-            'userId' => $userId,
-            'searchError' => $searchError,
-            'userInfo' => $userInfo
-        ]);
     }
 
     /**
@@ -273,4 +252,8 @@ class UserController extends MainController
             exit;
         }
     }
-} 
+
+    public function roleHistory() {
+        $this->showRoleHistory();
+    }
+}

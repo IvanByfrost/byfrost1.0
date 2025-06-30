@@ -13,7 +13,7 @@
                 <ul class="submenu">
                     <li><a href="#" onclick="loadView('user/consultUser')">Consultar Usuario</a></li>
                     <li><a href="#" onclick="loadView('user/assignRole')">Asignar rol</a></li>
-                    <li><a href="#" onclick="loadView('user/roleHistory')">Consultar historial de roles</a></li>
+                    <li><a href="#" onclick="loadView('user/showRoleHistory')">Consultar historial de roles</a></li>
                 </ul>
             </li>
             <li class="has-submenu">
