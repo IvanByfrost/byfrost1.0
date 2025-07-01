@@ -47,6 +47,9 @@
                     <a href="#" class="btn btn-outline-primary" onclick="loadView('user/assignRole')">
                         Asignar permisos de usuario
                     </a>
+                    <a href="#" class="btn btn-outline-warning" onclick="loadView('role/index')">
+                        <i class="fas fa-shield-alt"></i> Gestionar Roles y Permisos
+                    </a>
                 </div>
             </div>
         </div>
