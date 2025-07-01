@@ -1,4 +1,6 @@
 <?php
+error_log('DEBUG: Cargando app/views/root/dashboard.php');
+echo '<!-- DEBUG: Cargando app/views/root/dashboard.php -->';
 if (!defined('ROOT')) {
     define('ROOT', dirname(dirname(dirname(__DIR__))));
 }

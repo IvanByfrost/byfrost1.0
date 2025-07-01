@@ -13,6 +13,8 @@ class RootController extends MainController
      */
     public function dashboard()
     {
+        error_log('DEBUG: Entrando a RootController::dashboard()');
+        echo '<!-- DEBUG: Entrando a RootController::dashboard() -->';
         // Verificar que el usuario esté logueado y sea root
         if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn()) {
             header('Location: /?view=index&action=login');
