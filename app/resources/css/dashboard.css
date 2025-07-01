@@ -47,6 +47,7 @@
     color: #333;
     text-decoration: none;
     transition: background-color 0.3s ease;
+    
 }
 
 .root-sidebar ul li a:hover {
@@ -364,5 +365,11 @@ footer {
     margin-bottom: 16px;
     text-align: center;
   }
+}
+
+.has-submenu.active > a {
+    background-color: #f0f4ff;
+    color: #00613f;
+    border-radius: 6px;
 }
 

@@ -153,7 +153,15 @@ class SessionMiddleware {
             echo json_encode([
                 'success' => false,
                 'message' => 'Error de sesión. Por favor, inicia sesión nuevamente.',
-                'redirect' => '/?view=index&action=login'
+                'redirect' => '/?view=index&action=login',
+                'showSwal' => true,
+                'swalConfig' => [
+                    'icon' => 'error',
+                    'title' => '¡Error de Sesión!',
+                    'text' => 'Ha ocurrido un error con tu sesión. Por favor, inicia sesión nuevamente.',
+                    'confirmButtonText' => 'Entendido',
+                    'confirmButtonColor' => '#d33'
+                ]
             ]);
         } else {
             header('Location: /?view=index&action=login');
@@ -174,7 +182,15 @@ class SessionMiddleware {
             echo json_encode([
                 'success' => false,
                 'message' => 'Sesión expirada. Por favor, inicia sesión nuevamente.',
-                'redirect' => '/?view=index&action=login'
+                'redirect' => '/?view=index&action=login',
+                'showSwal' => true,
+                'swalConfig' => [
+                    'icon' => 'warning',
+                    'title' => '¡Sesión Expirada!',
+                    'text' => 'Tu sesión ha expirado por inactividad. Por favor, inicia sesión nuevamente.',
+                    'confirmButtonText' => 'Entendido',
+                    'confirmButtonColor' => '#3085d6'
+                ]
             ]);
         } else {
             header('Location: /?view=index&action=login');
