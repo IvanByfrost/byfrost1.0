@@ -1,4 +1,6 @@
 <?php
+error_log('DEBUG: Cargando app/views/root/dashboard.php');
+echo '<!-- DEBUG: Cargando app/views/root/dashboard.php -->';
 if (!defined('ROOT')) {
     define('ROOT', dirname(dirname(dirname(__DIR__))));
 }
@@ -9,40 +11,39 @@ require_once ROOT . '/app/library/SessionManager.php';
 // Inicializar SessionManager
 $sessionManager = new SessionManager();
 
-// Verificar si el usuario está logueado
-if (!$sessionManager->isLoggedIn()) {
-    header("Location: " . url . "?view=login");
+// Verificar que el usuario esté logueado y sea root
+// Esta verificación ya se hace en el controlador, pero por seguridad la mantenemos aquí también
+if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn()) {
+    header("Location: " . url . "?view=index&action=login");
     exit;
 }
 
-// Verificar si el usuario tiene el rol de escuela (asumiendo que es 'school' o 'treasurer')
-if (!$sessionManager->hasAnyRole(['school', 'treasurer'])) {
+if (!$this->sessionManager->hasRole('root')) {
     header("Location: " . url . "?view=unauthorized");
     exit;
 }
 
-require_once ROOT . '/app/views/layouts/dashHeader.php';
+// require_once ROOT . '/app/views/layouts/dashHeader.php'; // ELIMINADO: El controlador ya lo incluye
 ?>
+
 <script>
-    const BASE_URL = "<?php echo url ?>";
-    console.log("Valor de BASE_URL: ", BASE_URL);
+const BASE_URL = "<?php echo url ?>";
+console.log("Valor de BASE_URL: ", BASE_URL);
 </script>
 
 <script type="text/javascript" src="<?php echo url . app . rq ?>js/loadView.js"></script>
 
-<body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <?php
-            require_once 'schoolSidebar.php';
-            ?>
-        </aside>
-        <div id="mainContent">
-
-        </div>
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <?php require_once __DIR__ . '/rootSidebar.php'; ?>
+    </aside>
+    
+    <div id="mainContent" class="mainContent">
+        <?php require_once 'menuRoot.php'; ?>
+         <!-- INICIO: Contenido principal del dashboard -->
+         <H1 style="font-sixe:24px; marging-bottom: 20px;"> <div class="icon-book-marked"></div>panel de control escolar</H1>
+         <div class="summary-cards" style="display: flex; gap:20px; flex-wrap;">
+         <div style="flex: 1; min-width: 200px; background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></div>
+         👨‍🎓 <strong>Estudiantes</strong><br><span style="font-size: 24px;">1,230</span>
     </div>
-</body>
-
-<?php
-require_once __DIR__ . '/../layouts/dashFooter.php';
-?>
+</div> 
