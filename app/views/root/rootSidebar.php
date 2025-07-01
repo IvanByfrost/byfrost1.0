@@ -11,9 +11,9 @@
             <li class="has-submenu">
                 <a href="#"><i data-lucide="user"></i>Usuarios</a>
                 <ul class="submenu">
-                    <li><a href="#" onclick="loadView('user/consultUser')">Consultar Usuario</a></li>
-                    <li><a href="#" onclick="loadView('user/assignRole')">Asignar rol</a></li>
-                    <li><a href="#" onclick="loadView('user/showRoleHistory')">Consultar historial de roles</a></li>
+                    <li><a href="#" onclick="loadView('user/consultUser')"><i data-lucide="user-search"></i>Consultar Usuario</a></li>
+                    <li><a href="#" onclick="loadView('user/assignRole')"><i data-lucide="user-pen"></i>Asignar rol</a></li>
+                    <li><a href="#" onclick="loadView('user/showRoleHistory')"><i data-lucide="book-user"></i>Historial de roles</a></li>
                 </ul>
             </li>
             <li class="has-submenu">

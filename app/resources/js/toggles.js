@@ -5,6 +5,11 @@ document.addEventListener('DOMContentLoaded', function () {
         menuLink.addEventListener('click', function (e) {
             e.preventDefault(); // evita navegación si href="#"
             const parentLi = this.parentElement;
+            // Cierra todos los submenús excepto el actual
+            document.querySelectorAll('.has-submenu').forEach(function (li) {
+                if (li !== parentLi) li.classList.remove('active');
+            });
+            // Alterna el submenú actual
             parentLi.classList.toggle('active');
         });
     });
