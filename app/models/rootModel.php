@@ -1,5 +1,5 @@
 <?php
-require_once 'mainModel.php';
+require_once ROOT . '/app/models/mainModel.php';
 
 class RootModel extends MainModel
 {
