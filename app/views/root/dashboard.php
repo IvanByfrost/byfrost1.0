@@ -21,7 +21,7 @@ if (!$this->sessionManager->hasRole('root')) {
     exit;
 }
 
-require_once ROOT . '/app/views/layouts/dashHeader.php';
+// require_once ROOT . '/app/views/layouts/dashHeader.php'; // ELIMINADO: El controlador ya lo incluye
 ?>
 
 <script>
