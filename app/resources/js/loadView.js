@@ -32,6 +32,17 @@ window.loadView = function(viewName) {
         return response.text();
     })
     .then(html => {
+        // Verificar si la respuesta contiene JavaScript
+        if (html.includes('<script>')) {
+            // Ejecutar el JavaScript y luego actualizar el contenido
+            const scriptMatch = html.match(/<script>([\s\S]*?)<\/script>/);
+            if (scriptMatch) {
+                const scriptContent = scriptMatch[1];
+                eval(scriptContent);
+                return; // No actualizar el contenido si hay JavaScript
+            }
+        }
+        
         target.innerHTML = html;
         
         // Inicializar JavaScript específico según la vista cargada
@@ -50,6 +61,9 @@ window.loadView = function(viewName) {
             } else {
                 console.warn('Función initUserManagementAfterLoad no encontrada');
             }
+        }
+        if (viewName === 'role/index' || viewName.includes('role')) {
+            console.log('Vista de gestión de roles cargada');
         }
     })
     .catch(err => {

@@ -1,5 +1,5 @@
 <?php
-require_once 'models/rootModel.php';
+require_once ROOT . '/app/models/rootModel.php';
 
 class RoleController extends MainController {
 
@@ -16,10 +16,21 @@ class RoleController extends MainController {
     public function index() {
         try {
             $roles = $this->model->getAllRoleTypes();
-            include 'views/role/index.php';
+            
+            // Detectar si se está cargando como vista parcial (desde loadView)
+            $isPartialView = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+                            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+            
+            if ($isPartialView) {
+                // Cargar solo el contenido sin estructura HTML completa
+                include ROOT . '/app/views/role/indexPartial.php';
+            } else {
+                // Cargar página completa
+                include ROOT . '/app/views/role/index.php';
+            }
         } catch (Exception $e) {
             error_log("Error en RoleController::index: " . $e->getMessage());
-            include 'views/Error/500.php';
+            include ROOT . '/app/views/Error/500.php';
         }
     }
 
@@ -31,16 +42,28 @@ class RoleController extends MainController {
                 $role_type = $_GET['role_type'] ?? null;
             }
             
+            // Detectar si se está cargando como vista parcial
+            $isPartialView = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+                            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+            
             if ($role_type) {
                 $permissions = $this->model->getPermissionsByRole($role_type);
-                include 'views/role/editRole.php';
+                if ($isPartialView) {
+                    include ROOT . '/app/views/role/editRolePartial.php';
+                } else {
+                    include ROOT . '/app/views/role/editRole.php';
+                }
             } else {
                 // Mostrar selector de roles
-                include 'views/role/editRole.php';
+                if ($isPartialView) {
+                    include ROOT . '/app/views/role/editRolePartial.php';
+                } else {
+                    include ROOT . '/app/views/role/editRole.php';
+                }
             }
         } catch (Exception $e) {
             error_log("Error en RoleController::edit: " . $e->getMessage());
-            include 'views/Error/500.php';
+            include ROOT . '/app/views/Error/500.php';
         }
     }
 
@@ -63,7 +86,18 @@ class RoleController extends MainController {
             ];
 
             $this->model->updatePermissions($role_type, $data);
-            header("Location: /?controller=role&action=index");
+            
+            // Detectar si se está cargando como vista parcial
+            $isPartialView = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+                            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+            
+            if ($isPartialView) {
+                // Para vistas parciales, redirigir usando JavaScript
+                echo "<script>loadView('role/index');</script>";
+            } else {
+                // Para páginas completas, redirigir con header
+                header("Location: " . url . "?controller=role&action=index");
+            }
             exit;
         } catch (Exception $e) {
             error_log("Error en RoleController::update: " . $e->getMessage());

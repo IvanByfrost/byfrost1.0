@@ -67,6 +67,7 @@ $controllerMapping = [
     'activity' => 'ActivityController',
     'schedule' => 'ScheduleController',
     'user' => 'UserController',
+    'role' => 'RoleController',
     'index' => 'IndexController',
     'login' => 'IndexController',
     'register' => 'IndexController',
