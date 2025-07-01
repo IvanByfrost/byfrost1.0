@@ -101,7 +101,7 @@ class RoleController extends MainController {
             exit;
         } catch (Exception $e) {
             error_log("Error en RoleController::update: " . $e->getMessage());
-            include 'views/Error/500.php';
+            include ROOT . '/app/views/Error/500.php';
         }
     }
 }
