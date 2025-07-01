@@ -45,6 +45,15 @@ CREATE TABLE user_roles (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+CREATE TABLE role_permissions (
+    role_type ENUM('student', 'parent', 'professor', 'coordinator', 'director', 'treasurer', 'root') PRIMARY KEY,
+    can_create BOOLEAN DEFAULT FALSE,
+    can_read   BOOLEAN DEFAULT TRUE,
+    can_update BOOLEAN DEFAULT FALSE,
+    can_delete BOOLEAN DEFAULT FALSE
+);
+
+
 -- Comando para cambiar el valor por defecto en base de datos existente
 -- ALTER TABLE user_roles MODIFY COLUMN role_type ENUM('student', 'parent', 'professor', 'coordinator', 'director', 'treasurer', 'root') DEFAULT 'student';
 

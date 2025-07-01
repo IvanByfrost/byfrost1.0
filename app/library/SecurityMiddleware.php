@@ -214,4 +214,26 @@ class SecurityMiddleware {
         
         return $url;
     }
+
+    function getUserEffectivePermissions($user_id) {
+    $roles = getActiveRolesByUserId($user_id); // consulta a `user_roles`
+    $finalPermissions = [
+        'can_create' => false,
+        'can_read' => false,
+        'can_update' => false,
+        'can_delete' => false
+    ];
+
+    foreach ($roles as $role) {
+        $perm = getPermissionsByRoleType($role); // de la tabla `role_permissions`
+        foreach ($perm as $action => $isAllowed) {
+            if ($isAllowed) {
+                $finalPermissions[$action] = true;
+            }
+        }
+    }
+
+    return $finalPermissions;
+}
+
 } 
