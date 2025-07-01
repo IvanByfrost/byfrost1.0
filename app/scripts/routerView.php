@@ -13,6 +13,10 @@ require_once ROOT . '/app/library/SecurityMiddleware.php';
 $view = $_GET['view'] ?? '';
 $action = $_GET['action'] ?? '';
 
+// Debug router inicio
+error_log('DEBUG ROUTER: view=' . $view . ', action=' . $action);
+echo '<!-- DEBUG ROUTER: view=' . htmlspecialchars($view) . ', action=' . htmlspecialchars($action) . ' -->';
+
 // Validar y sanitizar parámetros
 $validation = SecurityMiddleware::validateGetParams($_GET);
 if (!$validation) {
@@ -86,12 +90,14 @@ if (isset($controllerMapping[$view])) {
     $controllerName = $controllerMapping[$view];
     $controllerPath = ROOT . "/app/controllers/{$controllerName}.php";
     
-    // echo "<!-- Debug: Controlador mapeado: " . $controllerName . " -->";
-    // echo "<!-- Debug: Ruta del controlador: " . $controllerPath . " -->";
+    error_log('DEBUG ROUTER: controllerName=' . $controllerName . ', controllerPath=' . $controllerPath);
+    echo '<!-- DEBUG ROUTER: controllerName=' . htmlspecialchars($controllerName) . ', controllerPath=' . htmlspecialchars($controllerPath) . ' -->';
     
     if (file_exists($controllerPath)) {
         // Cargar el controlador
         require_once $controllerPath;
+        error_log('DEBUG ROUTER: require_once OK for ' . $controllerPath);
+        echo '<!-- DEBUG ROUTER: require_once OK for ' . htmlspecialchars($controllerPath) . ' -->';
         
         // Obtener la conexión a la base de datos
         require_once ROOT . '/app/scripts/connection.php';
@@ -99,13 +105,18 @@ if (isset($controllerMapping[$view])) {
         
         // Instanciar el controlador
         $controller = new $controllerName($dbConn, null);
+        error_log('DEBUG ROUTER: Instanciado ' . $controllerName);
+        echo '<!-- DEBUG ROUTER: Instanciado ' . htmlspecialchars($controllerName) . ' -->';
         
         // Si hay una acción específica, llamarla
         if (!empty($action)) {
             if (method_exists($controller, $action)) {
-                // echo "<!-- Debug: Llamando método: " . $action . " -->";
+                error_log('DEBUG ROUTER: Llamando método ' . $action . ' en ' . $controllerName);
+                echo '<!-- DEBUG ROUTER: Llamando método ' . htmlspecialchars($action) . ' en ' . htmlspecialchars($controllerName) . ' -->';
                 $controller->$action();
             } else {
+                error_log('DEBUG ROUTER: Método ' . $action . ' NO existe en ' . $controllerName);
+                echo '<!-- DEBUG ROUTER: Método ' . htmlspecialchars($action) . ' NO existe en ' . htmlspecialchars($controllerName) . ' -->';
                 http_response_code(404);
                 echo "<h2>Error 404</h2><p>La acción <code>" . htmlspecialchars($action) . "</code> no existe en el controlador <code>" . htmlspecialchars($controllerName) . "</code>.</p>";
                 echo "<p>Métodos disponibles: <code>" . implode(', ', get_class_methods($controller)) . "</code></p>";
@@ -152,6 +163,8 @@ if (isset($controllerMapping[$view])) {
             }
         }
     } else {
+        error_log('DEBUG ROUTER: El archivo del controlador NO existe: ' . $controllerPath);
+        echo '<!-- DEBUG ROUTER: El archivo del controlador NO existe: ' . htmlspecialchars($controllerPath) . ' -->';
         http_response_code(404);
         echo "<h2>Error 404</h2><p>El controlador <code>" . htmlspecialchars($controllerName) . "</code> no existe.</p>";
         echo "<p>Ruta buscada: <code>" . htmlspecialchars($controllerPath) . "</code></p>";
