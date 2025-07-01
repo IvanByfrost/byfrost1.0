@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test SweetAlert2 - Sesión Expirada</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <h1>Test SweetAlert2 - Sesión Expirada</h1>
+    
+    <button onclick="testSessionExpired()">Probar Sesión Expirada</button>
+    <button onclick="testSessionError()">Probar Error de Sesión</button>
+    <button onclick="testAjaxResponse()">Probar Respuesta AJAX</button>
+    
+    <script>
+        // Función para probar sesión expirada
+        function testSessionExpired() {
+            const response = {
+                success: false,
+                message: 'Sesión expirada. Por favor, inicia sesión nuevamente.',
+                redirect: '/?view=index&action=login',
+                showSwal: true,
+                swalConfig: {
+                    icon: 'warning',
+                    title: '¡Sesión Expirada!',
+                    text: 'Tu sesión ha expirado por inactividad. Por favor, inicia sesión nuevamente.',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#3085d6'
+                }
+            };
+            
+            handleSessionResponse(response);
+        }
+        
+        // Función para probar error de sesión
+        function testSessionError() {
+            const response = {
+                success: false,
+                message: 'Error de sesión. Por favor, inicia sesión nuevamente.',
+                redirect: '/?view=index&action=login',
+                showSwal: true,
+                swalConfig: {
+                    icon: 'error',
+                    title: '¡Error de Sesión!',
+                    text: 'Ha ocurrido un error con tu sesión. Por favor, inicia sesión nuevamente.',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#d33'
+                }
+            };
+            
+            handleSessionResponse(response);
+        }
+        
+        // Función para probar respuesta AJAX
+        function testAjaxResponse() {
+            $.ajax({
+                type: 'GET',
+                url: 'test-session-swal.php',
+                dataType: 'json',
+                success: function(response) {
+                    console.log('Respuesta recibida:', response);
+                    // El sessionHandler.js debería interceptar esta respuesta automáticamente
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error en AJAX:', error);
+                }
+            });
+        }
+        
+        // Función para manejar respuestas de sesión (simulando sessionHandler.js)
+        function handleSessionResponse(response) {
+            if (response && response.showSwal && response.swalConfig) {
+                showSessionAlert(response.swalConfig, response.redirect);
+                return true;
+            }
+            
+            if (response && response.success === false && 
+                response.message && 
+                (response.message.includes('Sesión expirada') || response.message.includes('Error de sesión'))) {
+                
+                const swalConfig = {
+                    icon: 'warning',
+                    title: '¡Sesión Expirada!',
+                    text: response.message,
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#3085d6'
+                };
+                
+                showSessionAlert(swalConfig, response.redirect);
+                return true;
+            }
+            
+            return false;
+        }
+        
+        // Función para mostrar alerta de sesión
+        function showSessionAlert(config, redirectUrl) {
+            const defaultConfig = {
+                icon: 'warning',
+                title: '¡Sesión Expirada!',
+                text: 'Tu sesión ha expirado por inactividad. Por favor, inicia sesión nuevamente.',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#3085d6',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showCloseButton: false
+            };
+            
+            const finalConfig = { ...defaultConfig, ...config };
+            
+            Swal.fire(finalConfig).then((result) => {
+                if (result.isConfirmed) {
+                    if (redirectUrl) {
+                        console.log('Redirigiendo a:', redirectUrl);
+                        // window.location.href = redirectUrl;
+                    } else {
+                        console.log('Redirigiendo a login');
+                        // window.location.href = '/?view=index&action=login';
+                    }
+                }
+            });
+        }
+        
+        // Interceptar respuestas AJAX (simulando sessionHandler.js)
+        $(document).ajaxComplete(function(event, xhr, settings) {
+            try {
+                const contentType = xhr.getResponseHeader('Content-Type');
+                if (contentType && contentType.includes('application/json')) {
+                    const response = JSON.parse(xhr.responseText);
+                    
+                    if (response.showSwal && response.swalConfig) {
+                        showSessionAlert(response.swalConfig, response.redirect);
+                        return;
+                    }
+                    
+                    if (response.success === false && 
+                        (response.message && response.message.includes('Sesión expirada')) ||
+                        (response.message && response.message.includes('Error de sesión'))) {
+                        
+                        const swalConfig = {
+                            icon: 'warning',
+                            title: '¡Sesión Expirada!',
+                            text: response.message || 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.',
+                            confirmButtonText: 'Entendido',
+                            confirmButtonColor: '#3085d6'
+                        };
+                        
+                        showSessionAlert(swalConfig, response.redirect);
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.error('Error al procesar respuesta AJAX:', error);
+            }
+        });
+    </script>
+</body>
+</html> 

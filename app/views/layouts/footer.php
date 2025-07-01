@@ -41,6 +41,7 @@
     <!-- Scripts personalizados -->
     <script src="<?php echo url . app . rq ?>js/bootstrap.bundle.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/onlyNumber.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/sessionHandler.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/registerFunction.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/loginFunctions.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/completeProfile.js"></script>
