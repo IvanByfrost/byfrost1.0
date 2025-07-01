@@ -13,8 +13,14 @@ window.loadView = function(viewName) {
     // Si la vista tiene formato 'controller/action', construye la URL
     let url;
     if (viewName.includes('/')) {
-        const [controller, action] = viewName.split('/');
+        const [controller, actionWithParams] = viewName.split('/');
+        const [action, params] = actionWithParams.split('?');
         url = `${BASE_URL}?view=${controller}&action=${action}`;
+        
+        // Agregar parámetros adicionales si existen
+        if (params) {
+            url += `&${params}`;
+        }
     } else {
         url = `${BASE_URL}?view=${viewName}`;
     }
@@ -64,6 +70,12 @@ window.loadView = function(viewName) {
         }
         if (viewName === 'role/index' || viewName.includes('role')) {
             console.log('Vista de gestión de roles cargada');
+            // Inicializar formulario de roles después de cargar la vista
+            if (typeof initRoleEditForm === 'function') {
+                setTimeout(() => {
+                    initRoleEditForm();
+                }, 100);
+            }
         }
     })
     .catch(err => {

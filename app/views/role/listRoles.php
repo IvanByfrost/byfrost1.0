@@ -50,7 +50,7 @@
                                         </span>
                                     </div>
                                     <div class="mt-3">
-                                        <button class="btn btn-primary btn-sm" onclick="loadView('role/editRole', '<?= $role ?>')">
+                                        <button class="btn btn-primary btn-sm" onclick="loadView('role/edit?role_type=<?= $role ?>')">
                                             <i class="fas fa-edit"></i> Editar Permisos
                                         </button>
                                     </div>

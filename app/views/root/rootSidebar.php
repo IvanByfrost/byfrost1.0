@@ -19,7 +19,7 @@
             <li class="has-submenu">
                 <a href="#"><i data-lucide="key"></i>Permisos</a>
                 <ul class="submenu">
-                    <li><a href="#" onclick="loadView('role/editRole')">Editar permisos</a></li>
+                    <li><a href="#" onclick="loadView('role/index')">Editar permisos</a></li>
                 </ul>
             </li>
             <li class="has-submenu">

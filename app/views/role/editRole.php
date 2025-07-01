@@ -14,7 +14,7 @@
                 <div class="card-body">
                     <?php if (isset($permissions) && !empty($permissions)): ?>
                         <!-- Formulario de edición de permisos -->
-                        <form method="post" action="/?controller=role&action=update">
+                        <form id="editRoleForm" method="post">
                             <input type="hidden" name="role_type" value="<?= htmlspecialchars($permissions['role_type']) ?>">
                             
                             <div class="row">
@@ -61,16 +61,16 @@
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-save"></i> Guardar Permisos
                                 </button>
-                                <a href="/?controller=role&action=index" class="btn btn-secondary">
+                                <button type="button" class="btn btn-secondary" onclick="loadView('role/index')">
                                     <i class="fas fa-arrow-left"></i> Volver
-                                </a>
+                                </button>
                             </div>
                         </form>
                         
                     <?php else: ?>
                         <!-- Selector de rol -->
                         <form method="get" action="">
-                            <input type="hidden" name="controller" value="role">
+                            <input type="hidden" name="view" value="role">
                             <input type="hidden" name="action" value="edit">
                             
                             <div class="mb-3">
@@ -91,9 +91,9 @@
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-search"></i> Cargar Permisos
                                 </button>
-                                <a href="/?controller=role&action=index" class="btn btn-secondary">
+                                <button type="button" class="btn btn-secondary" onclick="loadView('role/index')">
                                     <i class="fas fa-arrow-left"></i> Volver
-                                </a>
+                                </button>
                             </div>
                         </form>
                     <?php endif; ?>
@@ -101,4 +101,4 @@
             </div>
         </div>
     </div>
-</div>
+</div> 
