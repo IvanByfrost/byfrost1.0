@@ -14,6 +14,7 @@
 
 cd C:\xampp1\htdocs\byfrost
 php -S localhost:8000
+C:\xampp\php\php.exe -S localhost:8000 router.php
 
 -- Cuentas de prueba
 CC 1031180139 12345678
