@@ -256,4 +256,116 @@ class UserController extends MainController
     public function roleHistory() {
         $this->showRoleHistory();
     }
+
+    /**
+     * Muestra la vista de administración de usuarios (settingsRoles)
+     */
+    public function settingsRoles()
+    {
+        $this->protectRoot();
+        $this->loadView('user/settingsRoles');
+    }
+
+    /**
+     * Devuelve la lista de usuarios en formato JSON (AJAX)
+     */
+    public function getUsersAjax()
+    {
+        $this->protectRoot();
+        try {
+            $users = $this->userModel->getUsers();
+            $this->sendJsonResponse(true, 'Usuarios obtenidos', ['users' => $users]);
+        } catch (Exception $e) {
+            $this->sendJsonResponse(false, 'Error al obtener usuarios: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Crea un usuario vía AJAX
+     */
+    public function createUserAjax()
+    {
+        $this->protectRoot();
+        $data = json_decode(file_get_contents('php://input'), true);
+        if (!$data) {
+            $this->sendJsonResponse(false, 'Datos inválidos');
+            return;
+        }
+        // Mapear datos del formulario a los campos del modelo
+        $userData = [
+            'first_name' => $data['nombre'] ?? '',
+            'last_name' => '',
+            'email' => $data['usuario'] ?? '',
+            'password' => $data['clave'] ?? '',
+            'credential_type' => $data['tipoDoc'] ?? '',
+            'credential_number' => $data['numeroDoc'] ?? '',
+            'date_of_birth' => null,
+            'phone' => null,
+            'address' => null
+        ];
+        try {
+            $this->userModel->createUser($userData);
+            // Asignar rol si es diferente de student
+            if (!empty($data['rol']) && $data['rol'] !== 'student') {
+                $user = $this->userModel->searchUsersByDocument($userData['credential_type'], $userData['credential_number']);
+                if (!empty($user[0]['user_id'])) {
+                    $this->userModel->assignRole($user[0]['user_id'], $data['rol']);
+                }
+            }
+            $this->sendJsonResponse(true, 'Usuario creado correctamente');
+        } catch (Exception $e) {
+            $this->sendJsonResponse(false, 'Error al crear usuario: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Edita un usuario vía AJAX (solo nombre por ahora)
+     */
+    public function editUserAjax()
+    {
+        $this->protectRoot();
+        $data = json_decode(file_get_contents('php://input'), true);
+        $userId = $data['user_id'] ?? null;
+        $nuevoNombre = $data['nombre'] ?? null;
+        if (!$userId || !$nuevoNombre) {
+            $this->sendJsonResponse(false, 'Faltan datos requeridos');
+            return;
+        }
+        // Separar nombre y apellido si es posible
+        $partes = explode(' ', $nuevoNombre, 2);
+        $firstName = $partes[0];
+        $lastName = $partes[1] ?? '';
+        try {
+            $this->userModel->updateUser($userId, [
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+                'phone' => null,
+                'date_of_birth' => null,
+                'address' => null
+            ]);
+            $this->sendJsonResponse(true, 'Usuario editado correctamente');
+        } catch (Exception $e) {
+            $this->sendJsonResponse(false, 'Error al editar usuario: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Elimina (desactiva) un usuario vía AJAX
+     */
+    public function deleteUserAjax()
+    {
+        $this->protectRoot();
+        $data = json_decode(file_get_contents('php://input'), true);
+        $userId = $data['user_id'] ?? null;
+        if (!$userId) {
+            $this->sendJsonResponse(false, 'Falta el ID de usuario');
+            return;
+        }
+        try {
+            $this->userModel->deleteUser($userId);
+            $this->sendJsonResponse(true, 'Usuario eliminado correctamente');
+        } catch (Exception $e) {
+            $this->sendJsonResponse(false, 'Error al eliminar usuario: ' . $e->getMessage());
+        }
+    }
 }

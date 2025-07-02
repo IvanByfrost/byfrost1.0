@@ -28,6 +28,13 @@
                     <li><a href="#" onclick="loadView('director/createDirector')">Consultar estadística</a></li>
                 </ul>
             </li>
-            <li class="has-submenu"><a href="#" onclick="loadView('layouts/settingsRoles')"><i data-lucide="settings"></i>Configuración</a></li>
+            <li class="has-submenu">
+                <a href="#"><i data-lucide="settings"></i>Configuración BYFROST</a>
+                <ul class="submenu">
+                    <li><a href="#" onclick="loadView('user/settingsRoles?section=usuarios')">👥 Usuarios</a></li>
+                    <li><a href="#" onclick="loadView('user/settingsRoles?section=agregar')">➕ Agregar usuario</a></li>
+                    <li><a href="#" onclick="loadView('user/settingsRoles?section=recuperar')">🔐 Recuperar contraseña</a></li>
+                </ul>
+            </li>
         </ul>
     </div>

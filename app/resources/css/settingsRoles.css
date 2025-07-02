@@ -1,0 +1,30 @@
+* { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+body { margin: 0; display: flex; background: #f3f4f6; }
+.sidebar {
+  width: 250px; background: #fff; padding: 20px; border-right: 1px solid #ddd; height: 100vh;
+}
+.sidebar h2 { margin-bottom: 30px; }
+.sidebar button {
+  display: block; background: none; border: none; padding: 10px; font-size: 16px;
+  width: 100%; text-align: left; cursor: pointer; border-radius: 8px; margin-bottom: 10px;
+}
+.sidebar button.active, .sidebar button:hover { background-color: #e0f2fe; }
+.main { flex: 1; padding: 30px; }
+.section {
+  display: none; background: white; padding: 20px; border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+.section.active { display: block; }
+input, select {
+  width: 100%; padding: 8px; margin: 8px 0 15px; border: 1px solid #ccc; border-radius: 6px;
+}
+table {
+  width: 100%; border-collapse: collapse; margin-top: 15px;
+}
+table, th, td { border: 1px solid #ccc; }
+th, td { padding: 10px; text-align: left; }
+button.action {
+  background-color: #0284c7; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer;
+}
+.delete-btn { background-color: #dc2626; }
+.edit-btn { background-color: #facc15; color: black; } 
