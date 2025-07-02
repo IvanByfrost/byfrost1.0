@@ -36,7 +36,7 @@ require_once ROOT . '/app/views/layouts/dashHeader.php';
             require_once 'directorSidebar.php';
             ?>
         </aside>
-        <div id="mainContent">
+        <div id="mainContent" class="mainContent">
 
         </div>
     </div>
