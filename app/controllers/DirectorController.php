@@ -5,10 +5,13 @@ require_once 'app/controllers/mainController.php';
 class DirectorController extends MainController {
     protected $dbConn;
     protected $view;
+    protected $directorModel;
+    
     public function __construct($dbConn)
     {
         parent::__construct($dbConn);
         $this->dbConn = $dbConn;
+        $this->directorModel = new DirectorModel();
     }
 
     // Acción por defecto: Lista de rectores
@@ -17,10 +20,23 @@ class DirectorController extends MainController {
         $this->listAction();
     }
 
+    // Dashboard del director
+    public function dashboard() {
+        $this->protectDirector();
+        // Cargar la vista del dashboard
+        require_once app.views . 'director/dashboard.php';
+    }
+
+    // Método por defecto para el router
+    public function index() {
+        $this->dashboard();
+    }
+
+
     // Mostrar la lista de rectores
     public function listAction() {
         $this->protectDirector();
-        $director = $this->dbConn->getAllRectores();
+        $directors = $this->directorModel->getAllDirector();
         // Cargar la vista
         require_once app.views . 'director/directorLists.php';
     }
@@ -42,16 +58,13 @@ class DirectorController extends MainController {
             $userPassword = $_POST['password'] ?? ''; // La contraseña en texto plano
             $phoneUser = $_POST['phoneUser'] ?? null;
 
-            // Validar y hashear la contraseña antes de guardarla
-            if (!empty($userPassword)) {
-                $hashedPassword = password_hash($userPassword, PASSWORD_DEFAULT);
-            } else {
-                // Manejar error o asignar un valor por defecto si la contraseña es obligatoria
+            // Validar que la contraseña no esté vacía
+            if (empty($userPassword)) {
                 echo "Error: La contraseña es obligatoria.";
                 return;
             }
 
-            if ($this->dbConn->createDirector($userName, $userLastName, $userEmail, $hashedPassword, $phoneUser)) {
+            if ($this->directorModel->createDirector($userName, $userLastName, $userEmail, $userPassword, $phoneUser)) {
                 header('Location: /software_academico/rector/listar'); // Redirigir a la lista
                 exit();
             } else {
@@ -68,7 +81,7 @@ class DirectorController extends MainController {
         $this->protectDirector();
         $id = $_GET['id'] ?? null; // Obtener ID de la URL
         if ($id) {
-            $director = $this->dbConn->getRectorById($id);
+            $director = $this->directorModel->getDirectorById($id);
             if ($director) {
                 require_once app.views. 'rector/editar.php';
             } else {
@@ -90,7 +103,7 @@ class DirectorController extends MainController {
             $phoneUser = $_POST['phoneUser'] ?? null;
 
             $userEmail = $_POST['email'] ?? '';
-            if ($id && $this->dbConn->updateDirector($id, $userName, $userLastName, $userEmail, $phoneUser)) {
+            if ($id && $this->directorModel->updateDirector($id, $userName, $userLastName, $userEmail, $phoneUser)) {
                 header('Location: /software_academico/rector/listar');
                 exit();
             } else {
@@ -107,7 +120,7 @@ class DirectorController extends MainController {
         $this->protectDirector();
         $id = $_GET['id'] ?? null;
         if ($id) {
-            if ($this->dbConn->deleteDirector($id)) {
+            if ($this->directorModel->deleteDirector($id)) {
                 header('Location: /software_academico/rector/listar');
                 exit();
             } else {
@@ -120,7 +133,7 @@ class DirectorController extends MainController {
 
     // Protección de acceso solo para directores
     private function protectDirector() {
-        if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn() || !$this->sessionManager->hasRole('director')) {
+        if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn() || !$this->sessionManager->hasAnyRole(['director', 'root'])) {
             header('Location: /?view=unauthorized');
             exit;
         }

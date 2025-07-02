@@ -216,24 +216,90 @@ class SecurityMiddleware {
     }
 
     function getUserEffectivePermissions($user_id) {
-    $roles = getActiveRolesByUserId($user_id); // consulta a `user_roles`
-    $finalPermissions = [
-        'can_create' => false,
-        'can_read' => false,
-        'can_update' => false,
-        'can_delete' => false
-    ];
+        $roles = $this->getActiveRolesByUserId($user_id); // consulta a `user_roles`
+        $finalPermissions = [
+            'can_create' => false,
+            'can_read' => false,
+            'can_update' => false,
+            'can_delete' => false
+        ];
 
-    foreach ($roles as $role) {
-        $perm = getPermissionsByRoleType($role); // de la tabla `role_permissions`
-        foreach ($perm as $action => $isAllowed) {
-            if ($isAllowed) {
-                $finalPermissions[$action] = true;
+        foreach ($roles as $role) {
+            $perm = $this->getPermissionsByRoleType($role); // de la tabla `role_permissions`
+            foreach ($perm as $action => $isAllowed) {
+                if ($isAllowed) {
+                    $finalPermissions[$action] = true;
+                }
             }
+        }
+
+        return $finalPermissions;
+    }
+
+    /**
+     * Obtiene los roles activos de un usuario
+     */
+    private function getActiveRolesByUserId($user_id) {
+        try {
+            // Usar la conexión global si está disponible
+            global $dbConn;
+            if (!$dbConn) {
+                require_once dirname(dirname(dirname(__DIR__))) . '/app/scripts/connection.php';
+                $dbConn = getConnection();
+            }
+            
+            $sql = "SELECT role_type FROM user_roles WHERE user_id = :user_id AND is_active = 1";
+            $stmt = $dbConn->prepare($sql);
+            $stmt->execute(['user_id' => $user_id]);
+            return $stmt->fetchAll(PDO::FETCH_COLUMN);
+        } catch (Exception $e) {
+            error_log("Error en getActiveRolesByUserId: " . $e->getMessage());
+            return [];
         }
     }
 
-    return $finalPermissions;
-}
+    /**
+     * Obtiene los permisos de un tipo de rol
+     */
+    private function getPermissionsByRoleType($roleType) {
+        try {
+            // Usar la conexión global si está disponible
+            global $dbConn;
+            if (!$dbConn) {
+                require_once dirname(dirname(dirname(__DIR__))) . '/app/scripts/connection.php';
+                $dbConn = getConnection();
+            }
+            
+            $sql = "SELECT can_create, can_read, can_update, can_delete FROM role_permissions WHERE role_type = :role_type";
+            $stmt = $dbConn->prepare($sql);
+            $stmt->execute(['role_type' => $roleType]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($result) {
+                return [
+                    'can_create' => (bool)$result['can_create'],
+                    'can_read' => (bool)$result['can_read'],
+                    'can_update' => (bool)$result['can_update'],
+                    'can_delete' => (bool)$result['can_delete']
+                ];
+            }
+            
+            // Si no hay permisos específicos, devolver permisos por defecto
+            return [
+                'can_create' => false,
+                'can_read' => true,
+                'can_update' => false,
+                'can_delete' => false
+            ];
+        } catch (Exception $e) {
+            error_log("Error en getPermissionsByRoleType: " . $e->getMessage());
+            return [
+                'can_create' => false,
+                'can_read' => true,
+                'can_update' => false,
+                'can_delete' => false
+            ];
+        }
+    }
 
 } 
