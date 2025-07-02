@@ -25,6 +25,20 @@
     <script type="text/javascript" src="<?php echo url; ?>app/resources/js/createSchool.js"></script>
     <script type="text/javascript" src="<?php echo url; ?>app/resources/js/userManagement.js"></script>
     <script type="text/javascript" src="<?php echo url; ?>app/resources/js/roleManagement.js"></script>
+
+    <footer class="border-top footer text-muted">
+    <div align='center'>
+        <p>&copy; PDHN</p>
+    </div>
+</footer>
+<script src="<?php echo URL.RQ ?>js/jquery-3.4.1.min.js"></script>
+<script src="<?php echo URL.RQ ?>js/bootstrap.bundle.min.js"></script>
+<script src="<?php echo URL.RQ ?>js/Uploadpicture.js"></script>
+<script src="<?php echo URL.RQ ?>js/User.js"></script>
+<script src="<?php echo URL.RQ ?>js/Principal.js"></script>
+<script src="<?php echo URL.RQ ?>js/app.js"></script>
+</body>
+</html>
     
     <script>
         // Inicializar Lucide

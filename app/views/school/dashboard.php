@@ -44,6 +44,7 @@ console.log("Valor de BASE_URL: ", BASE_URL);
          <H1 style="font-sixe:24px; marging-bottom: 20px;"> <div class="icon-book-marked"></div>panel de control escolar</H1>
          <div class="summary-cards" style="display: flex; gap:20px; flex-wrap;">
          <div style="flex: 1; min-width: 200px; background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></div>
-         👨‍🎓 <strong>Estudiantes</strong><br><span style="font-size: 24px;">1,230</span>
+         <strong>Estudiantes</strong><br><span style="font-size: 24px;">1,230</span>
+         
     </div>
 </div> 
