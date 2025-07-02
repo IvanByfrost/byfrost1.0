@@ -133,7 +133,7 @@ class DirectorController extends MainController {
 
     // Protección de acceso solo para directores
     private function protectDirector() {
-        if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn() || !$this->sessionManager->hasRole('director')) {
+        if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn() || !$this->sessionManager->hasAnyRole(['director', 'root'])) {
             header('Location: /?view=unauthorized');
             exit;
         }

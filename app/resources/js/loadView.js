@@ -1,5 +1,6 @@
 window.loadView = function(viewName) {
     const target = document.getElementById("mainContent");
+    console.log("Target mainContent:", target);
     if (!target) {
         console.error("Elemento con id 'mainContent' no encontrado.");
         return;
@@ -38,18 +39,21 @@ window.loadView = function(viewName) {
         return response.text();
     })
     .then(html => {
-        // Verificar si la respuesta contiene JavaScript
-        if (html.includes('<script>')) {
-            // Ejecutar el JavaScript y luego actualizar el contenido
-            const scriptMatch = html.match(/<script>([\s\S]*?)<\/script>/);
-            if (scriptMatch) {
-                const scriptContent = scriptMatch[1];
-                eval(scriptContent);
-                return; // No actualizar el contenido si hay JavaScript
-            }
-        }
-        
+        // console.log("Respuesta AJAX:", html);
         target.innerHTML = html;
+
+        // Ejecutar cualquier <script> embebido en la respuesta
+        const scripts = html.match(/<script>([\s\S]*?)<\/script>/gi);
+        if (scripts) {
+            scripts.forEach(scriptTag => {
+                const scriptContent = scriptTag.replace(/<script>|<\/script>/gi, '');
+                try {
+                    eval(scriptContent);
+                } catch (e) {
+                    console.error('Error ejecutando script embebido:', e);
+                }
+            });
+        }
         
         // Inicializar JavaScript específico según la vista cargada
         if (viewName === 'school/createSchool') {

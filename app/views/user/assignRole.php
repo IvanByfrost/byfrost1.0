@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/../../library/SessionManager.php';
+$sessionManager = new SessionManager();
+$userRole = $sessionManager->getUserRole();
 // Verificar si hay mensajes o errores
 $error = $error ?? '';
 $success = $success ?? '';
@@ -132,13 +135,23 @@ $roles = $roles ?? [];
                         <label for="modal_role_type" class="form-label">Nuevo Rol *</label>
                         <select class="form-control" id="modal_role_type" name="role_type" required>
                             <option value="">Seleccionar rol</option>
-                            <option value="student">Estudiante</option>
-                            <option value="parent">Padre/Acudiente</option>
-                            <option value="professor">Profesor</option>
-                            <option value="coordinator">Coordinador</option>
-                            <option value="director">Director/Rector</option>
-                            <option value="treasurer">Tesorero</option>
-                            <option value="root">Administrador</option>
+                            <?php if ($userRole === 'director'): ?>
+                                <option value="student">Estudiante</option>
+                                <option value="parent">Padre/Acudiente</option>
+                                <option value="professor">Profesor</option>
+                                <option value="coordinator">Coordinador</option>
+                                <option value="treasurer">Tesorero</option>
+                            <?php elseif ($userRole === 'coordinator'): ?>
+                                <option value="student">Estudiante</option>
+                            <?php else: ?>
+                                <option value="student">Estudiante</option>
+                                <option value="parent">Padre/Acudiente</option>
+                                <option value="professor">Profesor</option>
+                                <option value="coordinator">Coordinador</option>
+                                <option value="director">Director/Rector</option>
+                                <option value="treasurer">Tesorero</option>
+                                <option value="root">Administrador</option>
+                            <?php endif; ?>
                         </select>
                     </div>
                 </form>
