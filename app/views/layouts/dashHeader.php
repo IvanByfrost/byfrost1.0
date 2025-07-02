@@ -40,6 +40,11 @@ require_once ROOT . '/app/views/layouts/dashHead.php';
                 <small><?php echo ucfirst($userRole); ?></small>
             </div>
             <hr>
+            <div class="user-settings-submenu" style="padding: 0 10px 10px 10px;">
+                <div style="font-weight: bold; margin-bottom: 5px;">Configuración BYFROST</div>
+                <a href="#" onclick="loadView('user/settingsRoles?section=usuarios'); closeUserMenu();" style="display: block; padding: 6px 0; color: #0284c7;">👥 Usuarios</a>
+                <a href="#" onclick="loadView('user/settingsRoles?section=recuperar'); closeUserMenu();" style="display: block; padding: 6px 0; color: #0284c7;">🔐 Recuperar contraseña</a>
+            </div>
             <a href="<?php echo url . app ?>processes/outProcess.php" style="
             display: block;
             padding: 8px 10px;
@@ -50,3 +55,9 @@ require_once ROOT . '/app/views/layouts/dashHead.php';
         </div>
     </div>
 </header>
+
+<script>
+function closeUserMenu() {
+  document.querySelector('.user-menu-container').style.display = 'none';
+}
+</script>
