@@ -37,8 +37,6 @@
 <script src="<?php echo URL.RQ ?>js/User.js"></script>
 <script src="<?php echo URL.RQ ?>js/Principal.js"></script>
 <script src="<?php echo URL.RQ ?>js/app.js"></script>
-</body>
-</html>
     
     <script>
         // Inicializar Lucide
