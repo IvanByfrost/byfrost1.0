@@ -122,7 +122,7 @@ class UserController extends MainController
     }
 
     /**
-     * Protección de acceso solo para root
+     * Protección de acceso para root y director
      */
     private function protectRoot() {
         // Verificar si SessionManager está disponible
@@ -147,14 +147,14 @@ class UserController extends MainController
             exit;
         }
         
-        // Verificar si el usuario tiene rol de root
-        if (!$this->sessionManager->hasRole('root')) {
+        // Verificar si el usuario tiene rol de root o director
+        if (!$this->sessionManager->hasRole('root') && !$this->sessionManager->hasRole('director')) {
             $user = $this->sessionManager->getCurrentUser();
             $userRole = $user['role'] ?? 'sin rol';
             error_log("UserController::protectRoot - Usuario sin permisos: " . $user['email'] . " (rol: " . $userRole . ")");
             
             if ($this->isAjaxRequest()) {
-                $this->sendJsonResponse(false, 'No tienes permisos para realizar esta acción. Necesitas rol de root.');
+                $this->sendJsonResponse(false, 'No tienes permisos para realizar esta acción. Necesitas rol de root o director.');
             } else {
                 HeaderManager::redirect('/?view=unauthorized');
             }

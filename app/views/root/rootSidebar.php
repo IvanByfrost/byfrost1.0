@@ -30,6 +30,6 @@
                     <li><a href="#" onclick="loadView('director/createDirector')">Consultar estadística</a></li>
                 </ul>
             </li>
-            <li class="has-submenu"><a href="#"><i data-lucide="settings"></i>Configuración</a></li>
+            <li class="has-submenu"><a href="#" onclick="loadView('layouts/settingsRoles')"><i data-lucide="settings"></i>Configuración</a></li>
         </ul>
     </div>

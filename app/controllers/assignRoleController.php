@@ -16,7 +16,11 @@ class AssignRoleController extends MainController {
             $rolesPermitidos = ['coordinator', 'professor', 'parent', 'treasurer', 'student'];
             if (!in_array($roleType, $rolesPermitidos)) {
                 http_response_code(403);
-                echo "No tienes permiso para asignar el rol seleccionado.";
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'No tienes permisos para asignar este rol. Solo puedes asignar coordinadores, profesores, acudientes, tesoreros y estudiantes.',
+                    'data' => []
+                ]);
                 exit;
             }
         }
@@ -24,7 +28,11 @@ class AssignRoleController extends MainController {
         if ($this->sessionManager && $this->sessionManager->hasRole('coordinator')) {
             if ($roleType !== 'student') {
                 http_response_code(403);
-                echo "El coordinador solo puede asignar estudiantes.";
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'El coordinador solo puede asignar estudiantes.',
+                    'data' => []
+                ]);
                 exit;
             }
         }

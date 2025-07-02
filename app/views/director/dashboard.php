@@ -24,8 +24,7 @@ if (!$sessionManager->hasRole('director')) {
 require_once ROOT . '/app/views/layouts/dashHeader.php';
 ?>
 <script>
-    const BASE_URL = "<?php echo url ?>";
-    console.log("Valor de BASE_URL: ", BASE_URL);
+    console.log("BASE_URL será configurada en dashFooter.php");
 </script>
 
 <script type="text/javascript" src="<?php echo url . app. rq ?>js/loadView.js"></script>

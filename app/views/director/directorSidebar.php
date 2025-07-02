@@ -1,7 +1,7 @@
 <div class="root-dashboard">
     <div class="root-sidebar">
         <ul>
-            <li><a href="#"><i data-lucide="home"></i>Inicio</a></li>
+            <li><a href="#" onclick="loadView('school/createSchool')"><i data-lucide="home"></i>Inicio</a></li>
             <li class="has-submenu"><a href="#"><i data-lucide="school"></i>Colegios</a>
                 <ul class="submenu">
                     <li><a href="#" onclick="loadView('school/createSchool')"><i data-lucide="sparkles"></i>Registrar Colegio</a></li>
@@ -28,6 +28,6 @@
                     <li><a href="#" onclick="loadView('director/createDirector')">Consultar estadística</a></li>
                 </ul>
             </li>
-            <li class="has-submenu"><a href="#" onclick="loadView('director/editDirector')"><i data-lucide="settings"></i>Configuración</a></li>
+            <li class="has-submenu"><a href="#" onclick="loadView('layouts/settingsRoles')"><i data-lucide="settings"></i>Configuración</a></li>
         </ul>
     </div>

@@ -27,8 +27,7 @@ if (!$this->sessionManager->hasRole('root')) {
 ?>
 
 <script>
-const BASE_URL = "<?php echo url ?>";
-console.log("Valor de BASE_URL: ", BASE_URL);
+console.log("BASE_URL será configurada en dashFooter.php");
 </script>
 
 <script type="text/javascript" src="<?php echo url . app . rq ?>js/loadView.js"></script>
@@ -41,10 +40,11 @@ console.log("Valor de BASE_URL: ", BASE_URL);
     <div id="mainContent" class="mainContent">
         <?php require_once 'menuRoot.php'; ?>
          <!-- INICIO: Contenido principal del dashboard -->
-         <H1 style="font-sixe:24px; marging-bottom: 20px;"> <div class="icon-book-marked"></div>panel de control escolar</H1>
-         <div class="summary-cards" style="display: flex; gap:20px; flex-wrap;">
-         <div style="flex: 1; min-width: 200px; background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></div>
-         <strong>Estudiantes</strong><br><span style="font-size: 24px;">1,230</span>
-         
+         <h1 style="font-size:24px; margin-bottom: 20px;"> <div class="icon-book-marked"></div>Panel de Control Escolar</h1>
+         <div class="summary-cards" style="display: flex; gap:20px; flex-wrap: wrap;">
+             <div style="flex: 1; min-width: 200px; background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                 <strong>Estudiantes</strong><br><span style="font-size: 24px;">1,230</span>
+             </div>
+         </div>
     </div>
 </div> 

@@ -538,6 +538,7 @@ function displaySearchResults(users) {
     `;
     
     resultsContainer.innerHTML = html;
+    refreshIcons();
 }
 
 /**
@@ -618,6 +619,7 @@ function displayConsultResults(users) {
     `;
     
     resultsContainer.innerHTML = html;
+    refreshIcons();
 }
 
 /**
@@ -683,6 +685,7 @@ function displayRoleHistory(roleHistory, userInfo) {
     `;
     
     resultsContainer.innerHTML = html;
+    refreshIcons();
 }
 
 /**
@@ -742,12 +745,12 @@ function assignRole() {
         success: function(response) {
             console.log('Respuesta de asignación:', response);
             
-            if (response.status === 'ok') {
+            if (response.status === 'ok' || response.success === true) {
                 // Éxito
                 if (typeof Swal !== "undefined") {
                     Swal.fire({
                         title: '¡Éxito!',
-                        text: response.msg,
+                        text: response.msg || response.message,
                         icon: 'success',
                         timer: 3000,
                         showConfirmButton: false
@@ -758,7 +761,7 @@ function assignRole() {
                         loadUsersWithoutRole();
                     });
                 } else {
-                    alert(response.msg);
+                    alert(response.msg || response.message);
                     loadUsersWithoutRole();
                 }
             } else {
@@ -766,26 +769,32 @@ function assignRole() {
                 if (typeof Swal !== "undefined") {
                     Swal.fire({
                         title: 'Error',
-                        text: response.msg,
+                        text: response.msg || response.message || 'No tienes permisos para realizar esta acción.',
                         icon: 'error'
                     });
                 } else {
-                    alert(response.msg);
+                    alert(response.msg || response.message || 'No tienes permisos para realizar esta acción.');
                 }
             }
         },
         error: function(xhr, status, error) {
             console.error('Error en asignación:', error);
             console.log('Respuesta del servidor:', xhr.responseText);
-            
+            let msg = 'No se pudo conectar con el servidor. Intente nuevamente.';
+            try {
+                const json = JSON.parse(xhr.responseText);
+                if (json && (json.msg || json.message)) {
+                    msg = json.msg || json.message;
+                }
+            } catch (e) {}
             if (typeof Swal !== "undefined") {
                 Swal.fire({
-                    title: 'Error de conexión',
-                    text: 'No se pudo conectar con el servidor. Intente nuevamente.',
+                    title: 'Error',
+                    text: msg,
                     icon: 'error'
                 });
             } else {
-                alert('Error de conexión. Intente nuevamente.');
+                alert(msg);
             }
         },
         complete: function() {
@@ -870,6 +879,7 @@ function displayUsersWithoutRole(users) {
     });
     
     tableBody.innerHTML = html;
+    refreshIcons();
 }
 
 /**
@@ -906,3 +916,17 @@ function clearRoleHistoryForm() {
         resultsCard.style.display = 'none';
     }
 }
+
+// --- Llamar a lucide.createIcons() después de insertar HTML dinámico ---
+// Si tienes otras funciones que usan innerHTML para insertar vistas, agrega esto después:
+function refreshIcons() {
+    if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+    }
+}
+
+// Ejemplo de uso después de actualizar contenido dinámico:
+// target.innerHTML = html;
+// refreshIcons();
+
+// Si usas loadView.js u otro archivo para cargar vistas, asegúrate de llamar a refreshIcons() después de cada innerHTML.
