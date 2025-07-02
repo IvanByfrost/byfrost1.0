@@ -34,14 +34,14 @@ $redirectView = $sessionManager->getSessionData('ByFrost_redirect', 'dashboard')
 <script>
     setTimeout(() => {
         window.location.href = "<?php echo url . '?view=' . htmlspecialchars($redirectView); ?>";
-    }, 3000); // Redirige en 3 segundos
+    }, 5000); // Redirige en 5 segundos
 </script>
 
 <body>
     <div class="loading-cont">
         <img class="logo" src="<?php echo url . app . rq ?>img/Byfrost-logo.svg" alt="loading-logo" />
         <h1>BYFROST</h1>
-        <p>¡Hola de vuelta, <span id="userName"><?php echo htmlspecialchars($currentUser['full_name'] ?: 'Usuario'); ?></span>! ¡Que tengas un buen día 😊</p>
+        <p>¡Hola de vuelta, <span id="userName"><?php echo htmlspecialchars($currentUser['full_name'] ?: 'Usuario'); ?></span>! ¡Que tengas un buen día 😊!</p>
     </div>
 </body>
 
