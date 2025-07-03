@@ -44,6 +44,7 @@ require_once ROOT . '/app/views/layouts/dashHead.php';
                 <div style="font-weight: bold; margin-bottom: 5px;">Configuración BYFROST</div>
                 <a href="#" onclick="loadView('user/settingsRoles?section=usuarios'); closeUserMenu();" style="display: block; padding: 6px 0; color: #0284c7;">👥 Usuarios</a>
                 <a href="#" onclick="loadView('user/settingsRoles?section=recuperar'); closeUserMenu();" style="display: block; padding: 6px 0; color: #0284c7;">🔐 Recuperar contraseña</a>
+                <a href="#" onclick="loadView('user/profileSettings'); closeUserMenu();" style="display: block; padding: 6px 0; color: #0284c7;">⚙️ Mi perfil</a>
             </div>
             <a href="<?php echo url . app ?>processes/outProcess.php" style="
             display: block;

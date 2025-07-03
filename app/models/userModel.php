@@ -111,6 +111,7 @@ class UserModel extends MainModel
         $query = "UPDATE users SET 
                   first_name = :first_name,
                   last_name = :last_name,
+                  email = :email,
                   phone = :phone,
                   date_of_birth = :date_of_birth,
                   address = :address
@@ -120,6 +121,7 @@ class UserModel extends MainModel
         return $stmt->execute([
             ':first_name' => $data['first_name'],
             ':last_name' => $data['last_name'],
+            ':email' => $data['email'],
             ':phone' => $data['phone'],
             ':date_of_birth' => $data['date_of_birth'],
             ':address' => $data['address'],
@@ -453,6 +455,39 @@ class UserModel extends MainModel
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
             throw new Exception('Error al buscar usuarios por rol y documento');
+        }
+    }
+
+    /**
+     * Cambia la contraseña de un usuario autenticado
+     * @param int $userId
+     * @param string $currentPassword
+     * @param string $newPassword
+     * @return bool|string true si éxito, mensaje de error si falla
+     */
+    public function changePassword($userId, $currentPassword, $newPassword)
+    {
+        // 1. Obtener el hash actual
+        $query = "SELECT password_hash FROM users WHERE user_id = :user_id AND is_active = 1";
+        $stmt = $this->dbConn->prepare($query);
+        $stmt->execute([':user_id' => $userId]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$user) {
+            return 'Usuario no encontrado o inactivo.';
+        }
+        // 2. Verificar contraseña actual
+        if (!password_verify($currentPassword, $user['password_hash'])) {
+            return 'La contraseña actual es incorrecta.';
+        }
+        // 3. Actualizar con el nuevo hash
+        $newHash = password_hash($newPassword, PASSWORD_DEFAULT);
+        $update = "UPDATE users SET password_hash = :new_hash WHERE user_id = :user_id";
+        $stmtUpdate = $this->dbConn->prepare($update);
+        $result = $stmtUpdate->execute([':new_hash' => $newHash, ':user_id' => $userId]);
+        if ($result) {
+            return true;
+        } else {
+            return 'Error al actualizar la contraseña.';
         }
     }
 }

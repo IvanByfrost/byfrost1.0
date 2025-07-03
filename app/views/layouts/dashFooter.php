@@ -30,6 +30,7 @@
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/User.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/Principal.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/app.js"></script>
+    <script type="text/javascript" src="app/resources/js/profileSettings.js"></script> 
 
     <script>
         // Inicializar Lucide

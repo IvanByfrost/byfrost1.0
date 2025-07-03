@@ -263,7 +263,7 @@ class UserController extends MainController
     public function settingsRoles()
     {
         $this->protectRoot();
-        $this->loadView('user/settingsRoles');
+        $this->loadPartialView('user/settingsRoles');
     }
 
     /**
@@ -319,29 +319,30 @@ class UserController extends MainController
     }
 
     /**
-     * Edita un usuario vía AJAX (solo nombre por ahora)
+     * Edita un usuario vía AJAX (nombre, apellido, correo, teléfono, dirección)
      */
     public function editUserAjax()
     {
         $this->protectRoot();
         $data = json_decode(file_get_contents('php://input'), true);
         $userId = $data['user_id'] ?? null;
-        $nuevoNombre = $data['nombre'] ?? null;
-        if (!$userId || !$nuevoNombre) {
+        $firstName = $data['first_name'] ?? null;
+        $lastName = $data['last_name'] ?? null;
+        $email = $data['email'] ?? null;
+        $phone = $data['phone'] ?? null;
+        $address = $data['address'] ?? null;
+        if (!$userId || !$firstName || !$lastName || !$email) {
             $this->sendJsonResponse(false, 'Faltan datos requeridos');
             return;
         }
-        // Separar nombre y apellido si es posible
-        $partes = explode(' ', $nuevoNombre, 2);
-        $firstName = $partes[0];
-        $lastName = $partes[1] ?? '';
         try {
             $this->userModel->updateUser($userId, [
                 'first_name' => $firstName,
                 'last_name' => $lastName,
-                'phone' => null,
+                'email' => $email,
+                'phone' => $phone,
                 'date_of_birth' => null,
-                'address' => null
+                'address' => $address
             ]);
             $this->sendJsonResponse(true, 'Usuario editado correctamente');
         } catch (Exception $e) {
@@ -367,5 +368,79 @@ class UserController extends MainController
         } catch (Exception $e) {
             $this->sendJsonResponse(false, 'Error al eliminar usuario: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Cambia la contraseña del usuario autenticado (AJAX)
+     */
+    public function changePasswordAjax()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !$this->isAjaxRequest()) {
+            $this->sendJsonResponse(false, 'Método no permitido');
+            return;
+        }
+        // Obtener usuario autenticado
+        if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn()) {
+            $this->sendJsonResponse(false, 'No has iniciado sesión.');
+            return;
+        }
+        $user = $this->sessionManager->getCurrentUser();
+        $userId = $user['user_id'] ?? null;
+        if (!$userId) {
+            $this->sendJsonResponse(false, 'Usuario no válido.');
+            return;
+        }
+        $currentPassword = $_POST['currentPassword'] ?? '';
+        $newPassword = $_POST['newPassword'] ?? '';
+        $confirmPassword = $_POST['confirmPassword'] ?? '';
+        if (!$currentPassword || !$newPassword || !$confirmPassword) {
+            $this->sendJsonResponse(false, 'Todos los campos son obligatorios.');
+            return;
+        }
+        if ($newPassword !== $confirmPassword) {
+            $this->sendJsonResponse(false, 'La nueva contraseña y la confirmación no coinciden.');
+            return;
+        }
+        // Puedes agregar aquí validaciones adicionales de seguridad para la nueva contraseña
+        $result = $this->userModel->changePassword($userId, $currentPassword, $newPassword);
+        if ($result === true) {
+            $this->sendJsonResponse(true, 'Contraseña actualizada correctamente.');
+        } else {
+            $this->sendJsonResponse(false, $result);
+        }
+    }
+
+    /**
+     * Devuelve los datos del usuario autenticado (AJAX)
+     */
+    public function getProfileAjax()
+    {
+        if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn()) {
+            $this->sendJsonResponse(false, 'No has iniciado sesión.');
+            return;
+        }
+        $user = $this->sessionManager->getCurrentUser();
+        if (!$user || !isset($user['user_id'])) {
+            $this->sendJsonResponse(false, 'Usuario no válido.');
+            return;
+        }
+        $userData = $this->userModel->getUser($user['user_id']);
+        if ($userData) {
+            $this->sendJsonResponse(true, 'Usuario encontrado', ['user' => $userData]);
+        } else {
+            $this->sendJsonResponse(false, 'No se encontraron datos de usuario.');
+        }
+    }
+
+    /**
+     * Muestra la vista de configuración de perfil personal
+     */
+    public function profileSettings()
+    {
+        if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn()) {
+            HeaderManager::redirect('/?view=index&action=login');
+            exit;
+        }
+        $this->loadPartialView('user/profileSettings');
     }
 }
