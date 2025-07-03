@@ -1,7 +1,7 @@
 <main class="main">
   <!-- Usuarios -->
   <section id="usuarios" class="section active">
-    <h3>👥 Lista de usuarios BYFROST</h3>
+    <h3>👥 Lista de usuarios de BYFROST</h3>
     <table id="tablaUsuarios">
       <thead>
         <tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Tipo Doc.</th><th>Número</th><th>Acciones</th></tr>
@@ -9,15 +9,6 @@
       <tbody></tbody>
     </table>
   </section>
-
-  <!-- Recuperar -->
-  <section id="recuperar" class="section">
-    <h3>🔐 Recuperar contraseña</h3>
-    <input id="usuarioRecuperar" placeholder="Usuario (correo)" />
-    <button class="action" onclick="recuperarClave()">Recuperar</button>
-    <div id="recuperarMsg"></div>
-  </section>
-</main>
 
 <!-- Modal de edición de usuario -->
 <div id="editUserModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center;">
