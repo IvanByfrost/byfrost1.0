@@ -5,7 +5,7 @@ function showSection(id, event) {
   document.getElementById(id).classList.add('active');
   document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('active'));
   if(event) event.target.classList.add('active');
-  if (id === 'usuarios') cargarUsuarios();
+  if (id === 'usuarios') loadUsers();
 }
 
 // Load users via AJAX
@@ -98,7 +98,7 @@ if (document.getElementById('editUserForm')) {
         msgDiv.innerText = data.message || 'Usuario editado correctamente.';
         setTimeout(() => {
           document.getElementById('editUserModal').style.display = 'none';
-          cargarUsuarios();
+          loadUsers();
         }, 1000);
       } else {
         msgDiv.style.color = 'red';
@@ -111,35 +111,86 @@ if (document.getElementById('editUserForm')) {
   });
 }
 
-// Eliminar usuario
-async function eliminarUsuario(userId) {
-  if (!confirm('¿Eliminar este usuario?')) return;
+// Deactivate user (soft delete)
+async function deactivateUser(userId) {
+  if (!confirm('¿Desactivar este usuario? El usuario no podrá acceder al sistema pero los datos se mantendrán.')) return;
   const res = await fetch('?view=user&action=deleteUserAjax', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ user_id: userId })
   });
   const data = await res.json();
-  alert(data.message || (data.success ? 'Usuario eliminado' : 'Error al eliminar usuario'));
-  if (data.success) cargarUsuarios();
+  alert(data.message || (data.success ? 'Usuario desactivado' : 'Error al desactivar usuario'));
+  if (data.success) loadUsers();
 }
 
-// Recuperar clave (simulado)
-async function recuperarClave() {
-  const usuario = document.getElementById('usuarioRecuperar').value;
-  if (!usuario) return alert('Ingresa el usuario (correo)');
-  document.getElementById('recuperarMsg').innerText = 'Funcionalidad en desarrollo.';
+// Delete user permanently (hard delete)
+async function deleteUserPermanently(userId) {
+  // First confirmation
+  if (!confirm('⚠️ WARNING: This action will permanently delete the user and all their data.\n\n¿Está seguro de que desea continuar?')) return;
+  
+  // Second confirmation
+  if (!confirm('🚨 PERMANENT DELETION\n\nThis action CANNOT be undone.\n\n¿Confirma que desea eliminar permanentemente este usuario?')) return;
+  
+  try {
+    // Check if user can be deleted
+    const checkRes = await fetch('?view=user&action=checkCanDeleteUserAjax', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: userId })
+    });
+    const checkData = await checkRes.json();
+    
+    if (!checkData.success) {
+      alert('❌ Cannot delete: ' + checkData.message);
+      return;
+    }
+    
+    // Proceed with deletion
+    const res = await fetch('?view=user&action=deleteUserPermanentlyAjax', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: userId })
+    });
+    const data = await res.json();
+    alert(data.message || (data.success ? 'Usuario eliminado permanentemente' : 'Error al eliminar usuario'));
+    if (data.success) loadUsers();
+    
+  } catch (error) {
+    alert('Connection error: ' + error.message);
+  }
 }
 
-// Inicializar cuando se cargue la vista
+// Delete user (main function with options)
+async function deleteUser(userId) {
+  // Show options to user
+  const action = confirm('¿Qué acción desea realizar?\n\nOK = Desactivar usuario (reversible)\nCancelar = Eliminar permanentemente (irreversible)');
+  
+  if (action) {
+    // Deactivate
+    await deactivateUser(userId);
+  } else {
+    // Delete permanently
+    await deleteUserPermanently(userId);
+  }
+}
+
+// Recover password (simulated)
+async function recoverPassword() {
+  const user = document.getElementById('usuarioRecuperar').value;
+  if (!user) return alert('Enter user (email)');
+  document.getElementById('recuperarMsg').innerText = 'Feature in development.';
+}
+
+// Initialize when view loads
 function initSettingsRoles() {
-  // Leer parámetro 'section' de la URL
+  // Read 'section' parameter from URL
   const params = new URLSearchParams(window.location.search);
   const section = params.get('section');
   if (section && document.getElementById(section)) {
     showSection(section);
   } else {
-    cargarUsuarios();
+    loadUsers();
     showSection('usuarios');
   }
 }
