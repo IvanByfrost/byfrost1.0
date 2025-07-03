@@ -351,7 +351,7 @@ class UserController extends MainController
     }
 
     /**
-     * Elimina (desactiva) un usuario vía AJAX
+     * Desactiva un usuario vía AJAX (soft delete)
      */
     public function deleteUserAjax()
     {
@@ -364,9 +364,58 @@ class UserController extends MainController
         }
         try {
             $this->userModel->deleteUser($userId);
-            $this->sendJsonResponse(true, 'Usuario eliminado correctamente');
+            $this->sendJsonResponse(true, 'Usuario desactivado correctamente');
+        } catch (Exception $e) {
+            $this->sendJsonResponse(false, 'Error al desactivar usuario: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Elimina un usuario permanentemente vía AJAX (hard delete)
+     */
+    public function deleteUserPermanentlyAjax()
+    {
+        $this->protectRoot();
+        $data = json_decode(file_get_contents('php://input'), true);
+        $userId = $data['user_id'] ?? null;
+        if (!$userId) {
+            $this->sendJsonResponse(false, 'Falta el ID de usuario');
+            return;
+        }
+
+        try {
+            // Verificar si el usuario puede ser eliminado
+            $canDelete = $this->userModel->canDeleteUserPermanently($userId);
+            if (!$canDelete['can_delete']) {
+                $this->sendJsonResponse(false, $canDelete['reason']);
+                return;
+            }
+
+            $this->userModel->deleteUserPermanently($userId);
+            $this->sendJsonResponse(true, 'Usuario eliminado permanentemente');
         } catch (Exception $e) {
             $this->sendJsonResponse(false, 'Error al eliminar usuario: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Verifica si un usuario puede ser eliminado permanentemente vía AJAX
+     */
+    public function checkCanDeleteUserAjax()
+    {
+        $this->protectRoot();
+        $data = json_decode(file_get_contents('php://input'), true);
+        $userId = $data['user_id'] ?? null;
+        if (!$userId) {
+            $this->sendJsonResponse(false, 'Falta el ID de usuario');
+            return;
+        }
+
+        try {
+            $canDelete = $this->userModel->canDeleteUserPermanently($userId);
+            $this->sendJsonResponse($canDelete['can_delete'], $canDelete['reason'], $canDelete);
+        } catch (Exception $e) {
+            $this->sendJsonResponse(false, 'Error al verificar: ' . $e->getMessage());
         }
     }
 

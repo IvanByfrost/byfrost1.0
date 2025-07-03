@@ -8,10 +8,10 @@ function showSection(id, event) {
   if (id === 'usuarios') cargarUsuarios();
 }
 
-// Cargar usuarios vía AJAX
-async function cargarUsuarios() {
+// Load users via AJAX
+async function loadUsers() {
   const tbody = document.querySelector("#tablaUsuarios tbody");
-  tbody.innerHTML = '<tr><td colspan="6">Cargando...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="6">Loading...</td></tr>';
   try {
     const res = await fetch('?view=user&action=getUsersAjax');
     const data = await res.json();
@@ -26,21 +26,21 @@ async function cargarUsuarios() {
             <td>${u.credential_type || ''}</td>
             <td>${u.credential_number || ''}</td>
             <td>
-              <button class="action edit-btn" onclick='abrirModalEditarUsuario(${JSON.stringify(u)})'>Editar</button>
-              <button class="action delete-btn" onclick="eliminarUsuario(${u.user_id})">Eliminar</button>
+              <button class="action edit-btn" onclick='openEditUserModal(${JSON.stringify(u)})'>Edit</button>
+              <button class="action delete-btn" onclick="deleteUser(${u.user_id})">Delete</button>
             </td>
           </tr>`;
       });
     } else {
-      tbody.innerHTML = '<tr><td colspan="6">No hay usuarios.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6">No users found.</td></tr>';
     }
   } catch (e) {
-    tbody.innerHTML = '<tr><td colspan="6">Error al cargar usuarios.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6">Error loading users.</td></tr>';
   }
 }
 
-// Abrir modal de edición de usuario
-function abrirModalEditarUsuario(user) {
+// Open user edit modal
+function openEditUserModal(user) {
   const modal = document.getElementById('editUserModal');
   document.getElementById('editUserId').value = user.user_id;
   document.getElementById('editFirstName').value = user.first_name || '';

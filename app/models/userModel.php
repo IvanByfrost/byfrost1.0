@@ -152,12 +152,81 @@ class UserModel extends MainModel
         return $stmt->rowCount() > 0;
     }
 
-    // Función para eliminar un usuario
+    // Función para desactivar un usuario (soft delete)
     public function deleteUser($userId)
     {
         $query = "UPDATE users SET is_active = 0 WHERE user_id = :user_id";
         $stmt = $this->dbConn->prepare($query);
         return $stmt->execute([':user_id' => $userId]);
+    }
+
+    // Función para eliminar un usuario permanentemente (hard delete)
+    public function deleteUserPermanently($userId)
+    {
+        try {
+            $this->dbConn->beginTransaction();
+            
+            // Verificar que el usuario existe
+            $checkQuery = "SELECT user_id FROM users WHERE user_id = :user_id";
+            $checkStmt = $this->dbConn->prepare($checkQuery);
+            $checkStmt->execute([':user_id' => $userId]);
+            
+            if (!$checkStmt->fetch()) {
+                throw new Exception("El usuario no existe");
+            }
+            
+            // Eliminar roles del usuario (se eliminan automáticamente por CASCADE)
+            $roleQuery = "DELETE FROM user_roles WHERE user_id = :user_id";
+            $roleStmt = $this->dbConn->prepare($roleQuery);
+            $roleStmt->execute([':user_id' => $userId]);
+            
+            // Eliminar usuario permanentemente
+            $userQuery = "DELETE FROM users WHERE user_id = :user_id";
+            $userStmt = $this->dbConn->prepare($userQuery);
+            $userStmt->execute([':user_id' => $userId]);
+            
+            $this->dbConn->commit();
+            return true;
+            
+        } catch (Exception $e) {
+            $this->dbConn->rollBack();
+            throw $e;
+        }
+    }
+
+    // Función para verificar si un usuario puede ser eliminado permanentemente
+    public function canDeleteUserPermanently($userId)
+    {
+        try {
+            // Verificar si es el último usuario root
+            $rootQuery = "SELECT COUNT(*) as root_count FROM users u 
+                         INNER JOIN user_roles ur ON u.user_id = ur.user_id 
+                         WHERE ur.role_type = 'root' AND ur.is_active = 1";
+            $rootStmt = $this->dbConn->prepare($rootQuery);
+            $rootStmt->execute();
+            $rootCount = $rootStmt->fetch(PDO::FETCH_ASSOC)['root_count'];
+            
+            // Verificar si el usuario a eliminar es root
+            $isRootQuery = "SELECT COUNT(*) as is_root FROM users u 
+                           INNER JOIN user_roles ur ON u.user_id = ur.user_id 
+                           WHERE u.user_id = :user_id AND ur.role_type = 'root' AND ur.is_active = 1";
+            $isRootStmt = $this->dbConn->prepare($isRootQuery);
+            $isRootStmt->execute([':user_id' => $userId]);
+            $isRoot = $isRootStmt->fetch(PDO::FETCH_ASSOC)['is_root'] > 0;
+            
+            // Si es el último root, no permitir eliminación
+            if ($isRoot && $rootCount <= 1) {
+                return ['can_delete' => false, 'reason' => 'No se puede eliminar el último usuario root del sistema'];
+            }
+            
+            // Verificar dependencias en otras tablas (opcional)
+            // Aquí puedes agregar verificaciones adicionales según tu esquema
+            
+            return ['can_delete' => true, 'reason' => 'Usuario puede ser eliminado'];
+            
+        } catch (Exception $e) {
+            return ['can_delete' => false, 'reason' => 'Error al verificar: ' . $e->getMessage()];
+        }
     }
 
     // Función para validar un usuario
