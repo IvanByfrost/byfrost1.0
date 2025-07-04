@@ -183,8 +183,8 @@ window.safeLoadView = function(viewName) {
                                     <?php foreach ($absences as $absence): ?>
                                         <tr>
                                             <td>
-                                                <strong><?php echo htmlspecialchars($absence['employee_name']); ?></strong><br>
-                                                <small class="text-muted"><?php echo htmlspecialchars($absence['position']); ?></small>
+                                                <strong><?php echo htmlspecialchars($absence['first_name'] . ' ' . $absence['last_name']); ?></strong><br>
+                                                <small class="text-muted"><?php echo htmlspecialchars($absence['employee_code']); ?></small>
                                             </td>
                                             <td>
                                                 <?php 
@@ -206,7 +206,7 @@ window.safeLoadView = function(viewName) {
                                                     'bereavement' => 'secondary',
                                                     'other' => 'dark'
                                                 ];
-                                                $type = $absence['type'];
+                                                $type = $absence['absence_type'];
                                                 $label = $typeLabels[$type] ?? ucfirst($type);
                                                 $color = $typeColors[$type] ?? 'secondary';
                                                 ?>
@@ -238,9 +238,9 @@ window.safeLoadView = function(viewName) {
                                                 <span class="badge bg-<?php echo $statusColor; ?>"><?php echo $statusLabel; ?></span>
                                             </td>
                                             <td>
-                                                <?php if (!empty($absence['justification'])): ?>
+                                                <?php if (!empty($absence['reason'])): ?>
                                                     <button type="button" class="btn btn-sm btn-outline-info" 
-                                                            onclick="viewJustification('<?php echo htmlspecialchars($absence['justification']); ?>')"
+                                                            onclick="viewJustification('<?php echo htmlspecialchars($absence['reason']); ?>')"
                                                             title="Ver Justificación">
                                                         <i class="fas fa-eye"></i>
                                                     </button>
@@ -249,31 +249,30 @@ window.safeLoadView = function(viewName) {
                                                 <?php endif; ?>
                                             </td>
                                             <td>
-                                                <small><?php echo htmlspecialchars($absence['registered_by_name']); ?></small><br>
-                                                <small class="text-muted"><?php echo date('d/m/Y H:i', strtotime($absence['created_at'])); ?></small>
+                                                <small class="text-muted"><?php echo date('d/m/Y H:i', strtotime($absence['created_at'] ?? 'now')); ?></small>
                                             </td>
                                             <td>
                                                 <div class="btn-group" role="group">
                                                     <button type="button" class="btn btn-sm btn-outline-info" 
-                                                            onclick="safeLoadView('payroll/viewAbsence?id=<?php echo $absence['absence_id']; ?>')"
+                                                            onclick="safeLoadView('payroll/viewAbsence?id=<?php echo $absence['id']; ?>')"
                                                             title="Ver Detalles">
                                                         <i class="fas fa-eye"></i>
                                                     </button>
-                                                    <?php if ($sessionManager->hasRole(['root', 'director', 'coordinator']) && $absence['status'] === 'pending'): ?>
+                                                    <?php if ($sessionManager->hasRole(['root', 'director', 'coordinator'])): ?>
                                                     <button type="button" class="btn btn-sm btn-outline-success" 
-                                                            onclick="approveAbsence(<?php echo $absence['absence_id']; ?>)"
+                                                            onclick="approveAbsence(<?php echo $absence['id']; ?>)"
                                                             title="Aprobar">
                                                         <i class="fas fa-check"></i>
                                                     </button>
                                                     <button type="button" class="btn btn-sm btn-outline-danger" 
-                                                            onclick="rejectAbsence(<?php echo $absence['absence_id']; ?>)"
+                                                            onclick="rejectAbsence(<?php echo $absence['id']; ?>)"
                                                             title="Rechazar">
                                                         <i class="fas fa-times"></i>
                                                     </button>
                                                     <?php endif; ?>
-                                                    <?php if ($sessionManager->hasRole(['root', 'director']) && $absence['status'] === 'pending'): ?>
+                                                    <?php if ($sessionManager->hasRole(['root', 'director'])): ?>
                                                     <button type="button" class="btn btn-sm btn-outline-warning" 
-                                                            onclick="safeLoadView('payroll/editAbsence?id=<?php echo $absence['absence_id']; ?>')"
+                                                            onclick="safeLoadView('payroll/editAbsence?id=<?php echo $absence['id']; ?>')"
                                                             title="Editar">
                                                         <i class="fas fa-edit"></i>
                                                     </button>

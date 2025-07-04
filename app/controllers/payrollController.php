@@ -2,11 +2,12 @@
 require_once ROOT . '/app/models/payrollModel.php';
 require_once ROOT . '/app/library/SessionManager.php';
 require_once ROOT . '/app/library/SecurityMiddleware.php';
+require_once ROOT . '/app/controllers/MainController.php';
 
-class PayrollController {
-    private $payrollModel;
-    private $sessionManager;
-    private $securityMiddleware;
+class PayrollController extends MainController {
+    protected $payrollModel;
+    protected $sessionManager;
+    protected $securityMiddleware;
     
     public function __construct($dbConn = null, $view = null) {
         $this->payrollModel = new PayrollModel();
@@ -41,10 +42,10 @@ class PayrollController {
                 'page_title' => 'Dashboard de Nómina'
             ];
             
-            $this->loadView('payroll/dashboard', $data);
+            $this->loadPartialView('payroll/dashboard', $data);
             
         } catch (Exception $e) {
-            $this->loadView('Error/error', ['error' => $e->getMessage()]);
+            $this->loadPartialView('Error/error', ['error' => $e->getMessage()]);
         }
     }
     
@@ -70,10 +71,10 @@ class PayrollController {
                 'page_title' => 'Gestión de Empleados'
             ];
             
-            $this->loadView('payroll/employees', $data);
+            $this->loadPartialView('payroll/employees', $data);
             
         } catch (Exception $e) {
-            $this->loadView('Error/error', ['error' => $e->getMessage()]);
+            $this->loadPartialView('Error/error', ['error' => $e->getMessage()]);
         }
     }
     
@@ -109,7 +110,7 @@ class PayrollController {
                 }
                 
             } catch (Exception $e) {
-                $this->loadView('payroll/createEmployee', [
+                $this->loadPartialView('payroll/createEmployee', [
                     'error' => $e->getMessage(),
                     'data' => $_POST
                 ]);
@@ -117,12 +118,12 @@ class PayrollController {
         } else {
             try {
                 $availableUsers = $this->payrollModel->getAvailableUsersForEmployee();
-                $this->loadView('payroll/createEmployee', [
+                $this->loadPartialView('payroll/createEmployee', [
                     'page_title' => 'Crear Empleado',
                     'available_users' => $availableUsers
                 ]);
             } catch (Exception $e) {
-                $this->loadView('payroll/createEmployee', [
+                $this->loadPartialView('payroll/createEmployee', [
                     'page_title' => 'Crear Empleado',
                     'error' => $e->getMessage()
                 ]);
@@ -166,7 +167,7 @@ class PayrollController {
                 
             } catch (Exception $e) {
                 $employee = $this->payrollModel->getEmployeeById($employeeId);
-                $this->loadView('payroll/editEmployee', [
+                $this->loadPartialView('payroll/editEmployee', [
                     'error' => $e->getMessage(),
                     'employee' => $employee
                 ]);
@@ -178,7 +179,7 @@ class PayrollController {
                 exit;
             }
             
-            $this->loadView('payroll/editEmployee', [
+            $this->loadPartialView('payroll/editEmployee', [
                 'employee' => $employee,
                 'page_title' => 'Editar Empleado'
             ]);
@@ -211,10 +212,10 @@ class PayrollController {
                 'page_title' => 'Períodos de Nómina'
             ];
             
-            $this->loadView('payroll/periods', $data);
+            $this->loadPartialView('payroll/periods', $data);
             
         } catch (Exception $e) {
-            $this->loadView('Error/error', ['error' => $e->getMessage()]);
+            $this->loadPartialView('Error/error', ['error' => $e->getMessage()]);
         }
     }
     
@@ -245,13 +246,13 @@ class PayrollController {
                 }
                 
             } catch (Exception $e) {
-                $this->loadView('payroll/createPeriod', [
+                $this->loadPartialView('payroll/createPeriod', [
                     'error' => $e->getMessage(),
                     'data' => $_POST
                 ]);
             }
         } else {
-            $this->loadView('payroll/createPeriod', ['page_title' => 'Crear Período']);
+            $this->loadPartialView('payroll/createPeriod', ['page_title' => 'Crear Período']);
         }
     }
     
@@ -284,7 +285,7 @@ class PayrollController {
                 'page_title' => 'Período: ' . $period['period_name']
             ];
             
-            $this->loadView('payroll/viewPeriod', $data);
+            $this->loadPartialView('payroll/viewPeriod', $data);
             
         } catch (Exception $e) {
             $this->loadView('Error/error', ['error' => $e->getMessage()]);
@@ -315,7 +316,7 @@ class PayrollController {
             }
             
         } catch (Exception $e) {
-            $this->loadView('Error/error', ['error' => $e->getMessage()]);
+            $this->loadPartialView('Error/error', ['error' => $e->getMessage()]);
         }
     }
     
@@ -348,10 +349,10 @@ class PayrollController {
                 'page_title' => 'Registro de Nómina'
             ];
             
-            $this->loadView('payroll/viewPayrollRecord', $data);
+            $this->loadPartialView('payroll/viewPayrollRecord', $data);
             
         } catch (Exception $e) {
-            $this->loadView('Error/error', ['error' => $e->getMessage()]);
+            $this->loadPartialView('Error/error', ['error' => $e->getMessage()]);
         }
     }
     
@@ -389,7 +390,7 @@ class PayrollController {
                 
             } catch (Exception $e) {
                 $record = $this->payrollModel->getPayrollRecord($recordId);
-                $this->loadView('payroll/editPayrollRecord', [
+                $this->loadPartialView('payroll/editPayrollRecord', [
                     'error' => $e->getMessage(),
                     'record' => $record
                 ]);
@@ -401,7 +402,7 @@ class PayrollController {
                 exit;
             }
             
-            $this->loadView('payroll/editPayrollRecord', [
+            $this->loadPartialView('payroll/editPayrollRecord', [
                 'record' => $record,
                 'page_title' => 'Editar Registro de Nómina'
             ]);
@@ -434,10 +435,10 @@ class PayrollController {
                 'page_title' => 'Gestión de Ausencias'
             ];
             
-            $this->loadView('payroll/absences', $data);
+            $this->loadPartialView('payroll/absences', $data);
             
         } catch (Exception $e) {
-            $this->loadView('Error/error', ['error' => $e->getMessage()]);
+            $this->loadPartialView('Error/error', ['error' => $e->getMessage()]);
         }
     }
     
@@ -469,13 +470,13 @@ class PayrollController {
                 }
                 
             } catch (Exception $e) {
-                $this->loadView('payroll/createAbsence', [
+                $this->loadPartialView('payroll/createAbsence', [
                     'error' => $e->getMessage(),
                     'data' => $_POST
                 ]);
             }
         } else {
-            $this->loadView('payroll/createAbsence', ['page_title' => 'Crear Ausencia']);
+            $this->loadPartialView('payroll/createAbsence', ['page_title' => 'Crear Ausencia']);
         }
     }
     
@@ -505,10 +506,10 @@ class PayrollController {
                 'page_title' => 'Gestión de Horas Extra'
             ];
             
-            $this->loadView('payroll/overtime', $data);
+            $this->loadPartialView('payroll/overtime', $data);
             
         } catch (Exception $e) {
-            $this->loadView('Error/error', ['error' => $e->getMessage()]);
+            $this->loadPartialView('Error/error', ['error' => $e->getMessage()]);
         }
     }
     
@@ -540,13 +541,13 @@ class PayrollController {
                 }
                 
             } catch (Exception $e) {
-                $this->loadView('payroll/createOvertime', [
+                $this->loadPartialView('payroll/createOvertime', [
                     'error' => $e->getMessage(),
                     'data' => $_POST
                 ]);
             }
         } else {
-            $this->loadView('payroll/createOvertime', ['page_title' => 'Crear Hora Extra']);
+            $this->loadPartialView('payroll/createOvertime', ['page_title' => 'Crear Hora Extra']);
         }
     }
     
@@ -576,10 +577,10 @@ class PayrollController {
                 'page_title' => 'Gestión de Bonificaciones'
             ];
             
-            $this->loadView('payroll/bonuses', $data);
+            $this->loadPartialView('payroll/bonuses', $data);
             
         } catch (Exception $e) {
-            $this->loadView('Error/error', ['error' => $e->getMessage()]);
+            $this->loadPartialView('Error/error', ['error' => $e->getMessage()]);
         }
     }
     
@@ -610,13 +611,13 @@ class PayrollController {
                 }
                 
             } catch (Exception $e) {
-                $this->loadView('payroll/createBonus', [
+                $this->loadPartialView('payroll/createBonus', [
                     'error' => $e->getMessage(),
                     'data' => $_POST
                 ]);
             }
         } else {
-            $this->loadView('payroll/createBonus', ['page_title' => 'Crear Bonificación']);
+            $this->loadPartialView('payroll/createBonus', ['page_title' => 'Crear Bonificación']);
         }
     }
     
@@ -658,10 +659,10 @@ class PayrollController {
                 }
             }
             
-            $this->loadView('payroll/reports', $data);
+            $this->loadPartialView('payroll/reports', $data);
             
         } catch (Exception $e) {
-            $this->loadView('Error/error', ['error' => $e->getMessage()]);
+            $this->loadPartialView('Error/error', ['error' => $e->getMessage()]);
         }
     }
     
@@ -672,7 +673,7 @@ class PayrollController {
     /**
      * Cargar vista
      */
-    private function loadView($view, $data = []) {
+    protected function loadView($view, $data = []) {
         // Extraer variables del array de datos
         extract($data);
         
