@@ -28,9 +28,22 @@ if (!$this->sessionManager->hasRole('root')) {
 
 <script>
 console.log("BASE_URL será configurada en dashFooter.php");
-</script>
 
-<script type="text/javascript" src="<?php echo url . app . rq ?>js/loadView.js"></script>
+// Función de respaldo para loadView
+window.safeLoadView = function(viewName) {
+    console.log('safeLoadView llamado desde dashboard con:', viewName);
+    
+    if (typeof loadView === 'function') {
+        console.log('loadView disponible, ejecutando...');
+        loadView(viewName);
+    } else {
+        console.error('loadView no está disponible, redirigiendo...');
+        // Fallback: redirigir a la página
+        const url = `${BASE_URL}?view=${viewName.replace('/', '&action=')}`;
+        window.location.href = url;
+    }
+};
+</script>
 
 <div class="dashboard-container">
     <aside class="sidebar">

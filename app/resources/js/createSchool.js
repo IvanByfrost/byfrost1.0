@@ -342,5 +342,5 @@ function clearCreateSchoolForm() {
 
 // Función para cancelar y volver a la consulta
 function cancelCreateSchool() {
-    loadView('root/menuRoot');
+    loadView('root/rootMenu');
 } 

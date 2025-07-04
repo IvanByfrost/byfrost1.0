@@ -172,3 +172,61 @@ window.loadView = function(viewName) {
         }, 100);
     });
 };
+
+// Función segura para cargar vistas que verifica si loadView está disponible
+window.safeLoadView = function(viewName) {
+    console.log('safeLoadView llamado con:', viewName);
+    
+    if (typeof loadView === 'function') {
+        console.log('loadView disponible, ejecutando...');
+        loadView(viewName);
+    } else {
+        console.error('loadView no está disponible, intentando cargar manualmente...');
+        
+        // Fallback: cargar la vista manualmente
+        const target = document.getElementById("mainContent");
+        if (!target) {
+            console.error("Elemento con id 'mainContent' no encontrado.");
+            alert('Error: No se puede cargar la vista. Elemento mainContent no encontrado.');
+            return;
+        }
+        
+        // Mostrar indicador de carga
+        target.innerHTML = '<div class="text-center p-4"><i class="fas fa-spinner fa-spin"></i> Cargando...</div>';
+        
+        // Construir URL manualmente
+        let url;
+        if (viewName.includes('/')) {
+            const [controller, actionWithParams] = viewName.split('/');
+            const [action, params] = actionWithParams.split('?');
+            url = `${BASE_URL}?view=${controller}&action=${action}`;
+            
+            if (params) {
+                url += `&${params}`;
+            }
+        } else {
+            url = `${BASE_URL}?view=${viewName}`;
+        }
+        
+        console.log('URL construida manualmente:', url);
+        
+        // Hacer la petición manualmente
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Vista no encontrada.");
+            return response.text();
+        })
+        .then(html => {
+            target.innerHTML = html;
+        })
+        .catch(err => {
+            console.error("Error al cargar la vista:", err);
+            target.innerHTML = '<div class="alert alert-danger">Error al cargar la vista: ' + err.message + '</div>';
+        });
+    }
+};

@@ -64,10 +64,10 @@ class RootController extends MainController
     /**
      * Menú principal del root
      */
-    public function rootMenu()
+    public function menuRoot()
     {
         $this->protectRoot();
-        $this->loadPartialView('root/rootMenu');
+        $this->loadPartialView('root/menuRoot');
     }
 
     /**

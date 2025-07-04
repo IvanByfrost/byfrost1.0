@@ -1,8 +1,44 @@
 <?php
-// Incluir el header del dashboard
-include 'app/views/layouts/dashHead.php';
-include 'app/views/layouts/dashHeader.php';
+if (!defined('ROOT')) {
+    define('ROOT', dirname(dirname(dirname(__DIR__))));
+}
+
+require_once ROOT . '/config.php';
+require_once ROOT . '/app/library/SessionManager.php';
+
+// Inicializar SessionManager
+$sessionManager = new SessionManager();
+
+// Verificar que el usuario esté logueado y tenga permisos
+if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn()) {
+    header("Location: " . url . "?view=index&action=login");
+    exit;
+}
+
+if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
+    header("Location: " . url . "?view=unauthorized");
+    exit;
+}
 ?>
+
+<script>
+console.log("BASE_URL será configurada en dashFooter.php");
+
+// Función de respaldo para loadView
+window.safeLoadView = function(viewName) {
+    console.log('safeLoadView llamado desde empleados con:', viewName);
+    
+    if (typeof loadView === 'function') {
+        console.log('loadView disponible, ejecutando...');
+        loadView(viewName);
+    } else {
+        console.error('loadView no está disponible, redirigiendo...');
+        // Fallback: redirigir a la página
+        const url = `${BASE_URL}?view=${viewName.replace('/', '&action=')}`;
+        window.location.href = url;
+    }
+};
+</script>
 
 <div class="container-fluid">
     <div class="row">
@@ -11,37 +47,37 @@ include 'app/views/layouts/dashHeader.php';
             <div class="position-sticky pt-3">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php?controller=payroll&action=dashboard">
+                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/dashboard')">
                             <i class="fas fa-tachometer-alt"></i> Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="index.php?controller=payroll&action=employees">
+                        <a class="nav-link active" href="#" onclick="safeLoadView('payroll/employees')">
                             <i class="fas fa-users"></i> Empleados
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php?controller=payroll&action=periods">
+                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/periods')">
                             <i class="fas fa-calendar-alt"></i> Períodos
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php?controller=payroll&action=absences">
+                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/absences')">
                             <i class="fas fa-user-times"></i> Ausencias
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php?controller=payroll&action=overtime">
+                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/overtime')">
                             <i class="fas fa-clock"></i> Horas Extras
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php?controller=payroll&action=bonuses">
+                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/bonuses')">
                             <i class="fas fa-gift"></i> Bonificaciones
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php?controller=payroll&action=reports">
+                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/reports')">
                             <i class="fas fa-chart-bar"></i> Reportes
                         </a>
                     </li>
@@ -55,21 +91,15 @@ include 'app/views/layouts/dashHeader.php';
                 <h1 class="h2">Gestión de Empleados</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group me-2">
-                        <a href="index.php?controller=payroll&action=createEmployee" class="btn btn-sm btn-outline-primary">
+                        <?php if ($sessionManager->hasRole(['root', 'director'])): ?>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="safeLoadView('payroll/createEmployee')">
                             <i class="fas fa-plus"></i> Nuevo Empleado
-                        </a>
+                        </button>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
 
-            <!-- Mensajes de éxito/error -->
-            <?php if (isset($_GET['success'])): ?>
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle"></i> Operación realizada con éxito.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            <?php endif; ?>
-            
             <!-- Información sobre restricciones de empleados -->
             <div class="alert alert-info alert-dismissible fade show" role="alert">
                 <i class="fas fa-info-circle"></i> 
@@ -83,20 +113,17 @@ include 'app/views/layouts/dashHeader.php';
                     <h6 class="m-0 font-weight-bold text-primary">Filtros</h6>
                 </div>
                 <div class="card-body">
-                    <form method="GET" action="index.php" class="row g-3">
-                        <input type="hidden" name="controller" value="payroll">
-                        <input type="hidden" name="action" value="employees">
-                        
+                    <form method="GET" action="#" class="row g-3">
                         <div class="col-md-4">
                             <label for="department" class="form-label">Departamento</label>
                             <select class="form-select" id="department" name="department">
                                 <option value="">Todos los departamentos</option>
-                                <option value="Administración" <?php echo (isset($filters['department']) && $filters['department'] === 'Administración') ? 'selected' : ''; ?>>Administración</option>
-                                <option value="Académico" <?php echo (isset($filters['department']) && $filters['department'] === 'Académico') ? 'selected' : ''; ?>>Académico</option>
-                                <option value="Financiero" <?php echo (isset($filters['department']) && $filters['department'] === 'Financiero') ? 'selected' : ''; ?>>Financiero</option>
-                                <option value="Recursos Humanos" <?php echo (isset($filters['department']) && $filters['department'] === 'Recursos Humanos') ? 'selected' : ''; ?>>Recursos Humanos</option>
-                                <option value="Tecnología" <?php echo (isset($filters['department']) && $filters['department'] === 'Tecnología') ? 'selected' : ''; ?>>Tecnología</option>
-                                <option value="Mantenimiento" <?php echo (isset($filters['department']) && $filters['department'] === 'Mantenimiento') ? 'selected' : ''; ?>>Mantenimiento</option>
+                                <option value="Administración">Administración</option>
+                                <option value="Académico">Académico</option>
+                                <option value="Financiero">Financiero</option>
+                                <option value="Recursos Humanos">Recursos Humanos</option>
+                                <option value="Tecnología">Tecnología</option>
+                                <option value="Mantenimiento">Mantenimiento</option>
                             </select>
                         </div>
                         
@@ -104,12 +131,12 @@ include 'app/views/layouts/dashHeader.php';
                             <label for="position" class="form-label">Cargo</label>
                             <select class="form-select" id="position" name="position">
                                 <option value="">Todos los cargos</option>
-                                <option value="Director" <?php echo (isset($filters['position']) && $filters['position'] === 'Director') ? 'selected' : ''; ?>>Director</option>
-                                <option value="Coordinador" <?php echo (isset($filters['position']) && $filters['position'] === 'Coordinador') ? 'selected' : ''; ?>>Coordinador</option>
-                                <option value="Profesor" <?php echo (isset($filters['position']) && $filters['position'] === 'Profesor') ? 'selected' : ''; ?>>Profesor</option>
-                                <option value="Administrativo" <?php echo (isset($filters['position']) && $filters['position'] === 'Administrativo') ? 'selected' : ''; ?>>Administrativo</option>
-                                <option value="Tesorero" <?php echo (isset($filters['position']) && $filters['position'] === 'Tesorero') ? 'selected' : ''; ?>>Tesorero</option>
-                                <option value="Auxiliar" <?php echo (isset($filters['position']) && $filters['position'] === 'Auxiliar') ? 'selected' : ''; ?>>Auxiliar</option>
+                                <option value="Director">Director</option>
+                                <option value="Coordinador">Coordinador</option>
+                                <option value="Profesor">Profesor</option>
+                                <option value="Administrativo">Administrativo</option>
+                                <option value="Tesorero">Tesorero</option>
+                                <option value="Auxiliar">Auxiliar</option>
                             </select>
                         </div>
                         
@@ -117,9 +144,9 @@ include 'app/views/layouts/dashHeader.php';
                             <button type="submit" class="btn btn-primary me-2">
                                 <i class="fas fa-search"></i> Filtrar
                             </button>
-                            <a href="index.php?controller=payroll&action=employees" class="btn btn-outline-secondary">
+                            <button type="button" class="btn btn-outline-secondary" onclick="window.location.reload()">
                                 <i class="fas fa-times"></i> Limpiar
-                            </a>
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -131,7 +158,7 @@ include 'app/views/layouts/dashHeader.php';
                     <h6 class="m-0 font-weight-bold text-primary">Lista de Empleados</h6>
                 </div>
                 <div class="card-body">
-                    <?php if (!empty($employees)): ?>
+                    <?php if (isset($employees) && !empty($employees)): ?>
                         <div class="table-responsive">
                             <table class="table table-striped table-hover" id="employeesTable">
                                 <thead>
@@ -180,19 +207,25 @@ include 'app/views/layouts/dashHeader.php';
                                             </td>
                                             <td>
                                                 <div class="btn-group" role="group">
-                                                    <a href="index.php?controller=payroll&action=editEmployee&id=<?php echo $employee['employee_id']; ?>" 
-                                                       class="btn btn-sm btn-outline-primary" title="Editar">
+                                                    <?php if ($sessionManager->hasRole(['root', 'director'])): ?>
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                            onclick="safeLoadView('payroll/editEmployee?id=<?php echo $employee['employee_id']; ?>')"
+                                                            title="Editar">
                                                         <i class="fas fa-edit"></i>
-                                                    </a>
-                                                    <a href="index.php?controller=payroll&action=viewEmployee&id=<?php echo $employee['employee_id']; ?>" 
-                                                       class="btn btn-sm btn-outline-info" title="Ver Detalles">
+                                                    </button>
+                                                    <?php endif; ?>
+                                                    <button type="button" class="btn btn-sm btn-outline-info" 
+                                                            onclick="safeLoadView('payroll/viewEmployee?id=<?php echo $employee['employee_id']; ?>')"
+                                                            title="Ver Detalles">
                                                         <i class="fas fa-eye"></i>
-                                                    </a>
+                                                    </button>
+                                                    <?php if ($sessionManager->hasRole(['root', 'director'])): ?>
                                                     <button type="button" class="btn btn-sm btn-outline-danger" 
                                                             onclick="confirmDeactivate(<?php echo $employee['employee_id']; ?>, '<?php echo htmlspecialchars($employee['name'] . ' ' . $employee['lastname']); ?>')"
                                                             title="Desactivar">
                                                         <i class="fas fa-user-times"></i>
                                                     </button>
+                                                    <?php endif; ?>
                                                 </div>
                                             </td>
                                         </tr>
@@ -205,28 +238,25 @@ include 'app/views/layouts/dashHeader.php';
                         <div class="row mt-3">
                             <div class="col-md-6">
                                 <p class="text-muted">
-                                    <i class="fas fa-info-circle"></i> 
-                                    Mostrando <?php echo count($employees); ?> empleado(s)
+                                    Mostrando <strong><?php echo count($employees); ?></strong> empleados
                                 </p>
                             </div>
                             <div class="col-md-6 text-end">
-                                <button class="btn btn-outline-success btn-sm" onclick="exportToExcel()">
-                                    <i class="fas fa-file-excel"></i> Exportar a Excel
-                                </button>
-                                <button class="btn btn-outline-danger btn-sm" onclick="exportToPDF()">
-                                    <i class="fas fa-file-pdf"></i> Exportar a PDF
-                                </button>
+                                <p class="text-muted">
+                                    Total de salarios: <strong>$<?php echo number_format(array_sum(array_column($employees, 'salary')), 2); ?></strong>
+                                </p>
                             </div>
                         </div>
-                        
                     <?php else: ?>
                         <div class="text-center py-5">
                             <i class="fas fa-users fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">No se encontraron empleados</h5>
-                            <p class="text-muted">No hay empleados que coincidan con los filtros aplicados.</p>
-                            <a href="index.php?controller=payroll&action=createEmployee" class="btn btn-primary">
-                                <i class="fas fa-plus"></i> Crear Primer Empleado
-                            </a>
+                            <h5 class="text-muted">No hay empleados registrados</h5>
+                            <p class="text-muted">Comienza agregando el primer empleado al sistema</p>
+                            <?php if ($sessionManager->hasRole(['root', 'director'])): ?>
+                            <button type="button" class="btn btn-primary" onclick="safeLoadView('payroll/createEmployee')">
+                                <i class="fas fa-plus"></i> Agregar Primer Empleado
+                            </button>
+                            <?php endif; ?>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -235,65 +265,21 @@ include 'app/views/layouts/dashHeader.php';
     </div>
 </div>
 
-<!-- Modal de confirmación para desactivar -->
-<div class="modal fade" id="deactivateModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar Desactivación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>¿Está seguro de que desea desactivar al empleado <strong id="employeeName"></strong>?</p>
-                <p class="text-warning">
-                    <i class="fas fa-exclamation-triangle"></i> 
-                    Esta acción no se puede deshacer.
-                </p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="confirmDeactivate">Desactivar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
 // Función para confirmar desactivación
 function confirmDeactivate(employeeId, employeeName) {
-    document.getElementById('employeeName').textContent = employeeName;
-    document.getElementById('confirmDeactivate').onclick = function() {
-        // Aquí se haría la llamada AJAX para desactivar
-        window.location.href = `index.php?controller=payroll&action=deactivateEmployee&id=${employeeId}`;
-    };
-    new bootstrap.Modal(document.getElementById('deactivateModal')).show();
+    if (confirm(`¿Estás seguro de que deseas desactivar al empleado ${employeeName}?`)) {
+        // Aquí se implementaría la lógica de desactivación
+        alert('Función de desactivación en desarrollo');
+    }
 }
 
-// Función para exportar a Excel
-function exportToExcel() {
-    // Implementar exportación a Excel
-    alert('Función de exportación a Excel en desarrollo');
-}
-
-// Función para exportar a PDF
-function exportToPDF() {
-    // Implementar exportación a PDF
-    alert('Función de exportación a PDF en desarrollo');
-}
-
-// Inicializar DataTable
-$(document).ready(function() {
+// Inicializar DataTable si está disponible
+if (typeof $.fn.DataTable !== 'undefined') {
     $('#employeesTable').DataTable({
         language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
-        },
-        pageLength: 25,
-        order: [[1, 'asc']]
+            url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json'
+        }
     });
-});
-</script>
-
-<?php
-// Incluir el footer del dashboard
-include 'app/views/layouts/dashFooter.php';
-?> 
+}
+</script> 

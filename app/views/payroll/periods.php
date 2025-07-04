@@ -1,8 +1,44 @@
 <?php
-// Incluir el header del dashboard
-include 'app/views/layouts/dashHead.php';
-include 'app/views/layouts/dashHeader.php';
+if (!defined('ROOT')) {
+    define('ROOT', dirname(dirname(dirname(__DIR__))));
+}
+
+require_once ROOT . '/config.php';
+require_once ROOT . '/app/library/SessionManager.php';
+
+// Inicializar SessionManager
+$sessionManager = new SessionManager();
+
+// Verificar que el usuario esté logueado y tenga permisos
+if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn()) {
+    header("Location: " . url . "?view=index&action=login");
+    exit;
+}
+
+if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
+    header("Location: " . url . "?view=unauthorized");
+    exit;
+}
 ?>
+
+<script>
+console.log("BASE_URL será configurada en dashFooter.php");
+
+// Función de respaldo para loadView
+window.safeLoadView = function(viewName) {
+    console.log('safeLoadView llamado desde períodos con:', viewName);
+    
+    if (typeof loadView === 'function') {
+        console.log('loadView disponible, ejecutando...');
+        loadView(viewName);
+    } else {
+        console.error('loadView no está disponible, redirigiendo...');
+        // Fallback: redirigir a la página
+        const url = `${BASE_URL}?view=${viewName.replace('/', '&action=')}`;
+        window.location.href = url;
+    }
+};
+</script>
 
 <div class="container-fluid">
     <div class="row">
@@ -11,37 +47,37 @@ include 'app/views/layouts/dashHeader.php';
             <div class="position-sticky pt-3">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php?controller=payroll&action=dashboard">
+                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/dashboard')">
                             <i class="fas fa-tachometer-alt"></i> Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php?controller=payroll&action=employees">
+                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/employees')">
                             <i class="fas fa-users"></i> Empleados
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="index.php?controller=payroll&action=periods">
+                        <a class="nav-link active" href="#" onclick="safeLoadView('payroll/periods')">
                             <i class="fas fa-calendar-alt"></i> Períodos
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php?controller=payroll&action=absences">
+                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/absences')">
                             <i class="fas fa-user-times"></i> Ausencias
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php?controller=payroll&action=overtime">
+                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/overtime')">
                             <i class="fas fa-clock"></i> Horas Extras
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php?controller=payroll&action=bonuses">
+                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/bonuses')">
                             <i class="fas fa-gift"></i> Bonificaciones
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php?controller=payroll&action=reports">
+                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/reports')">
                             <i class="fas fa-chart-bar"></i> Reportes
                         </a>
                     </li>
@@ -52,22 +88,34 @@ include 'app/views/layouts/dashHeader.php';
         <!-- Contenido principal -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Períodos de Nómina</h1>
+                <h1 class="h2">Gestión de Períodos de Nómina</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group me-2">
-                        <a href="index.php?controller=payroll&action=createPeriod" class="btn btn-sm btn-outline-primary">
+                        <?php if ($sessionManager->hasRole(['root', 'director', 'treasurer'])): ?>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="safeLoadView('payroll/createPeriod')">
                             <i class="fas fa-plus"></i> Nuevo Período
-                        </a>
+                        </button>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
 
-            <!-- Mensajes de éxito/error -->
-            <?php if (isset($_GET['success'])): ?>
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle"></i> Operación realizada con éxito.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <!-- Período actual -->
+            <?php if (isset($current_period) && $current_period): ?>
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-calendar-check fa-2x me-3"></i>
+                    <div>
+                        <h6 class="alert-heading mb-1">Período Actual: <?php echo htmlspecialchars($current_period['period_name']); ?></h6>
+                        <p class="mb-0">
+                            <strong>Inicio:</strong> <?php echo date('d/m/Y', strtotime($current_period['start_date'])); ?> | 
+                            <strong>Fin:</strong> <?php echo date('d/m/Y', strtotime($current_period['end_date'])); ?> | 
+                            <strong>Pago:</strong> <?php echo date('d/m/Y', strtotime($current_period['payment_date'])); ?>
+                        </p>
+                    </div>
                 </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
             <?php endif; ?>
 
             <!-- Filtros -->
@@ -76,28 +124,56 @@ include 'app/views/layouts/dashHeader.php';
                     <h6 class="m-0 font-weight-bold text-primary">Filtros</h6>
                 </div>
                 <div class="card-body">
-                    <form method="GET" action="index.php" class="row g-3">
-                        <input type="hidden" name="controller" value="payroll">
-                        <input type="hidden" name="action" value="periods">
-                        
-                        <div class="col-md-4">
-                            <label for="status" class="form-label">Estado</label>
-                            <select class="form-select" id="status" name="status">
-                                <option value="">Todos los estados</option>
-                                <option value="open" <?php echo (isset($filters['status']) && $filters['status'] === 'open') ? 'selected' : ''; ?>>Abierto</option>
-                                <option value="processing" <?php echo (isset($filters['status']) && $filters['status'] === 'processing') ? 'selected' : ''; ?>>En Proceso</option>
-                                <option value="closed" <?php echo (isset($filters['status']) && $filters['status'] === 'closed') ? 'selected' : ''; ?>>Cerrado</option>
-                                <option value="paid" <?php echo (isset($filters['status']) && $filters['status'] === 'paid') ? 'selected' : ''; ?>>Pagado</option>
+                    <form method="GET" action="#" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="year" class="form-label">Año</label>
+                            <select class="form-select" id="year" name="year">
+                                <option value="">Todos los años</option>
+                                <?php 
+                                $currentYear = date('Y');
+                                for ($year = $currentYear; $year >= $currentYear - 5; $year--) {
+                                    echo "<option value='$year'>$year</option>";
+                                }
+                                ?>
                             </select>
                         </div>
                         
-                        <div class="col-md-4 d-flex align-items-end">
+                        <div class="col-md-3">
+                            <label for="status" class="form-label">Estado</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="">Todos los estados</option>
+                                <option value="open">Abierto</option>
+                                <option value="closed">Cerrado</option>
+                                <option value="processing">En Proceso</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="month" class="form-label">Mes</label>
+                            <select class="form-select" id="month" name="month">
+                                <option value="">Todos los meses</option>
+                                <option value="1">Enero</option>
+                                <option value="2">Febrero</option>
+                                <option value="3">Marzo</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Mayo</option>
+                                <option value="6">Junio</option>
+                                <option value="7">Julio</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Septiembre</option>
+                                <option value="10">Octubre</option>
+                                <option value="11">Noviembre</option>
+                                <option value="12">Diciembre</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3 d-flex align-items-end">
                             <button type="submit" class="btn btn-primary me-2">
                                 <i class="fas fa-search"></i> Filtrar
                             </button>
-                            <a href="index.php?controller=payroll&action=periods" class="btn btn-outline-secondary">
+                            <button type="button" class="btn btn-outline-secondary" onclick="window.location.reload()">
                                 <i class="fas fa-times"></i> Limpiar
-                            </a>
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -106,19 +182,20 @@ include 'app/views/layouts/dashHeader.php';
             <!-- Lista de períodos -->
             <div class="card shadow">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Lista de Períodos</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Períodos de Nómina</h6>
                 </div>
                 <div class="card-body">
-                    <?php if (!empty($periods)): ?>
+                    <?php if (isset($periods) && !empty($periods)): ?>
                         <div class="table-responsive">
                             <table class="table table-striped table-hover" id="periodsTable">
                                 <thead>
                                     <tr>
                                         <th>Período</th>
-                                        <th>Fechas</th>
-                                        <th>Pago</th>
+                                        <th>Fecha Inicio</th>
+                                        <th>Fecha Fin</th>
+                                        <th>Fecha Pago</th>
                                         <th>Estado</th>
-                                        <th>Empleados</th>
+                                        <th>Total Empleados</th>
                                         <th>Total Nómina</th>
                                         <th>Creado por</th>
                                         <th>Acciones</th>
@@ -130,72 +207,58 @@ include 'app/views/layouts/dashHeader.php';
                                             <td>
                                                 <strong><?php echo htmlspecialchars($period['period_name']); ?></strong>
                                             </td>
-                                            <td>
-                                                <small>
-                                                    <strong>Inicio:</strong> <?php echo date('d/m/Y', strtotime($period['start_date'])); ?><br>
-                                                    <strong>Fin:</strong> <?php echo date('d/m/Y', strtotime($period['end_date'])); ?>
-                                                </small>
-                                            </td>
-                                            <td>
-                                                <?php echo date('d/m/Y', strtotime($period['payment_date'])); ?>
-                                            </td>
+                                            <td><?php echo date('d/m/Y', strtotime($period['start_date'])); ?></td>
+                                            <td><?php echo date('d/m/Y', strtotime($period['end_date'])); ?></td>
+                                            <td><?php echo date('d/m/Y', strtotime($period['payment_date'])); ?></td>
                                             <td>
                                                 <?php 
                                                 $statusColors = [
                                                     'open' => 'success',
-                                                    'processing' => 'warning',
-                                                    'closed' => 'info',
-                                                    'paid' => 'primary'
+                                                    'closed' => 'secondary',
+                                                    'processing' => 'warning'
                                                 ];
                                                 $statusLabels = [
                                                     'open' => 'Abierto',
-                                                    'processing' => 'En Proceso',
                                                     'closed' => 'Cerrado',
-                                                    'paid' => 'Pagado'
+                                                    'processing' => 'En Proceso'
                                                 ];
+                                                $color = $statusColors[$period['status']] ?? 'secondary';
+                                                $label = $statusLabels[$period['status']] ?? ucfirst($period['status']);
                                                 ?>
-                                                <span class="badge bg-<?php echo $statusColors[$period['status']] ?? 'secondary'; ?>">
-                                                    <?php echo $statusLabels[$period['status']] ?? ucfirst($period['status']); ?>
-                                                </span>
+                                                <span class="badge bg-<?php echo $color; ?>"><?php echo $label; ?></span>
                                             </td>
                                             <td>
-                                                <span class="badge bg-info"><?php echo $period['total_employees']; ?></span>
+                                                <span class="badge bg-info"><?php echo $period['total_employees'] ?? 0; ?></span>
                                             </td>
                                             <td>
-                                                <strong>$<?php echo number_format($period['total_payroll'], 2); ?></strong>
+                                                <strong>$<?php echo number_format($period['total_payroll'] ?? 0, 2); ?></strong>
                                             </td>
-                                            <td>
-                                                <small><?php echo htmlspecialchars($period['created_by_name']); ?></small>
-                                            </td>
+                                            <td><?php echo htmlspecialchars($period['created_by_name'] ?? 'Sistema'); ?></td>
                                             <td>
                                                 <div class="btn-group" role="group">
-                                                    <a href="index.php?controller=payroll&action=viewPeriod&id=<?php echo $period['period_id']; ?>" 
-                                                       class="btn btn-sm btn-outline-primary" title="Ver Detalles">
+                                                    <button type="button" class="btn btn-sm btn-outline-info" 
+                                                            onclick="safeLoadView('payroll/viewPeriod?id=<?php echo $period['period_id']; ?>')"
+                                                            title="Ver Detalles">
                                                         <i class="fas fa-eye"></i>
-                                                    </a>
-                                                    
-                                                    <?php if ($period['status'] === 'open'): ?>
-                                                        <a href="index.php?controller=payroll&action=generatePayroll&period_id=<?php echo $period['period_id']; ?>" 
-                                                           class="btn btn-sm btn-outline-success" title="Generar Nómina"
-                                                           onclick="return confirm('¿Está seguro de generar la nómina para este período?')">
-                                                            <i class="fas fa-calculator"></i>
-                                                        </a>
+                                                    </button>
+                                                    <?php if ($sessionManager->hasRole(['root', 'director', 'treasurer'])): ?>
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                            onclick="safeLoadView('payroll/editPeriod?id=<?php echo $period['period_id']; ?>')"
+                                                            title="Editar">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
                                                     <?php endif; ?>
-                                                    
-                                                    <?php if ($period['status'] === 'processing'): ?>
-                                                        <button type="button" class="btn btn-sm btn-outline-info" 
-                                                                onclick="closePeriod(<?php echo $period['period_id']; ?>)"
-                                                                title="Cerrar Período">
-                                                            <i class="fas fa-lock"></i>
-                                                        </button>
-                                                    <?php endif; ?>
-                                                    
-                                                    <?php if ($period['status'] === 'closed'): ?>
-                                                        <button type="button" class="btn btn-sm btn-outline-success" 
-                                                                onclick="markAsPaid(<?php echo $period['period_id']; ?>)"
-                                                                title="Marcar como Pagado">
-                                                            <i class="fas fa-check"></i>
-                                                        </button>
+                                                    <?php if ($period['status'] === 'open' && $sessionManager->hasRole(['root', 'director', 'treasurer'])): ?>
+                                                    <button type="button" class="btn btn-sm btn-outline-success" 
+                                                            onclick="generatePayroll(<?php echo $period['period_id']; ?>)"
+                                                            title="Generar Nómina">
+                                                        <i class="fas fa-calculator"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-warning" 
+                                                            onclick="closePeriod(<?php echo $period['period_id']; ?>)"
+                                                            title="Cerrar Período">
+                                                        <i class="fas fa-lock"></i>
+                                                    </button>
                                                     <?php endif; ?>
                                                 </div>
                                             </td>
@@ -205,32 +268,34 @@ include 'app/views/layouts/dashHeader.php';
                             </table>
                         </div>
                         
-                        <!-- Estadísticas de la tabla -->
+                        <!-- Estadísticas -->
                         <div class="row mt-3">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <p class="text-muted">
-                                    <i class="fas fa-info-circle"></i> 
-                                    Mostrando <?php echo count($periods); ?> período(s)
+                                    Total períodos: <strong><?php echo count($periods); ?></strong>
                                 </p>
                             </div>
-                            <div class="col-md-6 text-end">
-                                <button class="btn btn-outline-success btn-sm" onclick="exportToExcel()">
-                                    <i class="fas fa-file-excel"></i> Exportar a Excel
-                                </button>
-                                <button class="btn btn-outline-danger btn-sm" onclick="exportToPDF()">
-                                    <i class="fas fa-file-pdf"></i> Exportar a PDF
-                                </button>
+                            <div class="col-md-4">
+                                <p class="text-muted">
+                                    Períodos abiertos: <strong><?php echo count(array_filter($periods, function($p) { return $p['status'] === 'open'; })); ?></strong>
+                                </p>
+                            </div>
+                            <div class="col-md-4">
+                                <p class="text-muted">
+                                    Total nómina: <strong>$<?php echo number_format(array_sum(array_column($periods, 'total_payroll')), 2); ?></strong>
+                                </p>
                             </div>
                         </div>
-                        
                     <?php else: ?>
                         <div class="text-center py-5">
-                            <i class="fas fa-calendar-alt fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">No se encontraron períodos</h5>
-                            <p class="text-muted">No hay períodos de nómina registrados.</p>
-                            <a href="index.php?controller=payroll&action=createPeriod" class="btn btn-primary">
+                            <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No hay períodos registrados</h5>
+                            <p class="text-muted">Comienza creando el primer período de nómina</p>
+                            <?php if ($sessionManager->hasRole(['root', 'director', 'treasurer'])): ?>
+                            <button type="button" class="btn btn-primary" onclick="safeLoadView('payroll/createPeriod')">
                                 <i class="fas fa-plus"></i> Crear Primer Período
-                            </a>
+                            </button>
+                            <?php endif; ?>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -239,94 +304,30 @@ include 'app/views/layouts/dashHeader.php';
     </div>
 </div>
 
-<!-- Modal de confirmación para cerrar período -->
-<div class="modal fade" id="closePeriodModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar Cierre de Período</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>¿Está seguro de que desea cerrar este período de nómina?</p>
-                <p class="text-warning">
-                    <i class="fas fa-exclamation-triangle"></i> 
-                    Una vez cerrado, no se podrán hacer modificaciones.
-                </p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-info" id="confirmClosePeriod">Cerrar Período</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal de confirmación para marcar como pagado -->
-<div class="modal fade" id="markAsPaidModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar Pago</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>¿Está seguro de que desea marcar este período como pagado?</p>
-                <p class="text-success">
-                    <i class="fas fa-check-circle"></i> 
-                    Esto confirmará que todos los pagos han sido realizados.
-                </p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-success" id="confirmMarkAsPaid">Marcar como Pagado</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
+// Función para generar nómina
+function generatePayroll(periodId) {
+    if (confirm('¿Estás seguro de que deseas generar la nómina para este período?')) {
+        // Aquí se implementaría la lógica de generación de nómina
+        alert('Función de generación de nómina en desarrollo');
+    }
+}
+
 // Función para cerrar período
 function closePeriod(periodId) {
-    document.getElementById('confirmClosePeriod').onclick = function() {
-        window.location.href = `index.php?controller=payroll&action=closePeriod&id=${periodId}`;
-    };
-    new bootstrap.Modal(document.getElementById('closePeriodModal')).show();
+    if (confirm('¿Estás seguro de que deseas cerrar este período? Esta acción no se puede deshacer.')) {
+        // Aquí se implementaría la lógica de cierre de período
+        alert('Función de cierre de período en desarrollo');
+    }
 }
 
-// Función para marcar como pagado
-function markAsPaid(periodId) {
-    document.getElementById('confirmMarkAsPaid').onclick = function() {
-        window.location.href = `index.php?controller=payroll&action=markAsPaid&id=${periodId}`;
-    };
-    new bootstrap.Modal(document.getElementById('markAsPaidModal')).show();
-}
-
-// Función para exportar a Excel
-function exportToExcel() {
-    // Implementar exportación a Excel
-    alert('Función de exportación a Excel en desarrollo');
-}
-
-// Función para exportar a PDF
-function exportToPDF() {
-    // Implementar exportación a PDF
-    alert('Función de exportación a PDF en desarrollo');
-}
-
-// Inicializar DataTable
-$(document).ready(function() {
+// Inicializar DataTable si está disponible
+if (typeof $.fn.DataTable !== 'undefined') {
     $('#periodsTable').DataTable({
         language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+            url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json'
         },
-        pageLength: 25,
-        order: [[0, 'desc']]
+        order: [[1, 'desc']] // Ordenar por fecha de inicio descendente
     });
-});
-</script>
-
-<?php
-// Incluir el footer del dashboard
-include 'app/views/layouts/dashFooter.php';
-?> 
+}
+</script> 

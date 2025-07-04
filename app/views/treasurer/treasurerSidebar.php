@@ -1,18 +1,9 @@
-<div class="root-dashboard">
-    <div class="root-sidebar">
+<div class="treasurer-dashboard">
+    <div class="treasurer-sidebar">
         <ul>
-            <li><a href="#" onclick="safeLoadView('school/createSchool')"><i data-lucide="home"></i>Inicio</a></li>
-            <li class="has-submenu"><a href="#"><i data-lucide="school"></i>Colegios</a>
-                <ul class="submenu">
-                    <li><a href="#" onclick="safeLoadView('school/createSchool')"><i data-lucide="sparkles"></i>Registrar Colegio</a></li>
-                    <li><a href="#" onclick="safeLoadView('school/consultSchool')">Ver Colegios</a></li>
-                </ul>
-            </li>
-            <li class="has-submenu"><a href="#"><i data-lucide="users"></i>Perfiles</a>
-                <ul class="submenu">
-                    <li><a href="#" onclick="safeLoadView('user/assignRole')"><i data-lucide="user-plus"></i>Asignar roles</a></li>
-                </ul>
-            </li>
+            <li><a href="#" onclick="safeLoadView('treasurer/dashboard')"><i data-lucide="home"></i>Inicio</a></li>
+            
+            <!-- Sección de Nómina - Principal para el Tesorero -->
             <li class="has-submenu">
                 <a href="#"><i data-lucide="dollar-sign"></i>Nómina</a>
                 <ul class="submenu">
@@ -25,16 +16,20 @@
                     <li><a href="#" onclick="safeLoadView('payroll/reports')">📈 Reportes</a></li>
                 </ul>
             </li>
+            
+            <!-- Sección de Reportes Financieros -->
             <li class="has-submenu">
-                <a href="#"><i data-lucide="bar-chart-2"></i>Reportes</a>
+                <a href="#"><i data-lucide="bar-chart-2"></i>Reportes Financieros</a>
                 <ul class="submenu">
-                    <li><a href="#" onclick="safeLoadView('director/editDirector')">Crear reporte</a></li>
-                    <li><a href="#" onclick="safeLoadView('director/createDirector')">Consultar reporte</a></li>
-                    <li><a href="#" onclick="safeLoadView('director/createDirector')">Consultar estadística</a></li>
+                    <li><a href="#" onclick="safeLoadView('reports/financial')">💰 Reportes Financieros</a></li>
+                    <li><a href="#" onclick="safeLoadView('reports/payroll')">💵 Reportes de Nómina</a></li>
+                    <li><a href="#" onclick="safeLoadView('reports/statistics')">📊 Estadísticas</a></li>
                 </ul>
             </li>
+            
+            <!-- Sección de Configuración -->
             <li class="has-submenu">
-                <a href="#"><i data-lucide="settings"></i>Configuración BYFROST</a>
+                <a href="#"><i data-lucide="settings"></i>Configuración</a>
                 <ul class="submenu">
                     <li><a href="#" onclick="safeLoadView('user/settingsRoles?section=usuarios')">👥 Usuarios</a></li>
                     <li><a href="#" onclick="safeLoadView('user/settingsRoles?section=recuperar')">🔐 Recuperar contraseña</a></li>
@@ -42,3 +37,4 @@
             </li>
         </ul>
     </div>
+</div> 
