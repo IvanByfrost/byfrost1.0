@@ -292,17 +292,17 @@ class UserController extends MainController
             return;
         }
         // Mapear datos del formulario a los campos del modelo
-        $userData = [
-            'first_name' => $data['nombre'] ?? '',
-            'last_name' => '',
-            'email' => $data['usuario'] ?? '',
-            'password' => $data['clave'] ?? '',
-            'credential_type' => $data['tipoDoc'] ?? '',
-            'credential_number' => $data['numeroDoc'] ?? '',
-            'date_of_birth' => null,
-            'phone' => null,
-            'address' => null
-        ];
+            $userData = [
+                'first_name' => $data['first_name'] ?? '',
+                'last_name' => $data['last_name'] ?? '',
+                'email' => $data['username'] ?? '',
+                'password' => $data['password'] ?? '',
+                'credential_type' => $data['document_type'] ?? '',
+                'credential_number' => $data['document_number'] ?? '',
+                'date_of_birth' => null,
+                'phone' => null,
+                'address' => null
+            ];
         try {
             $this->userModel->createUser($userData);
             // Asignar rol si es diferente de student
