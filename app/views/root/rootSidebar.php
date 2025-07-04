@@ -43,7 +43,7 @@
                 </ul>
             </li>
             <li class="has-submenu">
-                <a href="#"><i data-lucide="settings"></i>Configuración BYFROST</a>
+                <a href="#"><i data-lucide="settings"></i>Configuración</a>
                 <ul class="submenu">
                     <li><a href="#" onclick="safeLoadView('user/settingsRoles?section=usuarios')">👥 Usuarios</a></li>
                     <li><a href="#" onclick="safeLoadView('user/settingsRoles?section=recuperar')">🔐 Recuperar contraseña</a></li>

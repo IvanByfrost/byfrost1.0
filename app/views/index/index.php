@@ -83,7 +83,3 @@ require_once __DIR__ . '/../layouts/header.php';
         <img src="<?php echo url . app . rq ?>img\appstore-badge.webp" alt="App Store" width="180">
     </div>
 </section>
-
-<?php
-require_once __DIR__ . '/../layouts/footer.php';
-?>

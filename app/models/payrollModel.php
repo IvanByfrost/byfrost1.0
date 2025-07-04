@@ -1,5 +1,5 @@
 <?php
-require_once 'app/scripts/connection.php';
+require_once ROOT . '/app/scripts/connection.php';
 
 class PayrollModel {
     private $conn;

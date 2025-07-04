@@ -166,17 +166,20 @@ class SessionManager {
     }
     
     /**
-     * Verifica si el usuario tiene un rol específico
+     * Verifica si el usuario tiene un rol específico o uno de varios roles (insensible a mayúsculas)
      * 
-     * @param string $role Rol a verificar
+     * @param string|array $role Rol o array de roles a verificar
      * @return bool True si el usuario tiene el rol
      */
     public function hasRole($role) {
         if (!$this->isLoggedIn()) {
             return false;
         }
-        
-        return $_SESSION['user_role'] === $role;
+        $userRole = strtolower($_SESSION['user_role']);
+        if (is_array($role)) {
+            return in_array($userRole, array_map('strtolower', $role));
+        }
+        return $userRole === strtolower($role);
     }
     
     /**
