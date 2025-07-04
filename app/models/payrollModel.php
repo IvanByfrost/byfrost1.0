@@ -16,7 +16,7 @@ class PayrollModel {
      * Obtener todos los empleados activos
      */
     public function getAllEmployees($filters = []) {
-        $sql = "SELECT e.*, u.name, u.lastname, u.email, u.phone, ur.role_type 
+        $sql = "SELECT e.*, u.first_name, u.last_name, u.email, u.phone, ur.role_type 
                 FROM employees e 
                 INNER JOIN users u ON e.user_id = u.user_id 
                 INNER JOIN user_roles ur ON u.user_id = ur.user_id 
@@ -34,7 +34,7 @@ class PayrollModel {
             $params[] = $filters['position'];
         }
         
-        $sql .= " ORDER BY u.name, u.lastname";
+        $sql .= " ORDER BY u.first_name, u.last_name";
         
         $stmt = $this->conn->prepare($sql);
         $stmt->execute($params);
@@ -82,7 +82,7 @@ class PayrollModel {
      * Obtener empleado por ID
      */
     public function getEmployeeById($employeeId) {
-        $sql = "SELECT e.*, u.name, u.lastname, u.email, u.phone, u.role_id 
+        $sql = "SELECT e.*, u.first_name, u.last_name, u.email, u.phone, u.role_id 
                 FROM employees e 
                 INNER JOIN users u ON e.user_id = u.user_id 
                 WHERE e.employee_id = ?";
@@ -167,7 +167,7 @@ class PayrollModel {
      * Obtener todos los períodos de nómina
      */
     public function getAllPeriods($filters = []) {
-        $sql = "SELECT p.*, u.name as created_by_name 
+        $sql = "SELECT p.*, u.first_name as created_by_name 
                 FROM payroll_periods p 
                 INNER JOIN users u ON p.created_by_user_id = u.user_id";
         
@@ -189,7 +189,7 @@ class PayrollModel {
      * Obtener período por ID
      */
     public function getPeriodById($periodId) {
-        $sql = "SELECT p.*, u.name as created_by_name 
+        $sql = "SELECT p.*, u.first_name as created_by_name 
                 FROM payroll_periods p 
                 INNER JOIN users u ON p.created_by_user_id = u.user_id 
                 WHERE p.period_id = ?";
@@ -281,14 +281,14 @@ class PayrollModel {
      */
     public function getPayrollRecordsByPeriod($periodId) {
         $sql = "SELECT pr.*, e.employee_code, e.position, e.department, 
-                       u.name, u.lastname, u.email,
+                       u.first_name, u.last_name, u.email,
                        p.period_name, p.start_date, p.end_date
                 FROM payroll_records pr 
                 INNER JOIN employees e ON pr.employee_id = e.employee_id 
                 INNER JOIN users u ON e.user_id = u.user_id 
                 INNER JOIN payroll_periods p ON pr.period_id = p.period_id 
                 WHERE pr.period_id = ? 
-                ORDER BY u.name, u.lastname";
+                ORDER BY u.first_name, u.last_name";
         
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([$periodId]);
@@ -300,7 +300,7 @@ class PayrollModel {
      */
     public function getPayrollRecord($recordId) {
         $sql = "SELECT pr.*, e.employee_code, e.position, e.department, 
-                       u.name, u.lastname, u.email,
+                       u.first_name, u.last_name, u.email,
                        p.period_name, p.start_date, p.end_date
                 FROM payroll_records pr 
                 INNER JOIN employees e ON pr.employee_id = e.employee_id 
@@ -451,7 +451,7 @@ class PayrollModel {
      * Obtener ausencias de un empleado
      */
     public function getEmployeeAbsences($employeeId, $periodId = null) {
-        $sql = "SELECT ea.*, e.employee_code, u.name, u.lastname 
+        $sql = "SELECT ea.*, e.employee_code, u.first_name, u.last_name 
                 FROM employee_absences ea 
                 INNER JOIN employees e ON ea.employee_id = e.employee_id 
                 INNER JOIN users u ON e.user_id = u.user_id 
@@ -500,7 +500,7 @@ class PayrollModel {
      * Obtener horas extras de un empleado
      */
     public function getEmployeeOvertime($employeeId, $periodId = null) {
-        $sql = "SELECT eo.*, e.employee_code, u.name, u.lastname 
+        $sql = "SELECT eo.*, e.employee_code, u.first_name, u.last_name 
                 FROM employee_overtime eo 
                 INNER JOIN employees e ON eo.employee_id = e.employee_id 
                 INNER JOIN users u ON e.user_id = u.user_id 
@@ -548,7 +548,7 @@ class PayrollModel {
      * Obtener bonificaciones de un empleado
      */
     public function getEmployeeBonuses($employeeId, $periodId = null) {
-        $sql = "SELECT eb.*, e.employee_code, u.name, u.lastname 
+        $sql = "SELECT eb.*, e.employee_code, u.first_name, u.last_name 
                 FROM employee_bonuses eb 
                 INNER JOIN employees e ON eb.employee_id = e.employee_id 
                 INNER JOIN users u ON e.user_id = u.user_id 
@@ -635,11 +635,10 @@ class PayrollModel {
      * Obtener todas las ausencias con filtros
      */
     public function getAllAbsences($filters = []) {
-        $sql = "SELECT ea.*, e.employee_code, u.name, u.lastname, e.department 
+        $sql = "SELECT ea.*, e.employee_code, u.first_name, u.last_name, e.department 
                 FROM employee_absences ea 
                 INNER JOIN employees e ON ea.employee_id = e.employee_id 
-                INNER JOIN users u ON e.user_id = u.user_id 
-                WHERE ea.is_active = 1";
+                INNER JOIN users u ON e.user_id = u.user_id";
         
         $params = [];
         
@@ -666,11 +665,10 @@ class PayrollModel {
      * Obtener todas las horas extra con filtros
      */
     public function getAllOvertime($filters = []) {
-        $sql = "SELECT eo.*, e.employee_code, u.name, u.lastname, e.department 
+        $sql = "SELECT eo.*, e.employee_code, u.first_name, u.last_name, e.department 
                 FROM employee_overtime eo 
                 INNER JOIN employees e ON eo.employee_id = e.employee_id 
-                INNER JOIN users u ON e.user_id = u.user_id 
-                WHERE eo.is_active = 1";
+                INNER JOIN users u ON e.user_id = u.user_id";
         
         $params = [];
         
@@ -695,11 +693,10 @@ class PayrollModel {
      * Obtener todas las bonificaciones con filtros
      */
     public function getAllBonuses($filters = []) {
-        $sql = "SELECT eb.*, e.employee_code, u.name, u.lastname, e.department 
+        $sql = "SELECT eb.*, e.employee_code, u.last_name, e.department 
                 FROM employee_bonuses eb 
                 INNER JOIN employees e ON eb.employee_id = e.employee_id 
-                INNER JOIN users u ON e.user_id = u.user_id 
-                WHERE eb.is_active = 1";
+                INNER JOIN users u ON e.user_id = u.user_id";
         
         $params = [];
         
