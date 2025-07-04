@@ -665,4 +665,39 @@ app/resources/js/
 
 ---
 
+## [INTERNACIONALIZACIÓN] Nombres de campos en español en el flujo de creación de usuarios
+
+Se detectaron los siguientes usos de nombres de campos en español en el flujo de creación de usuarios (de frontend a backend):
+
+### Backend
+
+**Archivo:** `app/controllers/UserController.php`
+
+```php
+$userData = [
+    'first_name' => $data['nombre'] ?? '',
+    'last_name' => '',
+    'email' => $data['usuario'] ?? '',
+    'password' => $data['clave'] ?? '',
+    'credential_type' => $data['tipoDoc'] ?? '',
+    'credential_number' => $data['numeroDoc'] ?? '',
+    'date_of_birth' => null,
+    'phone' => null,
+    'address' => null
+];
+```
+
+### Frontend (búsqueda en archivos JS)
+
+No se encontraron objetos enviados por AJAX con estos nombres de campo en los archivos JS principales, pero sí aparecen en comentarios, mensajes y tablas. Es probable que el envío se realice en algún archivo JS o HTML que construya el objeto para el registro de usuario.
+
+**Recomendación:**
+- Cambiar los nombres de los campos enviados desde el frontend a inglés (`first_name`, `email`, `password`, `credential_type`, `credential_number`, etc.)
+- Actualizar el backend para recibir directamente los nombres en inglés y eliminar el mapeo.
+
+**Nota:**
+- Revisar especialmente los formularios de registro y los archivos JS que envían datos al endpoint de creación de usuario.
+
+---
+
 **Sigue este documento para organizar tus commits y facilitar la revisión y el mantenimiento del proyecto.**
