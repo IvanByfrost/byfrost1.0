@@ -30,18 +30,7 @@
                     <li><a href="#" onclick="safeLoadView('director/createDirector')">Consultar estadística</a></li>
                 </ul>
             </li>
-            <li class="has-submenu">
-                <a href="#"><i data-lucide="dollar-sign"></i>Nómina</a>
-                <ul class="submenu">
-                    <li><a href="#" onclick="safeLoadView('payroll/dashboard')"> Dashboard</a></li>
-                    <li><a href="#" onclick="safeLoadView('payroll/employees')"> Empleados</a></li>
-                    <li><a href="#" onclick="safeLoadView('payroll/periods')"> Períodos</a></li>
-                    <li><a href="#" onclick="safeLoadView('payroll/absences')"> Ausencias</a></li>
-                    <li><a href="#" onclick="safeLoadView('payroll/overtime')"> Horas Extras</a></li>
-                    <li><a href="#" onclick="safeLoadView('payroll/bonuses')"> Bonificaciones</a></li>
-                    <li><a href="#" onclick="safeLoadView('payroll/reports')"> Reportes</a></li>
-                </ul>
-            </li>
+            
             <li class="has-submenu">
                 <a href="#"><i data-lucide="settings"></i>Configuración</a>
                 <ul class="submenu">
