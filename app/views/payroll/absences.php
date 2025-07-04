@@ -40,50 +40,6 @@ window.safeLoadView = function(viewName) {
 };
 </script>
 
-<div class="container-fluid">
-    <div class="row">
-        <!-- Sidebar -->
-        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-            <div class="position-sticky pt-3">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/dashboard')">
-                            <i class="fas fa-tachometer-alt"></i> Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/employees')">
-                            <i class="fas fa-users"></i> Empleados
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/periods')">
-                            <i class="fas fa-calendar-alt"></i> Períodos
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#" onclick="safeLoadView('payroll/absences')">
-                            <i class="fas fa-user-times"></i> Ausencias
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/overtime')">
-                            <i class="fas fa-clock"></i> Horas Extras
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/bonuses')">
-                            <i class="fas fa-gift"></i> Bonificaciones
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/reports')">
-                            <i class="fas fa-chart-bar"></i> Reportes
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
 
         <!-- Contenido principal -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
