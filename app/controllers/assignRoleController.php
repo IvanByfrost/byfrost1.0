@@ -13,8 +13,8 @@ class AssignRoleController extends MainController {
     public function assign($userId, $roleType) {
         // Si el usuario logueado es director, restringe los roles que puede asignar
         if ($this->sessionManager && $this->sessionManager->hasRole('director')) {
-            $rolesPermitidos = ['coordinator', 'professor', 'parent', 'treasurer', 'student'];
-            if (!in_array($roleType, $rolesPermitidos)) {
+            $allowedroles = ['coordinator', 'professor', 'parent', 'treasurer', 'student'];
+            if (!in_array($roleType, $allowedroles)) {
                 http_response_code(403);
                 echo json_encode([
                     'success' => false,
