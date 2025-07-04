@@ -8,7 +8,7 @@ class PayrollController {
     private $sessionManager;
     private $securityMiddleware;
     
-    public function __construct() {
+    public function __construct($dbConn = null, $view = null) {
         $this->payrollModel = new PayrollModel();
         $this->sessionManager = new SessionManager();
         $this->securityMiddleware = new SecurityMiddleware();
@@ -24,7 +24,7 @@ class PayrollController {
     public function dashboard() {
         // Verificar permisos
         if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
+            header('Location: ?view=unauthorized');
             exit;
         }
         
@@ -53,7 +53,7 @@ class PayrollController {
      */
     public function employees() {
         if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
+            header('Location: ?view=unauthorized');
             exit;
         }
         
@@ -82,7 +82,7 @@ class PayrollController {
      */
     public function createEmployee() {
         if (!$this->sessionManager->hasRole(['root', 'director'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
+            header('Location: ?view=unauthorized');
             exit;
         }
         
@@ -102,7 +102,7 @@ class PayrollController {
                 ];
                 
                 if ($this->payrollModel->createEmployee($data)) {
-                    header('Location: index.php?controller=payroll&action=employees&success=1');
+                    header('Location: ?view=payroll&action=employees&success=1');
                     exit;
                 } else {
                     throw new Exception('Error al crear empleado');
@@ -135,13 +135,13 @@ class PayrollController {
      */
     public function editEmployee() {
         if (!$this->sessionManager->hasRole(['root', 'director'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
+            header('Location: ?view=unauthorized');
             exit;
         }
         
         $employeeId = $_GET['id'] ?? null;
         if (!$employeeId) {
-            header('Location: index.php?controller=payroll&action=employees');
+            header('Location: ?view=payroll&action=employees');
             exit;
         }
         
@@ -158,7 +158,7 @@ class PayrollController {
                 ];
                 
                 if ($this->payrollModel->updateEmployee($employeeId, $data)) {
-                    header('Location: index.php?controller=payroll&action=employees&success=1');
+                    header('Location: ?view=payroll&action=employees&success=1');
                     exit;
                 } else {
                     throw new Exception('Error al actualizar empleado');
@@ -174,7 +174,7 @@ class PayrollController {
         } else {
             $employee = $this->payrollModel->getEmployeeById($employeeId);
             if (!$employee) {
-                header('Location: index.php?controller=payroll&action=employees');
+                header('Location: ?view=payroll&action=employees');
                 exit;
             }
             
@@ -194,13 +194,14 @@ class PayrollController {
      */
     public function periods() {
         if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
+            header('Location: ?view=unauthorized');
             exit;
         }
         
         try {
             $filters = [];
             if (isset($_GET['status'])) $filters['status'] = $_GET['status'];
+            if (isset($_GET['year'])) $filters['year'] = $_GET['year'];
             
             $periods = $this->payrollModel->getAllPeriods($filters);
             
@@ -222,7 +223,7 @@ class PayrollController {
      */
     public function createPeriod() {
         if (!$this->sessionManager->hasRole(['root', 'director'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
+            header('Location: ?view=unauthorized');
             exit;
         }
         
@@ -237,7 +238,7 @@ class PayrollController {
                 ];
                 
                 if ($this->payrollModel->createPeriod($data)) {
-                    header('Location: index.php?controller=payroll&action=periods&success=1');
+                    header('Location: ?view=payroll&action=periods&success=1');
                     exit;
                 } else {
                     throw new Exception('Error al crear período');
@@ -259,13 +260,13 @@ class PayrollController {
      */
     public function viewPeriod() {
         if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
+            header('Location: ?view=unauthorized');
             exit;
         }
         
         $periodId = $_GET['id'] ?? null;
         if (!$periodId) {
-            header('Location: index.php?controller=payroll&action=periods');
+            header('Location: ?view=payroll&action=periods');
             exit;
         }
         
@@ -295,19 +296,19 @@ class PayrollController {
      */
     public function generatePayroll() {
         if (!$this->sessionManager->hasRole(['root', 'director'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
+            header('Location: ?view=unauthorized');
             exit;
         }
         
         $periodId = $_GET['period_id'] ?? null;
         if (!$periodId) {
-            header('Location: index.php?controller=payroll&action=periods');
+            header('Location: ?view=payroll&action=periods');
             exit;
         }
         
         try {
             if ($this->payrollModel->generatePayrollForPeriod($periodId, $this->sessionManager->getUserId())) {
-                header('Location: index.php?controller=payroll&action=viewPeriod&id=' . $periodId . '&success=1');
+                header('Location: ?view=payroll&action=viewPeriod&id=' . $periodId . '&success=1');
                 exit;
             } else {
                 throw new Exception('Error al generar nómina');
@@ -327,13 +328,13 @@ class PayrollController {
      */
     public function viewPayrollRecord() {
         if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
+            header('Location: ?view=unauthorized');
             exit;
         }
         
         $recordId = $_GET['id'] ?? null;
         if (!$recordId) {
-            header('Location: index.php?controller=payroll&action=periods');
+            header('Location: ?view=payroll&action=periods');
             exit;
         }
         
@@ -359,13 +360,13 @@ class PayrollController {
      */
     public function editPayrollRecord() {
         if (!$this->sessionManager->hasRole(['root', 'director', 'treasurer'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
+            header('Location: ?view=unauthorized');
             exit;
         }
         
         $recordId = $_GET['id'] ?? null;
         if (!$recordId) {
-            header('Location: index.php?controller=payroll&action=periods');
+            header('Location: ?view=payroll&action=periods');
             exit;
         }
         
@@ -380,7 +381,7 @@ class PayrollController {
                 ];
                 
                 if ($this->payrollModel->updatePayrollRecord($recordId, $data)) {
-                    header('Location: index.php?controller=payroll&action=viewPayrollRecord&id=' . $recordId . '&success=1');
+                    header('Location: ?view=payroll&action=viewPayrollRecord&id=' . $recordId . '&success=1');
                     exit;
                 } else {
                     throw new Exception('Error al actualizar registro');
@@ -396,7 +397,7 @@ class PayrollController {
         } else {
             $record = $this->payrollModel->getPayrollRecord($recordId);
             if (!$record) {
-                header('Location: index.php?controller=payroll&action=periods');
+                header('Location: ?view=payroll&action=periods');
                 exit;
             }
             
@@ -416,7 +417,7 @@ class PayrollController {
      */
     public function absences() {
         if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
+            header('Location: ?view=unauthorized');
             exit;
         }
         
@@ -445,7 +446,7 @@ class PayrollController {
      */
     public function createAbsence() {
         if (!$this->sessionManager->hasRole(['root', 'director', 'treasurer'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
+            header('Location: ?view=unauthorized');
             exit;
         }
         
@@ -461,7 +462,7 @@ class PayrollController {
                 ];
                 
                 if ($this->payrollModel->createAbsence($data)) {
-                    header('Location: index.php?controller=payroll&action=absences&success=1');
+                    header('Location: ?view=payroll&action=absences&success=1');
                     exit;
                 } else {
                     throw new Exception('Error al crear ausencia');
@@ -487,7 +488,7 @@ class PayrollController {
      */
     public function overtime() {
         if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
+            header('Location: ?view=unauthorized');
             exit;
         }
         
@@ -516,7 +517,7 @@ class PayrollController {
      */
     public function createOvertime() {
         if (!$this->sessionManager->hasRole(['root', 'director', 'treasurer'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
+            header('Location: ?view=unauthorized');
             exit;
         }
         
@@ -532,7 +533,7 @@ class PayrollController {
                 ];
                 
                 if ($this->payrollModel->createOvertime($data)) {
-                    header('Location: index.php?controller=payroll&action=overtime&success=1');
+                    header('Location: ?view=payroll&action=overtime&success=1');
                     exit;
                 } else {
                     throw new Exception('Error al crear hora extra');
@@ -558,7 +559,7 @@ class PayrollController {
      */
     public function bonuses() {
         if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
+            header('Location: ?view=unauthorized');
             exit;
         }
         
@@ -587,7 +588,7 @@ class PayrollController {
      */
     public function createBonus() {
         if (!$this->sessionManager->hasRole(['root', 'director', 'treasurer'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
+            header('Location: ?view=unauthorized');
             exit;
         }
         
@@ -602,7 +603,7 @@ class PayrollController {
                 ];
                 
                 if ($this->payrollModel->createBonus($data)) {
-                    header('Location: index.php?controller=payroll&action=bonuses&success=1');
+                    header('Location: ?view=payroll&action=bonuses&success=1');
                     exit;
                 } else {
                     throw new Exception('Error al crear bonificación');
@@ -628,7 +629,7 @@ class PayrollController {
      */
     public function reports() {
         if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
+            header('Location: ?view=unauthorized');
             exit;
         }
         

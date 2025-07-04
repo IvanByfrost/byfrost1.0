@@ -28,8 +28,6 @@ require_once ROOT . '/app/views/layouts/dashHeader.php';
     console.log("BASE_URL será configurada en dashFooter.php");
 </script>
 
-<script type="text/javascript" src="<?php echo url . app . rq ?>js/loadView.js"></script>
-
 <body>
     <div class="dashboard-container">
         <aside class="sidebar">

@@ -18,19 +18,19 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script type="text/javascript" src="<?php echo url; ?>app/resources/js/onlyNumber.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/onlyNumber.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/toggles.js"></script>
-    <script type="text/javascript" src="<?php echo url; ?>app/resources/js/loadView.js"></script>
-    <script type="text/javascript" src="<?php echo url; ?>app/resources/js/sessionHandler.js"></script>
-    <script type="text/javascript" src="<?php echo url; ?>app/resources/js/userSearch.js"></script>
-    <script type="text/javascript" src="<?php echo url; ?>app/resources/js/createSchool.js"></script>
-    <script type="text/javascript" src="<?php echo url; ?>app/resources/js/userManagement.js"></script>
-    <script type="text/javascript" src="<?php echo url; ?>app/resources/js/roleManagement.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/loadView.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/sessionHandler.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/userSearch.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/createSchool.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/userManagement.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/roleManagement.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/Uploadpicture.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/User.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/Principal.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/app.js"></script>
-    <script type="text/javascript" src="app/resources/js/profileSettings.js"></script> 
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/profileSettings.js"></script> 
 
     <script>
         // Inicializar Lucide

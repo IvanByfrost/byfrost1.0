@@ -72,6 +72,7 @@ $controllerMapping = [
     'schedule' => 'ScheduleController',
     'user' => 'UserController',
     'role' => 'RoleController',
+    'payroll' => 'PayrollController',
     'index' => 'IndexController',
     'login' => 'IndexController',
     'register' => 'IndexController',
@@ -133,7 +134,8 @@ if (isset($controllerMapping[$view])) {
                 'faq' => 'faq',
                 'forgotPassword' => 'forgotPassword',
                 'resetPassword' => 'resetPassword',
-                'completeProf' => 'completeProf'
+                'completeProf' => 'completeProf',
+                'payroll' => 'dashboard'
             ];
             
             // Si la vista tiene una acción por defecto, usarla
@@ -159,8 +161,16 @@ if (isset($controllerMapping[$view])) {
             } elseif (method_exists($controller, 'dashboard')) {
                 $controller->dashboard();
             } else {
+                // Si no hay método por defecto, mostrar métodos disponibles
+                $methods = get_class_methods($controller);
+                $publicMethods = array_filter($methods, function($method) {
+                    return $method !== '__construct' && !str_starts_with($method, '_');
+                });
+                
                 http_response_code(404);
                 echo "<h2>Error 404</h2><p>No se encontró un método por defecto en el controlador <code>" . htmlspecialchars($controllerName) . "</code>.</p>";
+                echo "<p>Métodos disponibles: <code>" . implode(', ', $publicMethods) . "</code></p>";
+                echo "<p>Acción solicitada: <code>" . htmlspecialchars($action) . "</code></p>";
             }
         }
     } else {
@@ -171,18 +181,36 @@ if (isset($controllerMapping[$view])) {
         echo "<p>Ruta buscada: <code>" . htmlspecialchars($controllerPath) . "</code></p>";
     }
 } else {
-    // Si no hay controlador mapeado, intentar cargar como vista directa
-    $viewPath = ROOT . "/app/views/" . $view . ".php";
-    
-    // echo "<!-- Debug: Intentando cargar como vista directa: " . $viewPath . " -->";
-    
-    if (file_exists($viewPath)) {
-        // echo "<!-- Debug: Cargando vista: " . $viewPath . " -->";
-        require_once $viewPath;
+    // Si no hay controlador mapeado, verificar si es una ruta con subdirectorios
+    if (strpos($view, '/') !== false) {
+        // Es una ruta con subdirectorios, intentar cargar como vista directa
+        $viewPath = ROOT . "/app/views/" . $view . ".php";
+        
+        // echo "<!-- Debug: Intentando cargar como vista directa: " . $viewPath . " -->";
+        
+        if (file_exists($viewPath)) {
+            // echo "<!-- Debug: Cargando vista: " . $viewPath . " -->";
+            require_once $viewPath;
+        } else {
+            http_response_code(404);
+            echo "<h2>Error 404</h2><p>La vista <code>" . htmlspecialchars($view) . "</code> no existe.</p>";
+            echo "<p>Ruta buscada: <code>" . htmlspecialchars($viewPath) . "</code></p>";
+            echo "<p>Vistas disponibles: <code>" . implode(', ', array_keys($controllerMapping)) . "</code></p>";
+        }
     } else {
-        http_response_code(404);
-        echo "<h2>Error 404</h2><p>La vista <code>" . htmlspecialchars($view) . "</code> no existe.</p>";
-        echo "<p>Ruta buscada: <code>" . htmlspecialchars($viewPath) . "</code></p>";
-        echo "<p>Vistas disponibles: <code>" . implode(', ', array_keys($controllerMapping)) . "</code></p>";
+        // Si no hay controlador mapeado, intentar cargar como vista directa
+        $viewPath = ROOT . "/app/views/" . $view . ".php";
+        
+        // echo "<!-- Debug: Intentando cargar como vista directa: " . $viewPath . " -->";
+        
+        if (file_exists($viewPath)) {
+            // echo "<!-- Debug: Cargando vista: " . $viewPath . " -->";
+            require_once $viewPath;
+        } else {
+            http_response_code(404);
+            echo "<h2>Error 404</h2><p>La vista <code>" . htmlspecialchars($view) . "</code> no existe.</p>";
+            echo "<p>Ruta buscada: <code>" . htmlspecialchars($viewPath) . "</code></p>";
+            echo "<p>Vistas disponibles: <code>" . implode(', ', array_keys($controllerMapping)) . "</code></p>";
+        }
     }
 }
