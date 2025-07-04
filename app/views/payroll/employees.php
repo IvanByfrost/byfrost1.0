@@ -69,6 +69,13 @@ include 'app/views/layouts/dashHeader.php';
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             <?php endif; ?>
+            
+            <!-- Información sobre restricciones de empleados -->
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <i class="fas fa-info-circle"></i> 
+                <strong>Información importante:</strong> Solo los usuarios con roles de <strong>Profesor</strong>, <strong>Coordinador</strong>, <strong>Director</strong>, <strong>Tesorero</strong> o <strong>Administrador</strong> pueden ser empleados. Los estudiantes y padres no pueden ser empleados del sistema.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
 
             <!-- Filtros -->
             <div class="card mb-4">
