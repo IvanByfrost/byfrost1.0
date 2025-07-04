@@ -84,12 +84,22 @@ include 'app/views/layouts/dashHeader.php';
                                     <label for="user_id" class="form-label">Usuario *</label>
                                     <select class="form-select" id="user_id" name="user_id" required>
                                         <option value="">Seleccionar usuario</option>
-                                        <!-- Aquí se cargarían los usuarios disponibles -->
-                                        <option value="1" <?php echo (isset($data['user_id']) && $data['user_id'] == 1) ? 'selected' : ''; ?>>Juan Pérez</option>
-                                        <option value="2" <?php echo (isset($data['user_id']) && $data['user_id'] == 2) ? 'selected' : ''; ?>>María García</option>
-                                        <option value="3" <?php echo (isset($data['user_id']) && $data['user_id'] == 3) ? 'selected' : ''; ?>>Carlos López</option>
+                                        <?php if (isset($available_users) && !empty($available_users)): ?>
+                                            <?php foreach ($available_users as $user): ?>
+                                                <option value="<?php echo $user['user_id']; ?>" 
+                                                        <?php echo (isset($data['user_id']) && $data['user_id'] == $user['user_id']) ? 'selected' : ''; ?>>
+                                                    <?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?> 
+                                                    (<?php echo htmlspecialchars($user['role_type']); ?>)
+                                                </option>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <option value="" disabled>No hay usuarios disponibles para empleados</option>
+                                        <?php endif; ?>
                                     </select>
-                                    <div class="form-text">Seleccione el usuario que será empleado</div>
+                                    <div class="form-text">
+                                        Solo se muestran usuarios con roles: Profesor, Coordinador, Director, Tesorero o Administrador. 
+                                        Los estudiantes y padres no pueden ser empleados.
+                                    </div>
                                 </div>
 
                                 <div class="mb-3">

@@ -16,10 +16,11 @@ class PayrollModel {
      * Obtener todos los empleados activos
      */
     public function getAllEmployees($filters = []) {
-        $sql = "SELECT e.*, u.name, u.lastname, u.email, u.phone, u.role_id 
+        $sql = "SELECT e.*, u.name, u.lastname, u.email, u.phone, ur.role_type 
                 FROM employees e 
                 INNER JOIN users u ON e.user_id = u.user_id 
-                WHERE e.is_active = 1";
+                INNER JOIN user_roles ur ON u.user_id = ur.user_id 
+                WHERE e.is_active = 1 AND ur.is_active = 1";
         
         $params = [];
         
@@ -41,6 +42,43 @@ class PayrollModel {
     }
     
     /**
+     * Obtener usuarios que pueden ser empleados (excluye estudiantes y padres)
+     */
+    public function getAvailableUsersForEmployee() {
+        $sql = "SELECT u.user_id, u.first_name, u.last_name, u.email, u.credential_number, ur.role_type
+                FROM users u 
+                INNER JOIN user_roles ur ON u.user_id = ur.user_id 
+                WHERE u.is_active = 1 
+                AND ur.is_active = 1 
+                AND ur.role_type IN ('professor', 'coordinator', 'director', 'treasurer', 'root')
+                AND u.user_id NOT IN (SELECT user_id FROM employees WHERE is_active = 1)
+                ORDER BY u.first_name, u.last_name";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    /**
+     * Validar que un usuario puede ser empleado
+     */
+    public function canUserBeEmployee($userId) {
+        $sql = "SELECT COUNT(*) as count 
+                FROM users u 
+                INNER JOIN user_roles ur ON u.user_id = ur.user_id 
+                WHERE u.user_id = ? 
+                AND u.is_active = 1 
+                AND ur.is_active = 1 
+                AND ur.role_type IN ('professor', 'coordinator', 'director', 'treasurer', 'root')
+                AND u.user_id NOT IN (SELECT user_id FROM employees WHERE is_active = 1)";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$userId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['count'] > 0;
+    }
+    
+    /**
      * Obtener empleado por ID
      */
     public function getEmployeeById($employeeId) {
@@ -58,6 +96,19 @@ class PayrollModel {
      * Crear nuevo empleado
      */
     public function createEmployee($data) {
+        // Validar que el usuario puede ser empleado
+        if (!$this->canUserBeEmployee($data['user_id'])) {
+            throw new Exception('El usuario seleccionado no puede ser empleado. Solo profesores, coordinadores, directores, tesoreros y administradores pueden ser empleados.');
+        }
+        
+        // Verificar que el código de empleado sea único
+        $checkSql = "SELECT COUNT(*) FROM employees WHERE employee_code = ? AND is_active = 1";
+        $checkStmt = $this->conn->prepare($checkSql);
+        $checkStmt->execute([$data['employee_code']]);
+        if ($checkStmt->fetchColumn() > 0) {
+            throw new Exception('El código de empleado ya existe.');
+        }
+        
         $sql = "INSERT INTO employees (user_id, employee_code, position, department, 
                 hire_date, salary, contract_type, work_schedule, bank_account, bank_name) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -573,6 +624,99 @@ class PayrollModel {
         
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([$periodId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    // =============================================
+    // MÉTODOS FALTANTES PARA LISTAS COMPLETAS
+    // =============================================
+    
+    /**
+     * Obtener todas las ausencias con filtros
+     */
+    public function getAllAbsences($filters = []) {
+        $sql = "SELECT ea.*, e.employee_code, u.name, u.lastname, e.department 
+                FROM employee_absences ea 
+                INNER JOIN employees e ON ea.employee_id = e.employee_id 
+                INNER JOIN users u ON e.user_id = u.user_id 
+                WHERE ea.is_active = 1";
+        
+        $params = [];
+        
+        if (!empty($filters['employee_id'])) {
+            $sql .= " AND ea.employee_id = ?";
+            $params[] = $filters['employee_id'];
+        }
+        
+        if (!empty($filters['period_id'])) {
+            $sql .= " AND ea.start_date BETWEEN (SELECT start_date FROM payroll_periods WHERE period_id = ?) 
+                     AND (SELECT end_date FROM payroll_periods WHERE period_id = ?)";
+            $params[] = $filters['period_id'];
+            $params[] = $filters['period_id'];
+        }
+        
+        $sql .= " ORDER BY ea.start_date DESC";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    /**
+     * Obtener todas las horas extra con filtros
+     */
+    public function getAllOvertime($filters = []) {
+        $sql = "SELECT eo.*, e.employee_code, u.name, u.lastname, e.department 
+                FROM employee_overtime eo 
+                INNER JOIN employees e ON eo.employee_id = e.employee_id 
+                INNER JOIN users u ON e.user_id = u.user_id 
+                WHERE eo.is_active = 1";
+        
+        $params = [];
+        
+        if (!empty($filters['employee_id'])) {
+            $sql .= " AND eo.employee_id = ?";
+            $params[] = $filters['employee_id'];
+        }
+        
+        if (!empty($filters['period_id'])) {
+            $sql .= " AND eo.period_id = ?";
+            $params[] = $filters['period_id'];
+        }
+        
+        $sql .= " ORDER BY eo.date_worked DESC";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    /**
+     * Obtener todas las bonificaciones con filtros
+     */
+    public function getAllBonuses($filters = []) {
+        $sql = "SELECT eb.*, e.employee_code, u.name, u.lastname, e.department 
+                FROM employee_bonuses eb 
+                INNER JOIN employees e ON eb.employee_id = e.employee_id 
+                INNER JOIN users u ON e.user_id = u.user_id 
+                WHERE eb.is_active = 1";
+        
+        $params = [];
+        
+        if (!empty($filters['employee_id'])) {
+            $sql .= " AND eb.employee_id = ?";
+            $params[] = $filters['employee_id'];
+        }
+        
+        if (!empty($filters['period_id'])) {
+            $sql .= " AND eb.period_id = ?";
+            $params[] = $filters['period_id'];
+        }
+        
+        $sql .= " ORDER BY eb.created_at DESC";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

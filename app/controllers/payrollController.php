@@ -1,7 +1,7 @@
 <?php
-require_once 'app/models/payrollModel.php';
-require_once 'app/library/SessionManager.php';
-require_once 'app/library/SecurityMiddleware.php';
+require_once ROOT . '/app/models/payrollModel.php';
+require_once ROOT . '/app/library/SessionManager.php';
+require_once ROOT . '/app/library/SecurityMiddleware.php';
 
 class PayrollController {
     private $payrollModel;
@@ -23,7 +23,7 @@ class PayrollController {
      */
     public function dashboard() {
         // Verificar permisos
-        if (!$this->securityMiddleware->hasRole(['root', 'director', 'treasurer'])) {
+        if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
             header('Location: index.php?controller=error&action=unauthorized');
             exit;
         }
@@ -52,7 +52,7 @@ class PayrollController {
      * Lista de empleados
      */
     public function employees() {
-        if (!$this->securityMiddleware->hasRole(['root', 'director', 'treasurer'])) {
+        if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
             header('Location: index.php?controller=error&action=unauthorized');
             exit;
         }
@@ -81,7 +81,7 @@ class PayrollController {
      * Crear nuevo empleado
      */
     public function createEmployee() {
-        if (!$this->securityMiddleware->hasRole(['root', 'director'])) {
+        if (!$this->sessionManager->hasRole(['root', 'director'])) {
             header('Location: index.php?controller=error&action=unauthorized');
             exit;
         }
@@ -115,7 +115,18 @@ class PayrollController {
                 ]);
             }
         } else {
-            $this->loadView('payroll/createEmployee', ['page_title' => 'Crear Empleado']);
+            try {
+                $availableUsers = $this->payrollModel->getAvailableUsersForEmployee();
+                $this->loadView('payroll/createEmployee', [
+                    'page_title' => 'Crear Empleado',
+                    'available_users' => $availableUsers
+                ]);
+            } catch (Exception $e) {
+                $this->loadView('payroll/createEmployee', [
+                    'page_title' => 'Crear Empleado',
+                    'error' => $e->getMessage()
+                ]);
+            }
         }
     }
     
@@ -123,7 +134,7 @@ class PayrollController {
      * Editar empleado
      */
     public function editEmployee() {
-        if (!$this->securityMiddleware->hasRole(['root', 'director'])) {
+        if (!$this->sessionManager->hasRole(['root', 'director'])) {
             header('Location: index.php?controller=error&action=unauthorized');
             exit;
         }
@@ -182,7 +193,7 @@ class PayrollController {
      * Lista de períodos de nómina
      */
     public function periods() {
-        if (!$this->securityMiddleware->hasRole(['root', 'director', 'treasurer'])) {
+        if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
             header('Location: index.php?controller=error&action=unauthorized');
             exit;
         }
@@ -210,7 +221,7 @@ class PayrollController {
      * Crear nuevo período
      */
     public function createPeriod() {
-        if (!$this->securityMiddleware->hasRole(['root', 'director'])) {
+        if (!$this->sessionManager->hasRole(['root', 'director'])) {
             header('Location: index.php?controller=error&action=unauthorized');
             exit;
         }
@@ -247,7 +258,7 @@ class PayrollController {
      * Ver período y sus registros
      */
     public function viewPeriod() {
-        if (!$this->securityMiddleware->hasRole(['root', 'director', 'treasurer'])) {
+        if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
             header('Location: index.php?controller=error&action=unauthorized');
             exit;
         }
@@ -283,7 +294,7 @@ class PayrollController {
      * Generar nómina para un período
      */
     public function generatePayroll() {
-        if (!$this->securityMiddleware->hasRole(['root', 'director'])) {
+        if (!$this->sessionManager->hasRole(['root', 'director'])) {
             header('Location: index.php?controller=error&action=unauthorized');
             exit;
         }
@@ -315,7 +326,7 @@ class PayrollController {
      * Ver registro de nómina específico
      */
     public function viewPayrollRecord() {
-        if (!$this->securityMiddleware->hasRole(['root', 'director', 'treasurer'])) {
+        if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
             header('Location: index.php?controller=error&action=unauthorized');
             exit;
         }
@@ -347,7 +358,7 @@ class PayrollController {
      * Editar registro de nómina
      */
     public function editPayrollRecord() {
-        if (!$this->securityMiddleware->hasRole(['root', 'director'])) {
+        if (!$this->sessionManager->hasRole(['root', 'director', 'treasurer'])) {
             header('Location: index.php?controller=error&action=unauthorized');
             exit;
         }
@@ -362,12 +373,10 @@ class PayrollController {
             try {
                 $data = [
                     'base_salary' => $_POST['base_salary'],
-                    'total_income' => $_POST['total_income'],
+                    'total_earnings' => $_POST['total_earnings'],
                     'total_deductions' => $_POST['total_deductions'],
                     'net_salary' => $_POST['net_salary'],
-                    'working_days' => $_POST['working_days'],
-                    'notes' => $_POST['notes'] ?? null,
-                    'status' => $_POST['status']
+                    'notes' => $_POST['notes'] ?? null
                 ];
                 
                 if ($this->payrollModel->updatePayrollRecord($recordId, $data)) {
@@ -379,21 +388,20 @@ class PayrollController {
                 
             } catch (Exception $e) {
                 $record = $this->payrollModel->getPayrollRecord($recordId);
-                $conceptDetails = $this->payrollModel->getConceptDetails($recordId);
-                
                 $this->loadView('payroll/editPayrollRecord', [
                     'error' => $e->getMessage(),
-                    'record' => $record,
-                    'concept_details' => $conceptDetails
+                    'record' => $record
                 ]);
             }
         } else {
             $record = $this->payrollModel->getPayrollRecord($recordId);
-            $conceptDetails = $this->payrollModel->getConceptDetails($recordId);
+            if (!$record) {
+                header('Location: index.php?controller=payroll&action=periods');
+                exit;
+            }
             
             $this->loadView('payroll/editPayrollRecord', [
                 'record' => $record,
-                'concept_details' => $conceptDetails,
                 'page_title' => 'Editar Registro de Nómina'
             ]);
         }
@@ -407,21 +415,21 @@ class PayrollController {
      * Lista de ausencias
      */
     public function absences() {
-        if (!$this->securityMiddleware->hasRole(['root', 'director', 'treasurer'])) {
+        if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
             header('Location: index.php?controller=error&action=unauthorized');
             exit;
         }
         
         try {
-            $employeeId = $_GET['employee_id'] ?? null;
-            $periodId = $_GET['period_id'] ?? null;
+            $filters = [];
+            if (isset($_GET['employee_id'])) $filters['employee_id'] = $_GET['employee_id'];
+            if (isset($_GET['period_id'])) $filters['period_id'] = $_GET['period_id'];
             
-            $absences = $this->payrollModel->getEmployeeAbsences($employeeId, $periodId);
+            $absences = $this->payrollModel->getAllAbsences($filters);
             
             $data = [
                 'absences' => $absences,
-                'employee_id' => $employeeId,
-                'period_id' => $periodId,
+                'filters' => $filters,
                 'page_title' => 'Gestión de Ausencias'
             ];
             
@@ -433,10 +441,10 @@ class PayrollController {
     }
     
     /**
-     * Crear ausencia
+     * Crear nueva ausencia
      */
     public function createAbsence() {
-        if (!$this->securityMiddleware->hasRole(['root', 'director'])) {
+        if (!$this->sessionManager->hasRole(['root', 'director', 'treasurer'])) {
             header('Location: index.php?controller=error&action=unauthorized');
             exit;
         }
@@ -445,12 +453,11 @@ class PayrollController {
             try {
                 $data = [
                     'employee_id' => $_POST['employee_id'],
+                    'absence_date' => $_POST['absence_date'],
                     'absence_type' => $_POST['absence_type'],
-                    'start_date' => $_POST['start_date'],
-                    'end_date' => $_POST['end_date'],
-                    'days_count' => $_POST['days_count'],
-                    'is_paid' => isset($_POST['is_paid']) ? 1 : 0,
-                    'reason' => $_POST['reason'] ?? null
+                    'hours_missed' => $_POST['hours_missed'],
+                    'justified' => isset($_POST['justified']) ? 1 : 0,
+                    'notes' => $_POST['notes'] ?? null
                 ];
                 
                 if ($this->payrollModel->createAbsence($data)) {
@@ -472,29 +479,29 @@ class PayrollController {
     }
     
     // =============================================
-    // MÉTODOS PARA HORAS EXTRAS
+    // MÉTODOS PARA HORAS EXTRA
     // =============================================
     
     /**
-     * Lista de horas extras
+     * Lista de horas extra
      */
     public function overtime() {
-        if (!$this->securityMiddleware->hasRole(['root', 'director', 'treasurer'])) {
+        if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
             header('Location: index.php?controller=error&action=unauthorized');
             exit;
         }
         
         try {
-            $employeeId = $_GET['employee_id'] ?? null;
-            $periodId = $_GET['period_id'] ?? null;
+            $filters = [];
+            if (isset($_GET['employee_id'])) $filters['employee_id'] = $_GET['employee_id'];
+            if (isset($_GET['period_id'])) $filters['period_id'] = $_GET['period_id'];
             
-            $overtime = $this->payrollModel->getEmployeeOvertime($employeeId, $periodId);
+            $overtime = $this->payrollModel->getAllOvertime($filters);
             
             $data = [
                 'overtime' => $overtime,
-                'employee_id' => $employeeId,
-                'period_id' => $periodId,
-                'page_title' => 'Gestión de Horas Extras'
+                'filters' => $filters,
+                'page_title' => 'Gestión de Horas Extra'
             ];
             
             $this->loadView('payroll/overtime', $data);
@@ -505,10 +512,10 @@ class PayrollController {
     }
     
     /**
-     * Crear horas extras
+     * Crear nueva hora extra
      */
     public function createOvertime() {
-        if (!$this->securityMiddleware->hasRole(['root', 'director'])) {
+        if (!$this->sessionManager->hasRole(['root', 'director', 'treasurer'])) {
             header('Location: index.php?controller=error&action=unauthorized');
             exit;
         }
@@ -517,19 +524,18 @@ class PayrollController {
             try {
                 $data = [
                     'employee_id' => $_POST['employee_id'],
-                    'period_id' => $_POST['period_id'],
-                    'date_worked' => $_POST['date_worked'],
+                    'overtime_date' => $_POST['overtime_date'],
                     'hours_worked' => $_POST['hours_worked'],
                     'hourly_rate' => $_POST['hourly_rate'],
                     'total_amount' => $_POST['total_amount'],
-                    'description' => $_POST['description'] ?? null
+                    'notes' => $_POST['notes'] ?? null
                 ];
                 
                 if ($this->payrollModel->createOvertime($data)) {
                     header('Location: index.php?controller=payroll&action=overtime&success=1');
                     exit;
                 } else {
-                    throw new Exception('Error al crear horas extras');
+                    throw new Exception('Error al crear hora extra');
                 }
                 
             } catch (Exception $e) {
@@ -539,7 +545,7 @@ class PayrollController {
                 ]);
             }
         } else {
-            $this->loadView('payroll/createOvertime', ['page_title' => 'Crear Horas Extras']);
+            $this->loadView('payroll/createOvertime', ['page_title' => 'Crear Hora Extra']);
         }
     }
     
@@ -551,21 +557,21 @@ class PayrollController {
      * Lista de bonificaciones
      */
     public function bonuses() {
-        if (!$this->securityMiddleware->hasRole(['root', 'director', 'treasurer'])) {
+        if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
             header('Location: index.php?controller=error&action=unauthorized');
             exit;
         }
         
         try {
-            $employeeId = $_GET['employee_id'] ?? null;
-            $periodId = $_GET['period_id'] ?? null;
+            $filters = [];
+            if (isset($_GET['employee_id'])) $filters['employee_id'] = $_GET['employee_id'];
+            if (isset($_GET['period_id'])) $filters['period_id'] = $_GET['period_id'];
             
-            $bonuses = $this->payrollModel->getEmployeeBonuses($employeeId, $periodId);
+            $bonuses = $this->payrollModel->getAllBonuses($filters);
             
             $data = [
                 'bonuses' => $bonuses,
-                'employee_id' => $employeeId,
-                'period_id' => $periodId,
+                'filters' => $filters,
                 'page_title' => 'Gestión de Bonificaciones'
             ];
             
@@ -577,10 +583,10 @@ class PayrollController {
     }
     
     /**
-     * Crear bonificación
+     * Crear nueva bonificación
      */
     public function createBonus() {
-        if (!$this->securityMiddleware->hasRole(['root', 'director'])) {
+        if (!$this->sessionManager->hasRole(['root', 'director', 'treasurer'])) {
             header('Location: index.php?controller=error&action=unauthorized');
             exit;
         }
@@ -589,10 +595,10 @@ class PayrollController {
             try {
                 $data = [
                     'employee_id' => $_POST['employee_id'],
-                    'period_id' => $_POST['period_id'],
                     'bonus_type' => $_POST['bonus_type'],
                     'amount' => $_POST['amount'],
-                    'description' => $_POST['description'] ?? null
+                    'bonus_date' => $_POST['bonus_date'],
+                    'notes' => $_POST['notes'] ?? null
                 ];
                 
                 if ($this->payrollModel->createBonus($data)) {
@@ -621,7 +627,7 @@ class PayrollController {
      * Reportes de nómina
      */
     public function reports() {
-        if (!$this->securityMiddleware->hasRole(['root', 'director', 'treasurer'])) {
+        if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
             header('Location: index.php?controller=error&action=unauthorized');
             exit;
         }
@@ -636,14 +642,19 @@ class PayrollController {
                 'page_title' => 'Reportes de Nómina'
             ];
             
+            // Cargar datos según el tipo de reporte
             if ($periodId) {
-                $period = $this->payrollModel->getPeriodById($periodId);
-                $statistics = $this->payrollModel->getPayrollStatistics($periodId);
-                $byDepartment = $this->payrollModel->getPayrollByDepartment($periodId);
-                
-                $data['period'] = $period;
-                $data['statistics'] = $statistics;
-                $data['by_department'] = $byDepartment;
+                switch ($reportType) {
+                    case 'summary':
+                        $data['statistics'] = $this->payrollModel->getPayrollStatistics($periodId);
+                        break;
+                    case 'by_department':
+                        $data['by_department'] = $this->payrollModel->getPayrollByDepartment($periodId);
+                        break;
+                    case 'detailed':
+                        $data['records'] = $this->payrollModel->getPayrollRecordsByPeriod($periodId);
+                        break;
+                }
             }
             
             $this->loadView('payroll/reports', $data);
@@ -654,19 +665,22 @@ class PayrollController {
     }
     
     // =============================================
-    // MÉTODO AUXILIAR PARA CARGAR VISTAS
+    // MÉTODOS AUXILIARES
     // =============================================
     
+    /**
+     * Cargar vista
+     */
     private function loadView($view, $data = []) {
-        // Extraer variables del array para que estén disponibles en la vista
+        // Extraer variables del array de datos
         extract($data);
         
         // Incluir la vista
-        $viewPath = "app/views/{$view}.php";
+        $viewPath = ROOT . '/app/views/' . $view . '.php';
         if (file_exists($viewPath)) {
             include $viewPath;
         } else {
-            throw new Exception("Vista no encontrada: {$viewPath}");
+            throw new Exception('Vista no encontrada: ' . $view);
         }
     }
 }
