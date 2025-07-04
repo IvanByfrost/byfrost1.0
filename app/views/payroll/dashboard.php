@@ -247,8 +247,3 @@ window.safeLoadView = function(viewName) {
         </main>
     </div>
 </div>
-
-<?php
-// Incluir el footer del dashboard
-include 'app/views/layouts/dashFooter.php';
-?> 
