@@ -55,19 +55,19 @@ class RootController extends MainController
     /**
      * Página de configuración del sistema
      */
-    public function configuracion()
+    public function configuration()
     {
         $this->protectRoot();
-        $this->loadView('root/configuracion');
+        $this->loadView('root/configuration');
     }
 
     /**
      * Menú principal del root
      */
-    public function menuRoot()
+    public function rootMenu()
     {
         $this->protectRoot();
-        $this->loadPartialView('root/menuRoot');
+        $this->loadPartialView('root/rootMenu');
     }
 
     /**

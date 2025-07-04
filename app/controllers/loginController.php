@@ -65,7 +65,7 @@ class LoginController extends MainController
                 exit;
             }
 
-            $query = "SELECT u.*, r.role_type AS rol
+            $query = "SELECT u.*, r.role_type AS role
           FROM users u
           JOIN user_roles r ON u.user_id = r.user_id
           WHERE u.credential_type = :credType 
@@ -82,7 +82,7 @@ class LoginController extends MainController
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($user !== false) {
-                if (is_null($user['rol'])) {
+                if (is_null($user['role'])) {
                     echo json_encode([
                         "status" => "error",
                         "msg" => "El usuario no se encuentra activado. Por favor, contacta con Byfrost."
@@ -95,7 +95,7 @@ class LoginController extends MainController
                     $userData = [
                         'id' => $user['user_id'],
                         'email' => $user['email'] ?? $user['credential_number'] . '@byfrost.com',
-                        'role' => $user['rol'],
+                        'role' => $user['role'],
                         'first_name' => $user['first_name'],
                         'last_name' => $user['last_name']
                     ];
@@ -106,7 +106,7 @@ class LoginController extends MainController
                         unset($user['password_hash']);
 
                         // Guardar el rol en la sesión para que charger.php sepa a dónde redirigir
-                        $this->sessionManager->setSessionData('ByFrost_redirect', $user['rol'] . '&action=dashboard');
+                        $this->sessionManager->setSessionData('ByFrost_redirect', $user['role'] . '&action=dashboard');
 
                         echo json_encode([
                             "status" => "ok",
