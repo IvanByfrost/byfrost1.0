@@ -1,14 +1,8 @@
 <?php
-<<<<<<< HEAD
-require_once 'app/models/payrollModel.php';
-require_once 'app/library/SessionManager.php';
-require_once 'app/library/SecurityMiddleware.php';
-=======
 require_once ROOT . '/app/models/payrollModel.php';
 require_once ROOT . '/app/library/SessionManager.php';
 require_once ROOT . '/app/library/SecurityMiddleware.php';
 require_once ROOT . '/app/controllers/MainController.php';
->>>>>>> 354953949cbaabb18f70f97b3e178d662b4ac9fb
 
 class PayrollController extends MainController {
     protected $payrollModel;
@@ -22,27 +16,21 @@ class PayrollController extends MainController {
     }
     
     // =============================================
-    // MAIN PAYROLL METHODS
+    // MÉTODOS PRINCIPALES DE NÓMINA
     // =============================================
     
     /**
-     * Main payroll dashboard
+     * Dashboard principal de nómina
      */
     public function dashboard() {
-<<<<<<< HEAD
-        // Check permissions
-        if (!$this->securityMiddleware->hasRole(['root', 'director', 'treasurer'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
-=======
         // Verificar permisos
         if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
             header('Location: ?view=unauthorized');
->>>>>>> b580a54ac9ce32e1ee86e4d2f3a0fb94b2f6af3d
             exit;
         }
         
         try {
-            // Get general statistics
+            // Obtener estadísticas generales
             $currentPeriod = $this->payrollModel->getAllPeriods(['status' => 'open']);
             $employees = $this->payrollModel->getAllEmployees();
             $recentPeriods = $this->payrollModel->getAllPeriods(['status' => 'closed']);
@@ -51,7 +39,7 @@ class PayrollController extends MainController {
                 'current_period' => $currentPeriod[0] ?? null,
                 'total_employees' => count($employees),
                 'recent_periods' => array_slice($recentPeriods, 0, 5),
-                'page_title' => 'Payroll Dashboard'
+                'page_title' => 'Dashboard de Nómina'
             ];
             
             $this->loadPartialView('payroll/dashboard', $data);
@@ -62,16 +50,11 @@ class PayrollController extends MainController {
     }
     
     /**
-     * Employee list
+     * Lista de empleados
      */
     public function employees() {
-<<<<<<< HEAD
-        if (!$this->securityMiddleware->hasRole(['root', 'director', 'treasurer'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
-=======
         if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
             header('Location: ?view=unauthorized');
->>>>>>> b580a54ac9ce32e1ee86e4d2f3a0fb94b2f6af3d
             exit;
         }
         
@@ -85,7 +68,7 @@ class PayrollController extends MainController {
             $data = [
                 'employees' => $employees,
                 'filters' => $filters,
-                'page_title' => 'Employee Management'
+                'page_title' => 'Gestión de Empleados'
             ];
             
             $this->loadPartialView('payroll/employees', $data);
@@ -96,16 +79,11 @@ class PayrollController extends MainController {
     }
     
     /**
-     * Create new employee
+     * Crear nuevo empleado
      */
     public function createEmployee() {
-<<<<<<< HEAD
-        if (!$this->securityMiddleware->hasRole(['root', 'director'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
-=======
         if (!$this->sessionManager->hasRole(['root', 'director'])) {
             header('Location: ?view=unauthorized');
->>>>>>> b580a54ac9ce32e1ee86e4d2f3a0fb94b2f6af3d
             exit;
         }
         
@@ -128,7 +106,7 @@ class PayrollController extends MainController {
                     header('Location: ?view=payroll&action=employees&success=1');
                     exit;
                 } else {
-                    throw new Exception('Error creating employee');
+                    throw new Exception('Error al crear empleado');
                 }
                 
             } catch (Exception $e) {
@@ -138,9 +116,6 @@ class PayrollController extends MainController {
                 ]);
             }
         } else {
-<<<<<<< HEAD
-            $this->loadView('payroll/createEmployee', ['page_title' => 'Create Employee']);
-=======
             try {
                 $availableUsers = $this->payrollModel->getAvailableUsersForEmployee();
                 $this->loadPartialView('payroll/createEmployee', [
@@ -153,21 +128,15 @@ class PayrollController extends MainController {
                     'error' => $e->getMessage()
                 ]);
             }
->>>>>>> 354953949cbaabb18f70f97b3e178d662b4ac9fb
         }
     }
     
     /**
-     * Edit employee
+     * Editar empleado
      */
     public function editEmployee() {
-<<<<<<< HEAD
-        if (!$this->securityMiddleware->hasRole(['root', 'director'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
-=======
         if (!$this->sessionManager->hasRole(['root', 'director'])) {
             header('Location: ?view=unauthorized');
->>>>>>> b580a54ac9ce32e1ee86e4d2f3a0fb94b2f6af3d
             exit;
         }
         
@@ -193,7 +162,7 @@ class PayrollController extends MainController {
                     header('Location: ?view=payroll&action=employees&success=1');
                     exit;
                 } else {
-                    throw new Exception('Error updating employee');
+                    throw new Exception('Error al actualizar empleado');
                 }
                 
             } catch (Exception $e) {
@@ -212,26 +181,21 @@ class PayrollController extends MainController {
             
             $this->loadPartialView('payroll/editEmployee', [
                 'employee' => $employee,
-                'page_title' => 'Edit Employee'
+                'page_title' => 'Editar Empleado'
             ]);
         }
     }
     
     // =============================================
-    // PAYROLL PERIOD METHODS
+    // MÉTODOS PARA PERÍODOS DE NÓMINA
     // =============================================
     
     /**
-     * Payroll periods list
+     * Lista de períodos de nómina
      */
     public function periods() {
-<<<<<<< HEAD
-        if (!$this->securityMiddleware->hasRole(['root', 'director', 'treasurer'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
-=======
         if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
             header('Location: ?view=unauthorized');
->>>>>>> b580a54ac9ce32e1ee86e4d2f3a0fb94b2f6af3d
             exit;
         }
         
@@ -245,7 +209,7 @@ class PayrollController extends MainController {
             $data = [
                 'periods' => $periods,
                 'filters' => $filters,
-                'page_title' => 'Payroll Periods'
+                'page_title' => 'Períodos de Nómina'
             ];
             
             $this->loadPartialView('payroll/periods', $data);
@@ -256,16 +220,11 @@ class PayrollController extends MainController {
     }
     
     /**
-     * Create new period
+     * Crear nuevo período
      */
     public function createPeriod() {
-<<<<<<< HEAD
-        if (!$this->securityMiddleware->hasRole(['root', 'director'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
-=======
         if (!$this->sessionManager->hasRole(['root', 'director'])) {
             header('Location: ?view=unauthorized');
->>>>>>> b580a54ac9ce32e1ee86e4d2f3a0fb94b2f6af3d
             exit;
         }
         
@@ -283,7 +242,7 @@ class PayrollController extends MainController {
                     header('Location: ?view=payroll&action=periods&success=1');
                     exit;
                 } else {
-                    throw new Exception('Error creating period');
+                    throw new Exception('Error al crear período');
                 }
                 
             } catch (Exception $e) {
@@ -293,25 +252,16 @@ class PayrollController extends MainController {
                 ]);
             }
         } else {
-<<<<<<< HEAD
-            $this->loadView('payroll/createPeriod', ['page_title' => 'Create Period']);
-=======
             $this->loadPartialView('payroll/createPeriod', ['page_title' => 'Crear Período']);
->>>>>>> 354953949cbaabb18f70f97b3e178d662b4ac9fb
         }
     }
     
     /**
-     * View period and its records
+     * Ver período y sus registros
      */
     public function viewPeriod() {
-<<<<<<< HEAD
-        if (!$this->securityMiddleware->hasRole(['root', 'director', 'treasurer'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
-=======
         if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
             header('Location: ?view=unauthorized');
->>>>>>> b580a54ac9ce32e1ee86e4d2f3a0fb94b2f6af3d
             exit;
         }
         
@@ -332,27 +282,22 @@ class PayrollController extends MainController {
                 'records' => $records,
                 'statistics' => $statistics,
                 'by_department' => $byDepartment,
-                'page_title' => 'Period: ' . $period['period_name']
+                'page_title' => 'Período: ' . $period['period_name']
             ];
             
             $this->loadPartialView('payroll/viewPeriod', $data);
             
         } catch (Exception $e) {
-            $this->loadView('Error/error', ['error' => $e->getMessage()]);
+            $this->loadPartialView('Error/error', ['error' => $e->getMessage()]);
         }
     }
     
     /**
-     * Generate payroll for a period
+     * Generar nómina para un período
      */
     public function generatePayroll() {
-<<<<<<< HEAD
-        if (!$this->securityMiddleware->hasRole(['root', 'director'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
-=======
         if (!$this->sessionManager->hasRole(['root', 'director'])) {
             header('Location: ?view=unauthorized');
->>>>>>> b580a54ac9ce32e1ee86e4d2f3a0fb94b2f6af3d
             exit;
         }
         
@@ -367,7 +312,7 @@ class PayrollController extends MainController {
                 header('Location: ?view=payroll&action=viewPeriod&id=' . $periodId . '&success=1');
                 exit;
             } else {
-                throw new Exception('Error generating payroll');
+                throw new Exception('Error al generar nómina');
             }
             
         } catch (Exception $e) {
@@ -401,7 +346,7 @@ class PayrollController extends MainController {
             $data = [
                 'record' => $record,
                 'concept_details' => $conceptDetails,
-                'page_title' => 'Payroll Record'
+                'page_title' => 'Registro de Nómina'
             ];
             
             $this->loadPartialView('payroll/viewPayrollRecord', $data);
@@ -412,16 +357,11 @@ class PayrollController extends MainController {
     }
     
     /**
-     * Edit payroll record
+     * Editar registro de nómina
      */
     public function editPayrollRecord() {
-<<<<<<< HEAD
-        if (!$this->securityMiddleware->hasRole(['root', 'director'])) {
-            header('Location: index.php?controller=error&action=unauthorized');
-=======
         if (!$this->sessionManager->hasRole(['root', 'director', 'treasurer'])) {
             header('Location: ?view=unauthorized');
->>>>>>> b580a54ac9ce32e1ee86e4d2f3a0fb94b2f6af3d
             exit;
         }
         
@@ -445,7 +385,7 @@ class PayrollController extends MainController {
                     header('Location: ?view=payroll&action=viewPayrollRecord&id=' . $recordId . '&success=1');
                     exit;
                 } else {
-                    throw new Exception('Error updating record');
+                    throw new Exception('Error al actualizar registro');
                 }
                 
             } catch (Exception $e) {
@@ -464,7 +404,7 @@ class PayrollController extends MainController {
             
             $this->loadPartialView('payroll/editPayrollRecord', [
                 'record' => $record,
-                'page_title' => 'Edit Payroll Record'
+                'page_title' => 'Editar Registro de Nómina'
             ]);
         }
     }
@@ -515,11 +455,12 @@ class PayrollController extends MainController {
             try {
                 $data = [
                     'employee_id' => $_POST['employee_id'],
-                    'absence_date' => $_POST['absence_date'],
                     'absence_type' => $_POST['absence_type'],
-                    'hours_missed' => $_POST['hours_missed'],
-                    'justified' => isset($_POST['justified']) ? 1 : 0,
-                    'notes' => $_POST['notes'] ?? null
+                    'start_date' => $_POST['start_date'],
+                    'end_date' => $_POST['end_date'],
+                    'days_count' => $_POST['days_count'],
+                    'is_paid' => isset($_POST['is_paid']) ? 1 : 0,
+                    'reason' => $_POST['reason'] ?? null
                 ];
                 
                 if ($this->payrollModel->createAbsence($data)) {
@@ -536,7 +477,18 @@ class PayrollController extends MainController {
                 ]);
             }
         } else {
-            $this->loadPartialView('payroll/createAbsence', ['page_title' => 'Crear Ausencia']);
+            try {
+                $employees = $this->payrollModel->getAllEmployees();
+                $this->loadPartialView('payroll/createAbsence', [
+                    'page_title' => 'Crear Ausencia',
+                    'employees' => $employees
+                ]);
+            } catch (Exception $e) {
+                $this->loadPartialView('payroll/createAbsence', [
+                    'page_title' => 'Crear Ausencia',
+                    'error' => $e->getMessage()
+                ]);
+            }
         }
     }
     
@@ -586,11 +538,12 @@ class PayrollController extends MainController {
             try {
                 $data = [
                     'employee_id' => $_POST['employee_id'],
-                    'overtime_date' => $_POST['overtime_date'],
+                    'period_id' => $_POST['period_id'],
+                    'date_worked' => $_POST['date_worked'],
                     'hours_worked' => $_POST['hours_worked'],
                     'hourly_rate' => $_POST['hourly_rate'],
                     'total_amount' => $_POST['total_amount'],
-                    'notes' => $_POST['notes'] ?? null
+                    'description' => $_POST['description'] ?? null
                 ];
                 
                 if ($this->payrollModel->createOvertime($data)) {
@@ -607,7 +560,20 @@ class PayrollController extends MainController {
                 ]);
             }
         } else {
-            $this->loadPartialView('payroll/createOvertime', ['page_title' => 'Crear Hora Extra']);
+            try {
+                $employees = $this->payrollModel->getAllEmployees();
+                $periods = $this->payrollModel->getAllPeriods(['status' => 'open']);
+                $this->loadPartialView('payroll/createOvertime', [
+                    'page_title' => 'Crear Hora Extra',
+                    'employees' => $employees,
+                    'periods' => $periods
+                ]);
+            } catch (Exception $e) {
+                $this->loadPartialView('payroll/createOvertime', [
+                    'page_title' => 'Crear Hora Extra',
+                    'error' => $e->getMessage()
+                ]);
+            }
         }
     }
     
@@ -657,10 +623,10 @@ class PayrollController extends MainController {
             try {
                 $data = [
                     'employee_id' => $_POST['employee_id'],
+                    'period_id' => $_POST['period_id'],
                     'bonus_type' => $_POST['bonus_type'],
                     'amount' => $_POST['amount'],
-                    'bonus_date' => $_POST['bonus_date'],
-                    'notes' => $_POST['notes'] ?? null
+                    'description' => $_POST['description'] ?? null
                 ];
                 
                 if ($this->payrollModel->createBonus($data)) {
@@ -677,7 +643,20 @@ class PayrollController extends MainController {
                 ]);
             }
         } else {
-            $this->loadPartialView('payroll/createBonus', ['page_title' => 'Crear Bonificación']);
+            try {
+                $employees = $this->payrollModel->getAllEmployees();
+                $periods = $this->payrollModel->getAllPeriods(['status' => 'open']);
+                $this->loadPartialView('payroll/createBonus', [
+                    'page_title' => 'Crear Bonificación',
+                    'employees' => $employees,
+                    'periods' => $periods
+                ]);
+            } catch (Exception $e) {
+                $this->loadPartialView('payroll/createBonus', [
+                    'page_title' => 'Crear Bonificación',
+                    'error' => $e->getMessage()
+                ]);
+            }
         }
     }
     
