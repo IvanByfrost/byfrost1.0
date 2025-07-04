@@ -165,50 +165,7 @@ window.safeLoadView = function(viewName) {
                 </div>
             </div>
 
-            <!-- Acciones rápidas -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">Acciones Rápidas</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-2 mb-2">
-                                    <button class="btn btn-primary w-100" onclick="safeLoadView('payroll/employees')">
-                                        <i class="fas fa-users"></i><br>Empleados
-                                    </button>
-                                </div>
-                                <div class="col-md-2 mb-2">
-                                    <button class="btn btn-success w-100" onclick="safeLoadView('payroll/periods')">
-                                        <i class="fas fa-calendar"></i><br>Períodos
-                                    </button>
-                                </div>
-                                <div class="col-md-2 mb-2">
-                                    <button class="btn btn-warning w-100" onclick="safeLoadView('payroll/absences')">
-                                        <i class="fas fa-user-times"></i><br>Ausencias
-                                    </button>
-                                </div>
-                                <div class="col-md-2 mb-2">
-                                    <button class="btn btn-info w-100" onclick="safeLoadView('payroll/overtime')">
-                                        <i class="fas fa-clock"></i><br>Horas Extras
-                                    </button>
-                                </div>
-                                <div class="col-md-2 mb-2">
-                                    <button class="btn btn-secondary w-100" onclick="safeLoadView('payroll/bonuses')">
-                                        <i class="fas fa-gift"></i><br>Bonificaciones
-                                    </button>
-                                </div>
-                                <div class="col-md-2 mb-2">
-                                    <button class="btn btn-dark w-100" onclick="safeLoadView('payroll/reports')">
-                                        <i class="fas fa-chart-bar"></i><br>Reportes
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
 
             <!-- Información del sistema -->
             <div class="row">
