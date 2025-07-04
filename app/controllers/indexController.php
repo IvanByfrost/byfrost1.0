@@ -129,7 +129,7 @@ class IndexController extends MainController
         if (!$this->isAjaxRequest() && !$force) {
             // Si no es AJAX, mostrar un mensaje de error más informativo
             if (empty($view)) {
-                echo '<div class="alert alert-warning">Vista no especificada. Use: ?view=index&action=loadPartial&view=nombreVista&action=accion</div>';
+                echo '<div class="alert alert-warning">Vista no especificada. Use: ?view=index&action=loadPartial&view=viewname&action=accionname</div>';
                 return;
             }
             
