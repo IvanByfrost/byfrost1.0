@@ -33,9 +33,9 @@ require_once __DIR__ . '/../layouts/header.php';
                     <input type="text" class="inputEstilo1" id="userDocument" name="userDocument" placeholder="Número de documento" pattern="[0-9]+" title="Only Numbers" onkeyup="onlyNumbers('userDocument',value);" autocomplete="off" required>
                 </div>
                 <div class="col-12">
-                    <div class="col-12" style="position: relative; padding: 0;">
-                        <input type="password" class="inputEstilo1 input-pill" id="userPassword" name="userPassword" placeholder="Contraseña" required>
-                        <button type="button" id="togglePassword" tabindex="-1" class="input-eye-pill" aria-label="Mostrar contraseña">
+                    <div class="input-container" style="position: relative; padding: 0;">
+                        <input id="userPassword" type="password" name="userPassword" class="inputEstilo1 input-pill" required placeholder="Contraseña">
+                        <button type="button" toggle-target="userPassword" tabindex="-1" class="toggle-password input-eye-pill" aria-label="Mostrar contraseña">
                             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path d="M1.5 12s4-7 10.5-7 10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z" stroke="#222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                                 <circle cx="12" cy="12" r="3.5" stroke="#222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -85,57 +85,58 @@ require_once __DIR__ . '/../layouts/header.php';
         console.log("URL del script:", "<?php echo url . app .rq ?>js/forgotPassword.js");
     </script>
     <style>
-    .input-pill {
-        border-radius: 999px;
-        background: #f2f2f2;
-        border: none;
-        padding-left: 24px;
-        padding-right: 56px;
-        font-weight: 400;
-        font-size: 18px;
-        color: #222;
-        box-shadow: none;
-        height: 54px;
-        transition: border 0.2s, box-shadow 0.2s;
+    .input-container {
+      position: relative !important;
+      width: 100%;
     }
-    .input-pill:focus {
-        outline: none;
-        border: 1.5px solid #a5ffa0;
-        background: #f8f8f8;
+    .input-container input.input-pill {
+      width: 100% !important;
+      border-radius: 999px !important;
+      background: #f2f2f2 !important;
+      border: none !important;
+      padding-left: 24px !important;
+      padding-right: 56px !important;
+      font-weight: 400 !important;
+      font-size: 18px !important;
+      color: #222 !important;
+      box-shadow: none !important;
+      height: 54px !important;
+      margin-bottom: 0 !important;
     }
-    .input-pill::placeholder {
-        color: #bdbdbd;
-        font-weight: 300;
-        font-size: 18px;
-        opacity: 1;
+    .input-container input.input-pill:focus {
+      outline: none !important;
+      border: 1.5px solid #a5ffa0 !important;
+      background: #f8f8f8 !important;
     }
-    .input-eye-pill {
-        position: absolute;
-        top: 50%;
-        right: 12px;
-        transform: translateY(-50%);
-        background: none !important;
-        border: none;
-        padding: 0;
-        margin: 0;
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        z-index: 3;
-        box-shadow: none !important;
+    .input-container input.input-pill::placeholder {
+      color: #bdbdbd !important;
+      font-weight: 300 !important;
+      font-size: 18px !important;
+      opacity: 1 !important;
     }
-    .input-eye-pill:focus {
-        outline: none;
-        box-shadow: none;
+    .input-container .toggle-password, .input-container .input-eye-pill {
+      position: absolute !important;
+      top: 50% !important;
+      right: 16px !important;
+      transform: translateY(-50%) !important;
+      background: none !important;
+      border: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      width: 32px !important;
+      height: 32px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      cursor: pointer !important;
+      z-index: 3 !important;
+      box-shadow: none !important;
     }
-    .input-eye-pill svg {
-        width: 28px;
-        height: 28px;
-        color: #222;
-        pointer-events: none;
+    .input-container .toggle-password svg, .input-container .input-eye-pill svg {
+      width: 28px !important;
+      height: 28px !important;
+      color: #222 !important;
+      pointer-events: none !important;
     }
     </style>
 </body>
