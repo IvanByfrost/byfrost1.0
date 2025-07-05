@@ -19,7 +19,7 @@ class UserModel extends MainModel
     {
         $query = "SELECT u.*, r.role_type FROM users u 
                   LEFT JOIN user_roles r ON u.user_id = r.user_id 
-                  WHERE r.is_active = 1 OR r.is_active IS NULL";
+                  WHERE u.is_active = 1";
         $stmt = $this->dbConn->query($query);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
