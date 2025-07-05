@@ -33,15 +33,13 @@ require_once __DIR__ . '/../layouts/header.php';
                     <input type="text" class="inputEstilo1" id="userDocument" name="userDocument" placeholder="Número de documento" pattern="[0-9]+" title="Only Numbers" onkeyup="onlyNumbers('userDocument',value);" autocomplete="off" required>
                 </div>
                 <div class="col-12">
-                    <div class="input-group password-group">
-                        <input type="password" class="inputEstilo1" id="userPassword" name="userPassword" placeholder="Password" required>
-                        <button type="button" class="btn-eye" id="togglePassword" tabindex="-1">
-                            <span id="eyeIcon">
-                                <!-- Ojo cerrado por defecto, tamaño y color ajustados -->
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" style="display:block;" fill="none" viewBox="0 0 24 24" stroke="#888">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10 0-1.657.336-3.234.938-4.675M15 12a3 3 0 11-6 0 3 3 0 016 0zm6.062-4.675A9.956 9.956 0 0122 9c0 5.523-4.477 10-10 10a9.956 9.956 0 01-4.675-.938"/>
-                                </svg>
-                            </span>
+                    <div class="col-12" style="position: relative; padding: 0;">
+                        <input type="password" class="inputEstilo1" id="userPassword" name="userPassword" placeholder="Password" required style="padding-right: 36px;">
+                        <button type="button" id="togglePassword" tabindex="-1" class="btn-eye-icon-fix" aria-label="Show password">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 16 16" stroke="currentColor">
+                                <path d="M1.333 8s2.333-4 6.667-4 6.667 4 6.667 4-2.333 4-6.667 4-6.667-4-6.667-4z" stroke="#888" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <circle cx="8" cy="8" r="2" stroke="#888" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
                         </button>
                     </div>
                 </div>
@@ -123,6 +121,64 @@ require_once __DIR__ . '/../layouts/header.php';
         height: 20px;
         color: #888;
         display: block;
+    }
+    .btn-eye-icon {
+        position: absolute;
+        top: 50%;
+        right: 18px;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 3;
+    }
+    .btn-eye-icon:focus {
+        outline: none;
+        box-shadow: none;
+    }
+    .btn-eye-icon svg {
+        width: 16px;
+        height: 16px;
+        color: #888;
+        pointer-events: none;
+    }
+    .position-relative {
+        position: relative !important;
+    }
+    .btn-eye-icon-fix {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 12px;
+        margin: auto 0;
+        background: none !important;
+        border: none;
+        padding: 0;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 3;
+        box-shadow: none !important;
+    }
+    .btn-eye-icon-fix:focus {
+        outline: none;
+        box-shadow: none;
+    }
+    .btn-eye-icon-fix svg {
+        width: 18px;
+        height: 18px;
+        color: #888;
+        pointer-events: none;
     }
     </style>
 </body>
