@@ -26,8 +26,8 @@ class RootController extends MainController
             exit;
         }
 
-        // Cargar la vista del dashboard usando el método centralizado
-        $this->loadView('root/dashboard');
+        // Cargar la vista del dashboard usando el método centralizado de dashboard
+        $this->loadDashboardView('root/dashboard');
     }
 
     /**

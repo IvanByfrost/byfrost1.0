@@ -218,5 +218,23 @@ class MainController
         }
     }
 
-    
+    /**
+     * Renderiza una vista de dashboard con layouts de dashboard
+     */
+    protected function loadDashboardView($viewPath, $data = [])
+    {
+        $viewPath = ROOT . "/app/views/{$viewPath}.php";
+        if (file_exists($viewPath)) {
+            extract($data);
+            require ROOT . '/app/views/layouts/head.php';
+            require ROOT . '/app/views/layouts/dashHeader.php';
+            require $viewPath;
+            require ROOT . '/app/views/layouts/dashFooter.php';
+        } else {
+            http_response_code(404);
+            require_once ROOT . '/app/controllers/errorController.php';
+            $error = new ErrorController($this->dbConn);
+            $error->Error('404');
+        }
+    }
 }
