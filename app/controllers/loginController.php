@@ -67,10 +67,9 @@ class LoginController extends MainController
 
             $query = "SELECT u.*, r.role_type AS role
           FROM users u
-          JOIN user_roles r ON u.user_id = r.user_id
+          LEFT JOIN user_roles r ON u.user_id = r.user_id AND r.is_active = 1
           WHERE u.credential_type = :credType 
           AND u.credential_number = :userDocument
-          AND r.is_active = 1
           AND u.is_active = 1
           LIMIT 1";
             $stmt = $this->dbConn->prepare($query);
@@ -83,9 +82,10 @@ class LoginController extends MainController
 
             if ($user !== false) {
                 if (is_null($user['role'])) {
+                    // Usuario existe pero no tiene rol activo
                     echo json_encode([
                         "status" => "no_role",
-                        "msg" => "Tu cuenta aún no tiene un rol asignado. Por favor, contacta al administrador del sistema."
+                        "msg" => "No tiene rol asignado, contactese con el administrador."
                     ]);
                     exit;
                 }
