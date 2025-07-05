@@ -11,6 +11,8 @@ async function cargarPerfilUsuario() {
       document.getElementById('profileEmail').value = data.user.email || '';
       document.getElementById('profilePhone').value = data.user.phone || '';
       document.getElementById('profileAddress').value = data.user.address || '';
+      document.getElementById('profileDocumentType').value = data.user.credential_type || '';
+      document.getElementById('profileDocumentNumber').value = data.user.credential_number || '';
     }
   } catch (e) {
     // No mostrar error, solo dejar vacío
@@ -26,8 +28,18 @@ if (document.getElementById('profileSettingsForm')) {
     const email = document.getElementById('profileEmail').value;
     const phone = document.getElementById('profilePhone').value;
     const address = document.getElementById('profileAddress').value;
+    const credential_type = document.getElementById('profileDocumentType').value;
+    const credential_number = document.getElementById('profileDocumentNumber').value;
     const msgDiv = document.getElementById('profileSettingsMsg');
     msgDiv.innerText = '';
+    
+    // Validaciones
+    if (!credential_type || !credential_number) {
+      msgDiv.style.color = 'red';
+      msgDiv.innerText = 'El tipo de documento y número de documento son obligatorios.';
+      return;
+    }
+    
     try {
       const res = await fetch('app/processes/profileProcess.php', {
         method: 'POST',
@@ -38,7 +50,9 @@ if (document.getElementById('profileSettingsForm')) {
           last_name,
           email,
           phone,
-          address
+          address,
+          credential_type,
+          credential_number
         })
       });
       const data = await res.json();

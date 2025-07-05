@@ -129,6 +129,34 @@ class UserModel extends MainModel
         ]);
     }
 
+    // Función para actualizar un usuario incluyendo campos de documento
+    public function updateUserWithDocument($userId, $data)
+    {
+        $query = "UPDATE users SET 
+                  first_name = :first_name,
+                  last_name = :last_name,
+                  email = :email,
+                  phone = :phone,
+                  date_of_birth = :date_of_birth,
+                  address = :address,
+                  credential_type = :credential_type,
+                  credential_number = :credential_number
+                  WHERE user_id = :user_id";
+
+        $stmt = $this->dbConn->prepare($query);
+        return $stmt->execute([
+            ':first_name' => $data['first_name'],
+            ':last_name' => $data['last_name'],
+            ':email' => $data['email'],
+            ':phone' => $data['phone'],
+            ':date_of_birth' => $data['date_of_birth'],
+            ':address' => $data['address'],
+            ':credential_type' => $data['credential_type'],
+            ':credential_number' => $data['credential_number'],
+            ':user_id' => $userId
+        ]);
+    }
+
     public function completeProfile($data)
     {
         $query = "UPDATE users 

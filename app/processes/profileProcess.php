@@ -41,21 +41,55 @@ if (
         $email = $_POST['email'] ?? '';
         $phone = $_POST['phone'] ?? '';
         $address = $_POST['address'] ?? '';
-        if (!$firstName || !$lastName || !$email) {
+        $credentialType = $_POST['credential_type'] ?? '';
+        $credentialNumber = $_POST['credential_number'] ?? '';
+        
+        if (!$firstName || !$lastName || !$email || !$credentialType || !$credentialNumber) {
             echo json_encode(['success' => false, 'message' => 'Faltan datos requeridos.']);
             exit;
         }
+        
         require_once ROOT . '/app/models/userModel.php';
         $userModel = new UserModel($dbConn);
-        $ok = $userModel->updateUser($userId, [
+        
+        // Verificar si el nuevo número de documento ya existe para otro usuario
+        if ($credentialNumber !== $user['credential_number']) {
+            $existingUser = $userModel->searchUsersByDocument($credentialType, $credentialNumber);
+            if (!empty($existingUser) && $existingUser[0]['user_id'] != $userId) {
+                echo json_encode(['success' => false, 'message' => 'Ya existe un usuario con ese número de documento.']);
+                exit;
+            }
+        }
+        
+        // Verificar si el nuevo email ya existe para otro usuario
+        if ($email !== $user['email']) {
+            $checkEmailQuery = "SELECT COUNT(*) FROM users WHERE email = :email AND user_id != :user_id";
+            $checkEmailStmt = $dbConn->prepare($checkEmailQuery);
+            $checkEmailStmt->execute([':email' => $email, ':user_id' => $userId]);
+            if ($checkEmailStmt->fetchColumn() > 0) {
+                echo json_encode(['success' => false, 'message' => 'Ya existe un usuario con ese email.']);
+                exit;
+            }
+        }
+        
+        // Actualizar usuario incluyendo los campos de documento
+        $ok = $userModel->updateUserWithDocument($userId, [
             'first_name' => $firstName,
             'last_name' => $lastName,
             'email' => $email,
             'phone' => $phone,
             'date_of_birth' => null,
-            'address' => $address
+            'address' => $address,
+            'credential_type' => $credentialType,
+            'credential_number' => $credentialNumber
         ]);
+        
         if ($ok) {
+            // Actualizar la sesión con los nuevos datos
+            $updatedUser = $userModel->getUser($userId);
+            if ($updatedUser) {
+                $_SESSION['user'] = $updatedUser;
+            }
             echo json_encode(['success' => true, 'message' => 'Perfil actualizado correctamente.']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Error al actualizar perfil.']);

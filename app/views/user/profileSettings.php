@@ -112,6 +112,51 @@
       background-color: #0056b3;
       border-color: #0056b3;
     }
+
+    .document-section {
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .document-section h4 {
+      color: #495057;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .document-warning {
+      background-color: #fff3cd;
+      border: 1px solid #ffeaa7;
+      color: #856404;
+      padding: 0.75rem;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      margin-right: -0.5rem;
+      margin-left: -0.5rem;
+    }
+
+    .col-md-6 {
+      flex: 0 0 50%;
+      max-width: 50%;
+      padding-right: 0.5rem;
+      padding-left: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
@@ -128,6 +173,35 @@
 
     <!-- Formulario de configuración -->
     <form id="profileSettingsForm">
+      <!-- Sección de documento -->
+      <div class="document-section">
+        <h4>📋 Información de Documento</h4>
+        <div class="document-warning">
+          <strong>⚠️ Importante:</strong> Solo cambia estos campos si te registraste con un tipo de documento incorrecto (ej: CC en lugar de TI).
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="profileDocumentType">Tipo de Documento</label>
+              <select class="inputEstilo1" id="profileDocumentType" name="credential_type" required>
+                <option value="">Seleccione...</option>
+                <option value="CC">Cédula de Ciudadanía (CC)</option>
+                <option value="TI">Tarjeta de Identidad (TI)</option>
+                <option value="CE">Cédula de Extranjería (CE)</option>
+                <option value="PP">Pasaporte (PP)</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="profileDocumentNumber">Número de Documento</label>
+              <input type="text" class="inputEstilo1" id="profileDocumentNumber" name="credential_number" required>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Información personal -->
       <div class="mb-3">
         <label for="profileFirstName">Nombre</label>
         <input type="text" class="inputEstilo1" id="profileFirstName" name="first_name" required>
