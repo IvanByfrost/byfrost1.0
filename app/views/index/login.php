@@ -34,11 +34,11 @@ require_once __DIR__ . '/../layouts/header.php';
                 </div>
                 <div class="col-12">
                     <div class="col-12" style="position: relative; padding: 0;">
-                        <input type="password" class="inputEstilo1" id="userPassword" name="userPassword" placeholder="Password" required style="padding-right: 36px;">
-                        <button type="button" id="togglePassword" tabindex="-1" class="btn-eye-icon-fix" aria-label="Show password">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 16 16" stroke="currentColor">
-                                <path d="M1.333 8s2.333-4 6.667-4 6.667 4 6.667 4-2.333 4-6.667 4-6.667-4-6.667-4z" stroke="#888" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <circle cx="8" cy="8" r="2" stroke="#888" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <input type="password" class="inputEstilo1 input-pill" id="userPassword" name="userPassword" placeholder="Contraseña" required>
+                        <button type="button" id="togglePassword" tabindex="-1" class="input-eye-pill" aria-label="Mostrar contraseña">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path d="M1.5 12s4-7 10.5-7 10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z" stroke="#222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <circle cx="12" cy="12" r="3.5" stroke="#222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </button>
                     </div>
@@ -85,99 +85,56 @@ require_once __DIR__ . '/../layouts/header.php';
         console.log("URL del script:", "<?php echo url . app .rq ?>js/forgotPassword.js");
     </script>
     <style>
-    .input-group.password-group {
-        position: relative;
-        width: 100%;
-    }
-    .input-group.password-group input[type='password'],
-    .input-group.password-group input[type='text'] {
-        width: 100%;
-        padding-right: 38px;
-    }
-    .btn-eye {
-        position: absolute;
-        right: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 2;
-        padding: 0;
-        background: none;
+    .input-pill {
+        border-radius: 999px;
+        background: #f2f2f2;
         border: none;
-        outline: none;
+        padding-left: 24px;
+        padding-right: 56px;
+        font-weight: 400;
+        font-size: 18px;
+        color: #222;
         box-shadow: none;
-        width: 28px;
-        height: 28px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
+        height: 54px;
+        transition: border 0.2s, box-shadow 0.2s;
     }
-    .btn-eye:active, .btn-eye:focus {
+    .input-pill:focus {
         outline: none;
-        box-shadow: none;
+        border: 1.5px solid #a5ffa0;
+        background: #f8f8f8;
     }
-    #eyeIcon svg {
-        width: 20px;
-        height: 20px;
-        color: #888;
-        display: block;
+    .input-pill::placeholder {
+        color: #bdbdbd;
+        font-weight: 300;
+        font-size: 18px;
+        opacity: 1;
     }
-    .btn-eye-icon {
+    .input-eye-pill {
         position: absolute;
         top: 50%;
-        right: 18px;
+        right: 20px;
         transform: translateY(-50%);
         background: none;
         border: none;
         padding: 0;
         margin: 0;
-        width: 24px;
-        height: 24px;
+        width: 32px;
+        height: 32px;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
         z-index: 3;
+        box-shadow: none;
     }
-    .btn-eye-icon:focus {
+    .input-eye-pill:focus {
         outline: none;
         box-shadow: none;
     }
-    .btn-eye-icon svg {
-        width: 16px;
-        height: 16px;
-        color: #888;
-        pointer-events: none;
-    }
-    .position-relative {
-        position: relative !important;
-    }
-    .btn-eye-icon-fix {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        right: 12px;
-        margin: auto 0;
-        background: none !important;
-        border: none;
-        padding: 0;
-        width: 22px;
-        height: 22px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        z-index: 3;
-        box-shadow: none !important;
-    }
-    .btn-eye-icon-fix:focus {
-        outline: none;
-        box-shadow: none;
-    }
-    .btn-eye-icon-fix svg {
-        width: 18px;
-        height: 18px;
-        color: #888;
+    .input-eye-pill svg {
+        width: 28px;
+        height: 28px;
+        color: #222;
         pointer-events: none;
     }
     </style>
