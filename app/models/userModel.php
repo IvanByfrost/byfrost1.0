@@ -76,11 +76,11 @@ class UserModel extends MainModel
 
             $userId = $this->dbConn->lastInsertId();
             
-            // 5. Asignar rol por defecto
-            $roleResult = $this->assignDefaultRole($userId, 'student');
-            if (!$roleResult) {
-                throw new Exception("Error al asignar el rol por defecto al usuario.");
-            }
+            // 5. NO asignar rol por defecto - el usuario quedará sin rol hasta que se le asigne uno
+            // $roleResult = $this->assignDefaultRole($userId, 'student');
+            // if (!$roleResult) {
+            //     throw new Exception("Error al asignar el rol por defecto al usuario.");
+            // }
 
             // Si todo salió bien, confirmar la transacción
             $this->dbConn->commit();
@@ -99,7 +99,7 @@ class UserModel extends MainModel
     {
         $query = "SELECT u.*, r.role_type FROM users u 
                   LEFT JOIN user_roles r ON u.user_id = r.user_id 
-                  WHERE u.user_id = :userId AND (r.is_active = 1 OR r.is_active IS NULL)";
+                  WHERE u.user_id = :userId AND u.is_active = 1";
         $stmt = $this->dbConn->prepare($query);
         $stmt->execute([':userId' => $userId]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
