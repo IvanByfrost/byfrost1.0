@@ -108,3 +108,8 @@ $("#loginForm").on("submit", function (e) {
             });
         });
 });
+
+function showPassword() {
+  const input = document.getElementById("clave");
+  input.type = input.type === "password" ? "text" : "password";
+}
