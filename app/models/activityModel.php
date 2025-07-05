@@ -307,12 +307,6 @@ class ActivityModel extends MainModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getById($id) {
-        $stmt = $this->dbConn->prepare("SELECT * FROM activities WHERE id = ?");
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
     public function create($studentId, $data) {
         $stmt = $this->dbConn->prepare("INSERT INTO activities (student_id, title, description, date, status) VALUES (?, ?, ?, ?, ?)");
         return $stmt->execute([$studentId, $data['title'], $data['description'], $data['date'], $data['status']]);

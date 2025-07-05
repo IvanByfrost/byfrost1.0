@@ -317,4 +317,38 @@ class studentController extends MainController
         header('Location: ?controller=student&action=listDocuments&studentId=' . $document['student_id']);
         exit;
     }
+
+    // CRUD de categorías de estudiante
+    public function listCategories()
+    {
+        $categories = $this->categoryModel->getAllCategories();
+        require ROOT . '/app/views/student/categoryList.php';
+    }
+
+    public function createCategory()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $name = $_POST['name'] ?? '';
+            if ($name) {
+                $this->categoryModel->create($name);
+                header('Location: ?controller=student&action=listCategories');
+                exit;
+            }
+        }
+        require ROOT . '/app/views/student/categoryCreate.php';
+    }
+
+    public function editCategory($id)
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $name = $_POST['name'] ?? '';
+            if ($name) {
+                $this->categoryModel->update($id, $name);
+                header('Location: ?controller=student&action=listCategories');
+                exit;
+            }
+        }
+        $category = $this->categoryModel->getCategoryById($id);
+        require ROOT . '/app/views/student/categoryEdit.php';
+    }
 }
