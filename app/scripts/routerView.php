@@ -59,33 +59,47 @@ if (
     exit;
 }
 
-// Mapeo de vistas a controladores
-$controllerMapping = [
-    'school' => 'SchoolController',
-    'coordinator' => 'CoordinatorController',
-    'director' => 'DirectorController',
-    'teacher' => 'TeacherController',
-    'student' => 'StudentController',
-    'root' => 'RootController',
-    'parent' => 'ParentController',
-    'activity' => 'ActivityController',
-    'schedule' => 'ScheduleController',
-    'user' => 'UserController',
-    'role' => 'RoleController',
-    'payroll' => 'PayrollController',
-    'index' => 'IndexController',
-    'login' => 'IndexController',
-    'register' => 'IndexController',
-    'contact' => 'IndexController',
-    'about' => 'IndexController',
-    'plans' => 'IndexController',
-    'faq' => 'IndexController',
-    'forgotPassword' => 'IndexController',
-    'resetPassword' => 'IndexController',
-    'completeProf' => 'IndexController',
-    'unauthorized' => 'ErrorController',
-    'Error' => 'ErrorController'
-];
+// Sistema automático de mapeo de controladores
+function getControllerMapping() {
+    $controllersDir = ROOT . '/app/controllers/';
+    $mapping = [];
+    
+    // Mapeo especial para vistas que no siguen la convención
+    $specialMapping = [
+        'login' => 'IndexController',
+        'register' => 'IndexController', 
+        'contact' => 'IndexController',
+        'about' => 'IndexController',
+        'plans' => 'IndexController',
+        'faq' => 'IndexController',
+        'forgotPassword' => 'IndexController',
+        'resetPassword' => 'IndexController',
+        'completeProf' => 'IndexController',
+        'unauthorized' => 'ErrorController',
+        'Error' => 'ErrorController'
+    ];
+    
+    // Escanear directorio de controladores automáticamente
+    if (is_dir($controllersDir)) {
+        $files = scandir($controllersDir);
+        foreach ($files as $file) {
+            if ($file !== '.' && $file !== '..' && pathinfo($file, PATHINFO_EXTENSION) === 'php') {
+                $controllerName = pathinfo($file, PATHINFO_FILENAME);
+                $viewName = strtolower(str_replace('Controller', '', $controllerName));
+                
+                // Solo agregar si no está en el mapeo especial
+                if (!isset($specialMapping[$viewName])) {
+                    $mapping[$viewName] = $controllerName;
+                }
+            }
+        }
+    }
+    
+    // Combinar mapeo automático con mapeo especial
+    return array_merge($mapping, $specialMapping);
+}
+
+$controllerMapping = getControllerMapping();
 
 // Verificar si la vista tiene un controlador mapeado
 if (isset($controllerMapping[$view])) {

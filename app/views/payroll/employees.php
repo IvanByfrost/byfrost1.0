@@ -10,12 +10,12 @@ require_once ROOT . '/app/library/SessionManager.php';
 $sessionManager = new SessionManager();
 
 // Verificar que el usuario esté logueado y tenga permisos
-if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn()) {
+if (!$sessionManager->isLoggedIn()) {
     header("Location: " . url . "?view=index&action=login");
     exit;
 }
 
-if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
+if (!$sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
     header("Location: " . url . "?view=unauthorized");
     exit;
 }
@@ -42,60 +42,23 @@ window.safeLoadView = function(viewName) {
 
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
-        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-            <div class="position-sticky pt-3">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/dashboard')">
-                            <i class="fas fa-tachometer-alt"></i> Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#" onclick="safeLoadView('payroll/employees')">
-                            <i class="fas fa-users"></i> Empleados
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/periods')">
-                            <i class="fas fa-calendar-alt"></i> Períodos
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/absences')">
-                            <i class="fas fa-user-times"></i> Ausencias
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/overtime')">
-                            <i class="fas fa-clock"></i> Horas Extras
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/bonuses')">
-                            <i class="fas fa-gift"></i> Bonificaciones
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="safeLoadView('payroll/reports')">
-                            <i class="fas fa-chart-bar"></i> Reportes
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-
         <!-- Contenido principal -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Gestión de Empleados</h1>
+        <main class="col-12 px-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-3 mb-4 border-bottom">
+                <div>
+                    <h1 class="h2 mb-0">Gestión de Empleados</h1>
+                    <p class="text-muted mb-0">Administra la información de los empleados del sistema</p>
+                </div>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group me-2">
                         <?php if ($sessionManager->hasRole(['root', 'director'])): ?>
-                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="safeLoadView('payroll/createEmployee')">
+                        <button type="button" class="btn btn-primary" onclick="safeLoadView('payroll/createEmployee')">
                             <i class="fas fa-plus"></i> Nuevo Empleado
                         </button>
                         <?php endif; ?>
+                        <button type="button" class="btn btn-outline-secondary" onclick="safeLoadView('payroll/dashboard')">
+                            <i class="fas fa-arrow-left"></i> Volver al Dashboard
+                        </button>
                     </div>
                 </div>
             </div>
