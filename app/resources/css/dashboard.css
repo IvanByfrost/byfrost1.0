@@ -318,15 +318,67 @@ footer {
   text-align: center;
 }
 
-.inputEstilo1 {
-    width: 100%;
-    padding: 20px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
-    font-size: 16px;
-    font-family: lato, sans-serif;
+/* Estilo para input de contraseña tipo píldora con botón de ojo */
+.input-container {
+  position: relative;
+  width: 100%;
+  padding: 0;
+}
+.inputEstilo1,
+.input-container input.input-pill {
+  width: 100%;
+  border-radius: 999px; /* Píldora */
+  background: #f2f2f2;
+  border: none;
+  padding-left: 24px;
+  padding-right: 56px; /* Espacio para el ojo */
+  font-weight: 400;
+  font-size: 18px;
+  color: #222;
+  box-shadow: none;
+  height: 54px;
+  margin-bottom: 0;
+  box-sizing: border-box;
+  font-family: lato, sans-serif;
+}
+.inputEstilo1:focus,
+.input-container input.input-pill:focus {
+  outline: none;
+  border: 1.5px solid #a5ffa0;
+  background: #f8f8f8;
+}
+.inputEstilo1::placeholder,
+.input-container input.input-pill::placeholder {
+  color: #bdbdbd;
+  font-weight: 300;
+  font-size: 18px;
+  opacity: 1;
+}
+.toggle-password, .input-eye-pill,
+.input-container .toggle-password, .input-container .input-eye-pill {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 3;
+  box-shadow: none;
+}
+.toggle-password svg, .input-eye-pill svg,
+.input-container .toggle-password svg, .input-container .input-eye-pill svg {
+  width: 28px;
+  height: 28px;
+  color: #222;
+  pointer-events: none;
 }
 
 .checkbox-group label {
@@ -384,4 +436,3 @@ body {
 html, body {
     overflow-x: hidden !important;
 }
-
