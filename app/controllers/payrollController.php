@@ -97,6 +97,7 @@ class PayrollController extends MainController {
             $data = [
                 'employees' => $employees,
                 'filters' => $filters,
+                'sessionManager' => $this->sessionManager,
                 'page_title' => 'Gestión de Empleados'
             ];
             
@@ -132,8 +133,13 @@ class PayrollController extends MainController {
                 ];
                 
                 if ($this->payrollModel->createEmployee($data)) {
-                    header('Location: ?view=payroll&action=employees&success=1');
-                    exit;
+                    if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+                        echo "<script>window.safeLoadView('payroll/employees');</script>";
+                        exit;
+                    } else {
+                        header('Location: ?view=payroll');
+                        exit;
+                    }
                 } else {
                     throw new Exception('Error al crear empleado');
                 }
@@ -188,8 +194,13 @@ class PayrollController extends MainController {
                 ];
                 
                 if ($this->payrollModel->updateEmployee($employeeId, $data)) {
-                    header('Location: ?view=payroll&action=employees&success=1');
-                    exit;
+                    if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+                        echo "<script>window.safeLoadView('payroll/employees');</script>";
+                        exit;
+                    } else {
+                        header('Location: ?view=payroll');
+                        exit;
+                    }
                 } else {
                     throw new Exception('Error al actualizar empleado');
                 }
@@ -231,24 +242,33 @@ class PayrollController extends MainController {
         }
         
         try {
+            // Paso 1: Obtener empleado
             $employee = $this->payrollModel->getEmployeeById($employeeId);
             if (!$employee) {
-                header('Location: ?view=payroll&action=employees');
-                exit;
+                throw new Exception('Empleado no encontrado con ID: ' . $employeeId);
             }
             
-            // Obtener historial de nómina del empleado
-            $payrollHistory = $this->payrollModel->getEmployeePayrollHistory($employeeId);
+            // Paso 2: Obtener historial de nómina del empleado
+            try {
+                $payrollHistory = $this->payrollModel->getEmployeePayrollHistory($employeeId);
+            } catch (Exception $e) {
+                // Si falla el historial, usar array vacío
+                $payrollHistory = [];
+                error_log('Error obteniendo historial de nómina: ' . $e->getMessage());
+            }
             
             $data = [
                 'employee' => $employee,
                 'payrollHistory' => $payrollHistory,
+                'sessionManager' => $this->sessionManager,
                 'page_title' => 'Detalles del Empleado: ' . $employee['first_name'] . ' ' . $employee['last_name']
             ];
             
+            // Paso 3: Cargar la vista
             $this->loadPartialView('payroll/viewEmployee', $data);
             
         } catch (Exception $e) {
+            error_log('Error en viewEmployee: ' . $e->getMessage());
             $this->loadPartialView('Error/error', ['error' => $e->getMessage()]);
         }
     }

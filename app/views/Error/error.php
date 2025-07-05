@@ -5,7 +5,7 @@ header("Pragma: no-cache");
 header("Expires: 0");
 
 // Incluir el layout head
-require_once 'app/views/layouts/head.php';
+require_once ROOT . '/app/views/layouts/head.php';
 ?>
 
 <body>

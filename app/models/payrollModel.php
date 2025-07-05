@@ -82,7 +82,7 @@ class PayrollModel {
      * Obtener empleado por ID
      */
     public function getEmployeeById($employeeId) {
-        $sql = "SELECT e.*, u.first_name, u.last_name, u.email, u.phone, u.role_id 
+        $sql = "SELECT e.*, u.first_name, u.last_name, u.email, u.phone 
                 FROM employees e 
                 INNER JOIN users u ON e.user_id = u.user_id 
                 WHERE e.employee_id = ?";
