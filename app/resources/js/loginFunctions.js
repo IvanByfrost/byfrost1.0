@@ -79,6 +79,14 @@ $("#loginForm").on("submit", function (e) {
                         window.location.href = data.redirect;
                     }
                 });
+            } else if (data.status === 'no_role') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Sin rol asignado',
+                    text: 'Tu cuenta aún no tiene un rol asignado. Por favor, contacta a Byfrost o a tu colegio.',
+                    confirmButtonText: 'Entendido',
+                    position: 'center'
+                });
             } else {
                 Swal.fire({
                     title: 'Error',
