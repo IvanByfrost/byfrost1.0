@@ -36,4 +36,13 @@ class MainModel {
         $stmt = $this->dbConn->prepare($query);
         return $stmt->execute($data);
     }
+
+    // Función para consultar un registro por cualquier campo
+    public function getByField($table, $field, $value)
+    {
+        $query = "SELECT * FROM $table WHERE $field = :value LIMIT 1";
+        $stmt = $this->dbConn->prepare($query);
+        $stmt->execute(['value' => $value]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }

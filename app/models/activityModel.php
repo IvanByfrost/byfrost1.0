@@ -308,7 +308,7 @@ class ActivityModel extends MainModel
     }
 
     public function getCountByStudent($studentId) {
-        $stmt = $this->dbConn->prepare("SELECT COUNT(*) FROM activities WHERE student_id = ?");
+        $stmt = $this->dbConn->prepare("SELECT COUNT(*) FROM student_scores WHERE student_user_id = ?");
         $stmt->execute([$studentId]);
         return $stmt->fetchColumn();
     }

@@ -13,6 +13,9 @@ class studentModel extends mainModel
         //Implementar la lógica para crear un estudiante
     }
     //Función para consultar un estudiante
+    public function getStudentById($id) {
+        return parent::getByField('users', 'user_id', $id);
+    }
     //Función para actualizar un estudiante
     //Función para eliminar un estudiante
 }

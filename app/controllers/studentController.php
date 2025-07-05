@@ -27,23 +27,23 @@ class StudentController extends MainController
         $this->reportModel = new ReportModel($dbConn);
         $this->academicHistoryModel = new AcademicHistoryModel($dbConn);
         $this->documentModel = new DocumentModel($dbConn);
-    }
-
-    // Método por defecto - redirige al dashboard
-    public function index()
-    {
-        // Obtener el ID del estudiante desde la sesión
-        $studentId = $_SESSION['user_id'] ?? null;
-        if (!$studentId) {
-            header('Location: ?controller=login');
-            exit;
-        }
-        $this->dashboard($studentId);
+        $this->sessionManager = new SessionManager();
     }
 
     // Dashboard principal del estudiante
     public function dashboard($studentId = null)
     {
+        // Verificar que el usuario esté logueado y sea estudiante
+        if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn()) {
+            header('Location: /?view=index&action=login');
+            exit;
+        }
+
+        if (!$this->sessionManager->hasRole('student')) {
+            header('Location: /?view=unauthorized');
+            exit;
+        }
+
         if (!$studentId) {
             $studentId = $_SESSION['user_id'] ?? null;
         }
@@ -55,7 +55,7 @@ class StudentController extends MainController
 
         // Obtener datos del estudiante
         $studentModel = new studentModel();
-        $student = $studentModel->getById($studentId);
+        $student = $studentModel->getStudentById($studentId);
         
         // Obtener estadísticas básicas
         $tasksCount = $this->taskModel->getCountByStudent($studentId);
