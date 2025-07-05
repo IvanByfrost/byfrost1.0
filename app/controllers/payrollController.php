@@ -215,6 +215,44 @@ class PayrollController extends MainController {
         }
     }
     
+    /**
+     * Ver detalles de empleado
+     */
+    public function viewEmployee() {
+        if (!$this->sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer'])) {
+            header('Location: ?view=unauthorized');
+            exit;
+        }
+        
+        $employeeId = $_GET['id'] ?? null;
+        if (!$employeeId) {
+            header('Location: ?view=payroll&action=employees');
+            exit;
+        }
+        
+        try {
+            $employee = $this->payrollModel->getEmployeeById($employeeId);
+            if (!$employee) {
+                header('Location: ?view=payroll&action=employees');
+                exit;
+            }
+            
+            // Obtener historial de nómina del empleado
+            $payrollHistory = $this->payrollModel->getEmployeePayrollHistory($employeeId);
+            
+            $data = [
+                'employee' => $employee,
+                'payrollHistory' => $payrollHistory,
+                'page_title' => 'Detalles del Empleado: ' . $employee['first_name'] . ' ' . $employee['last_name']
+            ];
+            
+            $this->loadPartialView('payroll/viewEmployee', $data);
+            
+        } catch (Exception $e) {
+            $this->loadPartialView('Error/error', ['error' => $e->getMessage()]);
+        }
+    }
+    
     // =============================================
     // MÉTODOS PARA PERÍODOS DE NÓMINA
     // =============================================

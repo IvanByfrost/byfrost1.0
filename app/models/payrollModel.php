@@ -159,6 +159,21 @@ class PayrollModel {
         return $stmt->execute([$employeeId]);
     }
     
+    /**
+     * Obtener historial de nómina de un empleado
+     */
+    public function getEmployeePayrollHistory($employeeId) {
+        $sql = "SELECT pr.*, p.period_name, p.start_date, p.end_date, p.payment_date
+                FROM payroll_records pr 
+                INNER JOIN payroll_periods p ON pr.period_id = p.period_id 
+                WHERE pr.employee_id = ? 
+                ORDER BY p.start_date DESC";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$employeeId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
     // =============================================
     // MÉTODOS PARA PERÍODOS DE NÓMINA
     // =============================================

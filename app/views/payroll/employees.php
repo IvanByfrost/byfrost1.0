@@ -144,7 +144,7 @@ window.safeLoadView = function(viewName) {
                                                 <span class="badge bg-primary"><?php echo htmlspecialchars($employee['employee_code']); ?></span>
                                             </td>
                                             <td>
-                                                <strong><?php echo htmlspecialchars($employee['name'] . ' ' . $employee['lastname']); ?></strong>
+                                                <strong><?php echo htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']); ?></strong>
                                             </td>
                                             <td><?php echo htmlspecialchars($employee['email']); ?></td>
                                             <td><?php echo htmlspecialchars($employee['position']); ?></td>
@@ -184,7 +184,7 @@ window.safeLoadView = function(viewName) {
                                                     </button>
                                                     <?php if ($sessionManager->hasRole(['root', 'director'])): ?>
                                                     <button type="button" class="btn btn-sm btn-outline-danger" 
-                                                            onclick="confirmDeactivate(<?php echo $employee['employee_id']; ?>, '<?php echo htmlspecialchars($employee['name'] . ' ' . $employee['lastname']); ?>')"
+                                                            onclick="confirmDeactivate(<?php echo $employee['employee_id']; ?>, '<?php echo htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']); ?>')"
                                                             title="Desactivar">
                                                         <i class="fas fa-user-times"></i>
                                                     </button>
@@ -228,5 +228,4 @@ window.safeLoadView = function(viewName) {
     </div>
 </div>
 
-<!-- Incluir el archivo JS externo -->
-<script type="text/javascript" src="app/resources/js/employeeManagement.js"></script> 
+ 
