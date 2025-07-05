@@ -1,9 +1,3 @@
-<div class="sidebar">
-    <div class="sidebar-header">
-        <img src="app/resources/img/Byfrost-logo.svg" alt="Byfrost" class="logo">
-        <h5>Panel Estudiante</h5>
-    </div>
-    
     <nav class="sidebar-nav">
         <ul class="nav-list">
             <li class="nav-item">

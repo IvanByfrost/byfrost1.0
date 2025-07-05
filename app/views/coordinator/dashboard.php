@@ -15,8 +15,8 @@ if (!$sessionManager->isLoggedIn()) {
     exit;
 }
 
-// Verificar si el usuario tiene el rol de coordinador
-if (!$sessionManager->hasRole('coordinator')) {
+// Verificar si el usuario tiene el rol de estudiante
+if (!$sessionManager->hasRole('student')) {
     header("Location: " . url . "?view=unauthorized");
     exit;
 }
@@ -31,7 +31,7 @@ require_once ROOT . '/app/views/layouts/scHeader.php';
     <div class="dashboard-container">
         <aside class="sidebar">
             <?php
-            require_once 'coordSidebar.php';
+            require_once 'studentSidebar.php';
             ?>
         </aside>
         <div id="mainContent">

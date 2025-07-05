@@ -360,3 +360,17 @@ INSERT INTO academic_terms (term_name, start_date, end_date, school_year) VALUES
 ('Primer Período', '2024-02-01', '2024-04-30', 2024),
 ('Segundo Período', '2024-05-01', '2024-07-31', 2024),
 ('Tercer Período', '2024-08-01', '2024-11-30', 2024);
+
+-- =============================================
+-- REPORTES ACADÉMICOS (BOLETINES)
+-- =============================================
+CREATE TABLE academic_reports (
+    report_id INT AUTO_INCREMENT PRIMARY KEY,
+    student_user_id INT NOT NULL,
+    period VARCHAR(20),
+    summary TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by_user_id INT,
+    FOREIGN KEY (student_user_id) REFERENCES users(user_id),
+    FOREIGN KEY (created_by_user_id) REFERENCES users(user_id)
+) ENGINE=InnoDB;
