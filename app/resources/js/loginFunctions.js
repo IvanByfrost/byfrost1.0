@@ -113,3 +113,26 @@ function showPassword() {
   const input = document.getElementById("clave");
   input.type = input.type === "password" ? "text" : "password";
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordInput = document.getElementById('userPassword');
+    const togglePassword = document.getElementById('togglePassword');
+    const eyeIcon = document.getElementById('eyeIcon');
+
+    if (togglePassword) {
+        togglePassword.addEventListener('click', function() {
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            // Cambia el icono
+            eyeIcon.innerHTML = isPassword
+                // Ojo abierto
+                ? `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm7.5 0a9.77 9.77 0 01-1.5 3.5c-2.5 3.5-6.5 5.5-10 5.5s-7.5-2-10-5.5A9.77 9.77 0 011.5 12a9.77 9.77 0 011.5-3.5C5.5 5 9.5 3 13 3s7.5 2 10 5.5A9.77 9.77 0 0122.5 12z"/>
+                </svg>`
+                // Ojo cerrado
+                : `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10 0-1.657.336-3.234.938-4.675M15 12a3 3 0 11-6 0 3 3 0 016 0zm6.062-4.675A9.956 9.956 0 0122 9c0 5.523-4.477 10-10 10a9.956 9.956 0 01-4.675-.938"/>
+                </svg>`;
+        });
+    }
+});
