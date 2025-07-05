@@ -19,7 +19,7 @@ class UserModel extends MainModel
     {
         $query = "SELECT u.*, r.role_type FROM users u 
                   LEFT JOIN user_roles r ON u.user_id = r.user_id 
-                  WHERE r.is_active = 1 OR r.is_active IS NULL";
+                  WHERE u.is_active = 1";
         $stmt = $this->dbConn->query($query);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -76,11 +76,11 @@ class UserModel extends MainModel
 
             $userId = $this->dbConn->lastInsertId();
             
-            // 5. Asignar rol por defecto
-            $roleResult = $this->assignDefaultRole($userId, 'student');
-            if (!$roleResult) {
-                throw new Exception("Error al asignar el rol por defecto al usuario.");
-            }
+            // 5. NO asignar rol por defecto - el usuario quedará sin rol hasta que se le asigne uno
+            // $roleResult = $this->assignDefaultRole($userId, 'student');
+            // if (!$roleResult) {
+            //     throw new Exception("Error al asignar el rol por defecto al usuario.");
+            // }
 
             // Si todo salió bien, confirmar la transacción
             $this->dbConn->commit();
@@ -99,7 +99,7 @@ class UserModel extends MainModel
     {
         $query = "SELECT u.*, r.role_type FROM users u 
                   LEFT JOIN user_roles r ON u.user_id = r.user_id 
-                  WHERE u.user_id = :userId AND (r.is_active = 1 OR r.is_active IS NULL)";
+                  WHERE u.user_id = :userId AND u.is_active = 1";
         $stmt = $this->dbConn->prepare($query);
         $stmt->execute([':userId' => $userId]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -290,29 +290,46 @@ class UserModel extends MainModel
                 throw new Exception("Tipo de rol inválido: " . $roleType);
             }
 
-            // Primero desactivar roles existentes
+            // Primero desactivar todos los roles existentes
             $queryDeactivate = "UPDATE user_roles SET is_active = 0 WHERE user_id = :user_id";
             $stmtDeactivate = $this->dbConn->prepare($queryDeactivate);
             $deactivateResult = $stmtDeactivate->execute([':user_id' => $userId]);
-            
             if (!$deactivateResult) {
                 throw new Exception("Error al desactivar roles existentes.");
             }
 
-            // Luego insertar el nuevo rol
-            $query = "INSERT INTO user_roles (user_id, role_type, is_active) VALUES (:user_id, :role_type, 1)";
-            $stmt = $this->dbConn->prepare($query);
-            $insertResult = $stmt->execute([
+            // Verificar si ya existe el rol para este usuario
+            $queryCheck = "SELECT * FROM user_roles WHERE user_id = :user_id AND role_type = :role_type";
+            $stmtCheck = $this->dbConn->prepare($queryCheck);
+            $stmtCheck->execute([
                 ':user_id' => $userId,
                 ':role_type' => $roleType
             ]);
+            $existingRole = $stmtCheck->fetch(PDO::FETCH_ASSOC);
 
-            if (!$insertResult) {
-                throw new Exception("Error al insertar el nuevo rol.");
+            if ($existingRole) {
+                // Si ya existe, reactívalo
+                $queryReactivate = "UPDATE user_roles SET is_active = 1 WHERE user_id = :user_id AND role_type = :role_type";
+                $stmtReactivate = $this->dbConn->prepare($queryReactivate);
+                $result = $stmtReactivate->execute([
+                    ':user_id' => $userId,
+                    ':role_type' => $roleType
+                ]);
+            } else {
+                // Si no existe, insértalo
+                $queryInsert = "INSERT INTO user_roles (user_id, role_type, is_active) VALUES (:user_id, :role_type, 1)";
+                $stmtInsert = $this->dbConn->prepare($queryInsert);
+                $result = $stmtInsert->execute([
+                    ':user_id' => $userId,
+                    ':role_type' => $roleType
+                ]);
+            }
+
+            if (!$result) {
+                throw new Exception("Error al asignar o reactivar el rol.");
             }
 
             return true;
-            
         } catch (Exception $e) {
             error_log("Error en UserModel::assignRole: " . $e->getMessage());
             throw $e;

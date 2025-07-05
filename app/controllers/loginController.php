@@ -84,8 +84,8 @@ class LoginController extends MainController
             if ($user !== false) {
                 if (is_null($user['role'])) {
                     echo json_encode([
-                        "status" => "error",
-                        "msg" => "El usuario no se encuentra activado. Por favor, contacta con Byfrost."
+                        "status" => "no_role",
+                        "msg" => "Tu cuenta aún no tiene un rol asignado. Por favor, contacta al administrador del sistema."
                     ]);
                     exit;
                 }

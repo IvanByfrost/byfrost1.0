@@ -688,17 +688,27 @@ function displayRoleHistory(roleHistory, userInfo) {
     refreshIcons();
 }
 
-/**
- * Muestra el modal para asignar rol
- */
+function traducirRol(rol) {
+    switch (rol) {
+        case 'student': return 'Estudiante';
+        case 'professor': return 'Profesor';
+        case 'coordinator': return 'Coordinador';
+        case 'director': return 'Director';
+        case 'treasurer': return 'Tesorero';
+        case 'parent': return 'Acudiente';
+        case 'root': return 'Administrador';
+        case 'Sin rol': return 'Sin rol asignado';
+        case 'Sin rol asignado': return 'Sin rol asignado';
+        default: return rol;
+    }
+}
+
 function showAssignRoleModal(userId, userName, currentRole) {
     console.log('Mostrando modal para usuario:', userId, userName, currentRole);
-    
     document.getElementById('modal_user_id').value = userId;
     document.getElementById('modal_user_name').value = userName;
-    document.getElementById('modal_current_role').value = currentRole || 'Sin rol asignado';
+    document.getElementById('modal_current_role').value = traducirRol(currentRole || 'Sin rol');
     document.getElementById('modal_role_type').value = '';
-    
     // Mostrar el modal
     const modal = new bootstrap.Modal(document.getElementById('assignRoleModal'));
     modal.show();
