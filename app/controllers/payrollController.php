@@ -713,16 +713,8 @@ class PayrollController extends MainController {
      * Cargar vista
      */
     protected function loadView($view, $data = []) {
-        // Extraer variables del array de datos
-        extract($data);
-        
-        // Incluir la vista
-        $viewPath = ROOT . '/app/views/' . $view . '.php';
-        if (file_exists($viewPath)) {
-            include $viewPath;
-        } else {
-            throw new Exception('Vista no encontrada: ' . $view);
-        }
+        // Usar el método loadPartialView del MainController
+        $this->loadPartialView($view, $data);
     }
 }
 ?> 
