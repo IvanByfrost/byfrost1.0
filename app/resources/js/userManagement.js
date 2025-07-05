@@ -507,7 +507,7 @@ function displaySearchResults(users) {
     users.forEach(user => {
         const fullName = user.first_name + ' ' + user.last_name;
         const document = user.credential_type + ' ' + user.credential_number;
-        const currentRole = user.user_role ? user.user_role : 'Sin rol';
+        const currentRole = user.user_role ? traducirRol(user.user_role) : 'Sin rol asignado';
         
         html += `
             <tr>
@@ -518,7 +518,7 @@ function displaySearchResults(users) {
                 <td>
                     ${user.user_role ? 
                         `<span class="badge bg-success">${currentRole}</span>` : 
-                        `<span class="badge bg-warning">Sin rol</span>`
+                        `<span class="badge bg-warning">Sin rol asignado</span>`
                     }
                 </td>
                 <td>
