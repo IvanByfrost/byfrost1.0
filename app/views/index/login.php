@@ -33,12 +33,12 @@ require_once __DIR__ . '/../layouts/header.php';
                     <input type="text" class="inputEstilo1" id="userDocument" name="userDocument" placeholder="Número de documento" pattern="[0-9]+" title="Only Numbers" onkeyup="onlyNumbers('userDocument',value);" autocomplete="off" required>
                 </div>
                 <div class="col-12">
-                    <div class="input-group">
+                    <div class="input-group password-group">
                         <input type="password" class="inputEstilo1" id="userPassword" name="userPassword" placeholder="Password" required>
-                        <button type="button" class="btn btn-outline-secondary" id="togglePassword" tabindex="-1">
+                        <button type="button" class="btn-eye" id="togglePassword" tabindex="-1">
                             <span id="eyeIcon">
-                                <!-- Ojo cerrado por defecto -->
-                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <!-- Ojo cerrado por defecto, tamaño y color ajustados -->
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" style="display:block;" fill="none" viewBox="0 0 24 24" stroke="#888">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10 0-1.657.336-3.234.938-4.675M15 12a3 3 0 11-6 0 3 3 0 016 0zm6.062-4.675A9.956 9.956 0 0122 9c0 5.523-4.477 10-10 10a9.956 9.956 0 01-4.675-.938"/>
                                 </svg>
                             </span>
@@ -87,24 +87,42 @@ require_once __DIR__ . '/../layouts/header.php';
         console.log("URL del script:", "<?php echo url . app .rq ?>js/forgotPassword.js");
     </script>
     <style>
-    .input-group {
+    .input-group.password-group {
         position: relative;
         width: 100%;
     }
-    .input-group input[type='password'],
-    .input-group input[type='text'] {
+    .input-group.password-group input[type='password'],
+    .input-group.password-group input[type='text'] {
         width: 100%;
-        padding-right: 40px;
+        padding-right: 38px;
     }
-    .input-group .btn {
+    .btn-eye {
         position: absolute;
-        right: 10px;
+        right: 12px;
         top: 50%;
         transform: translateY(-50%);
         z-index: 2;
         padding: 0;
-        background: transparent;
+        background: none;
         border: none;
+        outline: none;
+        box-shadow: none;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    .btn-eye:active, .btn-eye:focus {
+        outline: none;
+        box-shadow: none;
+    }
+    #eyeIcon svg {
+        width: 20px;
+        height: 20px;
+        color: #888;
+        display: block;
     }
     </style>
 </body>
