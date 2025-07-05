@@ -307,14 +307,20 @@ class ActivityModel extends MainModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getCountByStudent($studentId) {
+        $stmt = $this->dbConn->prepare("SELECT COUNT(*) FROM activities WHERE student_id = ?");
+        $stmt->execute([$studentId]);
+        return $stmt->fetchColumn();
+    }
+
     public function create($studentId, $data) {
-        $stmt = $this->dbConn->prepare("INSERT INTO activities (student_id, title, description, date, status) VALUES (?, ?, ?, ?, ?)");
-        return $stmt->execute([$studentId, $data['title'], $data['description'], $data['date'], $data['status']]);
+        $stmt = $this->dbConn->prepare("INSERT INTO activities (student_id, title, description, date, type, status) VALUES (?, ?, ?, ?, ?, ?)");
+        return $stmt->execute([$studentId, $data['title'], $data['description'], $data['date'], $data['type'], $data['status']]);
     }
 
     public function update($id, $data) {
-        $stmt = $this->dbConn->prepare("UPDATE activities SET title=?, description=?, date=?, status=? WHERE id=?");
-        return $stmt->execute([$data['title'], $data['description'], $data['date'], $data['status'], $id]);
+        $stmt = $this->dbConn->prepare("UPDATE activities SET title=?, description=?, date=?, type=?, status=? WHERE id=?");
+        return $stmt->execute([$data['title'], $data['description'], $data['date'], $data['type'], $data['status'], $id]);
     }
 
     public function delete($id) {

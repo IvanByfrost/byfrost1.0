@@ -5,6 +5,19 @@ class TaskModel extends mainModel {
         $stmt->execute([$studentId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
+    public function getCountByStudent($studentId) {
+        $stmt = $this->dbConn->prepare("SELECT COUNT(*) FROM tasks WHERE student_id = ?");
+        $stmt->execute([$studentId]);
+        return $stmt->fetchColumn();
+    }
+    
+    public function getPendingByStudent($studentId) {
+        $stmt = $this->dbConn->prepare("SELECT * FROM tasks WHERE student_id = ? AND status = 'pending' ORDER BY due_date ASC LIMIT 5");
+        $stmt->execute([$studentId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
     public function create($studentId, $data) {
         $stmt = $this->dbConn->prepare("INSERT INTO tasks (student_id, title, description, due_date, status) VALUES (?, ?, ?, ?, ?)");
         return $stmt->execute([$studentId, $data['title'], $data['description'], $data['due_date'], $data['status']]);
