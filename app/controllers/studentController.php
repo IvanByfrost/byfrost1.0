@@ -7,7 +7,7 @@ require_once ROOT . '/app/models/reportModel.php';
 require_once ROOT . '/app/models/academicHistoryModel.php';
 require_once ROOT . '/app/models/documentModel.php';
 
-class studentController extends MainController
+class StudentController extends MainController
 {
     protected $dbConn;
     protected $categoryModel;

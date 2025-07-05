@@ -26,30 +26,8 @@ class RootController extends MainController
             exit;
         }
 
-        // Cargar la vista del dashboard con el header específico
-        $this->loadDashboardView('root/dashboard');
-    }
-
-    /**
-     * Carga una vista del dashboard con el header específico
-     */
-    private function loadDashboardView($viewPath, $data = [])
-    {
-        $viewPath = ROOT . "/app/views/{$viewPath}.php";
-        
-        if (file_exists($viewPath)) {
-            extract($data);
-            require ROOT . '/app/views/layouts/head.php';
-            require ROOT . '/app/views/layouts/dashHeader.php'; // Header específico del dashboard
-            require $viewPath;
-            require ROOT . '/app/views/layouts/dashFooter.php'; // Footer específico del dashboard
-        } else {
-            // Redirigir a la página de error 404
-            http_response_code(404);
-            require_once ROOT . '/app/controllers/errorController.php';
-            $error = new ErrorController($this->dbConn);
-            $error->Error('404');
-        }
+        // Cargar la vista del dashboard usando el método centralizado
+        $this->loadView('root/dashboard');
     }
 
     /**
