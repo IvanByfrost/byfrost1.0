@@ -228,21 +228,5 @@ window.safeLoadView = function(viewName) {
     </div>
 </div>
 
-<script>
-// Función para confirmar desactivación
-function confirmDeactivate(employeeId, employeeName) {
-    if (confirm(`¿Estás seguro de que deseas desactivar al empleado ${employeeName}?`)) {
-        // Aquí se implementaría la lógica de desactivación
-        alert('Función de desactivación en desarrollo');
-    }
-}
-
-// Inicializar DataTable si está disponible
-if (typeof $.fn.DataTable !== 'undefined') {
-    $('#employeesTable').DataTable({
-        language: {
-            url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json'
-        }
-    });
-}
-</script> 
+<!-- Incluir el archivo JS externo -->
+<script type="text/javascript" src="app/resources/js/employeeManagement.js"></script> 
