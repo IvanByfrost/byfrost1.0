@@ -308,7 +308,7 @@ header {
 
 .input-group {
     display: flex;
-    flex-direction: column;
+    flex-direction: row !important;
     margin-bottom: 15px;
 }
 

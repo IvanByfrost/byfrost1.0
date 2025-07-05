@@ -31,6 +31,7 @@
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/Principal.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/app.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/profileSettings.js"></script> 
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/payrollManagement.js"></script>
 
     <script>
         // Inicializar Lucide

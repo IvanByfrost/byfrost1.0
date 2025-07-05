@@ -39,7 +39,7 @@ include 'app/views/layouts/formView.php';
                     <h6 class="m-0 font-weight-bold text-primary">Información del Empleado</h6>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="index.php?controller=payroll&action=createEmployee" id="createEmployeeForm">
+                    <form method="POST" action="index.php?view=payroll&action=createEmployee" id="createEmployeeForm">
                         <div class="row">
                             <!-- Información básica -->
                             <div class="col-md-6">
@@ -117,9 +117,9 @@ include 'app/views/layouts/formView.php';
                                     <label for="salary" class="form-label">Salario Base Mensual *</label>
                                     <div class="input-group">
                                         <span class="input-group-text">$</span>
-                                        <input type="number" class="form-control" id="salary" name="salary" 
-                                               value="<?php echo isset($data['salary']) ? $data['salary'] : ''; ?>" 
-                                               required min="0" step="0.01">
+                                        <input type="number" class="form-control" id="salary" name="salary"
+                                               value="<?php echo isset($data['salary']) ? $data['salary'] : ''; ?>"
+                                               required min="0" step="0.01" placeholder="0.00" style="max-width: 300px;">
                                     </div>
                                     <div class="form-text">Salario base sin deducciones</div>
                                 </div>
