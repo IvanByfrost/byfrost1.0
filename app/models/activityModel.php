@@ -300,4 +300,31 @@ class ActivityModel extends MainModel
             return [];
         }
     }
+
+    public function getAllByStudent($studentId) {
+        $stmt = $this->dbConn->prepare("SELECT * FROM activities WHERE student_id = ?");
+        $stmt->execute([$studentId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getById($id) {
+        $stmt = $this->dbConn->prepare("SELECT * FROM activities WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function create($studentId, $data) {
+        $stmt = $this->dbConn->prepare("INSERT INTO activities (student_id, title, description, date, status) VALUES (?, ?, ?, ?, ?)");
+        return $stmt->execute([$studentId, $data['title'], $data['description'], $data['date'], $data['status']]);
+    }
+
+    public function update($id, $data) {
+        $stmt = $this->dbConn->prepare("UPDATE activities SET title=?, description=?, date=?, status=? WHERE id=?");
+        return $stmt->execute([$data['title'], $data['description'], $data['date'], $data['status'], $id]);
+    }
+
+    public function delete($id) {
+        $stmt = $this->dbConn->prepare("DELETE FROM activities WHERE id = ?");
+        return $stmt->execute([$id]);
+    }
 }
