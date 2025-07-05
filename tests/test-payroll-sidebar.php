@@ -1,13 +1,12 @@
 <?php
-// Test específico para simular el sidebar del root y diagnosticar problemas de nómina
-echo "<h1>🔍 Test de Sidebar Root - Nómina</h1>";
+// Test específico para el JavaScript del sidebar de nómina
+echo "<h1>🔧 Test JavaScript - Sidebar Nómina</h1>";
 
 // Configurar variables
 if (!defined('ROOT')) {
     define('ROOT', __DIR__);
 }
 require_once '../config.php';
-
 ?>
 
 <!DOCTYPE html>
@@ -15,231 +14,186 @@ require_once '../config.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Sidebar Root - Nómina</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Test JavaScript - Nómina</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        .sidebar {
-            width: 250px;
-            background: #2c3e50;
-            color: white;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-        }
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .sidebar li {
-            border-bottom: 1px solid #34495e;
-        }
-        .sidebar a {
-            color: white;
-            text-decoration: none;
-            padding: 15px 20px;
-            display: block;
-            transition: background 0.3s;
-        }
-        .sidebar a:hover {
-            background: #34495e;
-        }
-        .submenu {
-            background: #34495e;
-            display: none;
-        }
-        .submenu li {
-            border-bottom: 1px solid #2c3e50;
-        }
-        .submenu a {
-            padding: 10px 30px;
-            font-size: 14px;
-        }
-        .has-submenu:hover .submenu {
-            display: block;
-        }
-        .mainContent {
-            margin-left: 250px;
-            padding: 20px;
-        }
-        .test-result {
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 4px;
-        }
-        .success { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
-        .error { background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
-        .info { background-color: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
-    </style>
 </head>
 <body>
-    <div class="sidebar">
-        <ul>
-            <li><a href="#" onclick="safeLoadView('root/menuRoot')"><i data-lucide="home"></i>Inicio</a></li>
-            <li class="has-submenu"><a href="#"><i data-lucide="school"></i>Colegios</a>
-                <ul class="submenu">
-                    <li><a href="#" onclick="safeLoadView('school/createSchool')">Registrar Colegio</a></li>
-                    <li><a href="#" onclick="safeLoadView('school/consultSchool')">Consultar Colegio</a></li>
-                </ul>
-            </li>
-            <li class="has-submenu">
-                <a href="#"><i data-lucide="user"></i>Usuarios</a>
-                <ul class="submenu">
-                    <li><a href="#" onclick="safeLoadView('user/consultUser')"><i data-lucide="user-search"></i>Consultar Usuario</a></li>
-                    <li><a href="#" onclick="safeLoadView('user/assignRole')"><i data-lucide="user-pen"></i>Asignar rol</a></li>
-                    <li><a href="#" onclick="safeLoadView('user/showRoleHistory')"><i data-lucide="book-user"></i>Historial de roles</a></li>
-                </ul>
-            </li>
-            <li class="has-submenu">
-                <a href="#"><i data-lucide="dollar-sign"></i>Nómina</a>
-                <ul class="submenu">
-                    <li><a href="#" onclick="safeLoadView('payroll/dashboard')"><i data-lucide="bar-chart-3"></i>Dashboard</a></li>
-                    <li><a href="#" onclick="safeLoadView('payroll/employees')"><i data-lucide="users"></i>Empleados</a></li>
-                    <li><a href="#" onclick="safeLoadView('payroll/periods')"><i data-lucide="calendar"></i>Períodos</a></li>
-                    <li><a href="#" onclick="safeLoadView('payroll/absences')"><i data-lucide="user-x"></i>Ausencias</a></li>
-                    <li><a href="#" onclick="safeLoadView('payroll/overtime')"><i data-lucide="clock"></i>Horas Extras</a></li>
-                    <li><a href="#" onclick="safeLoadView('payroll/bonuses')"><i data-lucide="gift"></i>Bonificaciones</a></li>
-                    <li><a href="#" onclick="safeLoadView('payroll/reports')"><i data-lucide="file-text"></i>Reportes</a></li>
-                </ul>
-            </li>
-            <li class="has-submenu">
-                <a href="#"><i data-lucide="key"></i>Permisos</a>
-                <ul class="submenu">
-                    <li><a href="#" onclick="safeLoadView('role/index')">Editar permisos</a></li>
-                </ul>
-            </li>
-            <li class="has-submenu">
-                <a href="#"><i data-lucide="bar-chart-2"></i>Reportes</a>
-                <ul class="submenu">
-                    <li><a href="#" onclick="safeLoadView('director/editDirector')">Crear reporte</a></li>
-                    <li><a href="#" onclick="safeLoadView('director/createDirector')">Consultar reporte</a></li>
-                    <li><a href="#" onclick="safeLoadView('director/createDirector')">Consultar estadística</a></li>
-                </ul>
-            </li>
-            
-            <li class="has-submenu">
-                <a href="#"><i data-lucide="settings"></i>Configuración</a>
-                <ul class="submenu">
-                    <li><a href="#" onclick="safeLoadView('user/settingsRoles?section=usuarios')"> Usuarios</a></li>
-                    <li><a href="#" onclick="safeLoadView('user/settingsRoles?section=recuperar')"> Recuperar contraseña</a></li>
-                </ul>
-            </li>
-        </ul>
-    </div>
-
-    <div id="mainContent" class="mainContent">
-        <h2>Test de Sidebar Root - Nómina</h2>
-        <p>Haz clic en las opciones del sidebar para probar la carga de nómina.</p>
-        
-        <div id="testResults">
-            <div class="test-result info">
-                <strong>Estado:</strong> Esperando pruebas...
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-3">
+                <h3>Sidebar de Nómina</h3>
+                <div class="root-dashboard">
+                    <div class="root-sidebar">
+                        <ul>
+                            <li class="has-submenu">
+                                <a href="#"><i data-lucide="dollar-sign"></i>Nómina</a>
+                                <ul class="submenu">
+                                    <li><a href="#" onclick="testLoadView('payroll/dashboard')"><i data-lucide="bar-chart-3"></i>Dashboard</a></li>
+                                    <li><a href="#" onclick="testLoadView('payroll/employees')"><i data-lucide="users"></i>Empleados</a></li>
+                                    <li><a href="#" onclick="testLoadView('payroll/periods')"><i data-lucide="calendar"></i>Períodos</a></li>
+                                    <li><a href="#" onclick="testLoadView('payroll/absences')"><i data-lucide="user-x"></i>Ausencias</a></li>
+                                    <li><a href="#" onclick="testLoadView('payroll/overtime')"><i data-lucide="clock"></i>Horas Extras</a></li>
+                                    <li><a href="#" onclick="testLoadView('payroll/bonuses')"><i data-lucide="gift"></i>Bonificaciones</a></li>
+                                    <li><a href="#" onclick="testLoadView('payroll/reports')"><i data-lucide="file-text"></i>Reportes</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-        </div>
-        
-        <div class="mt-4">
-            <h3>Pruebas Rápidas:</h3>
-            <button class="btn btn-primary" onclick="testPayrollDashboard()">Test Dashboard Nómina</button>
-            <button class="btn btn-success" onclick="testPayrollEmployees()">Test Empleados</button>
-            <button class="btn btn-warning" onclick="testPayrollPeriods()">Test Períodos</button>
-            <button class="btn btn-info" onclick="testLoadViewFunction()">Test loadView</button>
+            <div class="col-md-9">
+                <h3>Contenido Principal</h3>
+                <div id="mainContent" class="border p-3" style="min-height: 400px;">
+                    <p class="text-muted">Haz clic en un enlace del sidebar para probar la carga de vistas.</p>
+                </div>
+                
+                <div class="mt-3">
+                    <h4>Logs de JavaScript:</h4>
+                    <div id="jsLogs" class="bg-light p-3" style="height: 200px; overflow-y: auto; font-family: monospace; font-size: 12px;">
+                        <div>Esperando logs...</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <!-- Configuración de URL base -->
-    <script>
-        const BASE_URL = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
-        console.log('BASE_URL configurada:', BASE_URL);
-    </script>
-    
-    <!-- Cargar loadView.js -->
-    <script src="../app/resources/js/loadView.js"></script>
     
     <script>
-        // Inicializar Lucide
-        lucide.createIcons();
+        // Configuración base
+        const BASE_URL = '<?php echo url; ?>';
         
-        // Función para mostrar resultados
-        function showResult(message, type = 'info') {
-            const results = document.getElementById('testResults');
-            const div = document.createElement('div');
-            div.className = `test-result ${type}`;
-            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}:</strong> ${message}`;
-            results.appendChild(div);
+        // Función para agregar logs
+        function addLog(message, type = 'info') {
+            const logsDiv = document.getElementById('jsLogs');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `<span style="color: #666;">[${timestamp}]</span> <span style="color: ${type === 'error' ? 'red' : type === 'success' ? 'green' : 'blue'};">${message}</span>`;
+            logsDiv.appendChild(logEntry);
+            logsDiv.scrollTop = logsDiv.scrollHeight;
         }
         
-        // Función de respaldo para safeLoadView (como en las vistas)
-        window.safeLoadView = function(viewName) {
-            console.log('safeLoadView llamado con:', viewName);
-            showResult(`Intentando cargar: ${viewName}`, 'info');
+        // Función de test para cargar vistas
+        function testLoadView(viewName) {
+            addLog(`Intentando cargar: ${viewName}`, 'info');
+            
+            const target = document.getElementById("mainContent");
+            if (!target) {
+                addLog('Error: Elemento mainContent no encontrado', 'error');
+                return;
+            }
+            
+            // Mostrar indicador de carga
+            target.innerHTML = '<div class="text-center p-4"><i class="fas fa-spinner fa-spin"></i> Cargando...</div>';
+            addLog('Mostrando indicador de carga', 'info');
+            
+            // Construir URL
+            let url;
+            if (viewName.includes('/')) {
+                const [controller, actionWithParams] = viewName.split('/');
+                const [action, params] = actionWithParams.split('?');
+                url = `${BASE_URL}?view=${controller}&action=${action}`;
+                
+                if (params) {
+                    url += `&${params}`;
+                }
+            } else {
+                url = `${BASE_URL}?view=${viewName}`;
+            }
+            
+            addLog(`URL construida: ${url}`, 'info');
+            
+            // Hacer la petición
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                addLog(`Respuesta del servidor: ${response.status} ${response.statusText}`, 'info');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                return response.text();
+            })
+            .then(html => {
+                addLog(`Contenido recibido (${html.length} caracteres)`, 'success');
+                addLog(`Primeros 100 caracteres: ${html.substring(0, 100)}...`, 'info');
+                
+                // Verificar si es HTML válido
+                const hasHtmlTags = /<[^>]*>/g.test(html);
+                
+                if (hasHtmlTags) {
+                    addLog('Contenido detectado como HTML válido', 'success');
+                    target.innerHTML = html;
+                } else {
+                    addLog('Contenido no es HTML válido, mostrando como texto', 'warning');
+                    target.innerHTML = '<div class="alert alert-info">' + html + '</div>';
+                }
+            })
+            .catch(err => {
+                addLog(`Error al cargar la vista: ${err.message}`, 'error');
+                target.innerHTML = '<div class="alert alert-danger">Error al cargar la vista: ' + err.message + '</div>';
+            });
+        }
+        
+        // Función para probar loadView original
+        function testOriginalLoadView(viewName) {
+            addLog(`Probando loadView original con: ${viewName}`, 'info');
             
             if (typeof loadView === 'function') {
-                console.log('loadView disponible, ejecutando...');
-                showResult('loadView disponible, ejecutando...', 'success');
+                addLog('Función loadView disponible', 'success');
                 loadView(viewName);
             } else {
-                console.error('loadView no está disponible, redirigiendo...');
-                showResult('loadView no disponible, redirigiendo...', 'error');
-                // Fallback: redirigir a la página
-                const url = `${BASE_URL}?view=${viewName.replace('/', '&action=')}`;
-                window.location.href = url;
+                addLog('Función loadView NO disponible', 'error');
             }
-        };
-        
-        // Función de prueba para dashboard de nómina
-        function testPayrollDashboard() {
-            showResult('🔄 Probando dashboard de nómina...', 'info');
-            safeLoadView('payroll/dashboard');
         }
         
-        // Función de prueba para empleados
-        function testPayrollEmployees() {
-            showResult('🔄 Probando empleados de nómina...', 'info');
-            safeLoadView('payroll/employees');
-        }
-        
-        // Función de prueba para períodos
-        function testPayrollPeriods() {
-            showResult('🔄 Probando períodos de nómina...', 'info');
-            safeLoadView('payroll/periods');
-        }
-        
-        // Función de prueba para loadView
-        function testLoadViewFunction() {
-            showResult('🔄 Verificando función loadView...', 'info');
+        // Función para probar safeLoadView
+        function testSafeLoadView(viewName) {
+            addLog(`Probando safeLoadView con: ${viewName}`, 'info');
             
-            if (typeof loadView === 'function') {
-                showResult('✅ Función loadView está disponible', 'success');
-                console.log('loadView es una función:', loadView);
+            if (typeof safeLoadView === 'function') {
+                addLog('Función safeLoadView disponible', 'success');
+                safeLoadView(viewName);
             } else {
-                showResult('❌ Función loadView NO está disponible', 'error');
-                console.error('loadView no es una función:', typeof loadView);
+                addLog('Función safeLoadView NO disponible', 'error');
             }
         }
         
-        // Verificar al cargar la página
+        // Cargar loadView.js
+        function loadLoadViewScript() {
+            addLog('Cargando loadView.js...', 'info');
+            
+            const script = document.createElement('script');
+            script.src = BASE_URL + 'app/resources/js/loadView.js';
+            script.onload = function() {
+                addLog('loadView.js cargado exitosamente', 'success');
+            };
+            script.onerror = function() {
+                addLog('Error cargando loadView.js', 'error');
+            };
+            document.head.appendChild(script);
+        }
+        
+        // Inicializar
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Página cargada, verificando loadView...');
-            showResult('Página cargada, verificando componentes...', 'info');
-            
-            // Verificar loadView
-            if (typeof loadView === 'function') {
-                showResult('✅ loadView disponible', 'success');
-            } else {
-                showResult('❌ loadView no disponible', 'error');
-            }
-            
-            // Verificar BASE_URL
-            showResult(`✅ BASE_URL: ${BASE_URL}`, 'success');
+            addLog('Página cargada, inicializando...', 'info');
+            loadLoadViewScript();
         });
     </script>
+    
+    <div class="mt-4">
+        <h4>Tests Adicionales:</h4>
+        <div class="btn-group" role="group">
+            <button class="btn btn-primary" onclick="testLoadView('payroll/dashboard')">Test Dashboard</button>
+            <button class="btn btn-success" onclick="testOriginalLoadView('payroll/dashboard')">Test loadView Original</button>
+            <button class="btn btn-info" onclick="testSafeLoadView('payroll/dashboard')">Test safeLoadView</button>
+        </div>
+    </div>
 </body>
 </html> 

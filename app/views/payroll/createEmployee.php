@@ -1,62 +1,27 @@
 <?php
-// Incluir el header del dashboard
-include 'app/views/layouts/dashHead.php';
-include 'app/views/layouts/dashHeader.php';
+// Verificar sesión y permisos
+if (!isset($sessionManager)) {
+    require_once ROOT . '/app/library/SessionManager.php';
+    $sessionManager = new SessionManager();
+}
+
+// Verificar permisos
+if (!$sessionManager->hasRole(['root', 'director'])) {
+    header('Location: ?view=unauthorized');
+    exit;
+}
+
+// Incluir layout modular
+include 'app/views/layouts/formView.php';
 ?>
 
-<div class="container-fluid">
-    <div class="row">
-        <!-- Sidebar -->
-        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-            <div class="position-sticky pt-3">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php?controller=payroll&action=dashboard">
-                            <i class="fas fa-tachometer-alt"></i> Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="index.php?controller=payroll&action=employees">
-                            <i class="fas fa-users"></i> Empleados
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php?controller=payroll&action=periods">
-                            <i class="fas fa-calendar-alt"></i> Períodos
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php?controller=payroll&action=absences">
-                            <i class="fas fa-user-times"></i> Ausencias
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php?controller=payroll&action=overtime">
-                            <i class="fas fa-clock"></i> Horas Extras
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php?controller=payroll&action=bonuses">
-                            <i class="fas fa-gift"></i> Bonificaciones
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php?controller=payroll&action=reports">
-                            <i class="fas fa-chart-bar"></i> Reportes
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-
-        <!-- Contenido principal -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+<!-- Contenido del formulario -->
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Crear Nuevo Empleado</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
-                    <a href="index.php?controller=payroll&action=employees" class="btn btn-sm btn-outline-secondary">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="safeLoadView('payroll/employees')">
                         <i class="fas fa-arrow-left"></i> Volver a Empleados
-                    </a>
+                    </button>
                 </div>
             </div>
 
@@ -207,9 +172,9 @@ include 'app/views/layouts/dashHeader.php';
                             <div class="col-12">
                                 <hr>
                                 <div class="d-flex justify-content-between">
-                                    <a href="index.php?controller=payroll&action=employees" class="btn btn-secondary">
+                                    <button type="button" class="btn btn-secondary" onclick="safeLoadView('payroll/employees')">
                                         <i class="fas fa-times"></i> Cancelar
-                                    </a>
+                                    </button>
                                     <div>
                                         <button type="button" class="btn btn-outline-primary me-2" onclick="saveDraft()">
                                             <i class="fas fa-save"></i> Guardar Borrador
@@ -280,7 +245,4 @@ document.getElementById('hire_date').addEventListener('change', function() {
 });
 </script>
 
-<?php
-// Incluir el footer del dashboard
-include 'app/views/layouts/dashFooter.php';
-?> 
+<!-- Fin del contenido del formulario --> 

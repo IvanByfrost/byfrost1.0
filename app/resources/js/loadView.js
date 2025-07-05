@@ -13,17 +13,19 @@ window.loadView = function(viewName) {
     
     // Si la vista tiene formato 'controller/action', construye la URL
     let url;
+    const baseUrl = window.location.origin + window.location.pathname;
+    
     if (viewName.includes('/')) {
         const [controller, actionWithParams] = viewName.split('/');
         const [action, params] = actionWithParams.split('?');
-        url = `${BASE_URL}?view=${controller}&action=${action}`;
+        url = `${baseUrl}?view=${controller}&action=${action}`;
         
         // Agregar parámetros adicionales si existen
         if (params) {
             url += `&${params}`;
         }
     } else {
-        url = `${BASE_URL}?view=${viewName}`;
+        url = `${baseUrl}?view=${viewName}`;
     }
     
     console.log("URL construida:", url);
@@ -196,16 +198,18 @@ window.safeLoadView = function(viewName) {
         
         // Construir URL manualmente
         let url;
+        const baseUrl = window.location.origin + window.location.pathname;
+        
         if (viewName.includes('/')) {
             const [controller, actionWithParams] = viewName.split('/');
             const [action, params] = actionWithParams.split('?');
-            url = `${BASE_URL}?view=${controller}&action=${action}`;
+            url = `${baseUrl}?view=${controller}&action=${action}`;
             
             if (params) {
                 url += `&${params}`;
             }
         } else {
-            url = `${BASE_URL}?view=${viewName}`;
+            url = `${baseUrl}?view=${viewName}`;
         }
         
         console.log('URL construida manualmente:', url);

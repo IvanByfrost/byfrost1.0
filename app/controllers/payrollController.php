@@ -31,21 +31,50 @@ class PayrollController extends MainController {
         
         try {
             // Obtener estadísticas generales
-            $currentPeriod = $this->payrollModel->getAllPeriods(['status' => 'open']);
             $employees = $this->payrollModel->getAllEmployees();
-            $recentPeriods = $this->payrollModel->getAllPeriods(['status' => 'closed']);
+            $currentPeriods = $this->payrollModel->getAllPeriods(['status' => 'open']);
+            $closedPeriods = $this->payrollModel->getAllPeriods(['status' => 'closed']);
+            $absences = $this->payrollModel->getAllAbsences();
+            
+            // Calcular estadísticas
+            $total_employees = count($employees);
+            $active_periods = count($currentPeriods);
+            $total_absences = count($absences);
+            
+            // Calcular nómina del mes (ejemplo)
+            $monthly_payroll = 0;
+            if (!empty($employees)) {
+                foreach ($employees as $employee) {
+                    $monthly_payroll += $employee['salary'] ?? 0;
+                }
+            }
             
             $data = [
-                'current_period' => $currentPeriod[0] ?? null,
-                'total_employees' => count($employees),
-                'recent_periods' => array_slice($recentPeriods, 0, 5),
+                'total_employees' => $total_employees,
+                'monthly_payroll' => $monthly_payroll,
+                'active_periods' => $active_periods,
+                'total_absences' => $total_absences,
+                'current_period' => $currentPeriods[0] ?? null,
+                'recent_periods' => array_slice($closedPeriods, 0, 5),
                 'page_title' => 'Dashboard de Nómina'
             ];
             
             $this->loadPartialView('payroll/dashboard', $data);
             
         } catch (Exception $e) {
-            $this->loadPartialView('Error/error', ['error' => $e->getMessage()]);
+            // Si hay error, mostrar dashboard con valores por defecto
+            $data = [
+                'total_employees' => 0,
+                'monthly_payroll' => 0,
+                'active_periods' => 0,
+                'total_absences' => 0,
+                'current_period' => null,
+                'recent_periods' => [],
+                'page_title' => 'Dashboard de Nómina',
+                'error' => $e->getMessage()
+            ];
+            
+            $this->loadPartialView('payroll/dashboard', $data);
         }
     }
     
