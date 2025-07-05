@@ -29,6 +29,49 @@ class studentController extends MainController
         $this->documentModel = new DocumentModel($dbConn);
     }
 
+    // Método por defecto - redirige al dashboard
+    public function index()
+    {
+        // Obtener el ID del estudiante desde la sesión
+        $studentId = $_SESSION['user_id'] ?? null;
+        if (!$studentId) {
+            header('Location: ?controller=login');
+            exit;
+        }
+        $this->dashboard($studentId);
+    }
+
+    // Dashboard principal del estudiante
+    public function dashboard($studentId = null)
+    {
+        if (!$studentId) {
+            $studentId = $_SESSION['user_id'] ?? null;
+        }
+        
+        if (!$studentId) {
+            header('Location: ?controller=login');
+            exit;
+        }
+
+        // Obtener datos del estudiante
+        $studentModel = new studentModel();
+        $student = $studentModel->getById($studentId);
+        
+        // Obtener estadísticas básicas
+        $tasksCount = $this->taskModel->getCountByStudent($studentId);
+        $worksCount = $this->workModel->getCountByStudent($studentId);
+        $activitiesCount = $this->activityModel->getCountByStudent($studentId);
+        $reportsCount = $this->reportModel->getCountByStudent($studentId);
+        
+        // Obtener tareas pendientes
+        $pendingTasks = $this->taskModel->getPendingByStudent($studentId);
+        
+        // Obtener trabajos recientes
+        $recentWorks = $this->workModel->getRecentByStudent($studentId);
+        
+        require ROOT . '/app/views/student/dashboard.php';
+    }
+
     // Datos básicos del estudiante
     public function basicData($studentId)
     {
