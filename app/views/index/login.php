@@ -112,9 +112,9 @@ require_once __DIR__ . '/../layouts/header.php';
     .input-eye-pill {
         position: absolute;
         top: 50%;
-        right: 20px;
+        right: 12px;
         transform: translateY(-50%);
-        background: none;
+        background: none !important;
         border: none;
         padding: 0;
         margin: 0;
@@ -125,7 +125,7 @@ require_once __DIR__ . '/../layouts/header.php';
         justify-content: center;
         cursor: pointer;
         z-index: 3;
-        box-shadow: none;
+        box-shadow: none !important;
     }
     .input-eye-pill:focus {
         outline: none;
