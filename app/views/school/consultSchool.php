@@ -15,9 +15,9 @@ $search = $search ?? '';
                     <h2>Consulta de Escuelas</h2>
                     <p>Busca escuelas por nombre, código DANE o NIT.</p>
                 </div>
-                <a href="?view=school&action=createSchool" class="btn btn-success">
+                <button type="button" class="btn btn-success" onclick="loadView('school/createSchool')">
                     <i class="fas fa-plus"></i> Crear Nueva Escuela
-                </a>
+                </button>
             </div>
             
             <!-- Mensajes -->
@@ -51,9 +51,9 @@ $search = $search ?? '';
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <a href="?view=school&action=consultSchool" class="btn btn-secondary">
+                        <button type="button" class="btn btn-secondary" onclick="loadView('school/consultSchool')">
                             <i class="fas fa-list"></i> Ver Todas
-                        </a>
+                        </button>
                     </div>
                 </div>
             </form>
@@ -116,14 +116,16 @@ $search = $search ?? '';
                                             </td>
                                             <td>
                                                 <div class="btn-group" role="group">
-                                                    <a href="?view=school&action=view&id=<?php echo $school['school_id']; ?>" 
-                                                       class="btn btn-sm btn-outline-primary" title="Ver detalles">
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                            onclick="loadView('school/view?id=<?php echo $school['school_id']; ?>')" 
+                                                            title="Ver detalles">
                                                         <i class="fas fa-eye"></i>
-                                                    </a>
-                                                    <a href="?view=school&action=edit&id=<?php echo $school['school_id']; ?>" 
-                                                       class="btn btn-sm btn-outline-warning" title="Editar">
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-warning" 
+                                                            onclick="loadView('school/edit?id=<?php echo $school['school_id']; ?>')" 
+                                                            title="Editar">
                                                         <i class="fas fa-edit"></i>
-                                                    </a>
+                                                    </button>
                                                     <button type="button" class="btn btn-sm btn-outline-danger" 
                                                             onclick="confirmDelete(<?php echo $school['school_id']; ?>)" 
                                                             title="Eliminar">
@@ -146,7 +148,7 @@ $search = $search ?? '';
             <?php else: ?>
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle"></i> 
-                    No hay escuelas registradas. <a href="?view=school&action=createSchool">Crear la primera escuela</a>
+                    No hay escuelas registradas. <button type="button" class="btn btn-link p-0" onclick="loadView('school/createSchool')">Crear la primera escuela</button>
                 </div>
             <?php endif; ?>
         </div>
@@ -156,7 +158,7 @@ $search = $search ?? '';
 <script>
 function confirmDelete(schoolId) {
     if (confirm('¿Estás seguro de que deseas eliminar esta escuela? Esta acción no se puede deshacer.')) {
-        window.location.href = '?view=school&action=delete&id=' + schoolId;
+        loadView('school/delete?id=' + schoolId);
     }
 }
 </script>

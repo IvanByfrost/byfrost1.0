@@ -5,6 +5,7 @@ if (!defined('ROOT')) {
 
 require_once ROOT . '/app/scripts/connection.php';
 require_once ROOT . '/app/models/UserModel.php';
+require_once ROOT . '/app/library/SessionManager.php';
 
 // Debug: mostrar datos recibidos
 error_log("DEBUG assignProcess - POST data: " . print_r($_POST, true));
@@ -12,6 +13,17 @@ error_log("DEBUG assignProcess - REQUEST_METHOD: " . $_SERVER['REQUEST_METHOD'])
 
 $dbConn = getConnection();
 $model = new UserModel($dbConn);
+
+// Inicializar SessionManager para obtener el rol del usuario actual
+$sessionManager = new SessionManager();
+$currentUserRole = null;
+
+if ($sessionManager->isLoggedIn()) {
+    $currentUserRole = $sessionManager->getUserRole();
+    error_log("DEBUG assignProcess - Usuario actual logueado con rol: " . $currentUserRole);
+} else {
+    error_log("DEBUG assignProcess - Usuario no logueado");
+}
 
 // Verificar método y subject
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -114,11 +126,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             try {
                 if ($searchType === 'document' && $query) {
-                    $users = $model->searchUsersByRoleAndDocument($roleType, $query);
+                    $users = $model->searchUsersByRoleAndDocument($roleType, $query, $currentUserRole);
                 } elseif ($roleType === 'no_role') {
                     $users = $model->getUsersWithoutRole();
                 } else {
-                    $users = $model->getUsersByRole($roleType);
+                    $users = $model->getUsersByRole($roleType, $currentUserRole);
                 }
 
                 if (!empty($users)) {
@@ -227,7 +239,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
             try {
-                $users = $model->searchUsersByRoleAndDocument($roleType, $credentialNumber);
+                $users = $model->searchUsersByRoleAndDocument($roleType, $credentialNumber, $currentUserRole);
                 if (!empty($users)) {
                     echo json_encode([
                         'status' => 'ok',
@@ -250,14 +262,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
 
         default:
-            error_log("DEBUG assignProcess - Subject inválido: " . $subject);
+            error_log("DEBUG assignProcess - Subject no reconocido: " . $subject);
             echo json_encode([
                 'status' => 'error',
-                'msg' => 'Subject inválido. Valores permitidos: assign_role, search_users, search_users_by_role, get_users_without_role, search_role_history',
-                'debug' => [
-                    'received_subject' => $subject,
-                    'expected_subjects' => ['assign_role', 'search_users', 'search_users_by_role', 'get_users_without_role', 'search_role_history']
-                ]
+                'msg' => 'Operación no reconocida'
             ]);
             break;
     }
@@ -265,10 +273,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     error_log("DEBUG assignProcess - Método no permitido: " . $_SERVER['REQUEST_METHOD']);
     echo json_encode([
         'status' => 'error',
-        'msg' => 'Método no permitido. Se requiere POST',
-        'debug' => [
-            'method' => $_SERVER['REQUEST_METHOD'],
-            'expected_method' => 'POST'
-        ]
+        'msg' => 'Método no permitido'
     ]);
 }

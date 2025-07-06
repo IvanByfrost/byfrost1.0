@@ -450,11 +450,17 @@ class UserModel extends MainModel
      * Obtiene usuarios con un rol específico
      * 
      * @param string $roleType Tipo de rol
+     * @param string|null $currentUserRole Rol del usuario actual para restricciones
      * @return array Array de usuarios con el rol especificado
      */
-    public function getUsersByRole($roleType)
+    public function getUsersByRole($roleType, $currentUserRole = null)
     {
         try {
+            // Si el usuario actual es director, no puede buscar usuarios con rol "root" ni "director"
+            if ($currentUserRole === 'director' && in_array($roleType, ['root', 'director'])) {
+                throw new Exception('No tienes permisos para buscar usuarios con ese rol.');
+            }
+            
             $query = "SELECT 
                         u.user_id,
                         u.credential_type,
@@ -487,11 +493,17 @@ class UserModel extends MainModel
      * 
      * @param string $roleType Tipo de rol
      * @param string $query Criterio de búsqueda (nombre o documento)
+     * @param string|null $currentUserRole Rol del usuario actual para restricciones
      * @return array Array de usuarios encontrados
      */
-    public function searchUsersByRole($roleType, $query)
+    public function searchUsersByRole($roleType, $query, $currentUserRole = null)
     {
         try {
+            // Si el usuario actual es director, no puede buscar usuarios con rol "root" ni "director"
+            if ($currentUserRole === 'director' && in_array($roleType, ['root', 'director'])) {
+                throw new Exception('No tienes permisos para buscar usuarios con ese rol.');
+            }
+            
             $searchQuery = "SELECT 
                             u.user_id,
                             u.credential_type,
@@ -540,9 +552,14 @@ class UserModel extends MainModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function searchUsersByRoleAndDocument($roleType, $credentialNumber)
+    public function searchUsersByRoleAndDocument($roleType, $credentialNumber, $currentUserRole = null)
     {
         try {
+            // Si el usuario actual es director, no puede buscar usuarios con rol "root" ni "director"
+            if ($currentUserRole === 'director' && in_array($roleType, ['root', 'director'])) {
+                throw new Exception('No tienes permisos para buscar usuarios con ese rol.');
+            }
+            
             $query = "SELECT 
                         u.user_id,
                         u.credential_type,

@@ -23,8 +23,14 @@ class DirectorController extends MainController {
     // Dashboard del director
     public function dashboard() {
         $this->protectDirector();
-        // Cargar la vista del dashboard
-        require_once app.views . 'director/dashboard.php';
+        // Cargar la vista completa del dashboard del director (con layouts y menú)
+        require_once ROOT . '/app/views/director/dashboard.php';
+    }
+
+    // Menú principal del director
+    public function menuDirector() {
+        $this->protectDirector();
+        $this->loadPartialView('director/menuDirector');
     }
 
     // Método por defecto para el router

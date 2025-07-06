@@ -195,6 +195,231 @@ class SchoolController extends MainController
         ]);
     }
 
+    public function view()
+    {
+        $this->protectSchool();
+        
+        $schoolId = $_GET['id'] ?? null;
+        
+        if (!$schoolId) {
+            $this->loadPartialView('school/consultSchool', [
+                'error' => 'ID de escuela no proporcionado',
+                'schools' => $this->schoolModel->getAllSchools()
+            ]);
+            return;
+        }
+        
+        $school = $this->schoolModel->getSchoolById($schoolId);
+        
+        if (!$school) {
+            $this->loadPartialView('school/consultSchool', [
+                'error' => 'Escuela no encontrada',
+                'schools' => $this->schoolModel->getAllSchools()
+            ]);
+            return;
+        }
+        
+        $this->loadPartialView('school/viewSchool', [
+            'school' => $school
+        ]);
+    }
+
+    public function edit()
+    {
+        $this->protectSchool();
+        
+        $schoolId = $_GET['id'] ?? null;
+        
+        if (!$schoolId) {
+            $this->loadPartialView('school/consultSchool', [
+                'error' => 'ID de escuela no proporcionado',
+                'schools' => $this->schoolModel->getAllSchools()
+            ]);
+            return;
+        }
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                // Validar campos obligatorios
+                $requiredFields = ['school_name', 'school_dane', 'school_document'];
+                $missingFields = [];
+                
+                foreach ($requiredFields as $field) {
+                    if (empty($_POST[$field])) {
+                        $missingFields[] = $field;
+                    }
+                }
+                
+                if (!empty($missingFields)) {
+                    $errorMessage = 'Los siguientes campos son obligatorios: ' . implode(', ', $missingFields);
+                    
+                    if ($this->isAjaxRequest()) {
+                        $this->sendJsonResponse(false, $errorMessage);
+                        return;
+                    } else {
+                        $school = $this->schoolModel->getSchoolById($schoolId);
+                        $this->loadPartialView('school/editSchool', [
+                            'error' => $errorMessage,
+                            'school' => $school,
+                            'formData' => $_POST,
+                            'directors' => $this->schoolModel->getDirectors(),
+                            'coordinators' => $this->schoolModel->getCoordinators()
+                        ]);
+                        return;
+                    }
+                }
+                
+                // Validar formato de email
+                if (!empty($_POST['email']) && !filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+                    $errorMessage = 'El formato del email no es válido';
+                    
+                    if ($this->isAjaxRequest()) {
+                        $this->sendJsonResponse(false, $errorMessage);
+                        return;
+                    } else {
+                        $school = $this->schoolModel->getSchoolById($schoolId);
+                        $this->loadPartialView('school/editSchool', [
+                            'error' => $errorMessage,
+                            'school' => $school,
+                            'formData' => $_POST,
+                            'directors' => $this->schoolModel->getDirectors(),
+                            'coordinators' => $this->schoolModel->getCoordinators()
+                        ]);
+                        return;
+                    }
+                }
+                
+                // Preparar los datos
+                $data = [
+                    'school_id' => $schoolId,
+                    'school_name' => trim($_POST['school_name']),
+                    'school_dane' => trim($_POST['school_dane']),
+                    'school_document' => trim($_POST['school_document']),
+                    'total_quota' => intval($_POST['total_quota'] ?? 0),
+                    'director_user_id' => intval($_POST['director_user_id']),
+                    'coordinator_user_id' => !empty($_POST['coordinator_user_id']) ? intval($_POST['coordinator_user_id']) : null,
+                    'address' => trim($_POST['address'] ?? ''),
+                    'phone' => trim($_POST['phone'] ?? ''),
+                    'email' => trim($_POST['email'] ?? '')
+                ];
+                
+                // Llamar al método del modelo para actualizar
+                $result = $this->schoolModel->updateSchool($data);
+                
+                if ($result) {
+                    // Éxito
+                    if ($this->isAjaxRequest()) {
+                        $this->sendJsonResponse(true, 'Escuela actualizada exitosamente');
+                    } else {
+                        // Redirigir a la lista de escuelas con mensaje de éxito
+                        $this->redirect('?view=school&action=consultSchool&success=1&msg=' . urlencode('Escuela actualizada exitosamente'));
+                    }
+                } else {
+                    $errorMessage = 'Error al actualizar la escuela. Verifique que los datos sean únicos.';
+                    
+                    if ($this->isAjaxRequest()) {
+                        $this->sendJsonResponse(false, $errorMessage);
+                    } else {
+                        $school = $this->schoolModel->getSchoolById($schoolId);
+                        $this->loadPartialView('school/editSchool', [
+                            'error' => $errorMessage,
+                            'school' => $school,
+                            'formData' => $_POST,
+                            'directors' => $this->schoolModel->getDirectors(),
+                            'coordinators' => $this->schoolModel->getCoordinators()
+                        ]);
+                    }
+                }
+                
+            } catch (Exception $e) {
+                error_log("Error en SchoolController::edit: " . $e->getMessage());
+                
+                $errorMessage = 'Error interno del servidor: ' . $e->getMessage();
+                
+                if ($this->isAjaxRequest()) {
+                    $this->sendJsonResponse(false, $errorMessage);
+                } else {
+                    $school = $this->schoolModel->getSchoolById($schoolId);
+                    $this->loadPartialView('school/editSchool', [
+                        'error' => $errorMessage,
+                        'school' => $school,
+                        'formData' => $_POST,
+                        'directors' => $this->schoolModel->getDirectors(),
+                        'coordinators' => $this->schoolModel->getCoordinators()
+                    ]);
+                }
+            }
+        } else {
+            // Si es GET, mostrar el formulario de edición
+            $school = $this->schoolModel->getSchoolById($schoolId);
+            
+            if (!$school) {
+                $this->loadPartialView('school/consultSchool', [
+                    'error' => 'Escuela no encontrada',
+                    'schools' => $this->schoolModel->getAllSchools()
+                ]);
+                return;
+            }
+            
+            $this->loadPartialView('school/editSchool', [
+                'school' => $school,
+                'directors' => $this->schoolModel->getDirectors(),
+                'coordinators' => $this->schoolModel->getCoordinators()
+            ]);
+        }
+    }
+
+    public function delete()
+    {
+        $this->protectSchool();
+        
+        $schoolId = $_GET['id'] ?? null;
+        
+        if (!$schoolId) {
+            if ($this->isAjaxRequest()) {
+                $this->sendJsonResponse(false, 'ID de escuela no proporcionado');
+            } else {
+                $this->loadPartialView('school/consultSchool', [
+                    'error' => 'ID de escuela no proporcionado',
+                    'schools' => $this->schoolModel->getAllSchools()
+                ]);
+            }
+            return;
+        }
+        
+        try {
+            $result = $this->schoolModel->deleteSchool($schoolId);
+            
+            if ($result) {
+                if ($this->isAjaxRequest()) {
+                    $this->sendJsonResponse(true, 'Escuela eliminada exitosamente');
+                } else {
+                    $this->redirect('?view=school&action=consultSchool&success=1&msg=' . urlencode('Escuela eliminada exitosamente'));
+                }
+            } else {
+                if ($this->isAjaxRequest()) {
+                    $this->sendJsonResponse(false, 'Error al eliminar la escuela');
+                } else {
+                    $this->loadPartialView('school/consultSchool', [
+                        'error' => 'Error al eliminar la escuela',
+                        'schools' => $this->schoolModel->getAllSchools()
+                    ]);
+                }
+            }
+        } catch (Exception $e) {
+            error_log("Error en SchoolController::delete: " . $e->getMessage());
+            
+            if ($this->isAjaxRequest()) {
+                $this->sendJsonResponse(false, 'Error interno del servidor: ' . $e->getMessage());
+            } else {
+                $this->loadPartialView('school/consultSchool', [
+                    'error' => 'Error interno del servidor: ' . $e->getMessage(),
+                    'schools' => $this->schoolModel->getAllSchools()
+                ]);
+            }
+        }
+    }
+
     // Protección de acceso solo para escuela o tesorero
     private function protectSchool() {
         if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn() || !$this->sessionManager->hasAnyRole(['director', 'coordinator', 'treasurer', 'root'])) {

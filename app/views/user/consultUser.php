@@ -1,3 +1,29 @@
+<?php
+require_once __DIR__ . '/../../library/SessionManager.php';
+$sessionManager = new SessionManager();
+$userRole = $sessionManager->getUserRole();
+if (!function_exists('renderRoleOptions')) {
+    function renderRoleOptions($userRole, $selected = '') {
+        $roles = [
+            'student' => 'Estudiante',
+            'parent' => 'Padre/Acudiente',
+            'professor' => 'Profesor',
+            'coordinator' => 'Coordinador',
+            'director' => 'Director/Rector',
+            'treasurer' => 'Tesorero',
+            'root' => 'Administrador',
+            'no_role' => 'Sin Rol'
+        ];
+        if ($userRole === 'director') {
+            unset($roles['root'], $roles['director'], $roles['no_role']);
+        }
+        foreach ($roles as $value => $label) {
+            $isSelected = ($selected === $value) ? 'selected' : '';
+            echo "<option value=\"$value\" $isSelected>$label</option>";
+        }
+    }
+}
+?>
 <div class="container mt-4">
     <div class="row">
         <div class="col-12">
@@ -39,14 +65,7 @@
                                     <label for="role_type">Rol</label>
                                     <select class="form-control" id="role_type" name="role_type">
                                         <option value="">Seleccionar rol</option>
-                                        <option value="student">Estudiante</option>
-                                        <option value="parent">Padre/Acudiente</option>
-                                        <option value="professor">Profesor</option>
-                                        <option value="coordinator">Coordinador</option>
-                                        <option value="director">Director/Rector</option>
-                                        <option value="treasurer">Tesorero</option>
-                                        <option value="root">Administrador</option>
-                                        <option value="no_role">Sin Rol</option>
+                                        <?php renderRoleOptions($userRole); ?>
                                     </select>
                                 </div>
                             </div>

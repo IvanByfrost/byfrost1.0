@@ -25,6 +25,7 @@ CREATE TABLE users (
     address VARCHAR(100),
     phone VARCHAR(20),
     email VARCHAR(100),
+    school_id INT NULL,
     password_hash VARBINARY(255) NOT NULL,
     salt_password VARBINARY(255) NOT NULL,
     is_active BIT NOT NULL DEFAULT 1,
@@ -373,4 +374,18 @@ CREATE TABLE academic_reports (
     created_by_user_id INT,
     FOREIGN KEY (student_user_id) REFERENCES users(user_id),
     FOREIGN KEY (created_by_user_id) REFERENCES users(user_id)
+) ENGINE=InnoDB;
+
+-- =============================================
+-- RELACIÓN MUCHOS A MUCHOS: USUARIOS Y ESCUELAS
+-- =============================================
+CREATE TABLE school_users (
+    school_user_id INT AUTO_INCREMENT PRIMARY KEY,
+    school_id INT NOT NULL,
+    user_id INT NOT NULL,
+    assigned_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_active BIT NOT NULL DEFAULT 1,
+    UNIQUE KEY idx_school_user (school_id, user_id),
+    FOREIGN KEY (school_id) REFERENCES schools(school_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;

@@ -8,6 +8,29 @@ $success = $success ?? '';
 $message = $message ?? '';
 $users = $users ?? [];
 $roles = $roles ?? [];
+
+// Función reutilizable para renderizar las opciones de roles según el rol del usuario actual
+function renderRoleOptions($userRole, $selected = '') {
+    $roles = [
+        'student' => 'Estudiante',
+        'parent' => 'Padre/Acudiente',
+        'professor' => 'Profesor',
+        'coordinator' => 'Coordinador',
+        'director' => 'Director/Rector',
+        'treasurer' => 'Tesorero',
+        'root' => 'Administrador',
+        'none' => 'Sin Rol'
+    ];
+    // Restricciones para director
+    if ($userRole === 'director') {
+        unset($roles['root'], $roles['director'], $roles['none']);
+    }
+    // Puedes agregar más restricciones para otros roles aquí
+    foreach ($roles as $value => $label) {
+        $isSelected = ($selected === $value) ? 'selected' : '';
+        echo "<option value=\"$value\" $isSelected>$label</option>";
+    }
+}
 ?>
 
 <div class="container mt-4">
@@ -135,23 +158,7 @@ $roles = $roles ?? [];
                         <label for="modal_role_type" class="form-label">Nuevo Rol *</label>
                         <select class="form-control" id="modal_role_type" name="role_type" required>
                             <option value="">Seleccionar rol</option>
-                            <?php if ($userRole === 'director'): ?>
-                                <option value="student">Estudiante</option>
-                                <option value="parent">Padre/Acudiente</option>
-                                <option value="professor">Profesor</option>
-                                <option value="coordinator">Coordinador</option>
-                                <option value="treasurer">Tesorero</option>
-                            <?php elseif ($userRole === 'coordinator'): ?>
-                                <option value="student">Estudiante</option>
-                            <?php else: ?>
-                                <option value="student">Estudiante</option>
-                                <option value="parent">Padre/Acudiente</option>
-                                <option value="professor">Profesor</option>
-                                <option value="coordinator">Coordinador</option>
-                                <option value="director">Director/Rector</option>
-                                <option value="treasurer">Tesorero</option>
-                                <option value="root">Administrador</option>
-                            <?php endif; ?>
+                            <?php renderRoleOptions($userRole); ?>
                         </select>
                     </div>
                 </form>

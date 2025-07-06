@@ -279,4 +279,127 @@ class SchoolModel extends MainModel
             return [];
         }
     }
+
+    // Función para actualizar una escuela
+    public function updateSchool($data)
+    {
+        try {
+            // Validar que los datos requeridos estén presentes
+            if (empty($data['school_name']) || empty($data['school_dane']) || empty($data['school_document'])) {
+                throw new Exception('Los campos Nombre del colegio, DANE y NIT son obligatorios');
+            }
+            
+            // Validar que se haya proporcionado un director
+            if (empty($data['director_user_id'])) {
+                throw new Exception('Debe seleccionar un director para la escuela');
+            }
+            
+            // Verificar si ya existe otra escuela con el mismo NIT o código DANE (excluyendo la actual)
+            $checkQuery = "SELECT school_id FROM schools WHERE (school_document = :school_document OR school_dane = :school_dane) AND school_id != :school_id";
+            $checkStmt = $this->dbConn->prepare($checkQuery);
+            $checkStmt->execute([
+                ':school_document' => $data['school_document'],
+                ':school_dane' => $data['school_dane'],
+                ':school_id' => $data['school_id']
+            ]);
+            
+            if ($checkStmt->fetch()) {
+                throw new Exception('Ya existe otra escuela con el mismo NIT o código DANE');
+            }
+            
+            // Verificar que el director existe y tiene el rol correcto
+            $directorQuery = "SELECT u.user_id FROM users u 
+                             INNER JOIN user_roles ur ON u.user_id = ur.user_id 
+                             WHERE u.user_id = :director_id AND ur.role_type = 'director' 
+                             AND u.is_active = 1 AND ur.is_active = 1";
+            $directorStmt = $this->dbConn->prepare($directorQuery);
+            $directorStmt->execute([':director_id' => $data['director_user_id']]);
+            
+            if (!$directorStmt->fetch()) {
+                throw new Exception('El director seleccionado no existe o no tiene el rol correcto');
+            }
+            
+            // Verificar que el coordinador existe y tiene el rol correcto (si se proporciona)
+            if (!empty($data['coordinator_user_id'])) {
+                $coordinatorQuery = "SELECT u.user_id FROM users u 
+                                   INNER JOIN user_roles ur ON u.user_id = ur.user_id 
+                                   WHERE u.user_id = :coordinator_id AND ur.role_type = 'coordinator' 
+                                   AND u.is_active = 1 AND ur.is_active = 1";
+                $coordinatorStmt = $this->dbConn->prepare($coordinatorQuery);
+                $coordinatorStmt->execute([':coordinator_id' => $data['coordinator_user_id']]);
+                
+                if (!$coordinatorStmt->fetch()) {
+                    throw new Exception('El coordinador seleccionado no existe o no tiene el rol correcto');
+                }
+            }
+            
+            // Actualizar la escuela
+            $query = "UPDATE schools SET 
+                        school_name = :school_name,
+                        school_dane = :school_dane,
+                        school_document = :school_document,
+                        total_quota = :total_quota,
+                        director_user_id = :director_user_id,
+                        coordinator_user_id = :coordinator_user_id,
+                        address = :address,
+                        phone = :phone,
+                        email = :email
+                      WHERE school_id = :school_id AND is_active = 1";
+            
+            $stmt = $this->dbConn->prepare($query);
+            $result = $stmt->execute([
+                ':school_name' => $data['school_name'],
+                ':school_dane' => $data['school_dane'],
+                ':school_document' => $data['school_document'],
+                ':total_quota' => $data['total_quota'] ?? 0,
+                ':director_user_id' => $data['director_user_id'],
+                ':coordinator_user_id' => $data['coordinator_user_id'] ?? null,
+                ':address' => $data['address'] ?? '',
+                ':phone' => $data['phone'] ?? '',
+                ':email' => $data['email'] ?? '',
+                ':school_id' => $data['school_id']
+            ]);
+            
+            if ($result) {
+                error_log("Escuela actualizada exitosamente con ID: " . $data['school_id']);
+                return true;
+            }
+            
+            return false;
+        } catch (Exception $e) {
+            error_log("Error en SchoolModel::updateSchool: " . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    // Función para eliminar una escuela (marcar como inactiva)
+    public function deleteSchool($schoolId)
+    {
+        try {
+            // Verificar que la escuela existe y está activa
+            $checkQuery = "SELECT school_id FROM schools WHERE school_id = :school_id AND is_active = 1";
+            $checkStmt = $this->dbConn->prepare($checkQuery);
+            $checkStmt->execute([':school_id' => $schoolId]);
+            
+            if (!$checkStmt->fetch()) {
+                throw new Exception('La escuela no existe o ya fue eliminada');
+            }
+            
+            // Marcar como inactiva en lugar de eliminar físicamente
+            $query = "UPDATE schools SET is_active = 0 WHERE school_id = :school_id";
+            
+            $stmt = $this->dbConn->prepare($query);
+            $result = $stmt->execute([':school_id' => $schoolId]);
+            
+            if ($result) {
+                error_log("Escuela eliminada exitosamente con ID: " . $schoolId);
+                return true;
+            }
+            
+            return false;
+        } catch (Exception $e) {
+            error_log("Error en SchoolModel::deleteSchool: " . $e->getMessage());
+            throw $e;
+        }
+    }
 }
