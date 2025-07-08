@@ -151,7 +151,9 @@ if (isset($controllerMapping[$view])) {
                 'resetPassword' => 'resetPassword',
                 'completeProf' => 'completeProf',
                 'payroll' => 'dashboard',
-                'directorDashboard' => 'showDashboard'
+                'directorDashboard' => 'showDashboard',
+                'getMetrics' => 'getMetrics',
+                'getCommunicationData' => 'getCommunicationData'
             ];
             
             // Si la vista tiene una acción por defecto, usarla

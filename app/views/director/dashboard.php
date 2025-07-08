@@ -54,10 +54,6 @@ window.safeLoadView = function(viewName) {
         <div class="container-fluid">
             <div class="row mb-4">
                 <div class="col-12">
-                    <h1 class="h2 mb-0">
-                        <i class="fas fa-chart-line text-primary"></i>
-                        Dashboard del Director
-                    </h1>
                     <p class="text-muted">Panel de control y gestión integral del colegio</p>
                 </div>
             </div>
@@ -284,19 +280,8 @@ window.safeLoadView = function(viewName) {
                         </div>
                         <div class="card-body" id="communicationSection">
                             <!-- Banner de Anuncio Importante -->
-                            <div class="row mb-4">
-                                <div class="col-12">
-                                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                                        <div class="d-flex align-items-center">
-                                            <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
-                                            <div>
-                                                <h5 class="alert-heading mb-1">¡Anuncio Importante!</h5>
-                                                <p class="mb-0">Reunión de padres programada para el próximo viernes 15 de marzo a las 6:00 PM. Todos los padres deben asistir.</p>
-                                            </div>
-                                        </div>
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                    </div>
-                                </div>
+                            <div class="row mb-4" id="importantAnnouncements">
+                                <!-- Los anuncios se cargarán dinámicamente aquí -->
                             </div>
 
                             <div class="row">
@@ -310,28 +295,8 @@ window.safeLoadView = function(viewName) {
                                             </h6>
                                         </div>
                                         <div class="card-body">
-                                            <div class="list-group list-group-flush">
-                                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                                    <div>
-                                                        <h6 class="mb-1">Reunión de Padres</h6>
-                                                        <small class="text-muted">15 Mar - 6:00 PM</small>
-                                                    </div>
-                                                    <span class="badge bg-primary rounded-pill">Importante</span>
-                                                </div>
-                                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                                    <div>
-                                                        <h6 class="mb-1">Exámenes Finales</h6>
-                                                        <small class="text-muted">20-25 Mar</small>
-                                                    </div>
-                                                    <span class="badge bg-warning rounded-pill">Académico</span>
-                                                </div>
-                                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                                    <div>
-                                                        <h6 class="mb-1">Festival de Arte</h6>
-                                                        <small class="text-muted">28 Mar - 2:00 PM</small>
-                                                    </div>
-                                                    <span class="badge bg-success rounded-pill">Cultural</span>
-                                                </div>
+                                            <div class="list-group list-group-flush" id="monthlyEventsList">
+                                                <!-- Los eventos se cargarán dinámicamente aquí -->
                                             </div>
                                             <button class="btn btn-info btn-sm w-100 mt-3" onclick="loadView('activity/dashboard')">
                                                 <i class="fas fa-plus"></i> Agregar Evento
@@ -353,17 +318,17 @@ window.safeLoadView = function(viewName) {
                                             <div class="row text-center mb-3">
                                                 <div class="col-6">
                                                     <div class="border-end">
-                                                        <h4 class="text-success mb-0">247</h4>
+                                                        <h4 class="text-success mb-0" id="totalMessagesSent">0</h4>
                                                         <small class="text-muted">Mensajes Enviados</small>
                                                     </div>
                                                 </div>
                                                 <div class="col-6">
-                                                    <h4 class="text-info mb-0">89%</h4>
+                                                    <h4 class="text-info mb-0" id="readRate">0%</h4>
                                                     <small class="text-muted">Tasa de Lectura</small>
                                                 </div>
                                             </div>
                                             <div class="progress mb-3">
-                                                <div class="progress-bar bg-success" style="width: 89%"></div>
+                                                <div class="progress-bar bg-success" id="readRateProgress" style="width: 0%"></div>
                                             </div>
                                             <div class="d-grid gap-2">
                                                 <button class="btn btn-success btn-sm" onclick="loadView('director/createDirector')">
@@ -387,28 +352,8 @@ window.safeLoadView = function(viewName) {
                                             </h6>
                                         </div>
                                         <div class="card-body">
-                                            <div class="list-group list-group-flush">
-                                                <div class="list-group-item">
-                                                    <div class="d-flex w-100 justify-content-between">
-                                                        <h6 class="mb-1">Nuevo estudiante registrado</h6>
-                                                        <small class="text-muted">Hace 3 horas</small>
-                                                    </div>
-                                                    <p class="mb-1">María González se ha registrado en el sistema.</p>
-                                                </div>
-                                                <div class="list-group-item">
-                                                    <div class="d-flex w-100 justify-content-between">
-                                                        <h6 class="mb-1">Reporte mensual listo</h6>
-                                                        <small class="text-muted">Hace 1 día</small>
-                                                    </div>
-                                                    <p class="mb-1">El reporte de febrero está disponible.</p>
-                                                </div>
-                                                <div class="list-group-item">
-                                                    <div class="d-flex w-100 justify-content-between">
-                                                        <h6 class="mb-1">Actualización de horarios</h6>
-                                                        <small class="text-muted">Hace 2 días</small>
-                                                    </div>
-                                                    <p class="mb-1">Los horarios han sido actualizados.</p>
-                                                </div>
+                                            <div class="list-group list-group-flush" id="recentNotificationsList">
+                                                <!-- Las notificaciones se cargarán dinámicamente aquí -->
                                             </div>
                                         </div>
                                     </div>

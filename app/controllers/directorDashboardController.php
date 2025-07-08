@@ -338,6 +338,22 @@ class DirectorDashboardController {
     }
 
     /**
+     * API endpoint para obtener datos de comunicación
+     */
+    public function getCommunicationData() {
+        header('Content-Type: application/json');
+        
+        if (!$this->sessionManager->hasRole('director')) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Acceso denegado']);
+            return;
+        }
+
+        $communicationData = $this->getCommunicationData();
+        echo json_encode($communicationData);
+    }
+
+    /**
      * API endpoint para obtener datos de gráficos
      */
     public function getChartData() {
