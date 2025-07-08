@@ -32,6 +32,9 @@
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/app.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/profileSettings.js"></script> 
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/payrollManagement.js"></script>
+    <?php if ($userRole === 'director'): ?>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/directorDashboard.js"></script>
+    <?php endif; ?>
 
     <script>
         // Inicializar Lucide

@@ -1,0 +1,379 @@
+/* Dashboard del Director - Estilos Específicos */
+
+.dashboard-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.mainContent {
+    padding: 20px;
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+/* Estilos para las tarjetas KPI */
+.kpi-card {
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.kpi-card h3 {
+    font-weight: bold;
+    font-size: 2.5rem;
+}
+
+.kpi-card p {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* Estilos para las secciones principales */
+.card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    border-bottom: none;
+    padding: 1rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.card-header:hover {
+    opacity: 0.9;
+}
+
+.card-header h5 {
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Estilos para secciones desplegables */
+.card-header[onclick] {
+    cursor: pointer;
+    user-select: none;
+}
+
+.card-header[onclick]:hover {
+    transform: translateY(-1px);
+}
+
+.card-header[onclick] i.fa-chevron-down,
+.card-header[onclick] i.fa-chevron-right {
+    transition: transform 0.3s ease;
+}
+
+.card-header[onclick]:hover i.fa-chevron-down,
+.card-header[onclick]:hover i.fa-chevron-right {
+    transform: scale(1.1);
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Estilos para las tarjetas de funcionalidad */
+.card.h-100 {
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.card.h-100:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card.h-100 .card-body {
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.card.h-100 .fa-3x {
+    margin-bottom: 1rem;
+}
+
+/* Estilos para los botones */
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+/* Estilos para las notificaciones */
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid #e9ecef;
+    padding: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+.list-group-item h6 {
+    font-weight: 600;
+    color: #495057;
+}
+
+.list-group-item small {
+    color: #6c757d;
+}
+
+/* Estilos para los gráficos */
+canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Estilos para alertas */
+.alert {
+    border: none;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-left: 4px solid #17a2b8;
+}
+
+/* Estilos para la sección de comunicación */
+.alert-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 1px solid #ffc107;
+    color: #856404;
+}
+
+.alert-warning .fa-exclamation-triangle {
+    color: #ffc107;
+}
+
+/* Estilos para eventos del mes */
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid #e9ecef;
+    padding: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+.list-group-item h6 {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.25rem;
+}
+
+.list-group-item small {
+    color: #6c757d;
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+}
+
+/* Estilos para estadísticas de comunicación */
+.progress {
+    height: 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.progress-bar {
+    transition: width 0.6s ease;
+}
+
+/* Estilos para notificaciones */
+.notification-item {
+    padding: 0.75rem;
+    border-left: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.notification-item:hover {
+    border-left-color: #007bff;
+    background-color: #f8f9fa;
+}
+
+/* Estilos para banners destacados */
+.banner-highlight {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.banner-highlight h5 {
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.banner-highlight p {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 0;
+}
+
+/* Estilos para el título principal */
+.h2 {
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+/* Estilos para iconos */
+.fa-2x {
+    font-size: 2em;
+}
+
+.fa-3x {
+    font-size: 3em;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .mainContent {
+        padding: 10px;
+    }
+    
+    .kpi-card h3 {
+        font-size: 2rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.row {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Estilos para el sidebar */
+.sidebar {
+    background: #2c3e50;
+    min-height: 100vh;
+    padding: 0;
+}
+
+/* Estilos para el contenedor principal */
+.container-fluid {
+    padding: 0;
+}
+
+/* Estilos para las métricas */
+.mb-4 {
+    margin-bottom: 2rem !important;
+}
+
+/* Estilos para los colores de las secciones */
+.bg-success {
+    background-color: #28a745 !important;
+}
+
+.bg-info {
+    background-color: #17a2b8 !important;
+}
+
+.bg-warning {
+    background-color: #ffc107 !important;
+}
+
+.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+.bg-primary {
+    background-color: #007bff !important;
+}
+
+/* Estilos para los bordes de las tarjetas */
+.border-success {
+    border-color: #28a745 !important;
+}
+
+.border-info {
+    border-color: #17a2b8 !important;
+}
+
+.border-warning {
+    border-color: #ffc107 !important;
+}
+
+.border-primary {
+    border-color: #007bff !important;
+}
+
+/* Estilos para el texto en las tarjetas KPI */
+.text-white {
+    color: #fff !important;
+}
+
+/* Estilos para los iconos en las tarjetas KPI */
+.fa-2x {
+    opacity: 0.8;
+}
+
+/* Estilos para el hover de las tarjetas KPI */
+.kpi-card:hover .fa-2x {
+    opacity: 1;
+    transform: scale(1.1);
+    transition: all 0.3s ease;
+} 

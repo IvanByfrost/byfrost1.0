@@ -76,7 +76,8 @@ function getControllerMapping() {
         'resetPassword' => 'IndexController',
         'completeProf' => 'IndexController',
         'unauthorized' => 'ErrorController',
-        'Error' => 'ErrorController'
+        'Error' => 'ErrorController',
+        'directorDashboard' => 'DirectorDashboardController'
     ];
     
     // Escanear directorio de controladores automáticamente
@@ -149,7 +150,8 @@ if (isset($controllerMapping[$view])) {
                 'forgotPassword' => 'forgotPassword',
                 'resetPassword' => 'resetPassword',
                 'completeProf' => 'completeProf',
-                'payroll' => 'dashboard'
+                'payroll' => 'dashboard',
+                'directorDashboard' => 'showDashboard'
             ];
             
             // Si la vista tiene una acción por defecto, usarla
