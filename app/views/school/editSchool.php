@@ -78,7 +78,7 @@ if (empty($formData) && !empty($school)) {
                                 <div class="form-group">
                                     <label for="total_quota">Cupo Total</label>
                                     <input type="number" class="form-control" id="total_quota" name="total_quota" 
-                                           title="Only Numbers" onkeyup="onlyNumbers('total_quota',value);" autocomplete="off"
+                                           title="Completa este campo" onkeyup="onlyNumbers('total_quota',value);" autocomplete="off"
                                            value="<?php echo htmlspecialchars($formData['total_quota'] ?? ''); ?>" 
                                            min="0">
                                     <div class="invalid-feedback">
@@ -113,15 +113,15 @@ if (empty($formData) && !empty($school)) {
                             <div class="col-md-6 col-12">
                                 <div class="form-group">
                                     <label><strong>Director *</strong></label>
-                                    <select class="form-control" id="director_user_id" name="director_user_id" required>
-                                        <option value="">Seleccionar Director</option>
-                                        <?php foreach ($directors as $director): ?>
-                                            <option value="<?php echo $director['user_id']; ?>" 
-                                                    <?php echo ($formData['director_user_id'] ?? '') == $director['user_id'] ? 'selected' : ''; ?>>
-                                                <?php echo htmlspecialchars($director['first_name'] . ' ' . $director['last_name']); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchDirectorModal">
+                                            Buscar Director
+                                        </button>
+                                        <span id="selectedDirectorName" class="ms-2 text-success">
+                                            <?php if (!empty($formData['director_name'])) echo htmlspecialchars($formData['director_name']); ?>
+                                        </span>
+                                    </div>
+                                    <input type="hidden" id="director_user_id" name="director_user_id" value="<?php echo $formData['director_user_id'] ?? ''; ?>" required>
                                     <div class="invalid-feedback">
                                         Debe seleccionar un director.
                                     </div>
@@ -130,15 +130,15 @@ if (empty($formData) && !empty($school)) {
                             <div class="col-md-6 col-12">
                                 <div class="form-group">
                                     <label>Coordinador</label>
-                                    <select class="form-control" id="coordinator_user_id" name="coordinator_user_id">
-                                        <option value="">Seleccionar Coordinador (Opcional)</option>
-                                        <?php foreach ($coordinators as $coordinator): ?>
-                                            <option value="<?php echo $coordinator['user_id']; ?>" 
-                                                    <?php echo ($formData['coordinator_user_id'] ?? '') == $coordinator['user_id'] ? 'selected' : ''; ?>>
-                                                <?php echo htmlspecialchars($coordinator['first_name'] . ' ' . $coordinator['last_name']); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchCoordinatorModal">
+                                            Buscar Coordinador
+                                        </button>
+                                        <span id="selectedCoordinatorName" class="ms-2 text-success">
+                                            <?php if (!empty($formData['coordinator_name'])) echo htmlspecialchars($formData['coordinator_name']); ?>
+                                        </span>
+                                    </div>
+                                    <input type="hidden" id="coordinator_user_id" name="coordinator_user_id" value="<?php echo $formData['coordinator_user_id'] ?? ''; ?>">
                                 </div>
                             </div>
                         </div>
@@ -158,46 +158,124 @@ if (empty($formData) && !empty($school)) {
     </div>
 </div>
 
+<!-- Modal para buscar director -->
+<div class="modal fade" id="searchDirectorModal" tabindex="-1" aria-labelledby="searchDirectorModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="searchDirectorModalLabel">Buscar Director</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form id="searchDirectorForm" class="mb-3" autocomplete="off">
+          <div class="input-group">
+            <input type="text" class="form-control w-100" id="search_director_query" placeholder="Número de documento">
+            <button type="submit" class="btn btn-primary">Buscar</button>
+          </div>
+        </form>
+        <div id="searchDirectorResults">
+          <div class="list-group">
+            <?php if (isset($directors) && count($directors) > 0): ?>
+              <?php foreach ($directors as $director): ?>
+                <button type="button" class="list-group-item list-group-item-action" 
+                        onclick="selectDirector('<?php echo $director['user_id']; ?>', '<?php echo htmlspecialchars($director['first_name'] . ' ' . $director['last_name']); ?>')">
+                  <?php echo htmlspecialchars($director['first_name'] . ' ' . $director['last_name']); ?> 
+                  - <?php echo htmlspecialchars($director['email']); ?>
+                </button>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="alert alert-info">No hay directores disponibles. Use la búsqueda para encontrar directores.</div>
+            <?php endif; ?>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para buscar coordinador -->
+<div class="modal fade" id="searchCoordinatorModal" tabindex="-1" aria-labelledby="searchCoordinatorModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="searchCoordinatorModalLabel">Buscar Coordinador</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form id="searchCoordinatorForm" class="mb-3" autocomplete="off">
+          <div class="input-group">
+            <input type="text" class="form-control w-100" id="search_coordinator_query" placeholder="Número de documento">
+            <button type="submit" class="btn btn-primary">Buscar</button>
+          </div>
+        </form>
+        <div id="searchCoordinatorResults">
+          <div class="list-group">
+            <?php if (isset($coordinators) && count($coordinators) > 0): ?>
+              <?php foreach ($coordinators as $coordinator): ?>
+                <button type="button" class="list-group-item list-group-item-action" 
+                        onclick="selectCoordinator('<?php echo $coordinator['user_id']; ?>', '<?php echo htmlspecialchars($coordinator['first_name'] . ' ' . $coordinator['last_name']); ?>')">
+                  <?php echo htmlspecialchars($coordinator['first_name'] . ' ' . $coordinator['last_name']); ?> 
+                  - <?php echo htmlspecialchars($coordinator['email']); ?>
+                </button>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="alert alert-info">No hay coordinadores disponibles. Use la búsqueda para encontrar coordinadores.</div>
+            <?php endif; ?>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+#searchDirectorResults .list-group, #searchCoordinatorResults .list-group {
+    max-height: 300px;
+    overflow-y: auto;
+}
+</style>
+
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Validación del formulario
-    const form = document.getElementById('editSchoolForm');
-    
-    form.addEventListener('submit', function(e) {
+// Selección de director
+function selectDirector(userId, name) {
+    document.getElementById('director_user_id').value = userId;
+    document.getElementById('selectedDirectorName').textContent = name;
+    var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('searchDirectorModal'));
+    modal.hide();
+}
+// Selección de coordinador
+function selectCoordinator(userId, name) {
+    document.getElementById('coordinator_user_id').value = userId;
+    document.getElementById('selectedCoordinatorName').textContent = name;
+    var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('searchCoordinatorModal'));
+    modal.hide();
+}
+// Búsqueda AJAX para director
+const searchDirectorForm = document.getElementById('searchDirectorForm');
+if (searchDirectorForm) {
+    searchDirectorForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        
-        // Validar campos obligatorios
-        const requiredFields = ['school_name', 'school_dane', 'school_document', 'director_user_id'];
-        let isValid = true;
-        
-        requiredFields.forEach(field => {
-            const input = document.getElementById(field);
-            if (!input.value.trim()) {
-                input.classList.add('is-invalid');
-                isValid = false;
-            } else {
-                input.classList.remove('is-invalid');
-            }
-        });
-        
-        // Validar email si está presente
-        const email = document.getElementById('email');
-        if (email.value && !isValidEmail(email.value)) {
-            email.classList.add('is-invalid');
-            isValid = false;
-        } else {
-            email.classList.remove('is-invalid');
-        }
-        
-        if (isValid) {
-            // Enviar formulario
-            form.submit();
-        }
+        const query = document.getElementById('search_director_query').value.trim();
+        if (!query) return;
+        fetch('ruta_a_tu_endpoint_de_busqueda_director.php?query=' + encodeURIComponent(query))
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('searchDirectorResults').innerHTML = html;
+            });
     });
-    
-    function isValidEmail(email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    }
-});
+}
+// Búsqueda AJAX para coordinador
+const searchCoordinatorForm = document.getElementById('searchCoordinatorForm');
+if (searchCoordinatorForm) {
+    searchCoordinatorForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const query = document.getElementById('search_coordinator_query').value.trim();
+        if (!query) return;
+        fetch('ruta_a_tu_endpoint_de_busqueda_coordinador.php?query=' + encodeURIComponent(query))
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('searchCoordinatorResults').innerHTML = html;
+            });
+    });
+}
 </script>
