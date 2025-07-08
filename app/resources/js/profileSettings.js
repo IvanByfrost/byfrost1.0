@@ -1,7 +1,7 @@
 // profileSettings.js
 
-// Cargar datos del usuario autenticado al cargar la vista
-async function cargarPerfilUsuario() {
+// Load authenticated user data when the view loads
+async function loadUserProfile() {
   try {
     const res = await fetch('?view=user&action=getProfileAjax');
     const data = await res.json();
@@ -23,42 +23,42 @@ async function cargarPerfilUsuario() {
 if (document.getElementById('profileSettingsForm')) {
   document.getElementById('profileSettingsForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    const first_name = document.getElementById('profileFirstName').value;
-    const last_name = document.getElementById('profileLastName').value;
-    const email = document.getElementById('profileEmail').value;
-    const phone = document.getElementById('profilePhone').value;
-    const address = document.getElementById('profileAddress').value;
-    const credential_type = document.getElementById('profileDocumentType').value;
-    const credential_number = document.getElementById('profileDocumentNumber').value;
     const msgDiv = document.getElementById('profileSettingsMsg');
     msgDiv.innerText = '';
-    
-    // Validaciones
-    if (!credential_type || !credential_number) {
-      msgDiv.style.color = 'red';
-      msgDiv.innerText = 'El tipo de documento y número de documento son obligatorios.';
-      return;
+
+    // Validar archivo
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    if (file) {
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        msgDiv.style.color = 'red';
+        msgDiv.innerText = 'Solo se permiten imágenes JPG, PNG o WEBP.';
+        return;
+      }
+      if (file.size > 2 * 1024 * 1024) { // 2MB
+        msgDiv.style.color = 'red';
+        msgDiv.innerText = 'La imagen no debe superar los 2MB.';
+        return;
+      }
     }
-    
+
+    // Usar FormData para enviar todos los datos
+    const form = document.getElementById('profileSettingsForm');
+    const formData = new FormData(form);
+    formData.append('subject', 'updateProfile');
+
     try {
       const res = await fetch('app/processes/profileProcess.php', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          subject: 'updateProfile',
-          first_name,
-          last_name,
-          email,
-          phone,
-          address,
-          credential_type,
-          credential_number
-        })
+        body: formData
       });
       const data = await res.json();
       if (data.success) {
         msgDiv.style.color = 'green';
         msgDiv.innerText = data.message || 'Perfil actualizado correctamente.';
+        // Recargar la página para mostrar la nueva foto
+        setTimeout(() => window.location.reload(), 1000);
       } else {
         msgDiv.style.color = 'red';
         msgDiv.innerText = data.message || 'Error al actualizar perfil.';
@@ -70,5 +70,5 @@ if (document.getElementById('profileSettingsForm')) {
   });
 }
 
-// Inicializar
-cargarPerfilUsuario(); 
+// Initialize
+loadUserProfile(); 

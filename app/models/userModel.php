@@ -140,11 +140,8 @@ class UserModel extends MainModel
                   date_of_birth = :date_of_birth,
                   address = :address,
                   credential_type = :credential_type,
-                  credential_number = :credential_number
-                  WHERE user_id = :user_id";
-
-        $stmt = $this->dbConn->prepare($query);
-        return $stmt->execute([
+                  credential_number = :credential_number";
+        $params = [
             ':first_name' => $data['first_name'],
             ':last_name' => $data['last_name'],
             ':email' => $data['email'],
@@ -154,7 +151,14 @@ class UserModel extends MainModel
             ':credential_type' => $data['credential_type'],
             ':credential_number' => $data['credential_number'],
             ':user_id' => $userId
-        ]);
+        ];
+        if (isset($data['profile_photo']) && $data['profile_photo']) {
+            $query .= ", profile_photo = :profile_photo";
+            $params[':profile_photo'] = $data['profile_photo'];
+        }
+        $query .= " WHERE user_id = :user_id";
+        $stmt = $this->dbConn->prepare($query);
+        return $stmt->execute($params);
     }
 
     public function completeProfile($data)

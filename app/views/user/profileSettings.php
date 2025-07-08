@@ -166,13 +166,17 @@
     
     <!-- Sección de subida de foto -->
     <div class="upload-container">
-      <div class="profile-placeholder" id="profileImage"></div>
-      <button class="btn-upload" onclick="document.getElementById('fileInput').click()">Cargar foto</button><br>
-      <input type="file" id="fileInput" accept="image/*" style="display: none;">
+      <div class="profile-placeholder" id="profileImage">
+        <?php if (isset($_SESSION['user']['profile_photo']) && $_SESSION['user']['profile_photo'] && file_exists(ROOT . '/app/resources/img/profiles/' . $_SESSION['user']['profile_photo'])): ?>
+          <img src="<?php echo url . 'app/resources/img/profiles/' . $_SESSION['user']['profile_photo']; ?>" alt="Foto de perfil" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;">
+        <?php endif; ?>
+      </div>
+      <button class="btn-upload" onclick="document.getElementById('fileInput').click(); return false;">Cargar foto</button><br>
+      <input type="file" id="fileInput" name="profile_photo" accept="image/*" style="display: none;">
     </div>
 
     <!-- Formulario de configuración -->
-    <form id="profileSettingsForm">
+    <form id="profileSettingsForm" enctype="multipart/form-data" method="post">
       <!-- Sección de documento -->
       <div class="document-section">
         <h4>📋 Información de Documento</h4>

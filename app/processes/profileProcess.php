@@ -72,7 +72,39 @@ if (
             }
         }
         
-        // Actualizar usuario incluyendo los campos de documento
+        // Manejo de foto de perfil
+        $profilePhotoName = $user['profile_photo'] ?? null;
+        if (isset($_FILES['profile_photo']) && $_FILES['profile_photo']['error'] === UPLOAD_ERR_OK) {
+            $allowedTypes = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
+            $fileType = $_FILES['profile_photo']['type'];
+            $fileSize = $_FILES['profile_photo']['size'];
+            if (!array_key_exists($fileType, $allowedTypes)) {
+                echo json_encode(['success' => false, 'message' => 'Tipo de imagen no permitido.']);
+                exit;
+            }
+            if ($fileSize > 2 * 1024 * 1024) { // 2MB
+                echo json_encode(['success' => false, 'message' => 'La imagen no debe superar los 2MB.']);
+                exit;
+            }
+            $ext = $allowedTypes[$fileType];
+            $newFileName = 'user_' . $userId . '.' . $ext;
+            $uploadDir = ROOT . '/app/resources/img/profiles/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+            $uploadPath = $uploadDir . $newFileName;
+            // Eliminar imagen anterior si es diferente
+            if ($profilePhotoName && $profilePhotoName !== $newFileName && file_exists($uploadDir . $profilePhotoName)) {
+                unlink($uploadDir . $profilePhotoName);
+            }
+            if (!move_uploaded_file($_FILES['profile_photo']['tmp_name'], $uploadPath)) {
+                echo json_encode(['success' => false, 'message' => 'Error al guardar la imagen.']);
+                exit;
+            }
+            $profilePhotoName = $newFileName;
+        }
+        
+        // Actualizar usuario incluyendo los campos de documento y foto
         $ok = $userModel->updateUserWithDocument($userId, [
             'first_name' => $firstName,
             'last_name' => $lastName,
@@ -81,7 +113,8 @@ if (
             'date_of_birth' => null,
             'address' => $address,
             'credential_type' => $credentialType,
-            'credential_number' => $credentialNumber
+            'credential_number' => $credentialNumber,
+            'profile_photo' => $profilePhotoName
         ]);
         
         if ($ok) {
