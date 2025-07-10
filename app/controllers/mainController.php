@@ -155,7 +155,7 @@ class MainController
         }
         
         // Método 3: Verificar si hay parámetros específicos de AJAX
-        if (isset($_POST['ajax']) || isset($_GET['ajax'])) {
+        if (isset(htmlspecialchars($_POST['ajax'])) || isset(htmlspecialchars($_GET['ajax']))) {
             return true;
         }
         
@@ -167,12 +167,12 @@ class MainController
         }
         
         // Método 5: Verificar si la acción es loadPartial (indicador de AJAX)
-        if (isset($_GET['action']) && $_GET['action'] === 'loadPartial') {
+        if (isset(htmlspecialchars($_GET['action'])) && htmlspecialchars($_GET['action']) === 'loadPartial') {
             return true;
         }
         
         // Método 6: Verificar si hay parámetro partialView (indicador de AJAX)
-        if (isset($_GET['partialView'])) {
+        if (isset(htmlspecialchars($_GET['partialView']))) {
             return true;
         }
         

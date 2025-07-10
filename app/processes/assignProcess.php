@@ -27,13 +27,13 @@ if ($sessionManager->isLoggedIn()) {
 
 // Verificar método y subject
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $subject = $_POST['subject'] ?? '';
+    $subject = htmlspecialchars($_POST['subject']) ?? '';
 
     switch ($subject) {
         case 'assign_role':
             // Asignar rol a usuario
-            $userId = $_POST['user_id'] ?? null;
-            $roleType = $_POST['role_type'] ?? null;
+            $userId = htmlspecialchars($_POST['user_id']) ?? null;
+            $roleType = htmlspecialchars($_POST['role_type']) ?? null;
 
             if (!$userId || !$roleType) {
                 error_log("DEBUG assignProcess - Faltan datos para asignar rol");
@@ -71,8 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         case 'search_users':
             // Buscar usuarios por documento
-            $credentialType = $_POST['credential_type'] ?? null;
-            $credentialNumber = $_POST['credential_number'] ?? null;
+            $credentialType = htmlspecialchars($_POST['credential_type']) ?? null;
+            $credentialNumber = htmlspecialchars($_POST['credential_number']) ?? null;
 
             if (!$credentialType || !$credentialNumber) {
                 error_log("DEBUG assignProcess - Faltan datos para búsqueda");
@@ -111,9 +111,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
 
         case 'search_users_by_role':
-            $roleType = $_POST['role_type'] ?? null;
-            $searchType = $_POST['search_type'] ?? null;
-            $query = $_POST['query'] ?? null;
+            $roleType = htmlspecialchars($_POST['role_type']) ?? null;
+            $searchType = htmlspecialchars($_POST['search_type']) ?? null;
+            $query = htmlspecialchars($_POST['query']) ?? null;
 
             if (!$roleType) {
                 error_log("DEBUG assignProcess - Falta role_type para búsqueda por rol");
@@ -179,8 +179,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         case 'search_role_history':
             // Buscar historial de roles por documento
-            $credentialType = $_POST['credential_type'] ?? null;
-            $credentialNumber = $_POST['credential_number'] ?? null;
+            $credentialType = htmlspecialchars($_POST['credential_type']) ?? null;
+            $credentialNumber = htmlspecialchars($_POST['credential_number']) ?? null;
 
             if (!$credentialType || !$credentialNumber) {
                 error_log("DEBUG assignProcess - Faltan datos para búsqueda de historial");
@@ -229,8 +229,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
 
         case 'search_users_by_document':
-            $roleType = $_POST['role_type'] ?? null;
-            $credentialNumber = $_POST['query'] ?? null;
+            $roleType = htmlspecialchars($_POST['role_type']) ?? null;
+            $credentialNumber = htmlspecialchars($_POST['query']) ?? null;
             if (!$roleType || !$credentialNumber) {
                 echo json_encode([
                     'status' => 'error',

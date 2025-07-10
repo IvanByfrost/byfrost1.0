@@ -28,7 +28,7 @@ class RoleController extends MainController {
         try {
             // Si no se proporciona role_type, mostrar selector
             if (!$role_type) {
-                $role_type = $_GET['role_type'] ?? null;
+                $role_type = htmlspecialchars($_GET['role_type']) ?? null;
             }
             
             if ($role_type) {
@@ -46,7 +46,7 @@ class RoleController extends MainController {
     public function update($role_type = null) {
         try {
             if (!$role_type) {
-                $role_type = $_POST['role_type'] ?? null;
+                $role_type = htmlspecialchars($_POST['role_type']) ?? null;
             }
             
             if (!$role_type) {
@@ -54,10 +54,10 @@ class RoleController extends MainController {
             }
             
             $data = [
-                'can_create' => isset($_POST['can_create']) ? 1 : 0,
-                'can_read'   => isset($_POST['can_read']) ? 1 : 0,
-                'can_update' => isset($_POST['can_update']) ? 1 : 0,
-                'can_delete' => isset($_POST['can_delete']) ? 1 : 0
+                'can_create' => isset(htmlspecialchars($_POST['can_create'])) ? 1 : 0,
+                'can_read'   => isset(htmlspecialchars($_POST['can_read'])) ? 1 : 0,
+                'can_update' => isset(htmlspecialchars($_POST['can_update'])) ? 1 : 0,
+                'can_delete' => isset(htmlspecialchars($_POST['can_delete'])) ? 1 : 0
             ];
 
             $this->model->updatePermissions($role_type, $data);
@@ -85,10 +85,10 @@ class RoleController extends MainController {
      */
     public function loadPartial()
     {
-        $view = $_POST['view'] ?? $_GET['view'] ?? '';
-        $action = $_POST['action'] ?? $_GET['action'] ?? 'index';
-        $partialView = $_POST['partialView'] ?? $_GET['partialView'] ?? '';
-        $force = isset($_POST['force']) || isset($_GET['force']);
+        $view = htmlspecialchars($_POST['view']) ?? htmlspecialchars($_GET['view']) ?? '';
+        $action = htmlspecialchars($_POST['action']) ?? htmlspecialchars($_GET['action']) ?? 'index';
+        $partialView = htmlspecialchars($_POST['partialView']) ?? htmlspecialchars($_GET['partialView']) ?? '';
+        $force = isset(htmlspecialchars($_POST['force'])) || isset(htmlspecialchars($_GET['force']));
 
         if (!$this->isAjaxRequest() && !$force) {
             if (empty($partialView)) {

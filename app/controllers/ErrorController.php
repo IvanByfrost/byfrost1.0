@@ -14,7 +14,7 @@ class ErrorController extends MainController
         header("Pragma: no-cache");
         header("Expires: 0");
         
-        $errorCode = $message ?? $_GET['error'] ?? null;
+        $errorCode = $message ?? htmlspecialchars($_GET['error']) ?? null;
         
         // Obtener datos del usuario si está logueado
         $user = null;

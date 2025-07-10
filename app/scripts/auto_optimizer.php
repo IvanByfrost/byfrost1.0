@@ -698,13 +698,13 @@ class CacheManager {
             $originalContent = $content;
             
             // Reemplazar $_GET sin sanitizar
-            $content = preg_replace('/\$_GET\[([^\]]+)\]/', 'htmlspecialchars($_GET[$1])', $content);
+            $content = preg_replace('/\$_GET\[([^\]]+)\]/', 'htmlspecialchars(htmlspecialchars($_GET[$1]))', $content);
             
             // Reemplazar $_POST sin sanitizar
-            $content = preg_replace('/\$_POST\[([^\]]+)\]/', 'htmlspecialchars($_POST[$1])', $content);
+            $content = preg_replace('/\$_POST\[([^\]]+)\]/', 'htmlspecialchars(htmlspecialchars($_POST[$1]))', $content);
             
             // Reemplazar $_REQUEST sin sanitizar
-            $content = preg_replace('/\$_REQUEST\[([^\]]+)\]/', 'htmlspecialchars($_REQUEST[$1])', $content);
+            $content = preg_replace('/\$_REQUEST\[([^\]]+)\]/', 'htmlspecialchars(htmlspecialchars($_REQUEST[$1]))', $content);
             
             if ($content !== $originalContent) {
                 if (file_put_contents($file, $content)) {

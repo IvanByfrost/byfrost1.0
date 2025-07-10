@@ -13,20 +13,20 @@ $sessionManager = new SessionManager();
 
 // Verificar método y subject
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $subject = $_POST['subject'] ?? '';
+    $subject = htmlspecialchars($_POST['subject']) ?? '';
 
     switch ($subject) {
         case 'create_activity':
             // Crear actividad
             $data = [
-                'activity_name' => $_POST['activity_name'] ?? '',
-                'professor_subject_id' => $_POST['professor_subject_id'] ?? null,
-                'activity_type_id' => $_POST['activity_type_id'] ?? null,
-                'class_group_id' => $_POST['class_group_id'] ?? null,
-                'term_id' => $_POST['term_id'] ?? null,
-                'max_score' => $_POST['max_score'] ?? null,
-                'due_date' => $_POST['due_date'] ?? '',
-                'description' => $_POST['description'] ?? '',
+                'activity_name' => htmlspecialchars($_POST['activity_name']) ?? '',
+                'professor_subject_id' => htmlspecialchars($_POST['professor_subject_id']) ?? null,
+                'activity_type_id' => htmlspecialchars($_POST['activity_type_id']) ?? null,
+                'class_group_id' => htmlspecialchars($_POST['class_group_id']) ?? null,
+                'term_id' => htmlspecialchars($_POST['term_id']) ?? null,
+                'max_score' => htmlspecialchars($_POST['max_score']) ?? null,
+                'due_date' => htmlspecialchars($_POST['due_date']) ?? '',
+                'description' => htmlspecialchars($_POST['description']) ?? '',
                 'created_by_user_id' => $sessionManager->getUserId() ?? 1
             ];
             
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         case 'update_activity':
             // Actualizar actividad
-            $activityId = $_POST['activity_id'] ?? null;
+            $activityId = htmlspecialchars($_POST['activity_id']) ?? null;
             
             if (!$activityId) {
                 echo json_encode([
@@ -65,14 +65,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             $data = [
-                'activity_name' => $_POST['activity_name'] ?? '',
-                'professor_subject_id' => $_POST['professor_subject_id'] ?? null,
-                'activity_type_id' => $_POST['activity_type_id'] ?? null,
-                'class_group_id' => $_POST['class_group_id'] ?? null,
-                'term_id' => $_POST['term_id'] ?? null,
-                'max_score' => $_POST['max_score'] ?? null,
-                'due_date' => $_POST['due_date'] ?? '',
-                'description' => $_POST['description'] ?? ''
+                'activity_name' => htmlspecialchars($_POST['activity_name']) ?? '',
+                'professor_subject_id' => htmlspecialchars($_POST['professor_subject_id']) ?? null,
+                'activity_type_id' => htmlspecialchars($_POST['activity_type_id']) ?? null,
+                'class_group_id' => htmlspecialchars($_POST['class_group_id']) ?? null,
+                'term_id' => htmlspecialchars($_POST['term_id']) ?? null,
+                'max_score' => htmlspecialchars($_POST['max_score']) ?? null,
+                'due_date' => htmlspecialchars($_POST['due_date']) ?? '',
+                'description' => htmlspecialchars($_POST['description']) ?? ''
             ];
             
             try {
@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         case 'delete_activity':
             // Eliminar actividad
-            $activityId = $_POST['activity_id'] ?? null;
+            $activityId = htmlspecialchars($_POST['activity_id']) ?? null;
             
             if (!$activityId) {
                 echo json_encode([
@@ -139,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
     }
 } elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $action = $_GET['action'] ?? '';
+    $action = htmlspecialchars($_GET['action']) ?? '';
 
     switch ($action) {
         case 'getActivityTypes':
@@ -188,7 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
 
         case 'getProfessorSubjects':
-            $professorUserId = $_GET['professor_user_id'] ?? 1;
+            $professorUserId = htmlspecialchars($_GET['professor_user_id']) ?? 1;
             try {
                 $subjects = $model->getProfessorSubjects($professorUserId);
                 echo json_encode([
@@ -204,7 +204,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
 
         case 'getActivitiesByGroup':
-            $classGroupId = $_GET['class_group_id'] ?? null;
+            $classGroupId = htmlspecialchars($_GET['class_group_id']) ?? null;
             if (!$classGroupId) {
                 echo json_encode([
                     'status' => 'error',
@@ -227,7 +227,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
 
         case 'getActivitiesByProfessor':
-            $professorUserId = $_GET['professor_user_id'] ?? null;
+            $professorUserId = htmlspecialchars($_GET['professor_user_id']) ?? null;
             if (!$professorUserId) {
                 echo json_encode([
                     'status' => 'error',

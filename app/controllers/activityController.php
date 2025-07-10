@@ -87,7 +87,7 @@ class ActivityController extends MainController
                               'class_group_id', 'term_id', 'max_score', 'due_date'];
             
             foreach ($requiredFields as $field) {
-                if (empty($_POST[$field])) {
+                if (empty(htmlspecialchars($_POST[$field]))) {
                     echo json_encode([
                         'status' => 'error',
                         'msg' => "El campo $field es obligatorio"
@@ -98,14 +98,14 @@ class ActivityController extends MainController
             
             // Preparar datos
             $data = [
-                'activity_name' => $_POST['activity_name'],
-                'professor_subject_id' => $_POST['professor_subject_id'],
-                'activity_type_id' => $_POST['activity_type_id'],
-                'class_group_id' => $_POST['class_group_id'],
-                'term_id' => $_POST['term_id'],
-                'max_score' => $_POST['max_score'],
-                'due_date' => $_POST['due_date'],
-                'description' => $_POST['description'] ?? '',
+                'activity_name' => htmlspecialchars($_POST['activity_name']),
+                'professor_subject_id' => htmlspecialchars($_POST['professor_subject_id']),
+                'activity_type_id' => htmlspecialchars($_POST['activity_type_id']),
+                'class_group_id' => htmlspecialchars($_POST['class_group_id']),
+                'term_id' => htmlspecialchars($_POST['term_id']),
+                'max_score' => htmlspecialchars($_POST['max_score']),
+                'due_date' => htmlspecialchars($_POST['due_date']),
+                'description' => htmlspecialchars($_POST['description']) ?? '',
                 'created_by_user_id' => $_SESSION['user_id'] ?? 1 // Usar ID del usuario logueado
             ];
             
@@ -163,7 +163,7 @@ class ActivityController extends MainController
                               'class_group_id', 'term_id', 'max_score', 'due_date'];
             
             foreach ($requiredFields as $field) {
-                if (empty($_POST[$field])) {
+                if (empty(htmlspecialchars($_POST[$field]))) {
                     echo json_encode([
                         'status' => 'error',
                         'msg' => "El campo $field es obligatorio"
@@ -174,14 +174,14 @@ class ActivityController extends MainController
             
             // Preparar datos
             $data = [
-                'activity_name' => $_POST['activity_name'],
-                'professor_subject_id' => $_POST['professor_subject_id'],
-                'activity_type_id' => $_POST['activity_type_id'],
-                'class_group_id' => $_POST['class_group_id'],
-                'term_id' => $_POST['term_id'],
-                'max_score' => $_POST['max_score'],
-                'due_date' => $_POST['due_date'],
-                'description' => $_POST['description'] ?? ''
+                'activity_name' => htmlspecialchars($_POST['activity_name']),
+                'professor_subject_id' => htmlspecialchars($_POST['professor_subject_id']),
+                'activity_type_id' => htmlspecialchars($_POST['activity_type_id']),
+                'class_group_id' => htmlspecialchars($_POST['class_group_id']),
+                'term_id' => htmlspecialchars($_POST['term_id']),
+                'max_score' => htmlspecialchars($_POST['max_score']),
+                'due_date' => htmlspecialchars($_POST['due_date']),
+                'description' => htmlspecialchars($_POST['description']) ?? ''
             ];
             
             try {
@@ -280,10 +280,10 @@ class ActivityController extends MainController
      */
     public function loadPartial()
     {
-        $view = $_POST['view'] ?? $_GET['view'] ?? '';
-        $action = $_POST['action'] ?? $_GET['action'] ?? 'index';
-        $partialView = $_POST['partialView'] ?? $_GET['partialView'] ?? '';
-        $force = isset($_POST['force']) || isset($_GET['force']);
+        $view = htmlspecialchars($_POST['view']) ?? htmlspecialchars($_GET['view']) ?? '';
+        $action = htmlspecialchars($_POST['action']) ?? htmlspecialchars($_GET['action']) ?? 'index';
+        $partialView = htmlspecialchars($_POST['partialView']) ?? htmlspecialchars($_GET['partialView']) ?? '';
+        $force = isset(htmlspecialchars($_POST['force'])) || isset(htmlspecialchars($_GET['force']));
 
         if (!$this->isAjaxRequest() && !$force) {
             if (empty($partialView)) {

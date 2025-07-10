@@ -116,7 +116,7 @@ class StudentStatsController extends MainController
         }
 
         try {
-            $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+            $limit = isset(htmlspecialchars($_GET['limit'])) ? (int)htmlspecialchars($_GET['limit']) : 10;
             $students = $this->studentStatsModel->getTopPerformingStudents($limit);
             echo json_encode(['success' => true, 'data' => $students]);
         } catch (Exception $e) {
@@ -138,7 +138,7 @@ class StudentStatsController extends MainController
         }
 
         try {
-            $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+            $limit = isset(htmlspecialchars($_GET['limit'])) ? (int)htmlspecialchars($_GET['limit']) : 10;
             $students = $this->studentStatsModel->getStudentsNeedingAttention($limit);
             echo json_encode(['success' => true, 'data' => $students]);
         } catch (Exception $e) {

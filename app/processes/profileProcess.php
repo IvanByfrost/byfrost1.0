@@ -13,15 +13,15 @@ $userController = new UserController($dbConn);
 
 if (
     $_SERVER['REQUEST_METHOD'] === 'POST' &&
-    isset($_POST['subject']) &&
-    $_POST['subject'] === 'changePassword'
+    isset(htmlspecialchars($_POST['subject'])) &&
+    htmlspecialchars($_POST['subject']) === 'changePassword'
 ) {
     $userController->changePasswordAjax();
     exit;
-} else if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject'])) {
-    if ($_POST['subject'] === 'completeProfile') {
+} else if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset(htmlspecialchars($_POST['subject']))) {
+    if (htmlspecialchars($_POST['subject']) === 'completeProfile') {
         $controller->completeProfile();
-    } else if ($_POST['subject'] === 'updateProfile') {
+    } else if (htmlspecialchars($_POST['subject']) === 'updateProfile') {
         // Actualizar perfil del usuario autenticado
         session_start();
         require_once ROOT . '/app/library/SessionManager.php';
@@ -36,13 +36,13 @@ if (
             echo json_encode(['success' => false, 'message' => 'Usuario no válido.']);
             exit;
         }
-        $firstName = $_POST['first_name'] ?? '';
-        $lastName = $_POST['last_name'] ?? '';
-        $email = $_POST['email'] ?? '';
-        $phone = $_POST['phone'] ?? '';
-        $address = $_POST['address'] ?? '';
-        $credentialType = $_POST['credential_type'] ?? '';
-        $credentialNumber = $_POST['credential_number'] ?? '';
+        $firstName = htmlspecialchars($_POST['first_name']) ?? '';
+        $lastName = htmlspecialchars($_POST['last_name']) ?? '';
+        $email = htmlspecialchars($_POST['email']) ?? '';
+        $phone = htmlspecialchars($_POST['phone']) ?? '';
+        $address = htmlspecialchars($_POST['address']) ?? '';
+        $credentialType = htmlspecialchars($_POST['credential_type']) ?? '';
+        $credentialNumber = htmlspecialchars($_POST['credential_number']) ?? '';
         
         if (!$firstName || !$lastName || !$email || !$credentialType || !$credentialNumber) {
             echo json_encode(['success' => false, 'message' => 'Faltan datos requeridos.']);

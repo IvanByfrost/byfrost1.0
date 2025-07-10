@@ -31,10 +31,10 @@ class RegisterController extends MainController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // 1. Recolectar solo los datos que se envían desde el formulario
             $data = [
-                'credential_type' => $_POST['credType'] ?? '',
-                'credential_number' => $_POST['userDocument'] ?? '',
-                'email' => $_POST['userEmail'] ?? '',
-                'password' => $_POST['userPassword'] ?? '',
+                'credential_type' => htmlspecialchars($_POST['credType']) ?? '',
+                'credential_number' => htmlspecialchars($_POST['userDocument']) ?? '',
+                'email' => htmlspecialchars($_POST['userEmail']) ?? '',
+                'password' => htmlspecialchars($_POST['userPassword']) ?? '',
                 // Campos obligatorios que se completarán después
                 'first_name' => '',  // Se completará en completeProf.php
                 'last_name' => '',   // Se completará en completeProf.php
@@ -85,12 +85,12 @@ class RegisterController extends MainController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Recolectar datos del formulario de completar perfil
             $data = [
-                'credential_number' => $_POST['userDocument'] ?? '',
-                'first_name' => $_POST['userName'] ?? '',
-                'last_name' => $_POST['lastnameUser'] ?? '',
-                'date_of_birth' => $_POST['dob'] ?? '',
-                'phone' => $_POST['userPhone'] ?? '',
-                'address' => $_POST['addressUser'] ?? ''
+                'credential_number' => htmlspecialchars($_POST['userDocument']) ?? '',
+                'first_name' => htmlspecialchars($_POST['userName']) ?? '',
+                'last_name' => htmlspecialchars($_POST['lastnameUser']) ?? '',
+                'date_of_birth' => htmlspecialchars($_POST['dob']) ?? '',
+                'phone' => htmlspecialchars($_POST['userPhone']) ?? '',
+                'address' => htmlspecialchars($_POST['addressUser']) ?? ''
             ];
 
             // Validar campos obligatorios

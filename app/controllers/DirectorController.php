@@ -72,11 +72,11 @@ class DirectorController extends MainController {
     public function addDirector() {
         $this->protectDirector();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $userName = $_POST['userName'] ?? '';
-            $userLastName = $_POST['userLastName'] ?? '';
-            $userEmail = $_POST['email'] ?? '';
-            $userPassword = $_POST['password'] ?? ''; // La contraseña en texto plano
-            $phoneUser = $_POST['phoneUser'] ?? null;
+            $userName = htmlspecialchars($_POST['userName']) ?? '';
+            $userLastName = htmlspecialchars($_POST['userLastName']) ?? '';
+            $userEmail = htmlspecialchars($_POST['email']) ?? '';
+            $userPassword = htmlspecialchars($_POST['password']) ?? ''; // La contraseña en texto plano
+            $phoneUser = htmlspecialchars($_POST['phoneUser']) ?? null;
 
             // Validar que la contraseña no esté vacía
             if (empty($userPassword)) {
@@ -99,7 +99,7 @@ class DirectorController extends MainController {
     // Mostrar el formulario para editar un rector existente
     public function editDirector() {
         $this->protectDirector();
-        $id = $_GET['id'] ?? null; // Obtener ID de la URL
+        $id = htmlspecialchars($_GET['id']) ?? null; // Obtener ID de la URL
         if ($id) {
             $director = $this->directorModel->getDirectorById($id);
             if ($director) {
@@ -116,13 +116,13 @@ class DirectorController extends MainController {
     public function directorUpdate() {
         $this->protectDirector();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id = $_POST['id_rector'] ?? null;
-            $userName = $_POST['userName'] ?? '';
-            $userLastName = $_POST['userLastName'] ?? '';
-            $userEmail = $_POST['email'] ?? '';
-            $phoneUser = $_POST['phoneUser'] ?? null;
+            $id = htmlspecialchars($_POST['id_rector']) ?? null;
+            $userName = htmlspecialchars($_POST['userName']) ?? '';
+            $userLastName = htmlspecialchars($_POST['userLastName']) ?? '';
+            $userEmail = htmlspecialchars($_POST['email']) ?? '';
+            $phoneUser = htmlspecialchars($_POST['phoneUser']) ?? null;
 
-            $userEmail = $_POST['email'] ?? '';
+            $userEmail = htmlspecialchars($_POST['email']) ?? '';
             if ($id && $this->directorModel->updateDirector($id, $userName, $userLastName, $userEmail, $phoneUser)) {
                 header('Location: /software_academico/rector/listar');
                 exit();
@@ -138,7 +138,7 @@ class DirectorController extends MainController {
     // Eliminar un rector
     public function deleteDirector() {
         $this->protectDirector();
-        $id = $_GET['id'] ?? null;
+        $id = htmlspecialchars($_GET['id']) ?? null;
         if ($id) {
             if ($this->directorModel->deleteDirector($id)) {
                 header('Location: /software_academico/rector/listar');
@@ -164,11 +164,11 @@ class DirectorController extends MainController {
      */
     public function loadPartial()
     {
-        $view = $_POST['view'] ?? $_GET['view'] ?? '';
-        $action = $_POST['action'] ?? $_GET['action'] ?? 'index';
-        $partialView = $_POST['partialView'] ?? $_GET['partialView'] ?? '';
-        $force = isset($_POST['force']) || isset($_GET['force']);
-        $debug = isset($_POST['debug']) || isset($_GET['debug']);
+        $view = htmlspecialchars($_POST['view']) ?? htmlspecialchars($_GET['view']) ?? '';
+        $action = htmlspecialchars($_POST['action']) ?? htmlspecialchars($_GET['action']) ?? 'index';
+        $partialView = htmlspecialchars($_POST['partialView']) ?? htmlspecialchars($_GET['partialView']) ?? '';
+        $force = isset(htmlspecialchars($_POST['force'])) || isset(htmlspecialchars($_GET['force']));
+        $debug = isset(htmlspecialchars($_POST['debug'])) || isset(htmlspecialchars($_GET['debug']));
 
         // Debug: mostrar información
         if ($debug) {

@@ -87,11 +87,11 @@ class CoordinatorController extends MainController {
 
         try {
             // Validar que se proporcione un ID de usuario
-            if (empty($_POST['user_id'])) {
+            if (empty(htmlspecialchars($_POST['user_id']))) {
                 throw new Exception("Debe seleccionar un usuario");
             }
 
-            $userId = (int)$_POST['user_id'];
+            $userId = (int)htmlspecialchars($_POST['user_id']);
 
             // Asignar rol de coordinador al usuario existente
             $this->model->createCoordinator($userId);
@@ -116,7 +116,7 @@ class CoordinatorController extends MainController {
             return;
         }
 
-        $coordinatorId = $coordinatorId ?? ($_GET['id'] ?? null);
+        $coordinatorId = $coordinatorId ?? (htmlspecialchars($_GET['id']) ?? null);
         if (!$coordinatorId) {
             $this->redirect(url . '?view=coordinator&action=listCoordinators&error=no_id');
             return;
@@ -151,7 +151,7 @@ class CoordinatorController extends MainController {
             return;
         }
 
-        $coordinatorId = $_POST['coordinator_id'] ?? null;
+        $coordinatorId = htmlspecialchars($_POST['coordinator_id']) ?? null;
         if (!$coordinatorId) {
             $this->redirect(url . '?view=coordinator&action=listCoordinators&error=no_id');
             return;
@@ -163,26 +163,26 @@ class CoordinatorController extends MainController {
                               'date_of_birth', 'email'];
             
             foreach ($requiredFields as $field) {
-                if (empty($_POST[$field])) {
+                if (empty(htmlspecialchars($_POST[$field]))) {
                     throw new Exception("El campo $field es requerido");
                 }
             }
 
             // Validar formato de email
-            if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+            if (!filter_var(htmlspecialchars($_POST['email']), FILTER_VALIDATE_EMAIL)) {
                 throw new Exception("El formato del email no es válido");
             }
 
             // Preparar datos del usuario
             $userData = [
-                'credential_number' => $_POST['credential_number'],
-                'first_name' => $_POST['first_name'],
-                'last_name' => $_POST['last_name'],
-                'credential_type' => $_POST['credential_type'],
-                'date_of_birth' => $_POST['date_of_birth'],
-                'address' => $_POST['address'] ?? '',
-                'phone' => $_POST['phone'] ?? '',
-                'email' => $_POST['email']
+                'credential_number' => htmlspecialchars($_POST['credential_number']),
+                'first_name' => htmlspecialchars($_POST['first_name']),
+                'last_name' => htmlspecialchars($_POST['last_name']),
+                'credential_type' => htmlspecialchars($_POST['credential_type']),
+                'date_of_birth' => htmlspecialchars($_POST['date_of_birth']),
+                'address' => htmlspecialchars($_POST['address']) ?? '',
+                'phone' => htmlspecialchars($_POST['phone']) ?? '',
+                'email' => htmlspecialchars($_POST['email'])
             ];
 
             // Actualizar coordinador
@@ -209,9 +209,9 @@ class CoordinatorController extends MainController {
             return;
         }
 
-        $coordinatorId = $_POST['coordinator_id'] ?? null;
-        $newPassword = $_POST['new_password'] ?? '';
-        $confirmPassword = $_POST['confirm_password'] ?? '';
+        $coordinatorId = htmlspecialchars($_POST['coordinator_id']) ?? null;
+        $newPassword = htmlspecialchars($_POST['new_password']) ?? '';
+        $confirmPassword = htmlspecialchars($_POST['confirm_password']) ?? '';
 
         if (!$coordinatorId || !$newPassword || !$confirmPassword) {
             $this->redirect(url . '?view=coordinator&action=listCoordinators&error=missing_data');
@@ -240,7 +240,7 @@ class CoordinatorController extends MainController {
             return;
         }
 
-        $coordinatorId = $_GET['id'] ?? $_POST['coordinator_id'] ?? null;
+        $coordinatorId = htmlspecialchars($_GET['id']) ?? htmlspecialchars($_POST['coordinator_id']) ?? null;
         if (!$coordinatorId) {
             $this->redirect(url . '?view=coordinator&action=listCoordinators&error=no_id');
             return;
@@ -264,7 +264,7 @@ class CoordinatorController extends MainController {
             return;
         }
 
-        $coordinatorId = $_GET['id'] ?? $_POST['coordinator_id'] ?? null;
+        $coordinatorId = htmlspecialchars($_GET['id']) ?? htmlspecialchars($_POST['coordinator_id']) ?? null;
         if (!$coordinatorId) {
             $this->redirect(url . '?view=coordinator&action=listCoordinators&error=no_id');
             return;
@@ -287,7 +287,7 @@ class CoordinatorController extends MainController {
             return;
         }
 
-        $searchTerm = $_GET['search'] ?? $_POST['search'] ?? '';
+        $searchTerm = htmlspecialchars($_GET['search']) ?? htmlspecialchars($_POST['search']) ?? '';
         if (empty($searchTerm)) {
             $this->redirect(url . '?view=coordinator&action=listCoordinators');
             return;
@@ -316,7 +316,7 @@ class CoordinatorController extends MainController {
             return;
         }
 
-        $coordinatorId = $coordinatorId ?? ($_GET['id'] ?? null);
+        $coordinatorId = $coordinatorId ?? (htmlspecialchars($_GET['id']) ?? null);
         if (!$coordinatorId) {
             $this->redirect(url . '?view=coordinator&action=listCoordinators&error=no_id');
             return;
@@ -343,10 +343,10 @@ class CoordinatorController extends MainController {
      */
     public function loadPartial()
     {
-        $view = $_POST['view'] ?? $_GET['view'] ?? '';
-        $action = $_POST['action'] ?? $_GET['action'] ?? 'index';
-        $partialView = $_POST['partialView'] ?? $_GET['partialView'] ?? '';
-        $force = isset($_POST['force']) || isset($_GET['force']);
+        $view = htmlspecialchars($_POST['view']) ?? htmlspecialchars($_GET['view']) ?? '';
+        $action = htmlspecialchars($_POST['action']) ?? htmlspecialchars($_GET['action']) ?? 'index';
+        $partialView = htmlspecialchars($_POST['partialView']) ?? htmlspecialchars($_GET['partialView']) ?? '';
+        $force = isset(htmlspecialchars($_POST['force'])) || isset(htmlspecialchars($_GET['force']));
 
         if (!$this->isAjaxRequest() && !$force) {
             if (empty($partialView)) {

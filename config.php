@@ -1,7 +1,8 @@
 <?php
 // Definir ROOT solo si no está definido
 if (!defined('ROOT')) {
-    define('ROOT', __DIR__);
+    define('url', 'http://localhost:8000/');
+define('ROOT', __DIR__);
 }
 
 if (!defined('BASE_URL')) {

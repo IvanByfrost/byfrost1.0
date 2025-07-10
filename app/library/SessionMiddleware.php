@@ -55,8 +55,8 @@ class SessionMiddleware {
      * Verifica si la ruta actual es pública
      */
     private static function isPublicRoute() {
-        $view = $_GET['view'] ?? '';
-        $action = $_GET['action'] ?? 'index';
+        $view = htmlspecialchars($_GET['view']) ?? '';
+        $action = htmlspecialchars($_GET['action']) ?? 'index';
         
         // Si no hay view, considerar como pública
         if (empty($view)) {
@@ -219,8 +219,8 @@ class SessionMiddleware {
             'headers_sent' => headers_sent(),
             'is_ajax' => self::isAjaxRequest(),
             'is_public_route' => self::isPublicRoute(),
-            'current_view' => $_GET['view'] ?? '',
-            'current_action' => $_GET['action'] ?? ''
+            'current_view' => htmlspecialchars($_GET['view']) ?? '',
+            'current_action' => htmlspecialchars($_GET['action']) ?? ''
         ];
     }
 } 

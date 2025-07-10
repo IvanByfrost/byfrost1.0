@@ -10,8 +10,8 @@ if (!defined('ROOT')) {
 require_once ROOT . '/config.php';
 require_once ROOT . '/app/library/SecurityMiddleware.php';
 
-$view = $_GET['view'] ?? '';
-$action = $_GET['action'] ?? '';
+$view = htmlspecialchars($_GET['view']) ?? '';
+$action = htmlspecialchars($_GET['action']) ?? '';
 
 // Debug router inicio
 error_log('DEBUG ROUTER: view=' . $view . ', action=' . $action);

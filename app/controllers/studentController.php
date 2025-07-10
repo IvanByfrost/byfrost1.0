@@ -379,7 +379,7 @@ class StudentController extends MainController
     public function createCategory()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $name = $_POST['name'] ?? '';
+            $name = htmlspecialchars($_POST['name']) ?? '';
             if ($name) {
                 $this->categoryModel->create($name);
                 header('Location: ?controller=student&action=listCategories');
@@ -392,7 +392,7 @@ class StudentController extends MainController
     public function editCategory($id)
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $name = $_POST['name'] ?? '';
+            $name = htmlspecialchars($_POST['name']) ?? '';
             if ($name) {
                 $this->categoryModel->update($id, $name);
                 header('Location: ?controller=student&action=listCategories');
@@ -408,10 +408,10 @@ class StudentController extends MainController
      */
     public function loadPartial()
     {
-        $view = $_POST['view'] ?? $_GET['view'] ?? '';
-        $action = $_POST['action'] ?? $_GET['action'] ?? 'index';
-        $partialView = $_POST['partialView'] ?? $_GET['partialView'] ?? '';
-        $force = isset($_POST['force']) || isset($_GET['force']);
+        $view = htmlspecialchars($_POST['view']) ?? htmlspecialchars($_GET['view']) ?? '';
+        $action = htmlspecialchars($_POST['action']) ?? htmlspecialchars($_GET['action']) ?? 'index';
+        $partialView = htmlspecialchars($_POST['partialView']) ?? htmlspecialchars($_GET['partialView']) ?? '';
+        $force = isset(htmlspecialchars($_POST['force'])) || isset(htmlspecialchars($_GET['force']));
 
         if (!$this->isAjaxRequest() && !$force) {
             if (empty($partialView)) {

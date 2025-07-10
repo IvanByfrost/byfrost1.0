@@ -39,8 +39,8 @@ class UserController extends MainController
         $error = '';
         
         // Si se envió una búsqueda (GET o POST)
-        $credentialType = $_GET['credential_type'] ?? $_POST['credential_type'] ?? null;
-        $credentialNumber = $_GET['credential_number'] ?? $_POST['credential_number'] ?? null;
+        $credentialType = htmlspecialchars($_GET['credential_type']) ?? htmlspecialchars($_POST['credential_type']) ?? null;
+        $credentialNumber = htmlspecialchars($_GET['credential_number']) ?? htmlspecialchars($_POST['credential_number']) ?? null;
         
         if ($credentialType && $credentialNumber && !empty($credentialNumber)) {
             try {
@@ -85,8 +85,8 @@ class UserController extends MainController
             return;
         }
         
-        $userId = $_POST['user_id'] ?? null;
-        $roleType = $_POST['role_type'] ?? null;
+        $userId = htmlspecialchars($_POST['user_id']) ?? null;
+        $roleType = htmlspecialchars($_POST['role_type']) ?? null;
         
         if (!$userId || !$roleType) {
             $this->sendJsonResponse(false, 'Faltan datos requeridos');
@@ -176,8 +176,8 @@ class UserController extends MainController
         $userInfo = null;
 
         // Si se envía el formulario de búsqueda
-        $credentialType = $_GET['credential_type'] ?? null;
-        $credentialNumber = $_GET['credential_number'] ?? null;
+        $credentialType = htmlspecialchars($_GET['credential_type']) ?? null;
+        $credentialNumber = htmlspecialchars($_GET['credential_number']) ?? null;
         
         if ($credentialType && $credentialNumber) {
             // Buscar usuario por documento
@@ -223,8 +223,8 @@ class UserController extends MainController
     {
         $this->protectSchool();
         
-        $role = $_GET['role'] ?? '';
-        $query = $_GET['query'] ?? '';
+        $role = htmlspecialchars($_GET['role']) ?? '';
+        $query = htmlspecialchars($_GET['query']) ?? '';
         
         if (empty($role) || empty($query)) {
             $this->sendJsonResponse(false, 'Faltan parámetros requeridos');
@@ -439,9 +439,9 @@ class UserController extends MainController
             $this->sendJsonResponse(false, 'Usuario no válido.');
             return;
         }
-        $currentPassword = $_POST['currentPassword'] ?? '';
-        $newPassword = $_POST['newPassword'] ?? '';
-        $confirmPassword = $_POST['confirmPassword'] ?? '';
+        $currentPassword = htmlspecialchars($_POST['currentPassword']) ?? '';
+        $newPassword = htmlspecialchars($_POST['newPassword']) ?? '';
+        $confirmPassword = htmlspecialchars($_POST['confirmPassword']) ?? '';
         if (!$currentPassword || !$newPassword || !$confirmPassword) {
             $this->sendJsonResponse(false, 'Todos los campos son obligatorios.');
             return;
@@ -498,10 +498,10 @@ class UserController extends MainController
      */
     public function loadPartial()
     {
-        $view = $_POST['view'] ?? $_GET['view'] ?? '';
-        $action = $_POST['action'] ?? $_GET['action'] ?? 'index';
-        $partialView = $_POST['partialView'] ?? $_GET['partialView'] ?? '';
-        $force = isset($_POST['force']) || isset($_GET['force']);
+        $view = htmlspecialchars($_POST['view']) ?? htmlspecialchars($_GET['view']) ?? '';
+        $action = htmlspecialchars($_POST['action']) ?? htmlspecialchars($_GET['action']) ?? 'index';
+        $partialView = htmlspecialchars($_POST['partialView']) ?? htmlspecialchars($_GET['partialView']) ?? '';
+        $force = isset(htmlspecialchars($_POST['force'])) || isset(htmlspecialchars($_GET['force']));
 
         if (!$this->isAjaxRequest() && !$force) {
             if (empty($partialView)) {

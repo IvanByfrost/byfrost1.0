@@ -57,11 +57,11 @@ class GradeController
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data = [
-                'student_id' => $_POST['student_id'] ?? '',
-                'subject_id' => $_POST['subject_id'] ?? '',
-                'activity_name' => $_POST['activity_name'] ?? '',
-                'score' => $_POST['score'] ?? '',
-                'score_date' => $_POST['score_date'] ?? date('Y-m-d')
+                'student_id' => htmlspecialchars($_POST['student_id']) ?? '',
+                'subject_id' => htmlspecialchars($_POST['subject_id']) ?? '',
+                'activity_name' => htmlspecialchars($_POST['activity_name']) ?? '',
+                'score' => htmlspecialchars($_POST['score']) ?? '',
+                'score_date' => htmlspecialchars($_POST['score_date']) ?? date('Y-m-d')
             ];
 
             // Validaciones
@@ -89,7 +89,7 @@ class GradeController
      */
     public function editGradeForm()
     {
-        $gradeId = $_GET['id'] ?? null;
+        $gradeId = htmlspecialchars($_GET['id']) ?? null;
         if (!$gradeId) {
             echo json_encode(['success' => false, 'message' => 'ID de calificación no válido.']);
             return;
@@ -117,13 +117,13 @@ class GradeController
     public function updateGrade()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $gradeId = $_POST['grade_id'] ?? '';
+            $gradeId = htmlspecialchars($_POST['grade_id']) ?? '';
             $data = [
-                'student_id' => $_POST['student_id'] ?? '',
-                'subject_id' => $_POST['subject_id'] ?? '',
-                'activity_name' => $_POST['activity_name'] ?? '',
-                'score' => $_POST['score'] ?? '',
-                'score_date' => $_POST['score_date'] ?? date('Y-m-d')
+                'student_id' => htmlspecialchars($_POST['student_id']) ?? '',
+                'subject_id' => htmlspecialchars($_POST['subject_id']) ?? '',
+                'activity_name' => htmlspecialchars($_POST['activity_name']) ?? '',
+                'score' => htmlspecialchars($_POST['score']) ?? '',
+                'score_date' => htmlspecialchars($_POST['score_date']) ?? date('Y-m-d')
             ];
 
             // Validaciones
@@ -152,7 +152,7 @@ class GradeController
     public function deleteGrade()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $gradeId = $_POST['grade_id'] ?? '';
+            $gradeId = htmlspecialchars($_POST['grade_id']) ?? '';
             
             if (empty($gradeId)) {
                 echo json_encode(['success' => false, 'message' => 'ID de calificación no válido.']);
@@ -172,8 +172,8 @@ class GradeController
      */
     public function getFilteredGrades()
     {
-        $studentId = $_GET['student_id'] ?? '';
-        $subjectId = $_GET['subject_id'] ?? '';
+        $studentId = htmlspecialchars($_GET['student_id']) ?? '';
+        $subjectId = htmlspecialchars($_GET['subject_id']) ?? '';
 
         if ($studentId) {
             $grades = $this->gradeModel->getGradesByStudent($studentId);

@@ -33,18 +33,18 @@ class LoginController extends MainController
     public function authUser()
     {
         //Verifica que se hayan enviado los datos necesarios
-        if (empty($_POST['subject']) || empty($_POST['credType']) || empty($_POST['userDocument']) || empty($_POST['userPassword'])) {
+        if (empty(htmlspecialchars($_POST['subject'])) || empty(htmlspecialchars($_POST['credType'])) || empty(htmlspecialchars($_POST['userDocument'])) || empty(htmlspecialchars($_POST['userPassword']))) {
             echo json_encode([
                 "status" => "error",
                 "msg" => "Faltan uno o más datos obligatorios. Revisa el tipo de documento, el número o la contraseña."
             ]);
             exit;
         }
-        $subject = $_POST['subject'];
+        $subject = htmlspecialchars($_POST['subject']);
         if ($subject == "login") {
-            $credType = $_POST['credType'];
-            $userDocument = $_POST['userDocument'];
-            $userPassword = $_POST['userPassword'];
+            $credType = htmlspecialchars($_POST['credType']);
+            $userDocument = htmlspecialchars($_POST['userDocument']);
+            $userPassword = htmlspecialchars($_POST['userPassword']);
 
             // Primero verificar si el usuario existe
             $queryCheck = "SELECT COUNT(*) FROM users WHERE credential_type = :credType AND credential_number = :userDocument";

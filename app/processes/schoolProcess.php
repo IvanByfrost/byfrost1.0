@@ -36,14 +36,14 @@ try {
     $controller = new SchoolController($dbConn);
 
     // Manejar peticiones POST para crear escuela
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['school_name'])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset(htmlspecialchars($_POST['school_name']))) {
         error_log("Procesando creación de escuela");
         $controller->createSchool(); 
         return;
     }
 
     // Manejar peticiones POST para consultar escuela
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['nit']) || isset($_POST['school_name']) || isset($_POST['codigoDANE']) || isset($_POST['search']))) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset(htmlspecialchars($_POST['nit'])) || isset(htmlspecialchars($_POST['school_name'])) || isset(htmlspecialchars($_POST['codigoDANE'])) || isset(htmlspecialchars($_POST['search'])))) {
         error_log("Procesando consulta de escuela");
         $controller->consultSchool(); 
         return;

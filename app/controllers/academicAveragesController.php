@@ -161,7 +161,7 @@ class AcademicAveragesController {
             }
             
             // Obtener período específico si se proporciona
-            $termId = isset($_GET['term_id']) ? (int)$_GET['term_id'] : null;
+            $termId = isset(htmlspecialchars($_GET['term_id'])) ? (int)htmlspecialchars($_GET['term_id']) : null;
             
             // Obtener datos
             $topStudents = $this->model->getTopStudents($termId);
@@ -208,7 +208,7 @@ class AcademicAveragesController {
             }
             
             // Obtener tipo de datos solicitado
-            $type = isset($_GET['type']) ? $_GET['type'] : 'terms';
+            $type = isset(htmlspecialchars($_GET['type'])) ? htmlspecialchars($_GET['type']) : 'terms';
             
             $data = [];
             
@@ -223,7 +223,7 @@ class AcademicAveragesController {
                     $data = $this->model->getProfessorAverages();
                     break;
                 case 'top_students':
-                    $termId = isset($_GET['term_id']) ? (int)$_GET['term_id'] : null;
+                    $termId = isset(htmlspecialchars($_GET['term_id'])) ? (int)htmlspecialchars($_GET['term_id']) : null;
                     $data = $this->model->getTopStudents($termId);
                     break;
                 case 'trends':

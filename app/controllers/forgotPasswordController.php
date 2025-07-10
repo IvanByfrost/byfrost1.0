@@ -23,9 +23,9 @@ class ForgotPasswordController extends MainController
     public function requestReset()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $credType = $_POST['credType'] ?? '';
-            $userDocument = $_POST['userDocument'] ?? '';
-            $userEmail = $_POST['userEmail'] ?? '';
+            $credType = htmlspecialchars($_POST['credType']) ?? '';
+            $userDocument = htmlspecialchars($_POST['userDocument']) ?? '';
+            $userEmail = htmlspecialchars($_POST['userEmail']) ?? '';
 
             // Validar campos obligatorios
             if (empty($credType) || empty($userDocument) || empty($userEmail)) {
@@ -106,9 +106,9 @@ class ForgotPasswordController extends MainController
     public function resetPassword()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $token = $_POST['token'] ?? '';
-            $newPassword = $_POST['newPassword'] ?? '';
-            $confirmPassword = $_POST['confirmPassword'] ?? '';
+            $token = htmlspecialchars($_POST['token']) ?? '';
+            $newPassword = htmlspecialchars($_POST['newPassword']) ?? '';
+            $confirmPassword = htmlspecialchars($_POST['confirmPassword']) ?? '';
 
             // Validar campos
             if (empty($token) || empty($newPassword) || empty($confirmPassword)) {

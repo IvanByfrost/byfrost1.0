@@ -30,7 +30,7 @@ class SchoolController extends MainController
                 $missingFields = [];
                 
                 foreach ($requiredFields as $field) {
-                    if (empty($_POST[$field])) {
+                    if (empty(htmlspecialchars($_POST[$field]))) {
                         $missingFields[] = $field;
                     }
                 }
@@ -38,7 +38,7 @@ class SchoolController extends MainController
                 // Validar campos obligatorios del modal
                 $modalRequiredFields = ['departamento', 'municipio', 'direccion', 'telefono', 'correo'];
                 foreach ($modalRequiredFields as $field) {
-                    if (empty($_POST[$field])) {
+                    if (empty(htmlspecialchars($_POST[$field]))) {
                         $missingFields[] = $field;
                     }
                 }
@@ -61,7 +61,7 @@ class SchoolController extends MainController
                 }
                 
                 // Validar formato de email
-                if (!empty($_POST['correo']) && !filter_var($_POST['correo'], FILTER_VALIDATE_EMAIL)) {
+                if (!empty(htmlspecialchars($_POST['correo'])) && !filter_var(htmlspecialchars($_POST['correo']), FILTER_VALIDATE_EMAIL)) {
                     $errorMessage = 'El formato del email no es válido';
                     
                     if ($this->isAjaxRequest()) {
@@ -79,7 +79,7 @@ class SchoolController extends MainController
                 }
                 
                 // Validar que se haya seleccionado un director
-                if (empty($_POST['director_user_id'])) {
+                if (empty(htmlspecialchars($_POST['director_user_id']))) {
                     $errorMessage = 'Debe seleccionar un director para la escuela';
                     
                     if ($this->isAjaxRequest()) {
@@ -98,22 +98,22 @@ class SchoolController extends MainController
                 
                 // Preparar los datos mapeando correctamente los campos del modal
                 $data = [
-                    'school_name' => trim($_POST['school_name']),
-                    'school_dane' => trim($_POST['school_dane']),
-                    'school_document' => trim($_POST['school_document']),
-                    'total_quota' => intval($_POST['total_quota'] ?? 0),
-                    'director_user_id' => intval($_POST['director_user_id']),
-                    'coordinator_user_id' => !empty($_POST['coordinator_user_id']) ? intval($_POST['coordinator_user_id']) : null,
-                    'address' => trim($_POST['direccion'] ?? ''), // Mapear desde el modal
-                    'phone' => trim($_POST['telefono'] ?? ''), // Mapear desde el modal
-                    'email' => trim($_POST['correo'] ?? '') // Mapear desde el modal
+                    'school_name' => trim(htmlspecialchars($_POST['school_name'])),
+                    'school_dane' => trim(htmlspecialchars($_POST['school_dane'])),
+                    'school_document' => trim(htmlspecialchars($_POST['school_document'])),
+                    'total_quota' => intval(htmlspecialchars($_POST['total_quota']) ?? 0),
+                    'director_user_id' => intval(htmlspecialchars($_POST['director_user_id'])),
+                    'coordinator_user_id' => !empty(htmlspecialchars($_POST['coordinator_user_id'])) ? intval(htmlspecialchars($_POST['coordinator_user_id'])) : null,
+                    'address' => trim(htmlspecialchars($_POST['direccion']) ?? ''), // Mapear desde el modal
+                    'phone' => trim(htmlspecialchars($_POST['telefono']) ?? ''), // Mapear desde el modal
+                    'email' => trim(htmlspecialchars($_POST['correo']) ?? '') // Mapear desde el modal
                 ];
                 
                 // Construir dirección completa con departamento y municipio
-                if (!empty($_POST['departamento']) && !empty($_POST['municipio'])) {
-                    $data['address'] = trim($_POST['direccion'] ?? '') . ', ' . 
-                                     trim($_POST['municipio']) . ', ' . 
-                                     trim($_POST['departamento']);
+                if (!empty(htmlspecialchars($_POST['departamento'])) && !empty(htmlspecialchars($_POST['municipio']))) {
+                    $data['address'] = trim(htmlspecialchars($_POST['direccion']) ?? '') . ', ' . 
+                                     trim(htmlspecialchars($_POST['municipio'])) . ', ' . 
+                                     trim(htmlspecialchars($_POST['departamento']));
                 }
                 
                 // Llamar al método del modelo
@@ -171,7 +171,7 @@ class SchoolController extends MainController
     {
         $this->protectSchool();
         
-        $search = $_GET['search'] ?? '';
+        $search = htmlspecialchars($_GET['search']) ?? '';
         $schools = $this->schoolModel->getAllSchools();
         
         // Si hay término de búsqueda, filtrar los resultados
@@ -184,8 +184,8 @@ class SchoolController extends MainController
         }
         
         // Verificar si hay mensaje de éxito
-        $success = $_GET['success'] ?? false;
-        $message = $_GET['msg'] ?? '';
+        $success = htmlspecialchars($_GET['success']) ?? false;
+        $message = htmlspecialchars($_GET['msg']) ?? '';
         
         $this->loadPartialView('school/consultSchool', [
             'schools' => $schools,
@@ -199,7 +199,7 @@ class SchoolController extends MainController
     {
         $this->protectSchool();
         
-        $schoolId = $_GET['id'] ?? null;
+        $schoolId = htmlspecialchars($_GET['id']) ?? null;
         
         if (!$schoolId) {
             $this->loadPartialView('school/consultSchool', [
@@ -228,7 +228,7 @@ class SchoolController extends MainController
     {
         $this->protectSchool();
         
-        $schoolId = $_GET['id'] ?? null;
+        $schoolId = htmlspecialchars($_GET['id']) ?? null;
         
         if (!$schoolId) {
             $this->loadPartialView('school/consultSchool', [
@@ -245,7 +245,7 @@ class SchoolController extends MainController
                 $missingFields = [];
                 
                 foreach ($requiredFields as $field) {
-                    if (empty($_POST[$field])) {
+                    if (empty(htmlspecialchars($_POST[$field]))) {
                         $missingFields[] = $field;
                     }
                 }
@@ -270,7 +270,7 @@ class SchoolController extends MainController
                 }
                 
                 // Validar formato de email
-                if (!empty($_POST['email']) && !filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+                if (!empty(htmlspecialchars($_POST['email'])) && !filter_var(htmlspecialchars($_POST['email']), FILTER_VALIDATE_EMAIL)) {
                     $errorMessage = 'El formato del email no es válido';
                     
                     if ($this->isAjaxRequest()) {
@@ -292,15 +292,15 @@ class SchoolController extends MainController
                 // Preparar los datos
                 $data = [
                     'school_id' => $schoolId,
-                    'school_name' => trim($_POST['school_name']),
-                    'school_dane' => trim($_POST['school_dane']),
-                    'school_document' => trim($_POST['school_document']),
-                    'total_quota' => intval($_POST['total_quota'] ?? 0),
-                    'director_user_id' => intval($_POST['director_user_id']),
-                    'coordinator_user_id' => !empty($_POST['coordinator_user_id']) ? intval($_POST['coordinator_user_id']) : null,
-                    'address' => trim($_POST['address'] ?? ''),
-                    'phone' => trim($_POST['phone'] ?? ''),
-                    'email' => trim($_POST['email'] ?? '')
+                    'school_name' => trim(htmlspecialchars($_POST['school_name'])),
+                    'school_dane' => trim(htmlspecialchars($_POST['school_dane'])),
+                    'school_document' => trim(htmlspecialchars($_POST['school_document'])),
+                    'total_quota' => intval(htmlspecialchars($_POST['total_quota']) ?? 0),
+                    'director_user_id' => intval(htmlspecialchars($_POST['director_user_id'])),
+                    'coordinator_user_id' => !empty(htmlspecialchars($_POST['coordinator_user_id'])) ? intval(htmlspecialchars($_POST['coordinator_user_id'])) : null,
+                    'address' => trim(htmlspecialchars($_POST['address']) ?? ''),
+                    'phone' => trim(htmlspecialchars($_POST['phone']) ?? ''),
+                    'email' => trim(htmlspecialchars($_POST['email']) ?? '')
                 ];
                 
                 // Llamar al método del modelo para actualizar
@@ -373,7 +373,7 @@ class SchoolController extends MainController
     {
         $this->protectSchool();
         
-        $schoolId = $_GET['id'] ?? null;
+        $schoolId = htmlspecialchars($_GET['id']) ?? null;
         
         if (!$schoolId) {
             if ($this->isAjaxRequest()) {
@@ -425,10 +425,10 @@ class SchoolController extends MainController
      */
     public function loadPartial()
     {
-        $view = $_POST['view'] ?? $_GET['view'] ?? '';
-        $action = $_POST['action'] ?? $_GET['action'] ?? 'index';
-        $partialView = $_POST['partialView'] ?? $_GET['partialView'] ?? '';
-        $force = isset($_POST['force']) || isset($_GET['force']);
+        $view = htmlspecialchars($_POST['view']) ?? htmlspecialchars($_GET['view']) ?? '';
+        $action = htmlspecialchars($_POST['action']) ?? htmlspecialchars($_GET['action']) ?? 'index';
+        $partialView = htmlspecialchars($_POST['partialView']) ?? htmlspecialchars($_GET['partialView']) ?? '';
+        $force = isset(htmlspecialchars($_POST['force'])) || isset(htmlspecialchars($_GET['force']));
 
         if (!$this->isAjaxRequest() && !$force) {
             if (empty($partialView)) {

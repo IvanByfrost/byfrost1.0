@@ -21,7 +21,7 @@ $controller = new RegisterController($dbConn);
 
 // Verificar método y subject
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['subject']) && $_POST['subject'] === 'register') {
+    if (isset(htmlspecialchars($_POST['subject'])) && htmlspecialchars($_POST['subject']) === 'register') {
         error_log("DEBUG registerProcess - Subject válido, llamando registerUser()");
         
         // Capturar cualquier salida antes de la respuesta JSON
@@ -63,12 +63,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
     } else {
-        error_log("DEBUG registerProcess - Subject inválido o faltante. Subject recibido: " . ($_POST['subject'] ?? 'NO DEFINIDO'));
+        error_log("DEBUG registerProcess - Subject inválido o faltante. Subject recibido: " . (htmlspecialchars($_POST['subject']) ?? 'NO DEFINIDO'));
         echo json_encode([
             'status' => 'error',
             'msg' => 'Subject inválido o faltante. Se requiere subject=register',
             'debug' => [
-                'received_subject' => $_POST['subject'] ?? 'NO DEFINIDO',
+                'received_subject' => htmlspecialchars($_POST['subject']) ?? 'NO DEFINIDO',
                 'expected_subject' => 'register',
                 'post_data' => $_POST
             ]

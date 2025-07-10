@@ -89,8 +89,8 @@ class PayrollController extends MainController {
         
         try {
             $filters = [];
-            if (isset($_GET['department'])) $filters['department'] = $_GET['department'];
-            if (isset($_GET['position'])) $filters['position'] = $_GET['position'];
+            if (isset(htmlspecialchars($_GET['department']))) $filters['department'] = htmlspecialchars($_GET['department']);
+            if (isset(htmlspecialchars($_GET['position']))) $filters['position'] = htmlspecialchars($_GET['position']);
             
             $employees = $this->payrollModel->getAllEmployees($filters);
             
@@ -120,16 +120,16 @@ class PayrollController extends MainController {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $data = [
-                    'user_id' => $_POST['user_id'],
-                    'employee_code' => $_POST['employee_code'],
-                    'position' => $_POST['position'],
-                    'department' => $_POST['department'],
-                    'hire_date' => $_POST['hire_date'],
-                    'salary' => $_POST['salary'],
-                    'contract_type' => $_POST['contract_type'],
-                    'work_schedule' => $_POST['work_schedule'] ?? null,
-                    'bank_account' => $_POST['bank_account'] ?? null,
-                    'bank_name' => $_POST['bank_name'] ?? null
+                    'user_id' => htmlspecialchars($_POST['user_id']),
+                    'employee_code' => htmlspecialchars($_POST['employee_code']),
+                    'position' => htmlspecialchars($_POST['position']),
+                    'department' => htmlspecialchars($_POST['department']),
+                    'hire_date' => htmlspecialchars($_POST['hire_date']),
+                    'salary' => htmlspecialchars($_POST['salary']),
+                    'contract_type' => htmlspecialchars($_POST['contract_type']),
+                    'work_schedule' => htmlspecialchars($_POST['work_schedule']) ?? null,
+                    'bank_account' => htmlspecialchars($_POST['bank_account']) ?? null,
+                    'bank_name' => htmlspecialchars($_POST['bank_name']) ?? null
                 ];
                 
                 if ($this->payrollModel->createEmployee($data)) {
@@ -175,7 +175,7 @@ class PayrollController extends MainController {
             exit;
         }
         
-        $employeeId = $_GET['id'] ?? null;
+        $employeeId = htmlspecialchars($_GET['id']) ?? null;
         if (!$employeeId) {
             header('Location: ?view=payroll&action=employees');
             exit;
@@ -184,13 +184,13 @@ class PayrollController extends MainController {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $data = [
-                    'position' => $_POST['position'],
-                    'department' => $_POST['department'],
-                    'salary' => $_POST['salary'],
-                    'contract_type' => $_POST['contract_type'],
-                    'work_schedule' => $_POST['work_schedule'] ?? null,
-                    'bank_account' => $_POST['bank_account'] ?? null,
-                    'bank_name' => $_POST['bank_name'] ?? null
+                    'position' => htmlspecialchars($_POST['position']),
+                    'department' => htmlspecialchars($_POST['department']),
+                    'salary' => htmlspecialchars($_POST['salary']),
+                    'contract_type' => htmlspecialchars($_POST['contract_type']),
+                    'work_schedule' => htmlspecialchars($_POST['work_schedule']) ?? null,
+                    'bank_account' => htmlspecialchars($_POST['bank_account']) ?? null,
+                    'bank_name' => htmlspecialchars($_POST['bank_name']) ?? null
                 ];
                 
                 if ($this->payrollModel->updateEmployee($employeeId, $data)) {
@@ -235,7 +235,7 @@ class PayrollController extends MainController {
             exit;
         }
         
-        $employeeId = $_GET['id'] ?? null;
+        $employeeId = htmlspecialchars($_GET['id']) ?? null;
         if (!$employeeId) {
             header('Location: ?view=payroll&action=employees');
             exit;
@@ -288,8 +288,8 @@ class PayrollController extends MainController {
         
         try {
             $filters = [];
-            if (isset($_GET['status'])) $filters['status'] = $_GET['status'];
-            if (isset($_GET['year'])) $filters['year'] = $_GET['year'];
+            if (isset(htmlspecialchars($_GET['status']))) $filters['status'] = htmlspecialchars($_GET['status']);
+            if (isset(htmlspecialchars($_GET['year']))) $filters['year'] = htmlspecialchars($_GET['year']);
             
             $periods = $this->payrollModel->getAllPeriods($filters);
             
@@ -318,10 +318,10 @@ class PayrollController extends MainController {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $data = [
-                    'period_name' => $_POST['period_name'],
-                    'start_date' => $_POST['start_date'],
-                    'end_date' => $_POST['end_date'],
-                    'payment_date' => $_POST['payment_date'],
+                    'period_name' => htmlspecialchars($_POST['period_name']),
+                    'start_date' => htmlspecialchars($_POST['start_date']),
+                    'end_date' => htmlspecialchars($_POST['end_date']),
+                    'payment_date' => htmlspecialchars($_POST['payment_date']),
                     'created_by_user_id' => $this->sessionManager->getUserId()
                 ];
                 
@@ -352,7 +352,7 @@ class PayrollController extends MainController {
             exit;
         }
         
-        $periodId = $_GET['id'] ?? null;
+        $periodId = htmlspecialchars($_GET['id']) ?? null;
         if (!$periodId) {
             header('Location: ?view=payroll&action=periods');
             exit;
@@ -388,7 +388,7 @@ class PayrollController extends MainController {
             exit;
         }
         
-        $periodId = $_GET['period_id'] ?? null;
+        $periodId = htmlspecialchars($_GET['period_id']) ?? null;
         if (!$periodId) {
             header('Location: ?view=payroll&action=periods');
             exit;
@@ -420,7 +420,7 @@ class PayrollController extends MainController {
             exit;
         }
         
-        $recordId = $_GET['id'] ?? null;
+        $recordId = htmlspecialchars($_GET['id']) ?? null;
         if (!$recordId) {
             header('Location: ?view=payroll&action=periods');
             exit;
@@ -452,7 +452,7 @@ class PayrollController extends MainController {
             exit;
         }
         
-        $recordId = $_GET['id'] ?? null;
+        $recordId = htmlspecialchars($_GET['id']) ?? null;
         if (!$recordId) {
             header('Location: ?view=payroll&action=periods');
             exit;
@@ -461,11 +461,11 @@ class PayrollController extends MainController {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $data = [
-                    'base_salary' => $_POST['base_salary'],
-                    'total_earnings' => $_POST['total_earnings'],
-                    'total_deductions' => $_POST['total_deductions'],
-                    'net_salary' => $_POST['net_salary'],
-                    'notes' => $_POST['notes'] ?? null
+                    'base_salary' => htmlspecialchars($_POST['base_salary']),
+                    'total_earnings' => htmlspecialchars($_POST['total_earnings']),
+                    'total_deductions' => htmlspecialchars($_POST['total_deductions']),
+                    'net_salary' => htmlspecialchars($_POST['net_salary']),
+                    'notes' => htmlspecialchars($_POST['notes']) ?? null
                 ];
                 
                 if ($this->payrollModel->updatePayrollRecord($recordId, $data)) {
@@ -511,8 +511,8 @@ class PayrollController extends MainController {
         
         try {
             $filters = [];
-            if (isset($_GET['employee_id'])) $filters['employee_id'] = $_GET['employee_id'];
-            if (isset($_GET['period_id'])) $filters['period_id'] = $_GET['period_id'];
+            if (isset(htmlspecialchars($_GET['employee_id']))) $filters['employee_id'] = htmlspecialchars($_GET['employee_id']);
+            if (isset(htmlspecialchars($_GET['period_id']))) $filters['period_id'] = htmlspecialchars($_GET['period_id']);
             
             $absences = $this->payrollModel->getAllAbsences($filters);
             
@@ -541,13 +541,13 @@ class PayrollController extends MainController {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $data = [
-                    'employee_id' => $_POST['employee_id'],
-                    'absence_type' => $_POST['absence_type'],
-                    'start_date' => $_POST['start_date'],
-                    'end_date' => $_POST['end_date'],
-                    'days_count' => $_POST['days_count'],
-                    'is_paid' => isset($_POST['is_paid']) ? 1 : 0,
-                    'reason' => $_POST['reason'] ?? null
+                    'employee_id' => htmlspecialchars($_POST['employee_id']),
+                    'absence_type' => htmlspecialchars($_POST['absence_type']),
+                    'start_date' => htmlspecialchars($_POST['start_date']),
+                    'end_date' => htmlspecialchars($_POST['end_date']),
+                    'days_count' => htmlspecialchars($_POST['days_count']),
+                    'is_paid' => isset(htmlspecialchars($_POST['is_paid'])) ? 1 : 0,
+                    'reason' => htmlspecialchars($_POST['reason']) ?? null
                 ];
                 
                 if ($this->payrollModel->createAbsence($data)) {
@@ -594,8 +594,8 @@ class PayrollController extends MainController {
         
         try {
             $filters = [];
-            if (isset($_GET['employee_id'])) $filters['employee_id'] = $_GET['employee_id'];
-            if (isset($_GET['period_id'])) $filters['period_id'] = $_GET['period_id'];
+            if (isset(htmlspecialchars($_GET['employee_id']))) $filters['employee_id'] = htmlspecialchars($_GET['employee_id']);
+            if (isset(htmlspecialchars($_GET['period_id']))) $filters['period_id'] = htmlspecialchars($_GET['period_id']);
             
             $overtime = $this->payrollModel->getAllOvertime($filters);
             
@@ -624,13 +624,13 @@ class PayrollController extends MainController {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $data = [
-                    'employee_id' => $_POST['employee_id'],
-                    'period_id' => $_POST['period_id'],
-                    'date_worked' => $_POST['date_worked'],
-                    'hours_worked' => $_POST['hours_worked'],
-                    'hourly_rate' => $_POST['hourly_rate'],
-                    'total_amount' => $_POST['total_amount'],
-                    'description' => $_POST['description'] ?? null
+                    'employee_id' => htmlspecialchars($_POST['employee_id']),
+                    'period_id' => htmlspecialchars($_POST['period_id']),
+                    'date_worked' => htmlspecialchars($_POST['date_worked']),
+                    'hours_worked' => htmlspecialchars($_POST['hours_worked']),
+                    'hourly_rate' => htmlspecialchars($_POST['hourly_rate']),
+                    'total_amount' => htmlspecialchars($_POST['total_amount']),
+                    'description' => htmlspecialchars($_POST['description']) ?? null
                 ];
                 
                 if ($this->payrollModel->createOvertime($data)) {
@@ -679,8 +679,8 @@ class PayrollController extends MainController {
         
         try {
             $filters = [];
-            if (isset($_GET['employee_id'])) $filters['employee_id'] = $_GET['employee_id'];
-            if (isset($_GET['period_id'])) $filters['period_id'] = $_GET['period_id'];
+            if (isset(htmlspecialchars($_GET['employee_id']))) $filters['employee_id'] = htmlspecialchars($_GET['employee_id']);
+            if (isset(htmlspecialchars($_GET['period_id']))) $filters['period_id'] = htmlspecialchars($_GET['period_id']);
             
             $bonuses = $this->payrollModel->getAllBonuses($filters);
             
@@ -709,11 +709,11 @@ class PayrollController extends MainController {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $data = [
-                    'employee_id' => $_POST['employee_id'],
-                    'period_id' => $_POST['period_id'],
-                    'bonus_type' => $_POST['bonus_type'],
-                    'amount' => $_POST['amount'],
-                    'description' => $_POST['description'] ?? null
+                    'employee_id' => htmlspecialchars($_POST['employee_id']),
+                    'period_id' => htmlspecialchars($_POST['period_id']),
+                    'bonus_type' => htmlspecialchars($_POST['bonus_type']),
+                    'amount' => htmlspecialchars($_POST['amount']),
+                    'description' => htmlspecialchars($_POST['description']) ?? null
                 ];
                 
                 if ($this->payrollModel->createBonus($data)) {
@@ -761,8 +761,8 @@ class PayrollController extends MainController {
         }
         
         try {
-            $periodId = $_GET['period_id'] ?? null;
-            $reportType = $_GET['type'] ?? 'summary';
+            $periodId = htmlspecialchars($_GET['period_id']) ?? null;
+            $reportType = htmlspecialchars($_GET['type']) ?? 'summary';
             
             $data = [
                 'period_id' => $periodId,
@@ -809,10 +809,10 @@ class PayrollController extends MainController {
      */
     public function loadPartial()
     {
-        $view = $_POST['view'] ?? $_GET['view'] ?? '';
-        $action = $_POST['action'] ?? $_GET['action'] ?? 'index';
-        $partialView = $_POST['partialView'] ?? $_GET['partialView'] ?? '';
-        $force = isset($_POST['force']) || isset($_GET['force']);
+        $view = htmlspecialchars($_POST['view']) ?? htmlspecialchars($_GET['view']) ?? '';
+        $action = htmlspecialchars($_POST['action']) ?? htmlspecialchars($_GET['action']) ?? 'index';
+        $partialView = htmlspecialchars($_POST['partialView']) ?? htmlspecialchars($_GET['partialView']) ?? '';
+        $force = isset(htmlspecialchars($_POST['force'])) || isset(htmlspecialchars($_GET['force']));
 
         if (!$this->isAjaxRequest() && !$force) {
             if (empty($partialView)) {
