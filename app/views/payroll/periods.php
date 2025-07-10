@@ -267,6 +267,8 @@ window.safeLoadView = function(viewName) {
     </div>
 </div>
 
+<?php require_once ROOT . '/app/views/layouts/dashFooter.php'; ?>
+
 <script>
 // Función para generar nómina
 function generatePayroll(periodId) {

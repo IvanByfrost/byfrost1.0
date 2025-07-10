@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../library/SessionManager.php';
+require_once ROOT . '/app/library/SessionManager.php';
 $sessionManager = new SessionManager();
 $userRole = $sessionManager->getUserRole();
 if (!function_exists('renderRoleOptions')) {

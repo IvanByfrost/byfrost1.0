@@ -76,4 +76,4 @@ require_once ROOT . '/app/views/layouts/dashHeader.php';
     </div>
 </body>
 
-<?php require_once __DIR__ . '/../layouts/dashFooter.php'; ?>
+<?php require_once ROOT . '/app/views/layouts/dashFooter.php'; ?>

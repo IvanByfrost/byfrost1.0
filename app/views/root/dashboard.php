@@ -26,24 +26,7 @@ if (!$this->sessionManager->hasRole('root')) {
 // require_once ROOT . '/app/views/layouts/dashHeader.php'; // ELIMINADO: El controlador ya lo incluye
 ?>
 
-<script>
-console.log("BASE_URL será configurada en dashFooter.php");
-
-// Función de respaldo para loadView
-window.safeLoadView = function(viewName) {
-    console.log('safeLoadView llamado desde dashboard con:', viewName);
-    
-    if (typeof loadView === 'function') {
-        console.log('loadView disponible, ejecutando...');
-        loadView(viewName);
-    } else {
-        console.error('loadView no está disponible, redirigiendo...');
-        // Fallback: redirigir a la página
-        const url = `${BASE_URL}?view=${viewName.replace('/', '&action=')}`;
-        window.location.href = url;
-    }
-};
-</script>
+<script src="<?php echo url . app . rq ?>js/rootDashboard.js"></script>
 
 <div class="dashboard-container">
     <aside class="sidebar">
@@ -53,4 +36,6 @@ window.safeLoadView = function(viewName) {
     <div id="mainContent" class="mainContent">
         <?php require_once 'menuRoot.php'; ?>
     </div>
-</div> 
+</div>
+
+<?php require_once ROOT . '/app/views/layouts/dashFooter.php'; ?> 

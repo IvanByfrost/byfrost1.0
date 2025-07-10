@@ -360,3 +360,5 @@ if (typeof $.fn.daterangepicker !== 'undefined') {
     });
 }
 </script> 
+
+<?php require_once ROOT . '/app/views/layouts/dashFooter.php'; ?> 

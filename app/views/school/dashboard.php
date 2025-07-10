@@ -26,9 +26,7 @@ if (!$this->sessionManager->hasRole('root')) {
 // require_once ROOT . '/app/views/layouts/dashHeader.php'; // ELIMINADO: El controlador ya lo incluye
 ?>
 
-<script>
-console.log("BASE_URL será configurada en dashFooter.php");
-</script>
+<script src="<?php echo url . app . rq ?>js/schoolDashboard.js"></script>
 
 <div class="dashboard-container">
     <aside class="sidebar">
@@ -45,4 +43,6 @@ console.log("BASE_URL será configurada en dashFooter.php");
              </div>
          </div>
     </div>
-</div> 
+</div>
+
+<?php require_once ROOT . '/app/views/layouts/dashFooter.php'; ?> 

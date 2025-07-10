@@ -9,7 +9,7 @@ require_once ROOT . '/app/views/layouts/head.php';
     <div class="main-header">
     <div class="logo-header">
         <a href="<?php echo url; ?>">
-            <img src="<?php echo url . app . rq; ?>img/horizontal-logo.svg" alt="Byfrost Logo" width="200">
+            <img src="<?php echo url . app . rq ?>img/horizontal-logo.svg" alt="Byfrost Logo" width="200">
         </a>
     </div>
 
@@ -22,7 +22,7 @@ require_once ROOT . '/app/views/layouts/head.php';
 
     <a href="<?php echo url . app . views; ?>index/login.php">
         <div class="login-bttn">
-    <img src="<?php echo url . app . rq; ?>img/user-icon.svg" alt="User Icon" width="30"> 
+    <img src="<?php echo url . app . rq ?>img/user-icon.svg" alt="User Icon" width="30"> 
     Iniciar sesión
         </div>
     </a>

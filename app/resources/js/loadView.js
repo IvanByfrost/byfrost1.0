@@ -9,7 +9,7 @@ window.loadView = function(viewName, useAction = false) {
     console.log("Router - Cargando vista:", viewName);
     
     // Mostrar indicador de carga
-    target.innerHTML = '<div class="text-center p-4"><i class="fas fa-spinner fa-spin"></i> Router cargando...</div>';
+    target.innerHTML = '<div class="text-center p-4"><i class="fas fa-spinner fa-spin"></i> Cargando...</div>';
     
     // Función para construir URL usando Router
     function buildViewUrl(viewName) {
@@ -44,11 +44,15 @@ window.loadView = function(viewName, useAction = false) {
     })
     .then(response => {
         console.log('Respuesta del servidor:', response.status, response.statusText);
-        if (!response.ok) throw new Error("Vista no encontrada.");
+        if (!response.ok) {
+            console.error('Error HTTP:', response.status);
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
         return response.text();
     })
     .then(html => {
         console.log('Contenido de la respuesta:', html.substring(0, 200) + '...');
+        
         // Detectar si la respuesta es JSON de error
         let isJson = false;
         let json = null;
@@ -78,7 +82,7 @@ window.loadView = function(viewName, useAction = false) {
             
             // Mostrar error en la página primero
             target.innerHTML = '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
-                '<i class="fas fa-exclamation-triangle"></i> <strong>Error de Permisos:</strong> ' + errorMessage +
+                '<i class="fas fa-exclamation-triangle"></i> <strong>Error:</strong> ' + errorMessage +
                 '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
                 '</div>';
             
@@ -87,7 +91,7 @@ window.loadView = function(viewName, useAction = false) {
                 if (typeof Swal !== "undefined" && Swal.fire) {
                     console.log('Mostrando SweetAlert2...');
                     Swal.fire({
-                        title: 'Error de Permisos',
+                        title: 'Error',
                         text: errorMessage,
                         icon: 'error',
                         confirmButtonText: 'Entendido',
@@ -97,7 +101,7 @@ window.loadView = function(viewName, useAction = false) {
                     });
                 } else {
                     console.log('SweetAlert2 no disponible, usando alert nativo');
-                    alert('Error de Permisos: ' + errorMessage);
+                    alert('Error: ' + errorMessage);
                 }
             }, 100);
             
@@ -128,68 +132,7 @@ window.loadView = function(viewName, useAction = false) {
         }
         
         // Inicializar JavaScript específico según la vista cargada
-        if (viewName === 'director/dashboard') {
-            if (typeof window.initDirectorDashboard === 'function') {
-                window.initDirectorDashboard();
-            }
-        }
-        if (viewName === 'director/dashboard-simple') {
-            if (typeof window.initDirectorDashboardSimple === 'function') {
-                window.initDirectorDashboardSimple();
-            }
-        }
-        if (viewName === 'director/dashboardPartial') {
-            if (typeof window.initDirectorDashboardPartial === 'function') {
-                window.initDirectorDashboardPartial();
-            }
-        }
-        if (viewName === 'director/dashboardHome') {
-            if (typeof window.initDirectorDashboardHome === 'function') {
-                window.initDirectorDashboardHome();
-            }
-        }
-        if (viewName === 'school/createSchool') {
-            if (typeof window.initCreateSchoolForm === 'function') {
-                window.initCreateSchoolForm();
-            }
-        }
-        if (viewName === 'user/assignRole' || viewName.includes('assignRole') || 
-            viewName === 'user/consultUser' || viewName.includes('consultUser') ||
-            viewName === 'user/showRoleHistory' || viewName.includes('showRoleHistory') ||
-            viewName === 'user/roleHistory' || viewName.includes('roleHistory')) {
-            console.log('Vista de gestión de usuarios cargada, inicializando JavaScript...');
-            
-            // Función para intentar inicializar con retraso
-            function tryInitUserManagement(attempts = 0) {
-                if (typeof initUserManagementAfterLoad === 'function') {
-                    console.log('✅ initUserManagementAfterLoad encontrada, ejecutando...');
-                    try {
-                        initUserManagementAfterLoad();
-                        console.log('✅ initUserManagementAfterLoad ejecutada exitosamente');
-                    } catch (error) {
-                        console.error('❌ Error al ejecutar initUserManagementAfterLoad:', error);
-                    }
-                } else if (attempts < 10) {
-                    console.log(`⏳ initUserManagementAfterLoad no disponible (intento ${attempts + 1}/10), reintentando en 200ms...`);
-                    setTimeout(() => tryInitUserManagement(attempts + 1), 200);
-                } else {
-                    console.warn('❌ Función initUserManagementAfterLoad no encontrada después de 10 intentos');
-                    console.log('Esto puede ser normal si la vista no requiere inicialización específica');
-                }
-            }
-            
-            // Intentar inicializar inmediatamente
-            tryInitUserManagement();
-        }
-        if (viewName === 'role/index' || viewName.includes('role')) {
-            console.log('Vista de gestión de roles cargada');
-            // Inicializar formulario de roles después de cargar la vista
-            if (typeof initRoleEditForm === 'function') {
-                setTimeout(() => {
-                    initRoleEditForm();
-                }, 100);
-            }
-        }
+        initializeViewSpecificJS(viewName);
         
         // Reinicializar submenús después de cargar contenido dinámicamente
         if (typeof window.reinitializeSidebarSubmenus === 'function') {
@@ -198,89 +141,141 @@ window.loadView = function(viewName, useAction = false) {
                 window.reinitializeSidebarSubmenus();
             }, 100);
         }
+        
+        console.log('Vista cargada exitosamente:', viewName);
     })
-    .catch(err => {
-        console.error("Error al cargar la vista:", err);
+    .catch(error => {
+        console.error('Error cargando vista:', error);
+        
+        // Mostrar error más descriptivo
+        const errorMessage = `Error cargando la vista "${viewName}": ${error.message}`;
         target.innerHTML = '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
-            '<i class="fas fa-exclamation-triangle"></i> <strong>Error:</strong> No se pudo cargar la vista: ' + err.message +
+            '<i class="fas fa-exclamation-triangle"></i> <strong>Error de Carga:</strong> ' + errorMessage +
             '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
             '</div>';
         
-        // Intentar mostrar SweetAlert2 con retraso
+        // Intentar mostrar SweetAlert2
         setTimeout(() => {
             if (typeof Swal !== "undefined" && Swal.fire) {
-                console.log('Mostrando SweetAlert2 para error de carga...');
                 Swal.fire({
-                    title: 'Error',
-                    text: 'No se pudo cargar la vista.',
+                    title: 'Error de Carga',
+                    text: errorMessage,
                     icon: 'error',
                     confirmButtonText: 'Entendido',
-                    timer: 4000,
-                    timerProgressBar: true
+                    confirmButtonColor: '#d33'
                 });
             } else {
-                console.log('SweetAlert2 no disponible para error de carga, usando alert nativo');
-                alert('Error: No se pudo cargar la vista.');
+                alert('Error de Carga: ' + errorMessage);
             }
         }, 100);
     });
 };
 
-// Función segura para cargar vistas que verifica si loadView está disponible
-window.safeLoadView = function(viewName) {
-    console.log('safeLoadView llamado con:', viewName);
+// Función para inicializar JavaScript específico de cada vista
+function initializeViewSpecificJS(viewName) {
+    console.log('Inicializando JavaScript específico para:', viewName);
     
+    // Director views
+    if (viewName === 'director/dashboard') {
+        if (typeof window.initDirectorDashboard === 'function') {
+            window.initDirectorDashboard();
+        }
+    }
+    if (viewName === 'director/dashboard-simple') {
+        if (typeof window.initDirectorDashboardSimple === 'function') {
+            window.initDirectorDashboardSimple();
+        }
+    }
+    if (viewName === 'director/dashboardPartial') {
+        if (typeof window.initDirectorDashboardPartial === 'function') {
+            window.initDirectorDashboardPartial();
+        }
+    }
+    if (viewName === 'director/dashboardHome') {
+        if (typeof window.initDirectorDashboardHome === 'function') {
+            window.initDirectorDashboardHome();
+        }
+    }
+    
+    // School views
+    if (viewName === 'school/createSchool') {
+        if (typeof window.initCreateSchoolForm === 'function') {
+            window.initCreateSchoolForm();
+        }
+    }
+    
+    // User management views
+    if (viewName === 'user/assignRole' || viewName.includes('assignRole') || 
+        viewName === 'user/consultUser' || viewName.includes('consultUser') ||
+        viewName === 'user/showRoleHistory' || viewName.includes('showRoleHistory') ||
+        viewName === 'user/roleHistory' || viewName.includes('roleHistory')) {
+        console.log('Vista de gestión de usuarios cargada, inicializando JavaScript...');
+        
+        // Función para intentar inicializar con retraso
+        function tryInitUserManagement(attempts = 0) {
+            if (typeof initUserManagementAfterLoad === 'function') {
+                console.log('✅ initUserManagementAfterLoad encontrada, ejecutando...');
+                try {
+                    initUserManagementAfterLoad();
+                    console.log('✅ initUserManagementAfterLoad ejecutada exitosamente');
+                } catch (error) {
+                    console.error('❌ Error al ejecutar initUserManagementAfterLoad:', error);
+                }
+            } else if (attempts < 10) {
+                console.log(`⏳ initUserManagementAfterLoad no disponible (intento ${attempts + 1}/10), reintentando en 200ms...`);
+                setTimeout(() => tryInitUserManagement(attempts + 1), 200);
+            } else {
+                console.warn('❌ Función initUserManagementAfterLoad no encontrada después de 10 intentos');
+            }
+        }
+        
+        tryInitUserManagement();
+    }
+    
+    // Role management views
+    if (viewName === 'role/index' || viewName.includes('role')) {
+        console.log('Vista de gestión de roles cargada');
+        if (typeof initRoleEditForm === 'function') {
+            setTimeout(() => {
+                initRoleEditForm();
+            }, 100);
+        }
+    }
+    
+    // Payroll views
+    if (viewName.includes('payroll/')) {
+        console.log('Vista de nómina cargada:', viewName);
+        // Inicializar funcionalidades específicas de nómina si existen
+        if (typeof window.initPayrollView === 'function') {
+            setTimeout(() => {
+                window.initPayrollView(viewName);
+            }, 100);
+        }
+    }
+    
+    // Student views
+    if (viewName.includes('student/')) {
+        console.log('Vista de estudiante cargada:', viewName);
+        if (typeof window.initStudentView === 'function') {
+            setTimeout(() => {
+                window.initStudentView(viewName);
+            }, 100);
+        }
+    }
+}
+
+// Función de respaldo mejorada (solo para casos extremos)
+window.safeLoadView = function(viewName) {
+    console.warn('⚠️ safeLoadView llamado - Esto indica un problema en el routing');
+    console.log('Intentando cargar vista con loadView:', viewName);
+    
+    // Intentar con loadView primero
     if (typeof loadView === 'function') {
-        console.log('loadView disponible, ejecutando...');
         loadView(viewName);
     } else {
-        console.error('loadView no está disponible, intentando cargar manualmente...');
-        
-        // Fallback: cargar la vista manualmente
-        const target = document.getElementById("mainContent");
-        if (!target) {
-            console.error("Elemento con id 'mainContent' no encontrado.");
-            alert('Error: No se puede cargar la vista. Elemento mainContent no encontrado.');
-            return;
-        }
-        
-        // Mostrar indicador de carga
-        target.innerHTML = '<div class="text-center p-4"><i class="fas fa-spinner fa-spin"></i> Cargando...</div>';
-        
-        // Construir URL manualmente
-        let localUrl;
-        const baseUrl = window.location.origin + window.location.pathname;
-        
-        if (viewName.includes('/')) {
-            const [controller, actionWithParams] = viewName.split('/');
-            const [action, params] = actionWithParams.split('?');
-            localUrl = `${baseUrl}?view=${controller}&action=${action}`;
-            
-            if (params) {
-                localUrl += `&${params}`;
-            }
-        } else {
-            localUrl = `${baseUrl}?view=${viewName}`;
-        }
-        
-        console.log("URL de fallback:", localUrl);
-        
-        fetch(localUrl, {
-            method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => {
-            if (!response.ok) throw new Error("Vista no encontrada.");
-            return response.text();
-        })
-        .then(html => {
-            target.innerHTML = html;
-        })
-        .catch(err => {
-            console.error("Error en fallback:", err);
-            target.innerHTML = '<div class="alert alert-danger">Error: ' + err.message + '</div>';
-        });
+        console.error('❌ loadView no está disponible');
+        // Fallback: redirigir a la página
+        const url = `${window.location.origin}${window.location.pathname}?view=${viewName.replace('/', '&action=')}`;
+        window.location.href = url;
     }
 };

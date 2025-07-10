@@ -41,5 +41,5 @@ require_once ROOT . '/app/views/layouts/scHeader.php';
 </body>
 
 <?php
-require_once __DIR__ . '/../layouts/dashFooter.php';
+require_once ROOT . '/app/views/layouts/dashFooter.php';
 ?>

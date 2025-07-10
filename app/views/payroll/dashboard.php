@@ -21,24 +21,7 @@ if (!$sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer']))
 }
 ?>
 
-<script>
-console.log("BASE_URL será configurada en dashFooter.php");
-
-// Función de respaldo para loadView
-window.safeLoadView = function(viewName) {
-    console.log('safeLoadView llamado desde dashboard de nómina con:', viewName);
-    
-    if (typeof loadView === 'function') {
-        console.log('loadView disponible, ejecutando...');
-        loadView(viewName);
-    } else {
-        console.error('loadView no está disponible, redirigiendo...');
-        // Fallback: redirigir a la página
-        const url = `${BASE_URL}?view=${viewName.replace('/', '&action=')}`;
-        window.location.href = url;
-    }
-};
-</script>
+<script src="<?php echo url . app . rq ?>js/payrollDashboard.js"></script>
 
 <div class="container-fluid">
     <div class="row">
@@ -51,10 +34,10 @@ window.safeLoadView = function(viewName) {
                 </div>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group me-2">
-                        <button type="button" class="btn btn-primary" onclick="safeLoadView('payroll/employees')">
+                        <button type="button" class="btn btn-primary" onclick="loadView('payroll/employees')">
                             <i class="fas fa-plus"></i> Nuevo Empleado
                         </button>
-                        <button type="button" class="btn btn-success" onclick="safeLoadView('payroll/periods')">
+                        <button type="button" class="btn btn-success" onclick="loadView('payroll/periods')">
                             <i class="fas fa-calendar-plus"></i> Nuevo Período
                         </button>
                     </div>
@@ -144,7 +127,7 @@ window.safeLoadView = function(viewName) {
                             <div class="row g-3">
                                 <div class="col-md-2 col-sm-4 col-6">
                                     <div class="d-grid">
-                                        <button class="btn btn-outline-primary btn-lg h-100" onclick="safeLoadView('payroll/employees')">
+                                        <button class="btn btn-outline-primary btn-lg h-100" onclick="loadView('payroll/employees')">
                                             <i class="fas fa-users fa-2x mb-2"></i><br>
                                             <span class="fw-bold">Empleados</span>
                                         </button>
@@ -152,7 +135,7 @@ window.safeLoadView = function(viewName) {
                                 </div>
                                 <div class="col-md-2 col-sm-4 col-6">
                                     <div class="d-grid">
-                                        <button class="btn btn-outline-success btn-lg h-100" onclick="safeLoadView('payroll/periods')">
+                                        <button class="btn btn-outline-success btn-lg h-100" onclick="loadView('payroll/periods')">
                                             <i class="fas fa-calendar fa-2x mb-2"></i><br>
                                             <span class="fw-bold">Períodos</span>
                                         </button>
@@ -160,7 +143,7 @@ window.safeLoadView = function(viewName) {
                                 </div>
                                 <div class="col-md-2 col-sm-4 col-6">
                                     <div class="d-grid">
-                                        <button class="btn btn-outline-warning btn-lg h-100" onclick="safeLoadView('payroll/absences')">
+                                        <button class="btn btn-outline-warning btn-lg h-100" onclick="loadView('payroll/absences')">
                                             <i class="fas fa-user-times fa-2x mb-2"></i><br>
                                             <span class="fw-bold">Ausencias</span>
                                         </button>
@@ -168,7 +151,7 @@ window.safeLoadView = function(viewName) {
                                 </div>
                                 <div class="col-md-2 col-sm-4 col-6">
                                     <div class="d-grid">
-                                        <button class="btn btn-outline-info btn-lg h-100" onclick="safeLoadView('payroll/overtime')">
+                                        <button class="btn btn-outline-info btn-lg h-100" onclick="loadView('payroll/overtime')">
                                             <i class="fas fa-clock fa-2x mb-2"></i><br>
                                             <span class="fw-bold">Horas Extras</span>
                                         </button>
@@ -176,7 +159,7 @@ window.safeLoadView = function(viewName) {
                                 </div>
                                 <div class="col-md-2 col-sm-4 col-6">
                                     <div class="d-grid">
-                                        <button class="btn btn-outline-secondary btn-lg h-100" onclick="safeLoadView('payroll/bonuses')">
+                                        <button class="btn btn-outline-secondary btn-lg h-100" onclick="loadView('payroll/bonuses')">
                                             <i class="fas fa-gift fa-2x mb-2"></i><br>
                                             <span class="fw-bold">Bonificaciones</span>
                                         </button>
@@ -184,7 +167,7 @@ window.safeLoadView = function(viewName) {
                                 </div>
                                 <div class="col-md-2 col-sm-4 col-6">
                                     <div class="d-grid">
-                                        <button class="btn btn-outline-dark btn-lg h-100" onclick="safeLoadView('payroll/reports')">
+                                        <button class="btn btn-outline-dark btn-lg h-100" onclick="loadView('payroll/reports')">
                                             <i class="fas fa-chart-bar fa-2x mb-2"></i><br>
                                             <span class="fw-bold">Reportes</span>
                                         </button>
@@ -257,3 +240,5 @@ window.safeLoadView = function(viewName) {
         </main>
     </div>
 </div>
+
+<?php require_once ROOT . '/app/views/layouts/dashFooter.php'; ?>

@@ -1,5 +1,5 @@
 <?php
-require_once 'app/views/layouts/dashHeader.php';
+require_once ROOT . '/app/views/layouts/dashHeader.php';
 ?>
 
 <div class="student-stats-dashboard">
@@ -497,4 +497,4 @@ function viewStudent(studentId) {
 }
 </script>
 
-<?php require_once 'app/views/layouts/dashFooter.php'; ?> 
+<?php require_once ROOT . '/app/views/layouts/dashFooter.php'; ?> 
