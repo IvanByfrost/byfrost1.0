@@ -368,5 +368,62 @@ class DirectorDashboardController {
         $chartData = $this->getChartData();
         echo json_encode($chartData);
     }
+
+    /**
+     * API endpoint para crear un nuevo evento
+     */
+    public function createEvent() {
+        header('Content-Type: application/json');
+        
+        // Solo permitir POST y directores
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['success' => false, 'message' => 'Método no permitido']);
+            return;
+        }
+        if (!$this->sessionManager->hasRole('director')) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Acceso denegado']);
+            return;
+        }
+        
+        // Leer datos JSON
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!$input) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Datos inválidos']);
+            return;
+        }
+        // Validar campos obligatorios
+        $required = ['title','type','date'];
+        foreach ($required as $field) {
+            if (empty($input[$field])) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'message' => "El campo $field es obligatorio"]);
+                return;
+            }
+        }
+        // Preparar datos
+        $title = trim($input['title']);
+        $type = trim($input['type']);
+        $date = trim($input['date']);
+        $time = !empty($input['time']) ? trim($input['time']) : null;
+        $location = !empty($input['location']) ? trim($input['location']) : null;
+        $priority = !empty($input['priority']) ? trim($input['priority']) : 'normal';
+        $description = !empty($input['description']) ? trim($input['description']) : null;
+        $participants = !empty($input['participants']) ? implode(',', (array)$input['participants']) : null;
+        $created_by = $_SESSION['user_id'] ?? 1;
+        
+        try {
+            $query = "INSERT INTO events (title, type, event_date, event_time, location, priority, description, participants, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute([$title, $type, $date, $time, $location, $priority, $description, $participants, $created_by]);
+            echo json_encode(['success' => true, 'message' => 'Evento creado correctamente']);
+        } catch (Exception $e) {
+            error_log('Error al crear evento: ' . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Error al crear el evento']);
+        }
+    }
 }
 ?> 
