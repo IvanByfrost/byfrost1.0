@@ -69,7 +69,15 @@ class StudentController extends MainController
         // Obtener trabajos recientes
         $recentWorks = $this->workModel->getRecentByStudent($studentId);
         
-        require ROOT . '/app/views/student/dashboard.php';
+        $this->loadDashboardView('student/dashboard', [
+            'student' => $student,
+            'tasksCount' => $tasksCount,
+            'worksCount' => $worksCount,
+            'activitiesCount' => $activitiesCount,
+            'reportsCount' => $reportsCount,
+            'pendingTasks' => $pendingTasks,
+            'recentWorks' => $recentWorks
+        ]);
     }
 
     // Datos básicos del estudiante

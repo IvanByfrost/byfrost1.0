@@ -77,7 +77,14 @@ function getControllerMapping() {
         'completeProf' => 'IndexController',
         'unauthorized' => 'ErrorController',
         'Error' => 'ErrorController',
-        'directorDashboard' => 'DirectorDashboardController'
+        'directorDashboard' => 'DirectorDashboardController',
+        'rootDashboard' => 'RootDashboardController',
+        'coordinatorDashboard' => 'CoordinatorDashboardController',
+        'teacherDashboard' => 'TeacherDashboardController',
+        'studentDashboard' => 'StudentDashboardController',
+        'parentDashboard' => 'ParentDashboardController',
+        'treasurerDashboard' => 'TreasurerDashboardController',
+        'academicAverages' => 'AcademicAveragesController'
     ];
     
     // Escanear directorio de controladores automáticamente
@@ -152,6 +159,12 @@ if (isset($controllerMapping[$view])) {
                 'completeProf' => 'completeProf',
                 'payroll' => 'dashboard',
                 'directorDashboard' => 'showDashboard',
+                'rootDashboard' => 'dashboard',
+                'coordinatorDashboard' => 'dashboard',
+                'teacherDashboard' => 'dashboard',
+                'studentDashboard' => 'dashboard',
+                'parentDashboard' => 'dashboard',
+                'treasurerDashboard' => 'dashboard',
                 'getMetrics' => 'getMetrics',
                 'getCommunicationData' => 'getCommunicationData'
             ];

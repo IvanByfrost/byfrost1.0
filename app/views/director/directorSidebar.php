@@ -1,7 +1,7 @@
 <div class="root-dashboard">
     <div class="root-sidebar">
         <ul>
-            <li><a href="?view=director&action=dashboard"><i data-lucide="home"></i>Inicio</a></li>
+            <li><a href="?view=directorDashboard"><i data-lucide="home"></i>Inicio</a></li>
             <li class="has-submenu"><a href="#"><i data-lucide="school"></i>Colegios</a>
                 <ul class="submenu">
                     <li><a href="#" onclick="safeLoadView('school/createSchool')"><i data-lucide="sparkles"></i>Registrar Colegio</a></li>
@@ -26,7 +26,7 @@
                 <ul class="submenu">
                     <li><a href="#" onclick="safeLoadView('director/editDirector')">Crear Reporte</a></li>
                     <li><a href="#" onclick="safeLoadView('director/createDirector')">Consultar Reporte</a></li>
-                    <li><a href="#" onclick="safeLoadView('director/createDirector')">Estadísticas</a></li>
+                    <li><a href="#" onclick="safeLoadView('studentStats/dashboard')">📊 Estadísticas de Estudiantes</a></li>
                 </ul>
             </li>
             <li class="has-submenu"><a href="#"><i data-lucide="settings"></i>Configuración</a>
@@ -40,6 +40,7 @@
                     <li><a href="#" onclick="safeLoadView('activity/dashboard')">Actividades</a></li>
                     <li><a href="#" onclick="safeLoadView('schedule/schedule')">Horarios</a></li>
                     <li><a href="#" onclick="safeLoadView('student/academicHistory')">Historial Académico</a></li>
+                    <li><a href="#" onclick="safeLoadView('academicAverages')">Promedios Académicos</a></li>
                 </ul>
             </li>
         </ul>

@@ -12,13 +12,27 @@ $sessionManager = new SessionManager();
 
 // Obtener datos del usuario actual
 $currentUser = $sessionManager->getCurrentUser();
-$userName = $currentUser['full_name'] ?: 'Usuario';
-$userRole = $currentUser['role'] ?: 'Sin rol asignado';
+$userName = '';
+
+// Construir el nombre del usuario usando los campos correctos
+if (isset($currentUser['first_name']) && isset($currentUser['last_name'])) {
+    $userName = trim($currentUser['first_name'] . ' ' . $currentUser['last_name']);
+} elseif (isset($currentUser['first_name'])) {
+    $userName = $currentUser['first_name'];
+} elseif (isset($currentUser['last_name'])) {
+    $userName = $currentUser['last_name'];
+} elseif (isset($currentUser['full_name'])) {
+    $userName = $currentUser['full_name'];
+} else {
+    $userName = 'Usuario';
+}
+
+$userRole = $sessionManager->getUserRole() ?: 'Sin rol asignado';
 
 // Debug: mostrar información del usuario para diagnóstico
-if (empty($currentUser['role'])) {
-    error_log("dashHeader.php - Usuario sin rol: " . json_encode($currentUser));
-}
+error_log("dashHeader.php - Datos del usuario: " . json_encode($currentUser));
+error_log("dashHeader.php - Nombre construido: " . $userName);
+error_log("dashHeader.php - Rol: " . $userRole);
 
 require_once ROOT . '/app/views/layouts/dashHead.php';
 ?>

@@ -8,6 +8,7 @@ if (!defined('ROOT')) {
 require_once ROOT . '/config.php';
 require_once ROOT . '/app/library/SessionManager.php';
 
+
 // Inicializar SessionManager
 $sessionManager = new SessionManager();
 
@@ -128,6 +129,78 @@ window.safeLoadView = function(viewName) {
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- WIDGET DE ASISTENCIA -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <?php require_once ROOT . '/app/views/widgets/attendanceWidget.php'; ?>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-line"></i> Resumen Rápido</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <h4 class="text-primary"><?= date('d/m/Y') ?></h4>
+                                        <p class="text-muted">Fecha Actual</p>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <h4 class="text-success"><?= date('H:i') ?></h4>
+                                        <p class="text-muted">Hora Actual</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WIDGET DE GRÁFICOS -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <?php require_once ROOT . '/app/views/widgets/chartsWidget.php'; ?>
+                </div>
+            </div>
+
+            <!-- WIDGET DE ESTADÍSTICAS DE ESTUDIANTES -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <?php require_once ROOT . '/app/views/layouts/studentStatsWidget.php'; ?>
+                </div>
+            </div>
+
+            <!-- WIDGET DE ALERTAS DE RIESGO ACADÉMICO -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <?php require_once ROOT . '/app/views/layouts/studentRiskWidget.php'; ?>
+                </div>
+            </div>
+
+            <!-- WIDGET DE EVENTOS PRÓXIMOS -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <?php require_once ROOT . '/app/views/layouts/upcomingEventsWidget.php'; ?>
+                </div>
+            </div>
+
+            <!-- WIDGET DE GESTIÓN DE PAGOS -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <?php require_once ROOT . '/app/views/layouts/paymentWidget.php'; ?>
+                </div>
+            </div>
+
+            <!-- WIDGET DE ESTADÍSTICAS ACADÉMICAS -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <?php require_once ROOT . '/app/views/layouts/academicStatsWidget.php'; ?>
                 </div>
             </div>
 
@@ -417,6 +490,12 @@ window.safeLoadView = function(viewName) {
 <!-- Scripts para gráficos -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+// Verificar que Chart.js esté disponible
+if (typeof Chart === 'undefined') {
+    console.error('Chart.js no está cargado');
+} else {
+    console.log('Chart.js cargado correctamente');
+}
 // Función para alternar secciones
 function toggleSection(sectionId) {
     const section = document.getElementById(sectionId);
@@ -443,92 +522,118 @@ function loadKPIs() {
 // Gráfico de asistencia
 function createAttendanceChart() {
     const ctx = document.getElementById('attendanceChart');
-    if (!ctx) return;
+    if (!ctx) {
+        console.log('Canvas attendanceChart no encontrado');
+        return;
+    }
     
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-            datasets: [{
-                label: 'Asistencia (%)',
-                data: [92, 94, 91, 95, 93, 94],
-                borderColor: 'rgb(75, 192, 192)',
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                tension: 0.1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100
+    try {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Asistencia (%)',
+                    data: [92, 94, 91, 95, 93, 94],
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
                 }
             }
-        }
-    });
+        });
+    } catch (error) {
+        console.error('Error creando gráfico de asistencia:', error);
+    }
 }
 
 // Gráfico de distribución de estudiantes
 function createStudentsChart() {
     const ctx = document.getElementById('studentsChart');
-    if (!ctx) return;
+    if (!ctx) {
+        console.log('Canvas studentsChart no encontrado');
+        return;
+    }
     
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Primaria', 'Secundaria', 'Bachillerato'],
-            datasets: [{
-                data: [450, 380, 417],
-                backgroundColor: [
-                    'rgb(255, 99, 132)',
-                    'rgb(54, 162, 235)',
-                    'rgb(255, 205, 86)'
-                ]
-            }]
-        },
-        options: {
-            responsive: true
-        }
-    });
+    try {
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Primaria', 'Secundaria', 'Bachillerato'],
+                datasets: [{
+                    data: [450, 380, 417],
+                    backgroundColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 205, 86)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    } catch (error) {
+        console.error('Error creando gráfico de estudiantes:', error);
+    }
 }
 
 // Gráfico de rendimiento académico
 function createPerformanceChart() {
     const ctx = document.getElementById('performanceChart');
-    if (!ctx) return;
+    if (!ctx) {
+        console.log('Canvas performanceChart no encontrado');
+        return;
+    }
     
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-            datasets: [{
-                label: 'Promedio General',
-                data: [85, 87, 86, 89, 88, 90],
-                backgroundColor: 'rgba(54, 162, 235, 0.8)'
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100
+    try {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Promedio General',
+                    data: [85, 87, 86, 89, 88, 90],
+                    backgroundColor: 'rgba(54, 162, 235, 0.8)'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
                 }
             }
-        }
-    });
+        });
+    } catch (error) {
+        console.error('Error creando gráfico de rendimiento:', error);
+    }
 }
 
 // Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM cargado, inicializando dashboard...');
+    
+    // Cargar KPIs
     loadKPIs();
-    createAttendanceChart();
-    createStudentsChart();
-    createPerformanceChart();
+    
+    // Esperar un poco más para asegurar que los canvas estén disponibles
+    setTimeout(function() {
+        console.log('Creando gráficos...');
+        createAttendanceChart();
+        createStudentsChart();
+        createPerformanceChart();
+    }, 100);
 });
 </script>
 
-<?php
-require_once __DIR__ . '/../layouts/dashFooter.php';
-?>

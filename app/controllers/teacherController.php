@@ -11,11 +11,11 @@ class TeacherController extends MainController
         parent::__construct($dbConn);
         $this->teacherModel = new TeacherModel();
     }
-    public function showDashTeacher()
+    public function dashboard()
     {
         $this->protectTeacher();
         $teachers = $this->teacherModel->getTeachers();
-        $this->render('teacher/dashboard', ['teachers' => $teachers]);
+        $this->loadDashboardView('teacher/dashboard', ['teachers' => $teachers]);
     }
 
     // Función para crear un profesor
