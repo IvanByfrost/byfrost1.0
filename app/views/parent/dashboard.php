@@ -25,7 +25,7 @@ require_once ROOT . '/app/views/layouts/dashHeader.php';
 ?>
 
 <script>
-    console.log("BASE_URL será configurada en dashFooter.php");
+    
 </script>
 
 <body>

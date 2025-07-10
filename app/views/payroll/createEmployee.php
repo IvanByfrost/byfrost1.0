@@ -19,7 +19,7 @@ include 'app/views/layouts/formView.php';
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Crear Nuevo Empleado</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="safeLoadView('payroll/employees')">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="loadView('payroll/employees')">
                         <i class="fas fa-arrow-left"></i> Volver a Empleados
                     </button>
                 </div>
@@ -172,7 +172,7 @@ include 'app/views/layouts/formView.php';
                             <div class="col-12">
                                 <hr>
                                 <div class="d-flex justify-content-between">
-                                    <button type="button" class="btn btn-secondary" onclick="safeLoadView('payroll/employees')">
+                                    <button type="button" class="btn btn-secondary" onclick="loadView('payroll/employees')">
                                         <i class="fas fa-times"></i> Cancelar
                                     </button>
                                     <div>

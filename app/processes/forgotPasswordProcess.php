@@ -1,10 +1,9 @@
 <?php
 if (!defined('ROOT')) {
-    define('ROOT', dirname(dirname(__DIR__)));
+    define('ROOT', dirname(dirname((__DIR__))));
 }
-
-require_once ROOT . '/app/scripts/connection.php';
-require_once ROOT . '/app/controllers/forgotPasswordController.php';
+require_once ROOT . '/config.php';
+require_once ROOT . '/app/controllers/ForgotPasswordController.php';
 
 $dbConn = getConnection();
 $controller = new ForgotPasswordController($dbConn);

@@ -22,11 +22,11 @@ if (!$sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer']))
 ?>
 
 <script>
-console.log("BASE_URL será configurada en dashFooter.php");
+
 
 // Función de respaldo para loadView
-window.safeLoadView = function(viewName) {
-    console.log('safeLoadView llamado desde bonificaciones con:', viewName);
+window.loadView = function(viewName) {
+    console.log('loadView llamado desde bonificaciones con:', viewName);
     
     if (typeof loadView === 'function') {
         console.log('loadView disponible, ejecutando...');
@@ -52,11 +52,11 @@ window.safeLoadView = function(viewName) {
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group me-2">
                         <?php if ($sessionManager->hasRole(['root', 'director', 'treasurer'])): ?>
-                        <button type="button" class="btn btn-primary" onclick="safeLoadView('payroll/createBonus')">
+                        <button type="button" class="btn btn-primary" onclick="loadView('payroll/createBonus')">
                             <i class="fas fa-plus"></i> Nueva Bonificación
                         </button>
                         <?php endif; ?>
-                        <button type="button" class="btn btn-outline-secondary" onclick="safeLoadView('payroll/dashboard')">
+                        <button type="button" class="btn btn-outline-secondary" onclick="loadView('payroll/dashboard')">
                             <i class="fas fa-arrow-left"></i> Volver al Dashboard
                         </button>
                     </div>
@@ -224,7 +224,7 @@ window.safeLoadView = function(viewName) {
                                             <td>
                                                 <div class="btn-group" role="group">
                                                     <button type="button" class="btn btn-sm btn-outline-info" 
-                                                            onclick="safeLoadView('payroll/viewBonus?id=<?php echo $bonus['bonus_id']; ?>')"
+                                                            onclick="loadView('payroll/viewBonus?id=<?php echo $bonus['bonus_id']; ?>')"
                                                             title="Ver Detalles">
                                                         <i class="fas fa-eye"></i>
                                                     </button>
@@ -242,7 +242,7 @@ window.safeLoadView = function(viewName) {
                                                     <?php endif; ?>
                                                     <?php if ($sessionManager->hasRole(['root', 'director']) && $bonus['status'] === 'pending'): ?>
                                                     <button type="button" class="btn btn-sm btn-outline-warning" 
-                                                            onclick="safeLoadView('payroll/editBonus?id=<?php echo $bonus['bonus_id']; ?>')"
+                                                            onclick="loadView('payroll/editBonus?id=<?php echo $bonus['bonus_id']; ?>')"
                                                             title="Editar">
                                                         <i class="fas fa-edit"></i>
                                                     </button>
@@ -284,7 +284,7 @@ window.safeLoadView = function(viewName) {
                             <h5 class="text-muted">No hay bonificaciones registradas</h5>
                             <p class="text-muted">Comienza registrando la primera bonificación</p>
                             <?php if ($sessionManager->hasRole(['root', 'director', 'treasurer'])): ?>
-                            <button type="button" class="btn btn-primary" onclick="safeLoadView('payroll/createBonus')">
+                            <button type="button" class="btn btn-primary" onclick="loadView('payroll/createBonus')">
                                 <i class="fas fa-plus"></i> Registrar Primera Bonificación
                             </button>
                             <?php endif; ?>

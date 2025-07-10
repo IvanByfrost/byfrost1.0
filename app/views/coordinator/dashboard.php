@@ -24,7 +24,7 @@ if (!$sessionManager->hasRole('student')) {
 require_once ROOT . '/app/views/layouts/scHeader.php';
 ?>
 <script>
-    console.log("BASE_URL será configurada en dashFooter.php");
+    
 </script>
 
 <body>

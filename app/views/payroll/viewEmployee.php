@@ -24,11 +24,11 @@ if (!$sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer']))
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group me-2">
                         <?php if ($sessionManager->hasRole(['root', 'director'])): ?>
-                        <button type="button" class="btn btn-primary" onclick="safeLoadView('payroll/editEmployee?id=<?php echo $employee['employee_id']; ?>')">
+                        <button type="button" class="btn btn-primary" onclick="loadView('payroll/editEmployee?id=<?php echo $employee['employee_id']; ?>')">
                             <i class="fas fa-edit"></i> Editar Empleado
                         </button>
                         <?php endif; ?>
-                        <button type="button" class="btn btn-outline-secondary" onclick="safeLoadView('payroll/employees')">
+                        <button type="button" class="btn btn-outline-secondary" onclick="loadView('payroll/employees')">
                             <i class="fas fa-arrow-left"></i> Volver a Empleados
                         </button>
                     </div>
@@ -240,7 +240,7 @@ if (!$sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer']))
                                                     </td>
                                                     <td>
                                                         <button type="button" class="btn btn-sm btn-outline-info" 
-                                                                onclick="safeLoadView('payroll/viewRecord?id=<?php echo $record['record_id']; ?>')"
+                                                                onclick="loadView('payroll/viewRecord?id=<?php echo $record['record_id']; ?>')"
                                                                 title="Ver Detalles">
                                                             <i class="fas fa-eye"></i>
                                                         </button>

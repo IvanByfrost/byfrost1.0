@@ -22,11 +22,11 @@ if (!$sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer']))
 ?>
 
 <script>
-console.log("BASE_URL será configurada en dashFooter.php");
+
 
 // Función de respaldo para loadView
-window.safeLoadView = function(viewName) {
-    console.log('safeLoadView llamado desde horas extras con:', viewName);
+window.loadView = function(viewName) {
+    console.log('loadView llamado desde horas extras con:', viewName);
     
     if (typeof loadView === 'function') {
         console.log('loadView disponible, ejecutando...');
@@ -52,11 +52,11 @@ window.safeLoadView = function(viewName) {
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group me-2">
                         <?php if ($sessionManager->hasRole(['root', 'director', 'coordinator'])): ?>
-                        <button type="button" class="btn btn-primary" onclick="safeLoadView('payroll/createOvertime')">
+                        <button type="button" class="btn btn-primary" onclick="loadView('payroll/createOvertime')">
                             <i class="fas fa-plus"></i> Registrar Horas Extras
                         </button>
                         <?php endif; ?>
-                        <button type="button" class="btn btn-outline-secondary" onclick="safeLoadView('payroll/dashboard')">
+                        <button type="button" class="btn btn-outline-secondary" onclick="loadView('payroll/dashboard')">
                             <i class="fas fa-arrow-left"></i> Volver al Dashboard
                         </button>
                     </div>
@@ -214,7 +214,7 @@ window.safeLoadView = function(viewName) {
                                             <td>
                                                 <div class="btn-group" role="group">
                                                     <button type="button" class="btn btn-sm btn-outline-info" 
-                                                            onclick="safeLoadView('payroll/viewOvertime?id=<?php echo $overtime['overtime_id']; ?>')"
+                                                            onclick="loadView('payroll/viewOvertime?id=<?php echo $overtime['overtime_id']; ?>')"
                                                             title="Ver Detalles">
                                                         <i class="fas fa-eye"></i>
                                                     </button>
@@ -232,7 +232,7 @@ window.safeLoadView = function(viewName) {
                                                     <?php endif; ?>
                                                     <?php if ($sessionManager->hasRole(['root', 'director']) && $overtime['status'] === 'pending'): ?>
                                                     <button type="button" class="btn btn-sm btn-outline-warning" 
-                                                            onclick="safeLoadView('payroll/editOvertime?id=<?php echo $overtime['overtime_id']; ?>')"
+                                                            onclick="loadView('payroll/editOvertime?id=<?php echo $overtime['overtime_id']; ?>')"
                                                             title="Editar">
                                                         <i class="fas fa-edit"></i>
                                                     </button>
@@ -274,7 +274,7 @@ window.safeLoadView = function(viewName) {
                             <h5 class="text-muted">No hay horas extras registradas</h5>
                             <p class="text-muted">Comienza registrando las primeras horas extras</p>
                             <?php if ($sessionManager->hasRole(['root', 'director', 'coordinator'])): ?>
-                            <button type="button" class="btn btn-primary" onclick="safeLoadView('payroll/createOvertime')">
+                            <button type="button" class="btn btn-primary" onclick="loadView('payroll/createOvertime')">
                                 <i class="fas fa-plus"></i> Registrar Primeras Horas Extras
                             </button>
                             <?php endif; ?>

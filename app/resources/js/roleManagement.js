@@ -1,169 +1,168 @@
 /**
- * JavaScript para la gestión de roles y permisos
+ * Módulo de gestión de roles
  */
 
-// Función para inicializar el formulario de edición de roles
-function initRoleEditForm() {
-    console.log('Buscando formulario editRoleForm...');
-    const form = document.getElementById('editRoleForm');
-    if (form) {
-        console.log('Formulario encontrado, agregando event listener...');
-        form.addEventListener('submit', function(e) {
-            console.log('Formulario enviado, previniendo envío por defecto...');
-            e.preventDefault();
-            submitRoleForm(this);
-        });
-    } else {
-        console.log('Formulario editRoleForm no encontrado');
+// Mostrar modal de asignación de roles
+function showAssignRoleModal(userId, userName, currentRole) {
+    console.log('Mostrando modal para asignar rol a:', userName);
+    
+    const modal = document.getElementById('assignRoleModal');
+    const modalTitle = document.getElementById('assignRoleModalLabel');
+    const roleSelect = document.getElementById('role_type');
+    const userIdInput = document.getElementById('user_id');
+    
+    if (!modal || !modalTitle || !roleSelect || !userIdInput) {
+        console.error('Elementos del modal no encontrados');
+        return;
     }
+    
+    // Configurar modal
+    modalTitle.textContent = `Asignar Rol a ${userName}`;
+    userIdInput.value = userId;
+    
+    // Limpiar selección anterior
+    roleSelect.value = '';
+    
+    // Mostrar modal
+    const bootstrapModal = new bootstrap.Modal(modal);
+    bootstrapModal.show();
 }
 
-// Función para enviar el formulario de roles vía AJAX
-function submitRoleForm(form) {
-    console.log('Iniciando envío del formulario...');
-    const formData = new FormData(form);
+// Asignar rol a usuario
+function assignRole() {
+    const userId = document.getElementById('user_id').value;
+    const roleType = document.getElementById('role_type').value;
     
-    // Log de los datos del formulario
-    for (let [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
+    if (!userId || !roleType) {
+        showError('Por favor, selecciona un rol para asignar.');
+        return;
     }
     
-    // Mostrar indicador de carga
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
-    submitBtn.disabled = true;
+    console.log('Asignando rol:', roleType, 'a usuario:', userId);
     
-    fetch(BASE_URL + '?view=role&action=update', {
+    $.ajax({
+        url: window.USER_MANAGEMENT_BASE_URL + 'app/processes/assignProcess.php',
         method: 'POST',
-        body: formData,
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => {
-        console.log('Respuesta del servidor recibida:', response.status, response.statusText);
-        if (!response.ok) {
-            throw new Error('Error en la respuesta del servidor');
-        }
-        return response.text();
-    })
-    .then(data => {
-        console.log('Datos de respuesta:', data);
-        // Si la respuesta contiene JavaScript, ejecutarlo
-        if (data.includes('<script>')) {
-            console.log('Ejecutando JavaScript de respuesta...');
-            const scriptMatch = data.match(/<script>([\s\S]*?)<\/script>/);
-            if (scriptMatch) {
-                eval(scriptMatch[1]);
+        data: {
+            subject: 'assign_role',
+            user_id: userId,
+            role_type: roleType
+        },
+        success: function(response) {
+            try {
+                const data = JSON.parse(response);
+                if (data.status === 'ok') {
+                    // Cerrar modal
+                    const modal = document.getElementById('assignRoleModal');
+                    const bootstrapModal = bootstrap.Modal.getInstance(modal);
+                    bootstrapModal.hide();
+                    
+                    // Mostrar mensaje de éxito
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            title: '¡Éxito!',
+                            text: 'Rol asignado correctamente',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                    } else {
+                        alert('Rol asignado correctamente');
+                    }
+                    
+                    // Recargar lista de usuarios sin rol
+                    loadUsersWithoutRole();
+                    
+                } else {
+                    showError(data.msg || 'Error al asignar el rol');
+                }
+            } catch (e) {
+                showError('Error procesando la respuesta del servidor');
             }
-        } else {
-            // Si no hay JavaScript, mostrar mensaje de éxito
-            console.log('Mostrando mensaje de éxito...');
-            showSuccessMessage('Permisos guardados correctamente');
-            loadView('role/index');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showErrorMessage('Error al guardar los permisos');
-    })
-    .finally(() => {
-        // Restaurar botón
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-    });
-}
-
-// Función para mostrar mensaje de éxito
-function showSuccessMessage(message) {
-    if (typeof Swal !== "undefined") {
-        Swal.fire({
-            title: '¡Éxito!',
-            text: message,
-            icon: 'success',
-            timer: 2000,
-            showConfirmButton: false
-        });
-    } else {
-        alert(message);
-    }
-}
-
-// Función para mostrar mensaje de error
-function showErrorMessage(message) {
-    if (typeof Swal !== "undefined") {
-        Swal.fire({
-            title: 'Error',
-            text: message,
-            icon: 'error',
-            timer: 4000
-        });
-    } else {
-        alert(message);
-    }
-}
-
-// Función para confirmar cambios antes de guardar
-function confirmRoleChanges() {
-    if (typeof Swal !== "undefined") {
-        return Swal.fire({
-            title: '¿Guardar cambios?',
-            text: '¿Estás seguro de que quieres guardar los cambios en los permisos?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sí, guardar',
-            cancelButtonText: 'Cancelar'
-        });
-    } else {
-        return Promise.resolve({ isConfirmed: confirm('¿Estás seguro de que quieres guardar los cambios?') });
-    }
-}
-
-// Función para validar el formulario antes de enviar
-function validateRoleForm(form) {
-    const roleType = form.querySelector('input[name="role_type"]').value;
-    
-    if (!roleType) {
-        showErrorMessage('Debe seleccionar un rol');
-        return false;
-    }
-    
-    // Verificar que al menos un permiso esté seleccionado
-    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
-    let hasPermission = false;
-    
-    checkboxes.forEach(checkbox => {
-        if (checkbox.checked) {
-            hasPermission = true;
+        },
+        error: function() {
+            showError('Error de conexión con el servidor');
         }
     });
-    
-    if (!hasPermission) {
-        showErrorMessage('Debe seleccionar al menos un permiso');
-        return false;
-    }
-    
-    return true;
 }
 
-// Inicializar cuando el DOM esté listo (solo para páginas que no usan loadView)
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM cargado, verificando si necesitamos inicializar formulario de roles...');
-    // Solo inicializar si estamos en una página que no usa loadView
-    if (!window.location.search.includes('view=')) {
-        initRoleEditForm();
-    }
-});
+// Cargar usuarios sin rol
+function loadUsersWithoutRole() {
+    console.log('Cargando usuarios sin rol...');
+    
+    $.ajax({
+        url: window.USER_MANAGEMENT_BASE_URL + 'app/processes/assignProcess.php',
+        method: 'POST',
+        data: {
+            subject: 'get_users_without_role'
+        },
+        success: function(response) {
+            try {
+                const data = JSON.parse(response);
+                if (data.status === 'ok') {
+                    displayUsersWithoutRole(data.data);
+                } else {
+                    showError(data.msg || 'Error cargando usuarios');
+                }
+            } catch (e) {
+                showError('Error procesando la respuesta del servidor');
+            }
+        },
+        error: function() {
+            showError('Error de conexión con el servidor');
+        }
+    });
+}
 
-// Función para exportar (si se necesita en otros archivos)
-window.roleManagement = {
-    initRoleEditForm,
-    submitRoleForm,
-    showSuccessMessage,
-    showErrorMessage,
-    confirmRoleChanges,
-    validateRoleForm
-}; 
+// Mostrar usuarios sin rol
+function displayUsersWithoutRole(users) {
+    const table = document.getElementById('usersWithoutRoleTable');
+    if (!table) {
+        console.error('Tabla de usuarios sin rol no encontrada');
+        return;
+    }
+    
+    const tbody = table.querySelector('tbody');
+    if (!tbody) {
+        console.error('Cuerpo de tabla no encontrado');
+        return;
+    }
+    
+    if (!users || users.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center">No hay usuarios sin rol asignado</td></tr>';
+        return;
+    }
+    
+    let html = '';
+    users.forEach(user => {
+        html += `<tr>
+            <td>${user.first_name} ${user.last_name}</td>
+            <td>${user.email}</td>
+            <td>${user.credential_type} ${user.credential_number}</td>
+            <td>
+                <button class="btn btn-sm btn-primary" onclick="showAssignRoleModal(${user.user_id}, '${user.first_name} ${user.last_name}', '')">
+                    <i class="fas fa-user-plus"></i> Asignar Rol
+                </button>
+            </td>
+        </tr>`;
+    });
+    
+    tbody.innerHTML = html;
+}
+
+// Recargar usuarios sin rol
+function refreshUsersWithoutRole() {
+    loadUsersWithoutRole();
+}
+
+// Limpiar formulario de historial de roles
+function clearRoleHistoryForm() {
+    const form = document.getElementById('roleHistoryForm');
+    if (form) {
+        form.reset();
+    }
+    
+    const resultsContainer = document.getElementById('roleHistoryResults');
+    if (resultsContainer) {
+        resultsContainer.innerHTML = '';
+    }
+} 

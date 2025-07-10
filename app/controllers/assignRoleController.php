@@ -1,5 +1,5 @@
 <?php
-require_once ROOT . '/app/models/userModel.php';
+require_once ROOT . '/app/models/UserModel.php';
 require_once ROOT . '/app/controllers/MainController.php';
 
 class AssignRoleController extends MainController {

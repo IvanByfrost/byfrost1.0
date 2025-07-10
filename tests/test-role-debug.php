@@ -106,7 +106,7 @@ try {
 // 7. Test del RoleController
 echo "<h2>7. Test del RoleController</h2>";
 try {
-    require_once ROOT . '/app/controllers/roleController.php';
+    require_once ROOT . '/app/controllers/RoleController.php';
     $roleController = new RoleController($dbConn);
     echo "<div style='color: green;'>✅ RoleController cargado correctamente</div>";
     

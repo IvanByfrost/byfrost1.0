@@ -2,7 +2,7 @@
 require_once ROOT . '/app/models/studentModel.php';
 require_once ROOT . '/app/models/taskModel.php';
 require_once ROOT . '/app/models/workModel.php';
-require_once ROOT . '/app/models/activityModel.php';
+require_once ROOT . '/app/models/ActivityModel.php';
 require_once ROOT . '/app/models/reportModel.php';
 require_once ROOT . '/app/models/academicHistoryModel.php';
 require_once ROOT . '/app/models/documentModel.php';
@@ -54,7 +54,7 @@ class StudentController extends MainController
         }
 
         // Obtener datos del estudiante
-        $studentModel = new studentModel();
+        $studentModel = new StudentModel();
         $student = $studentModel->getStudentById($studentId);
         
         // Obtener estadísticas básicas
@@ -83,7 +83,7 @@ class StudentController extends MainController
     // Datos básicos del estudiante
     public function basicData($studentId)
     {
-        $student = (new studentModel())->getById($studentId);
+        $student = (new StudentModel())->getById($studentId);
         require ROOT . '/app/views/student/basicData.php';
     }
 

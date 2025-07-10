@@ -60,7 +60,14 @@
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/loadView.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/sessionHandler.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/userSearch.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/roleHistory.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/schoolValidation.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/schoolForm.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/createSchool.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/activityDataTable.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/activityForm.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/activityActions.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/activityDashboard.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/userManagement.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/roleManagement.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/Uploadpicture.js"></script>
@@ -75,6 +82,9 @@
     // Cargar script específico del director si es necesario
     if ($userRole === 'director'): 
     ?>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/directorMetrics.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/directorCharts.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/directorCommunication.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/directorDashboard.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/dashboard.js"></script>
     <?php endif; ?>

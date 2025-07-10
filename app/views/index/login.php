@@ -1,7 +1,7 @@
 <?php
 //require_once(__DIR__ . '/../../config.php');
-require_once __DIR__ . '/../layouts/head.php';
-require_once __DIR__ . '/../layouts/header.php';
+require_once ROOT . '/app/views/layouts/head.php';
+require_once ROOT . '/app/views/layouts/header.php';
 ?>
 
 <body>
@@ -77,7 +77,7 @@ require_once __DIR__ . '/../layouts/header.php';
     <br>
 
     <?php
-    require_once __DIR__ . '/../layouts/footer.php';
+    require_once ROOT . '/app/views/layouts/footer.php';
     ?>
 
     <!-- Scripts específicos -->

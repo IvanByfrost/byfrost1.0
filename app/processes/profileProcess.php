@@ -49,7 +49,7 @@ if (
             exit;
         }
         
-        require_once ROOT . '/app/models/userModel.php';
+        require_once ROOT . '/app/models/UserModel.php';
         $userModel = new UserModel($dbConn);
         
         // Verificar si el nuevo número de documento ya existe para otro usuario

@@ -95,7 +95,7 @@ echo "<!DOCTYPE html>
                 '../app/controllers/UserController.php',
                 '../app/controllers/DirectorController.php',
                 '../app/controllers/SchoolController.php',
-                '../app/controllers/studentController.php',
+                '../app/controllers/StudentController.php',
                 '../app/controllers/payrollController.php',
                 '../app/views/user/consultUser.php',
                 '../app/views/director/editDirector.php',

@@ -134,7 +134,7 @@ class PayrollController extends MainController {
                 
                 if ($this->payrollModel->createEmployee($data)) {
                     if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
-                        echo "<script>window.safeLoadView('payroll/employees');</script>";
+                        echo "<script>window.loadView('payroll/employees');</script>";
                         exit;
                     } else {
                         header('Location: ?view=payroll');
@@ -195,7 +195,7 @@ class PayrollController extends MainController {
                 
                 if ($this->payrollModel->updateEmployee($employeeId, $data)) {
                     if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
-                        echo "<script>window.safeLoadView('payroll/employees');</script>";
+                        echo "<script>window.loadView('payroll/employees');</script>";
                         exit;
                     } else {
                         header('Location: ?view=payroll');

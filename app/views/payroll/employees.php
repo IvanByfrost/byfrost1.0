@@ -22,11 +22,11 @@ if (!$sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer']))
 ?>
 
 <script>
-console.log("BASE_URL será configurada en dashFooter.php");
+
 
 // Función de respaldo para loadView
-window.safeLoadView = function(viewName) {
-    console.log('safeLoadView llamado desde empleados con:', viewName);
+window.loadView = function(viewName) {
+    console.log('loadView llamado desde empleados con:', viewName);
     
     if (typeof loadView === 'function') {
         console.log('loadView disponible, ejecutando...');
@@ -52,11 +52,11 @@ window.safeLoadView = function(viewName) {
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group me-2">
                         <?php if ($sessionManager->hasRole(['root', 'director'])): ?>
-                        <button type="button" class="btn btn-primary" onclick="safeLoadView('payroll/createEmployee')">
+                        <button type="button" class="btn btn-primary" onclick="loadView('payroll/createEmployee')">
                             <i class="fas fa-plus"></i> Nuevo Empleado
                         </button>
                         <?php endif; ?>
-                        <button type="button" class="btn btn-outline-secondary" onclick="safeLoadView('payroll/dashboard')">
+                        <button type="button" class="btn btn-outline-secondary" onclick="loadView('payroll/dashboard')">
                             <i class="fas fa-arrow-left"></i> Volver al Dashboard
                         </button>
                     </div>
@@ -172,13 +172,13 @@ window.safeLoadView = function(viewName) {
                                                 <div class="btn-group" role="group">
                                                     <?php if ($sessionManager->hasRole(['root', 'director'])): ?>
                                                     <button type="button" class="btn btn-sm btn-outline-primary" 
-                                                            onclick="safeLoadView('payroll/editEmployee?id=<?php echo $employee['employee_id']; ?>')"
+                                                            onclick="loadView('payroll/editEmployee?id=<?php echo $employee['employee_id']; ?>')"
                                                             title="Editar">
                                                         <i class="fas fa-edit"></i>
                                                     </button>
                                                     <?php endif; ?>
                                                     <button type="button" class="btn btn-sm btn-outline-info" 
-                                                            onclick="safeLoadView('payroll/viewEmployee?id=<?php echo $employee['employee_id']; ?>')"
+                                                            onclick="loadView('payroll/viewEmployee?id=<?php echo $employee['employee_id']; ?>')"
                                                             title="Ver Detalles">
                                                         <i class="fas fa-eye"></i>
                                                     </button>
@@ -216,7 +216,7 @@ window.safeLoadView = function(viewName) {
                             <h5 class="text-muted">No hay empleados registrados</h5>
                             <p class="text-muted">Comienza agregando el primer empleado al sistema</p>
                             <?php if ($sessionManager->hasRole(['root', 'director'])): ?>
-                            <button type="button" class="btn btn-primary" onclick="safeLoadView('payroll/createEmployee')">
+                            <button type="button" class="btn btn-primary" onclick="loadView('payroll/createEmployee')">
                                 <i class="fas fa-plus"></i> Agregar Primer Empleado
                             </button>
                             <?php endif; ?>

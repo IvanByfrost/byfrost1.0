@@ -21,24 +21,7 @@ if (!$this->sessionManager->hasRole('treasurer')) {
 }
 ?>
 
-<script>
-console.log("BASE_URL será configurada en dashFooter.php");
-
-// Función de respaldo para loadView
-window.safeLoadView = function(viewName) {
-    console.log('safeLoadView llamado desde dashboard de tesorero con:', viewName);
-    
-    if (typeof loadView === 'function') {
-        console.log('loadView disponible, ejecutando...');
-        loadView(viewName);
-    } else {
-        console.error('loadView no está disponible, redirigiendo...');
-        // Fallback: redirigir a la página
-        const url = `${BASE_URL}?view=${viewName.replace('/', '&action=')}`;
-        window.location.href = url;
-    }
-};
-</script>
+<script src="<?php echo url . app . rq ?>js/treasurerDashboard.js"></script>
 
 <div class="dashboard-container">
     <aside class="sidebar">
@@ -101,22 +84,22 @@ window.safeLoadView = function(viewName) {
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-md-3 mb-2">
-                                            <button class="btn btn-primary w-100" onclick="safeLoadView('payroll/employees')">
+                                            <button class="btn btn-primary w-100" onclick="loadView('payroll/employees')">
                                                 <i class="fas fa-users"></i> Gestionar Empleados
                                             </button>
                                         </div>
                                         <div class="col-md-3 mb-2">
-                                            <button class="btn btn-success w-100" onclick="safeLoadView('payroll/periods')">
+                                            <button class="btn btn-success w-100" onclick="loadView('payroll/periods')">
                                                 <i class="fas fa-calendar"></i> Períodos de Nómina
                                             </button>
                                         </div>
                                         <div class="col-md-3 mb-2">
-                                            <button class="btn btn-warning w-100" onclick="safeLoadView('payroll/reports')">
+                                            <button class="btn btn-warning w-100" onclick="loadView('payroll/reports')">
                                                 <i class="fas fa-chart-bar"></i> Generar Reportes
                                             </button>
                                         </div>
                                         <div class="col-md-3 mb-2">
-                                            <button class="btn btn-info w-100" onclick="safeLoadView('payroll/dashboard')">
+                                            <button class="btn btn-info w-100" onclick="loadView('payroll/dashboard')">
                                                 <i class="fas fa-tachometer-alt"></i> Dashboard Completo
                                             </button>
                                         </div>

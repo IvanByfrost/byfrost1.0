@@ -22,11 +22,11 @@ if (!$sessionManager->hasRole(['root', 'director', 'coordinator', 'treasurer']))
 ?>
 
 <script>
-console.log("BASE_URL será configurada en dashFooter.php");
+
 
 // Función de respaldo para loadView
-window.safeLoadView = function(viewName) {
-    console.log('safeLoadView llamado desde reportes con:', viewName);
+window.loadView = function(viewName) {
+    console.log('loadView llamado desde reportes con:', viewName);
     
     if (typeof loadView === 'function') {
         console.log('loadView disponible, ejecutando...');
@@ -57,7 +57,7 @@ window.safeLoadView = function(viewName) {
                         <button type="button" class="btn btn-danger" onclick="exportPDF()">
                             <i class="fas fa-file-pdf"></i> Exportar PDF
                         </button>
-                        <button type="button" class="btn btn-outline-secondary" onclick="safeLoadView('payroll/dashboard')">
+                        <button type="button" class="btn btn-outline-secondary" onclick="loadView('payroll/dashboard')">
                             <i class="fas fa-arrow-left"></i> Volver al Dashboard
                         </button>
                     </div>
