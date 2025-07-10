@@ -1,4 +1,4 @@
-window.loadView = function(viewName) {
+window.loadView = function(viewName, useAction = false) {
     const target = document.getElementById("mainContent");
     console.log("Target mainContent:", target);
     if (!target) {
@@ -32,6 +32,21 @@ window.loadView = function(viewName) {
         // Si la vista tiene módulo explícito (ej: school/createSchool)
         if (viewName.includes('/')) {
             const [module, partialView] = viewName.split('/');
+            // Lista de vistas que requieren acción directa (sincronizada con UnifiedRouter)
+            const directActionViews = [
+                'school/consultSchool',
+                'user/consultUser', 
+                'user/assignRole',
+                'user/roleHistory',
+                'payroll/dashboard',
+                'activity/dashboard',
+                'student/academicHistory'
+            ];
+            
+            // Si la vista está en la lista de acciones directas
+            if (directActionViews.includes(viewName)) {
+                return `${baseUrl}?view=${module}&action=${partialView}`;
+            }
             return `${baseUrl}?view=${module}&action=loadPartial&partialView=${partialView}`;
         }
         

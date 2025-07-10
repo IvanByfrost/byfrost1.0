@@ -1,268 +1,295 @@
-<!DOCTYPE html>
-<html lang="es">
+<?php
+// Script de diagnóstico completo para ByFrost
+ini_set('display_errors', 1);
+ini_set('error_reporting', E_ALL);
+
+echo "<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diagnóstico Completo del Sistema</title>
+    <title>🔍 Diagnóstico Completo - ByFrost</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .success { color: green; }
-        .error { color: red; }
-        .warning { color: orange; }
-        .info { color: blue; }
-        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
-        .critical { background: #f8d7da; border: 1px solid #f5c6cb; }
-        .working { background: #d4edda; border: 1px solid #c3e6cb; }
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #34495e; border-left: 4px solid #3498db; padding-left: 15px; }
+        h3 { color: #7f8c8d; }
+        .success { color: #27ae60; font-weight: bold; }
+        .error { color: #e74c3c; font-weight: bold; }
+        .warning { color: #f39c12; font-weight: bold; }
+        .info { color: #3498db; font-weight: bold; }
+        .code { background: #ecf0f1; padding: 10px; border-radius: 4px; font-family: monospace; margin: 10px 0; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #bdc3c7; border-radius: 5px; }
+        .url-test { margin: 5px 0; }
+        .url-test a { color: #3498db; text-decoration: none; }
+        .url-test a:hover { text-decoration: underline; }
+        .solution { background: #e8f5e8; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .error-details { background: #ffeaea; padding: 10px; border-radius: 4px; margin: 10px 0; }
     </style>
 </head>
 <body>
-    <h1>🔍 Diagnóstico Completo del Sistema</h1>
-    
-    <div class="test-section critical">
-        <h2>🚨 Estado Crítico</h2>
-        <p><strong>El usuario reporta que "Nada funciona"</strong></p>
-        <p>Vamos a diagnosticar cada componente del sistema paso a paso.</p>
-    </div>
-    
-    <div class="test-section">
-        <h2>📋 Checklist de Diagnóstico</h2>
-        <div id="diagnostic-results">Ejecutando diagnóstico...</div>
-    </div>
-    
-    <div class="test-section">
-        <h2>🔧 Pruebas Manuales</h2>
-        <button onclick="testBasicAccess()" style="background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin: 5px;">
-            🌐 Prueba Acceso Básico
-        </button>
-        <button onclick="testDashboard()" style="background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin: 5px;">
-            🏠 Prueba Dashboard
-        </button>
-        <button onclick="testLogin()" style="background: #ffc107; color: black; padding: 10px 20px; border: none; border-radius: 5px; margin: 5px;">
-            🔐 Prueba Login
-        </button>
-        <button onclick="testAssignRole()" style="background: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin: 5px;">
-            👥 Prueba Asignar Roles
-        </button>
-        <div id="manual-test-results"></div>
-    </div>
-    
-    <div class="test-section">
-        <h2>📁 Verificación de Archivos</h2>
-        <div id="files-check"></div>
-    </div>
-    
-    <div class="test-section">
-        <h2>🌐 URLs de Prueba</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px;">
-            <div style="border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
-                <strong>Página Principal:</strong><br>
-                <a href="http://localhost:8000/" target="_blank">http://localhost:8000/</a>
-            </div>
-            <div style="border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
-                <strong>Login:</strong><br>
-                <a href="http://localhost:8000/?view=index&action=login" target="_blank">http://localhost:8000/?view=index&action=login</a>
-            </div>
-            <div style="border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
-                <strong>Dashboard:</strong><br>
-                <a href="http://localhost:8000/?view=root&action=dashboard" target="_blank">http://localhost:8000/?view=root&action=dashboard</a>
-            </div>
-            <div style="border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
-                <strong>Asignar Roles:</strong><br>
-                <a href="http://localhost:8000/?view=user&action=assignRole" target="_blank">http://localhost:8000/?view=user&action=assignRole</a>
-            </div>
-        </div>
-    </div>
-    
-    <div class="test-section">
-        <h2>📝 Información del Sistema</h2>
-        <div id="system-info"></div>
-    </div>
-    
-    <div class="test-section">
-        <h2>🚀 Acciones Recomendadas</h2>
-        <ol>
-            <li><strong>Verifica que el servidor esté corriendo:</strong> Deberías poder acceder a http://localhost:8000/</li>
-            <li><strong>Revisa la consola del navegador:</strong> F12 → Console para ver errores</li>
-            <li><strong>Verifica la base de datos:</strong> Asegúrate de que esté conectada</li>
-            <li><strong>Revisa los logs del servidor:</strong> Para errores de PHP</li>
-            <li><strong>Prueba cada URL individualmente:</strong> Una por una</li>
-        </ol>
-    </div>
+    <div class='container'>
+        <h1>🔍 Diagnóstico Completo - ByFrost</h1>";
 
-    <script>
-        // Diagnóstico automático
-        async function runDiagnostic() {
-            const results = document.getElementById('diagnostic-results');
-            let html = '<h3>Ejecutando diagnóstico...</h3>';
-            
-            // Verificar archivos críticos
-            const criticalFiles = [
-                'index.php',
-                'config.php',
-                'app/controllers/RootController.php',
-                'app/controllers/UserController.php',
-                'app/views/root/dashboard.php',
-                'app/views/user/assignRole.php',
-                'app/resources/js/loadView.js',
-                'app/resources/js/assignRole.js'
-            ];
-            
-            html += '<h4>📁 Archivos Críticos:</h4>';
-            for (const file of criticalFiles) {
-                try {
-                    const response = await fetch(file);
-                    if (response.ok) {
-                        html += `<div class="success">✅ ${file}</div>`;
-                    } else {
-                        html += `<div class="error">❌ ${file} - Error ${response.status}</div>`;
-                    }
-                } catch (error) {
-                    html += `<div class="error">❌ ${file} - ${error.message}</div>`;
-                }
+// =============================================
+// 1. INFORMACIÓN DEL SISTEMA
+// =============================================
+echo "<div class='section'>
+    <h2>1. 📊 Información del Sistema</h2>
+    <p><span class='info'>Sistema Operativo:</span> " . php_uname() . "</p>
+    <p><span class='info'>Versión de PHP:</span> " . phpversion() . "</p>
+    <p><span class='info'>Servidor Web:</span> " . ($_SERVER['SERVER_SOFTWARE'] ?? 'No disponible') . "</p>
+    <p><span class='info'>Document Root:</span> " . ($_SERVER['DOCUMENT_ROOT'] ?? 'No disponible') . "</p>
+    <p><span class='info'>Directorio Actual:</span> " . __DIR__ . "</p>
+    <p><span class='info'>URL Actual:</span> " . ($_SERVER['REQUEST_URI'] ?? 'No disponible') . "</p>
+</div>";
+
+// =============================================
+// 2. VERIFICACIÓN DE ARCHIVOS CRÍTICOS
+// =============================================
+echo "<div class='section'>
+    <h2>2. 📁 Verificación de Archivos Críticos</h2>";
+
+$criticalFiles = [
+    'index.php' => 'Archivo principal de la aplicación',
+    'config.php' => 'Archivo de configuración',
+    'app/scripts/connection.php' => 'Conexión a base de datos',
+    'app/scripts/routerView.php' => 'Sistema de rutas',
+    '.htaccess' => 'Configuración de Apache',
+    'app/scripts/Baldur.sql' => 'Script de base de datos'
+];
+
+$missingFiles = [];
+foreach ($criticalFiles as $file => $description) {
+    if (file_exists($file)) {
+        echo "<p><span class='success'>✅ $description</span> ($file)</p>";
+    } else {
+        echo "<p><span class='error'>❌ $description</span> ($file) - <span class='error'>NO ENCONTRADO</span></p>";
+        $missingFiles[] = $file;
+    }
+}
+
+if (!empty($missingFiles)) {
+    echo "<div class='solution'>
+        <h3>💡 Solución para archivos faltantes:</h3>
+        <p>Los siguientes archivos son críticos y deben existir:</p>
+        <ul>";
+    foreach ($missingFiles as $file) {
+        echo "<li><code>$file</code></li>";
+    }
+    echo "</ul>
+        <p>Verifica que todos los archivos del proyecto estén en su lugar correcto.</p>
+    </div>";
+}
+
+echo "</div>";
+
+// =============================================
+// 3. VERIFICACIÓN DE EXTENSIONES PHP
+// =============================================
+echo "<div class='section'>
+    <h2>3. 🔧 Verificación de Extensiones PHP</h2>";
+
+$requiredExtensions = [
+    'pdo' => 'Conexión a bases de datos',
+    'pdo_mysql' => 'Driver MySQL para PDO',
+    'json' => 'Manejo de JSON',
+    'mbstring' => 'Manejo de caracteres multibyte'
+];
+
+foreach ($requiredExtensions as $ext => $description) {
+    if (extension_loaded($ext)) {
+        echo "<p><span class='success'>✅ $description</span> ($ext)</p>";
+    } else {
+        echo "<p><span class='error'>❌ $description</span> ($ext) - <span class='error'>NO CARGADA</span></p>";
+    }
+}
+
+echo "</div>";
+
+// =============================================
+// 4. VERIFICACIÓN DE BASE DE DATOS
+// =============================================
+echo "<div class='section'>
+    <h2>4. 🗄️ Verificación de Base de Datos</h2>";
+
+$host = 'localhost';
+$user = 'byfrost_app_user';
+$pass = 'ByFrost2024!Secure#';
+$dbName = 'baldur_db';
+
+$dbStatus = 'unknown';
+$dbError = '';
+
+try {
+    // Probar conexión sin especificar base de datos
+    $pdo = new PDO("mysql:host=$host", $user, $pass);
+    echo "<p><span class='success'>✅ Conexión a MySQL exitosa</span></p>";
+    
+    // Verificar si la base de datos existe
+    $stmt = $pdo->query("SHOW DATABASES LIKE 'baldur_db'");
+    if ($stmt->rowCount() > 0) {
+        echo "<p><span class='success'>✅ Base de datos 'baldur_db' existe</span></p>";
+        
+        // Conectar a la base de datos específica
+        $pdo = new PDO("mysql:host=$host;dbname=$dbName", $user, $pass);
+        echo "<p><span class='success'>✅ Conexión a 'baldur_db' exitosa</span></p>";
+        
+        // Verificar tablas
+        $stmt = $pdo->query("SHOW TABLES");
+        $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        echo "<p><span class='success'>✅ Tablas encontradas: " . count($tables) . "</span></p>";
+        
+        if (count($tables) > 0) {
+            echo "<p><span class='info'>📋 Tablas disponibles:</span></p><ul>";
+            foreach ($tables as $table) {
+                echo "<li>$table</li>";
             }
-            
-            // Verificar acceso básico
-            html += '<h4>🌐 Acceso Básico:</h4>';
-            try {
-                const response = await fetch('http://localhost:8000/');
-                if (response.ok) {
-                    html += '<div class="success">✅ Servidor accesible</div>';
-                } else {
-                    html += `<div class="error">❌ Servidor error: ${response.status}</div>`;
-                }
-            } catch (error) {
-                html += `<div class="error">❌ Servidor no accesible: ${error.message}</div>`;
-            }
-            
-            results.innerHTML = html;
+            echo "</ul>";
         }
         
-        // Verificar archivos
-        async function checkFiles() {
-            const results = document.getElementById('files-check');
-            let html = '<h4>Verificando archivos...</h4>';
-            
-            const files = [
-                { name: 'index.php', path: 'index.php' },
-                { name: 'config.php', path: 'config.php' },
-                { name: 'RootController', path: 'app/controllers/RootController.php' },
-                { name: 'UserController', path: 'app/controllers/UserController.php' },
-                { name: 'Dashboard View', path: 'app/views/root/dashboard.php' },
-                { name: 'AssignRole View', path: 'app/views/user/assignRole.php' },
-                { name: 'loadView.js', path: 'app/resources/js/loadView.js' },
-                { name: 'assignRole.js', path: 'app/resources/js/assignRole.js' }
-            ];
-            
-            for (const file of files) {
-                try {
-                    const response = await fetch(file.path);
-                    if (response.ok) {
-                        const content = await response.text();
-                        const size = content.length;
-                        html += `<div class="success">✅ ${file.name} (${size} bytes)</div>`;
-                    } else {
-                        html += `<div class="error">❌ ${file.name} - Error ${response.status}</div>`;
-                    }
-                } catch (error) {
-                    html += `<div class="error">❌ ${file.name} - ${error.message}</div>`;
-                }
-            }
-            
-            results.innerHTML = html;
-        }
+        $dbStatus = 'ok';
         
-        // Información del sistema
-        function getSystemInfo() {
-            const results = document.getElementById('system-info');
-            const info = {
-                'User Agent': navigator.userAgent,
-                'URL Actual': window.location.href,
-                'Protocolo': window.location.protocol,
-                'Host': window.location.host,
-                'Puerto': window.location.port,
-                'Pathname': window.location.pathname,
-                'Search': window.location.search
-            };
-            
-            let html = '<h4>Información del Navegador:</h4>';
-            for (const [key, value] of Object.entries(info)) {
-                html += `<div><strong>${key}:</strong> ${value}</div>`;
-            }
-            
-            results.innerHTML = html;
-        }
-        
-        // Pruebas manuales
-        async function testBasicAccess() {
-            const results = document.getElementById('manual-test-results');
-            results.innerHTML = '<div class="info">Probando acceso básico...</div>';
-            
-            try {
-                const response = await fetch('http://localhost:8000/');
-                if (response.ok) {
-                    results.innerHTML = '<div class="success">✅ Acceso básico funciona</div>';
-                } else {
-                    results.innerHTML = `<div class="error">❌ Acceso básico falló: ${response.status}</div>`;
-                }
-            } catch (error) {
-                results.innerHTML = `<div class="error">❌ Error de conexión: ${error.message}</div>`;
-            }
-        }
-        
-        async function testDashboard() {
-            const results = document.getElementById('manual-test-results');
-            results.innerHTML = '<div class="info">Probando dashboard...</div>';
-            
-            try {
-                const response = await fetch('http://localhost:8000/?view=root&action=dashboard');
-                if (response.ok) {
-                    results.innerHTML = '<div class="success">✅ Dashboard accesible</div>';
-                } else {
-                    results.innerHTML = `<div class="error">❌ Dashboard error: ${response.status}</div>`;
-                }
-            } catch (error) {
-                results.innerHTML = `<div class="error">❌ Error de conexión: ${error.message}</div>`;
-            }
-        }
-        
-        async function testLogin() {
-            const results = document.getElementById('manual-test-results');
-            results.innerHTML = '<div class="info">Probando login...</div>';
-            
-            try {
-                const response = await fetch('http://localhost:8000/?view=index&action=login');
-                if (response.ok) {
-                    results.innerHTML = '<div class="success">✅ Login accesible</div>';
-                } else {
-                    results.innerHTML = `<div class="error">❌ Login error: ${response.status}</div>`;
-                }
-            } catch (error) {
-                results.innerHTML = `<div class="error">❌ Error de conexión: ${error.message}</div>`;
-            }
-        }
-        
-        async function testAssignRole() {
-            const results = document.getElementById('manual-test-results');
-            results.innerHTML = '<div class="info">Probando asignar roles...</div>';
-            
-            try {
-                const response = await fetch('http://localhost:8000/?view=user&action=assignRole');
-                if (response.ok) {
-                    results.innerHTML = '<div class="success">✅ Asignar roles accesible</div>';
-                } else {
-                    results.innerHTML = `<div class="error">❌ Asignar roles error: ${response.status}</div>`;
-                }
-            } catch (error) {
-                results.innerHTML = `<div class="error">❌ Error de conexión: ${error.message}</div>`;
-            }
-        }
-        
-        // Ejecutar diagnóstico al cargar
-        document.addEventListener('DOMContentLoaded', function() {
-            runDiagnostic();
-            checkFiles();
-            getSystemInfo();
-        });
-    </script>
-</body>
-</html> 
+    } else {
+        echo "<p><span class='error'>❌ Base de datos 'baldur_db' NO existe</span></p>";
+        $dbStatus = 'no_db';
+    }
+    
+} catch (PDOException $e) {
+    echo "<p><span class='error'>❌ Error de conexión: " . $e->getMessage() . "</span></p>";
+    $dbStatus = 'connection_error';
+    $dbError = $e->getMessage();
+}
+
+// Verificar usuario MySQL
+echo "<h3>🔍 Verificación de Usuario MySQL</h3>";
+try {
+    $pdo = new PDO("mysql:host=$host", 'root', ''); // Intentar con root sin contraseña
+    echo "<p><span class='success'>✅ Conexión como root exitosa</span></p>";
+    
+    $stmt = $pdo->query("SELECT User, Host FROM mysql.user WHERE User = 'byfrost_app_user'");
+    if ($stmt->rowCount() > 0) {
+        echo "<p><span class='success'>✅ Usuario 'byfrost_app_user' existe</span></p>";
+    } else {
+        echo "<p><span class='error'>❌ Usuario 'byfrost_app_user' NO existe</span></p>";
+    }
+    
+} catch (PDOException $e) {
+    echo "<p><span class='warning'>⚠️ No se pudo conectar como root: " . $e->getMessage() . "</span></p>";
+}
+
+echo "</div>";
+
+// =============================================
+// 5. SOLUCIONES ESPECÍFICAS
+// =============================================
+echo "<div class='section'>
+    <h2>5. 🛠️ Soluciones Específicas</h2>";
+
+if ($dbStatus === 'no_db') {
+    echo "<div class='solution'>
+        <h3>🔧 Crear Base de Datos</h3>
+        <p>La base de datos 'baldur_db' no existe. Para crearla:</p>
+        <div class='code'>
+            -- En phpMyAdmin o MySQL CLI:
+            CREATE DATABASE IF NOT EXISTS baldur_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+            CREATE USER 'byfrost_app_user'@'localhost' IDENTIFIED BY 'ByFrost2024!Secure#';
+            GRANT ALL PRIVILEGES ON baldur_db.* TO 'byfrost_app_user'@'localhost';
+            FLUSH PRIVILEGES;
+            USE baldur_db;
+            -- Luego importar el archivo app/scripts/Baldur.sql
+        </div>
+    </div>";
+}
+
+if ($dbStatus === 'connection_error') {
+    echo "<div class='solution'>
+        <h3>🔧 Error de Conexión</h3>
+        <p>No se pudo conectar a la base de datos. Verifica:</p>
+        <ul>
+            <li>Que MySQL esté ejecutándose en XAMPP</li>
+            <li>Que el usuario 'byfrost_app_user' exista</li>
+            <li>Que la contraseña sea correcta</li>
+            <li>Que el host 'localhost' sea accesible</li>
+        </ul>
+        <p><strong>Error específico:</strong> $dbError</p>
+    </div>";
+}
+
+echo "<div class='solution'>
+    <h3>🔧 Pasos para Solucionar Problemas</h3>
+    <ol>
+        <li><strong>Verificar XAMPP:</strong> Asegúrate de que Apache y MySQL estén ejecutándose</li>
+        <li><strong>Crear Base de Datos:</strong> Ejecuta el script Baldur.sql en phpMyAdmin</li>
+        <li><strong>Crear Usuario:</strong> Crea el usuario 'byfrost_app_user' con los privilegios necesarios</li>
+        <li><strong>Verificar Archivos:</strong> Asegúrate de que todos los archivos críticos estén presentes</li>
+        <li><strong>Probar URLs:</strong> Usa los enlaces de prueba que aparecen más abajo</li>
+    </ol>
+</div>";
+
+echo "</div>";
+
+// =============================================
+// 6. PRUEBAS DE URL
+// =============================================
+echo "<div class='section'>
+    <h2>6. 🌐 Pruebas de URL</h2>
+    <p>Haz clic en los siguientes enlaces para probar diferentes rutas de la aplicación:</p>";
+
+$baseUrl = 'http://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . ($_SERVER['SERVER_PORT'] == '80' ? '' : ':' . $_SERVER['SERVER_PORT']);
+$testUrls = [
+    '/' => 'Página principal',
+    '/index.php' => 'Index.php directo',
+    '/?view=index' => 'Index con parámetro',
+    '/?view=login' => 'Página de login',
+    '/?view=register' => 'Página de registro',
+    '/test-database-connection.php' => 'Test de base de datos',
+    '/test-server-status.php' => 'Test del servidor'
+];
+
+foreach ($testUrls as $url => $description) {
+    $fullUrl = $baseUrl . $url;
+    echo "<div class='url-test'>
+        <a href='$fullUrl' target='_blank'>🔗 $description</a> 
+        <span class='info'>($fullUrl)</span>
+    </div>";
+}
+
+echo "</div>";
+
+// =============================================
+// 7. RESUMEN Y RECOMENDACIONES
+// =============================================
+echo "<div class='section'>
+    <h2>7. 📋 Resumen y Recomendaciones</h2>";
+
+$issues = [];
+if (!empty($missingFiles)) {
+    $issues[] = "Archivos críticos faltantes: " . implode(', ', $missingFiles);
+}
+if ($dbStatus !== 'ok') {
+    $issues[] = "Problemas con la base de datos";
+}
+
+if (empty($issues)) {
+    echo "<p><span class='success'>✅ Todo parece estar configurado correctamente</span></p>";
+    echo "<p>Si aún no puedes acceder a la aplicación, verifica:</p>
+    <ul>
+        <li>Que Apache esté ejecutándose en XAMPP</li>
+        <li>Que no haya conflictos de puerto</li>
+        <li>Que la URL sea correcta (probablemente http://localhost/byfrost/)</li>
+        <li>Los logs de error de Apache y PHP</li>
+    </ul>";
+} else {
+    echo "<p><span class='error'>❌ Se encontraron los siguientes problemas:</span></p>
+    <ul>";
+    foreach ($issues as $issue) {
+        echo "<li>$issue</li>";
+    }
+    echo "</ul>
+    <p>Resuelve estos problemas antes de intentar acceder a la aplicación.</p>";
+}
+
+echo "</div>";
+
+echo "</div></body></html>";
+?> 
