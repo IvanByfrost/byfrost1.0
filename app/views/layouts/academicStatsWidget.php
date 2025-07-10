@@ -57,7 +57,7 @@ $termComparison = $academicStatsModel->getTermComparison();
             <div class="metric-content">
                 <h4><?php echo number_format($generalStats['total_students'] ?? 0); ?></h4>
                 <p>Estudiantes</p>
-                <small><?php echo number_format($generalStats['total_subjects'] ?? 0); ?> asignaturas</small>
+                <small><?php echo number_format($generalStats['total_activities'] ?? 0); ?> actividades</small>
             </div>
         </div>
 
@@ -97,7 +97,7 @@ $termComparison = $academicStatsModel->getTermComparison();
                 <?php foreach ($averagesByTerm as $term): ?>
                 <div class="term-card">
                     <div class="term-header">
-                        <h6><?php echo htmlspecialchars($term['academic_term_name']); ?></h6>
+                        <h6><?php echo htmlspecialchars($term['term_name']); ?></h6>
                         <span class="term-score"><?php echo number_format($term['average_score'], 2); ?></span>
                     </div>
                     <div class="term-stats">
@@ -114,12 +114,12 @@ $termComparison = $academicStatsModel->getTermComparison();
                             <span class="value danger"><?php echo number_format($term['failing_scores']); ?></span>
                         </div>
                         <div class="stat-item">
-                            <span class="label">Rango:</span>
-                            <span class="value"><?php echo number_format($term['min_score'], 1); ?> - <?php echo number_format($term['max_score'], 1); ?></span>
+                            <span class="label">Tasa de aprobación:</span>
+                            <span class="value"><?php echo $term['pass_rate']; ?>%</span>
                         </div>
                     </div>
                     <div class="term-actions">
-                        <button class="btn btn-sm btn-outline-primary" onclick="viewTermDetails(<?php echo $term['academic_term_id']; ?>)">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewTermDetails(<?php echo $term['term_id']; ?>)">
                             <i class="fas fa-eye"></i> Ver Detalles
                         </button>
                     </div>
@@ -145,15 +145,15 @@ $termComparison = $academicStatsModel->getTermComparison();
                         <span class="rank-number">#<?php echo $index + 1; ?></span>
                     </div>
                     <div class="student-info">
-                        <strong><?php echo htmlspecialchars($student['student_name']); ?></strong>
-                        <span class="term"><?php echo htmlspecialchars($student['academic_term_name']); ?></span>
+                        <strong><?php echo htmlspecialchars($student['first_name'] . ' ' . $student['last_name']); ?></strong>
+                        <span class="stats"><?php echo $student['total_scores']; ?> calificaciones</span>
                     </div>
                     <div class="student-score">
                         <span class="score"><?php echo number_format($student['average_score'], 2); ?></span>
-                        <small><?php echo $student['total_scores']; ?> calificaciones</small>
+                        <small>Promedio general</small>
                     </div>
                     <div class="student-actions">
-                        <button class="btn btn-sm btn-outline-primary" onclick="viewStudentDetails(<?php echo $student['student_id']; ?>)">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewStudentDetails(<?php echo $student['user_id']; ?>)">
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
@@ -201,34 +201,90 @@ $termComparison = $academicStatsModel->getTermComparison();
     <div class="score-distribution">
         <h5><i class="fas fa-chart-pie"></i> Distribución de Calificaciones</h5>
         <div class="distribution-chart">
-            <div class="chart-container" style="position: relative; height: 300px;">
-                <canvas id="scoreDistributionChart"></canvas>
-            </div>
+            <?php if (empty($scoreDistribution)): ?>
+                <div class="no-data">
+                    <i class="fas fa-info-circle"></i>
+                    <span>No hay datos de distribución</span>
+                </div>
+            <?php else: ?>
+                <div class="distribution-bars">
+                    <?php foreach ($scoreDistribution as $distribution): ?>
+                    <div class="distribution-bar">
+                        <div class="bar-label">
+                            <span class="range-name"><?php echo htmlspecialchars($distribution['score_range']); ?></span>
+                            <span class="range-count"><?php echo $distribution['count']; ?> estudiantes</span>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: <?php echo $distribution['percentage']; ?>%; background-color: <?php echo getScoreColor($distribution['score_range']); ?>;"></div>
+                        </div>
+                        <div class="bar-percentage">
+                            <span><?php echo $distribution['percentage']; ?>%</span>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
         </div>
-        <div class="distribution-legend">
-            <?php foreach ($scoreDistribution as $distribution): ?>
-            <div class="legend-item">
-                <span class="legend-color" style="background-color: <?php echo getScoreColor($distribution['score_range']); ?>"></span>
-                <span class="legend-label"><?php echo htmlspecialchars($distribution['score_range']); ?></span>
-                <span class="legend-value"><?php echo $distribution['count']; ?> (<?php echo $distribution['percentage']; ?>%)</span>
-            </div>
-            <?php endforeach; ?>
+    </div>
+
+    <!-- Comparación entre períodos -->
+    <div class="term-comparison">
+        <h5><i class="fas fa-chart-line"></i> Comparación entre Períodos</h5>
+        <div class="comparison-chart">
+            <?php if (empty($termComparison)): ?>
+                <div class="no-data">
+                    <i class="fas fa-info-circle"></i>
+                    <span>No hay datos de comparación</span>
+                </div>
+            <?php else: ?>
+                <div class="comparison-bars">
+                    <?php foreach ($termComparison as $term): ?>
+                    <div class="comparison-item">
+                        <div class="term-info">
+                            <h6><?php echo htmlspecialchars($term['term_name']); ?></h6>
+                            <span class="term-stats">
+                                <?php echo $term['total_scores']; ?> calificaciones
+                            </span>
+                        </div>
+                        <div class="term-metrics">
+                            <div class="metric">
+                                <span class="label">Promedio:</span>
+                                <span class="value"><?php echo number_format($term['average_score'], 2); ?></span>
+                            </div>
+                            <div class="metric">
+                                <span class="label">Aprobación:</span>
+                                <span class="value success"><?php echo $term['pass_rate']; ?>%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="label">Desviación:</span>
+                                <span class="value"><?php echo number_format($term['standard_deviation'], 2); ?></span>
+                            </div>
+                        </div>
+                        <div class="term-actions">
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewTermComparison(<?php echo $term['term_id']; ?>)">
+                                <i class="fas fa-chart-line"></i> Ver Gráfico
+                            </button>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 
     <!-- Acciones rápidas -->
     <div class="quick-actions">
-        <button class="btn btn-primary" onclick="viewAcademicReport()">
-            <i class="fas fa-chart-line"></i> Ver Reporte Completo
+        <button class="btn btn-primary" onclick="viewFullReport()">
+            <i class="fas fa-file-alt"></i> Ver Reporte Completo
         </button>
-        <button class="btn btn-success" onclick="viewScoreTrends()">
-            <i class="fas fa-trending-up"></i> Ver Tendencias
+        <button class="btn btn-success" onclick="exportAcademicReport()">
+            <i class="fas fa-download"></i> Exportar Reporte
         </button>
-        <button class="btn btn-warning" onclick="viewSubjectComparison()">
-            <i class="fas fa-balance-scale"></i> Comparar Asignaturas
+        <button class="btn btn-info" onclick="viewTrends()">
+            <i class="fas fa-chart-line"></i> Ver Tendencias
         </button>
-        <button class="btn btn-info" onclick="viewStudentRanking()">
-            <i class="fas fa-medal"></i> Ranking Estudiantes
+        <button class="btn btn-warning" onclick="viewAnalytics()">
+            <i class="fas fa-analytics"></i> Análisis Avanzado
         </button>
     </div>
 </div>
@@ -514,35 +570,139 @@ $termComparison = $academicStatsModel->getTermComparison();
     text-align: center;
 }
 
-.distribution-legend {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+.distribution-bars {
+    display: flex;
+    flex-direction: column;
     gap: 10px;
 }
 
-.legend-item {
+.distribution-bar {
     display: flex;
     align-items: center;
-    padding: 5px;
+    padding: 8px 15px;
+    border-radius: 6px;
+    background: #e9ecef;
+    border: 1px solid #dee2e6;
 }
 
-.legend-color {
-    width: 15px;
-    height: 15px;
-    border-radius: 3px;
-    margin-right: 8px;
-}
-
-.legend-label {
+.bar-label {
     flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     font-size: 0.85rem;
     color: #333;
 }
 
-.legend-value {
+.range-name {
+    font-weight: 600;
+}
+
+.range-count {
+    color: #666;
+    font-size: 0.75rem;
+}
+
+.bar-container {
+    width: 100%;
+    height: 10px;
+    background: #e9ecef;
+    border-radius: 5px;
+    margin: 0 10px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.3s ease-in-out;
+}
+
+.bar-percentage {
+    font-size: 0.85rem;
+    color: #333;
+    font-weight: 600;
+    min-width: 50px;
+    text-align: right;
+}
+
+.term-comparison {
+    margin-bottom: 25px;
+}
+
+.comparison-chart {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.comparison-bars {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.comparison-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-radius: 8px;
+    background: #e9ecef;
+    border-left: 4px solid #17a2b8;
+    transition: all 0.2s ease;
+}
+
+.comparison-item:hover {
+    background: #dee2e6;
+    transform: translateX(5px);
+}
+
+.term-info {
+    flex: 1;
+    margin-right: 15px;
+}
+
+.term-info h6 {
+    margin: 0 0 5px 0;
+    color: #333;
+    font-weight: 600;
+}
+
+.term-info .term-stats {
     font-size: 0.85rem;
     color: #666;
+}
+
+.term-metrics {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+}
+
+.metric {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+}
+
+.metric .label {
+    color: #666;
+    margin-right: 8px;
+}
+
+.metric .value {
     font-weight: 600;
+    color: #333;
+}
+
+.metric .value.success {
+    color: #28a745;
+}
+
+.term-actions {
+    text-align: center;
 }
 
 .quick-actions {
@@ -577,7 +737,11 @@ $termComparison = $academicStatsModel->getTermComparison();
         flex-direction: column;
     }
     
-    .distribution-legend {
+    .distribution-bars {
+        flex-direction: column;
+    }
+    
+    .comparison-bars {
         grid-template-columns: 1fr;
     }
 }
@@ -628,12 +792,12 @@ function viewSubjectDetails(subjectId) {
 }
 
 // Función para ver reporte académico completo
-function viewAcademicReport() {
+function viewFullReport() {
     loadView('academic/report');
 }
 
 // Función para ver tendencias de calificaciones
-function viewScoreTrends() {
+function viewTrends() {
     loadView('academic/trends');
 }
 
@@ -645,6 +809,18 @@ function viewSubjectComparison() {
 // Función para ver ranking de estudiantes
 function viewStudentRanking() {
     loadView('academic/studentRanking');
+}
+
+// Función para ver comparación de períodos
+function viewTermComparison(termId) {
+    if (termId > 0) {
+        loadView('academic/termComparison&id=' + termId);
+    }
+}
+
+// Función para ver análisis avanzado
+function viewAnalytics() {
+    loadView('academic/advancedAnalytics');
 }
 
 // Gráfico de distribución de calificaciones

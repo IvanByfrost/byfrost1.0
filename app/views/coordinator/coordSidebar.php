@@ -1,7 +1,7 @@
 <div class="coordinator-dashboard">
     <div class="coordinator-sidebar">
         <ul>
-            <li><a href="#" onclick="safeLoadView('coordinator/dashboard')"><i data-lucide="home"></i>Inicio</a></li>
+            <li><a href="?view=coordinatorDashboard"><i data-lucide="home"></i>Inicio</a></li>
             <li class="has-submenu"><a href="#"><i data-lucide="users"></i>Estudiantes</a>
                 <ul class="submenu">
                     <li><a href="#" onclick="safeLoadView('student/createStudent')">Registrar estudiantes</a></li>

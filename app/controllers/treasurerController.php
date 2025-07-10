@@ -3,14 +3,13 @@ require_once 'app/library/SessionManager.php';
 require_once 'app/library/SecurityMiddleware.php';
 require_once 'app/models/payrollModel.php';
 
-class TreasurerController {
-    private $sessionManager;
-    private $securityMiddleware;
+require_once 'app/controllers/MainController.php';
+
+class TreasurerController extends MainController {
     private $payrollModel;
     
-    public function __construct() {
-        $this->sessionManager = new SessionManager();
-        $this->securityMiddleware = new SecurityMiddleware();
+    public function __construct($dbConn) {
+        parent::__construct($dbConn);
         $this->payrollModel = new PayrollModel();
     }
     
@@ -37,26 +36,10 @@ class TreasurerController {
                 'page_title' => 'Dashboard del Tesorero'
             ];
             
-            $this->loadView('treasurer/dashboard', $data);
+            $this->loadDashboardView('treasurer/dashboard', $data);
             
         } catch (Exception $e) {
-            $this->loadView('Error/error', ['error' => $e->getMessage()]);
-        }
-    }
-    
-    /**
-     * Cargar vista
-     */
-    private function loadView($view, $data = []) {
-        // Extraer variables del array de datos
-        extract($data);
-        
-        // Incluir la vista
-        $viewPath = ROOT . '/app/views/' . $view . '.php';
-        if (file_exists($viewPath)) {
-            include $viewPath;
-        } else {
-            throw new Exception('Vista no encontrada: ' . $view);
+            $this->loadDashboardView('Error/error', ['error' => $e->getMessage()]);
         }
     }
 }

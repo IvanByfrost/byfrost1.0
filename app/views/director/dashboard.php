@@ -490,6 +490,12 @@ window.safeLoadView = function(viewName) {
 <!-- Scripts para gráficos -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+// Verificar que Chart.js esté disponible
+if (typeof Chart === 'undefined') {
+    console.error('Chart.js no está cargado');
+} else {
+    console.log('Chart.js cargado correctamente');
+}
 // Función para alternar secciones
 function toggleSection(sectionId) {
     const section = document.getElementById(sectionId);
@@ -516,89 +522,118 @@ function loadKPIs() {
 // Gráfico de asistencia
 function createAttendanceChart() {
     const ctx = document.getElementById('attendanceChart');
-    if (!ctx) return;
+    if (!ctx) {
+        console.log('Canvas attendanceChart no encontrado');
+        return;
+    }
     
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-            datasets: [{
-                label: 'Asistencia (%)',
-                data: [92, 94, 91, 95, 93, 94],
-                borderColor: 'rgb(75, 192, 192)',
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                tension: 0.1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100
+    try {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Asistencia (%)',
+                    data: [92, 94, 91, 95, 93, 94],
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
                 }
             }
-        }
-    });
+        });
+    } catch (error) {
+        console.error('Error creando gráfico de asistencia:', error);
+    }
 }
 
 // Gráfico de distribución de estudiantes
 function createStudentsChart() {
     const ctx = document.getElementById('studentsChart');
-    if (!ctx) return;
+    if (!ctx) {
+        console.log('Canvas studentsChart no encontrado');
+        return;
+    }
     
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Primaria', 'Secundaria', 'Bachillerato'],
-            datasets: [{
-                data: [450, 380, 417],
-                backgroundColor: [
-                    'rgb(255, 99, 132)',
-                    'rgb(54, 162, 235)',
-                    'rgb(255, 205, 86)'
-                ]
-            }]
-        },
-        options: {
-            responsive: true
-        }
-    });
+    try {
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Primaria', 'Secundaria', 'Bachillerato'],
+                datasets: [{
+                    data: [450, 380, 417],
+                    backgroundColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 205, 86)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    } catch (error) {
+        console.error('Error creando gráfico de estudiantes:', error);
+    }
 }
 
 // Gráfico de rendimiento académico
 function createPerformanceChart() {
     const ctx = document.getElementById('performanceChart');
-    if (!ctx) return;
+    if (!ctx) {
+        console.log('Canvas performanceChart no encontrado');
+        return;
+    }
     
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-            datasets: [{
-                label: 'Promedio General',
-                data: [85, 87, 86, 89, 88, 90],
-                backgroundColor: 'rgba(54, 162, 235, 0.8)'
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100
+    try {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Promedio General',
+                    data: [85, 87, 86, 89, 88, 90],
+                    backgroundColor: 'rgba(54, 162, 235, 0.8)'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
                 }
             }
-        }
-    });
+        });
+    } catch (error) {
+        console.error('Error creando gráfico de rendimiento:', error);
+    }
 }
 
 // Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM cargado, inicializando dashboard...');
+    
+    // Cargar KPIs
     loadKPIs();
-    createAttendanceChart();
-    createStudentsChart();
-    createPerformanceChart();
+    
+    // Esperar un poco más para asegurar que los canvas estén disponibles
+    setTimeout(function() {
+        console.log('Creando gráficos...');
+        createAttendanceChart();
+        createStudentsChart();
+        createPerformanceChart();
+    }, 100);
 });
 </script>
 

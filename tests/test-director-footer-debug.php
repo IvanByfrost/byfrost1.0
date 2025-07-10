@@ -1,205 +1,129 @@
 <?php
-define('ROOT', dirname(__DIR__));
+// Script de prueba para verificar el footer del director
+require_once '../config.php';
+require_once '../app/controllers/directorDashboardController.php';
 
-echo "<h1>🔍 Diagnóstico del Footer del Director Dashboard</h1>";
+echo "<h1>Prueba de Footer del Director Dashboard</h1>";
 
-// Verificar archivos críticos
-$criticalFiles = [
-    'config.php' => ROOT . '/config.php',
-    'dashHeader.php' => ROOT . '/app/views/layouts/dashHeader.php',
-    'dashFooter.php' => ROOT . '/app/views/layouts/dashFooter.php',
-    'directorDashboardController.php' => ROOT . '/app/controllers/directorDashboardController.php',
-    'dashboard.php' => ROOT . '/app/views/director/dashboard.php'
-];
-
-echo "<h2>📁 Verificación de Archivos Críticos</h2>";
-foreach ($criticalFiles as $name => $path) {
-    if (file_exists($path)) {
-        echo "<p style='color: green;'>✅ $name existe</p>";
-    } else {
-        echo "<p style='color: red;'>❌ $name NO existe en: $path</p>";
-    }
-}
-
-// Verificar constantes en config.php
-echo "<h2>⚙️ Verificación de Constantes</h2>";
-if (file_exists(ROOT . '/config.php')) {
-    require_once ROOT . '/config.php';
-    
-    $constants = ['url', 'app', 'rq', 'ROOT'];
-    foreach ($constants as $const) {
-        if (defined($const)) {
-            echo "<p style='color: green;'>✅ $const = " . constant($const) . "</p>";
-        } else {
-            echo "<p style='color: red;'>❌ $const NO está definida</p>";
-        }
-    }
-} else {
-    echo "<p style='color: red;'>❌ config.php no existe</p>";
-}
-
-// Verificar contenido del dashHeader.php
-echo "<h2>📋 Contenido de dashHeader.php</h2>";
-if (file_exists(ROOT . '/app/views/layouts/dashHeader.php')) {
-    $headerContent = file_get_contents(ROOT . '/app/views/layouts/dashHeader.php');
-    
-    // Verificar si incluye config.php
-    if (strpos($headerContent, 'config.php') !== false) {
-        echo "<p style='color: green;'>✅ dashHeader.php incluye config.php</p>";
-    } else {
-        echo "<p style='color: red;'>❌ dashHeader.php NO incluye config.php</p>";
-    }
-    
-    // Verificar si define las constantes
-    if (strpos($headerContent, 'url') !== false) {
-        echo "<p style='color: green;'>✅ dashHeader.php usa la constante url</p>";
-    } else {
-        echo "<p style='color: orange;'>⚠️ dashHeader.php no usa la constante url</p>";
-    }
-} else {
-    echo "<p style='color: red;'>❌ dashHeader.php no existe</p>";
-}
-
-// Verificar contenido del dashFooter.php
-echo "<h2>📋 Contenido de dashFooter.php</h2>";
-if (file_exists(ROOT . '/app/views/layouts/dashFooter.php')) {
-    $footerContent = file_get_contents(ROOT . '/app/views/layouts/dashFooter.php');
-    
-    // Verificar si usa las constantes
-    $constantsUsed = ['url', 'app', 'rq'];
-    foreach ($constantsUsed as $const) {
-        if (strpos($footerContent, $const) !== false) {
-            echo "<p style='color: green;'>✅ dashFooter.php usa la constante $const</p>";
-        } else {
-            echo "<p style='color: red;'>❌ dashFooter.php NO usa la constante $const</p>";
-        }
-    }
-    
-    // Verificar si incluye config.php
-    if (strpos($footerContent, 'config.php') !== false) {
-        echo "<p style='color: green;'>✅ dashFooter.php incluye config.php</p>";
-    } else {
-        echo "<p style='color: orange;'>⚠️ dashFooter.php NO incluye config.php directamente</p>";
-    }
-} else {
-    echo "<p style='color: red;'>❌ dashFooter.php no existe</p>";
-}
-
-// Verificar el controlador del director
-echo "<h2>🎮 Verificación del Controlador</h2>";
-if (file_exists(ROOT . '/app/controllers/directorDashboardController.php')) {
-    require_once ROOT . '/app/controllers/directorDashboardController.php';
-    
-    if (class_exists('DirectorDashboardController')) {
-        echo "<p style='color: green;'>✅ Clase DirectorDashboardController existe</p>";
-        
-        // Verificar herencia
-        $reflection = new ReflectionClass('DirectorDashboardController');
-        $parent = $reflection->getParentClass();
-        if ($parent && $parent->getName() === 'MainController') {
-            echo "<p style='color: green;'>✅ DirectorDashboardController hereda de MainController</p>";
-        } else {
-            echo "<p style='color: red;'>❌ DirectorDashboardController NO hereda de MainController</p>";
-        }
-        
-        // Verificar método showDashboard
-        if (method_exists('DirectorDashboardController', 'showDashboard')) {
-            echo "<p style='color: green;'>✅ Método showDashboard existe</p>";
-        } else {
-            echo "<p style='color: red;'>❌ Método showDashboard NO existe</p>";
-        }
-    } else {
-        echo "<p style='color: red;'>❌ Clase DirectorDashboardController NO existe</p>";
-    }
-} else {
-    echo "<p style='color: red;'>❌ directorDashboardController.php no existe</p>";
-}
-
-// Verificar el dashboard view
-echo "<h2>📄 Verificación del Dashboard View</h2>";
-if (file_exists(ROOT . '/app/views/director/dashboard.php')) {
-    $dashboardContent = file_get_contents(ROOT . '/app/views/director/dashboard.php');
-    
-    // Verificar si incluye config.php
-    if (strpos($dashboardContent, 'config.php') !== false) {
-        echo "<p style='color: green;'>✅ dashboard.php incluye config.php</p>";
-    } else {
-        echo "<p style='color: orange;'>⚠️ dashboard.php NO incluye config.php</p>";
-    }
-    
-    // Verificar si incluye dashHeader
-    if (strpos($dashboardContent, 'dashHeader.php') !== false) {
-        echo "<p style='color: green;'>✅ dashboard.php incluye dashHeader.php</p>";
-    } else {
-        echo "<p style='color: red;'>❌ dashboard.php NO incluye dashHeader.php</p>";
-    }
-    
-    // Verificar si incluye dashFooter
-    if (strpos($dashboardContent, 'dashFooter.php') !== false) {
-        echo "<p style='color: green;'>✅ dashboard.php incluye dashFooter.php</p>";
-    } else {
-        echo "<p style='color: orange;'>⚠️ dashboard.php NO incluye dashFooter.php directamente</p>";
-    }
-} else {
-    echo "<p style='color: red;'>❌ dashboard.php no existe</p>";
-}
-
-// Simular carga del dashboard
-echo "<h2>🧪 Simulación de Carga</h2>";
-echo "<p>Probando carga del dashboard del director...</p>";
+// Simular una sesión de director
+session_start();
+$_SESSION['user_id'] = 1;
+$_SESSION['user_role'] = 'director';
+$_SESSION['user_name'] = 'Director Test';
 
 try {
-    // Definir constantes necesarias
-    if (!defined('ROOT')) {
-        define('ROOT', dirname(__DIR__));
+    // Crear conexión a la base de datos
+    $dbConn = new PDO("mysql:host=localhost;dbname=byfrost", "root", "");
+    $dbConn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    echo "<h2>1. Verificación de Archivos</h2>";
+    
+    // Verificar que existe el archivo dashFooter.php
+    $footerPath = ROOT . '/app/views/layouts/dashFooter.php';
+    if (file_exists($footerPath)) {
+        echo "<div style='color: green;'>✅ dashFooter.php existe en: $footerPath</div>";
+    } else {
+        echo "<div style='color: red;'>❌ dashFooter.php NO existe en: $footerPath</div>";
     }
     
-    if (file_exists(ROOT . '/config.php')) {
-        require_once ROOT . '/config.php';
-        echo "<p style='color: green;'>✅ config.php cargado correctamente</p>";
+    // Verificar que existe el dashboard del director
+    $dashboardPath = ROOT . '/app/views/director/dashboard.php';
+    if (file_exists($dashboardPath)) {
+        echo "<div style='color: green;'>✅ dashboard.php existe en: $dashboardPath</div>";
+    } else {
+        echo "<div style='color: red;'>❌ dashboard.php NO existe en: $dashboardPath</div>";
+    }
+    
+    echo "<h2>2. Verificación del Controlador</h2>";
+    
+    // Crear instancia del controlador
+    $controller = new DirectorDashboardController($dbConn);
+    
+    // Verificar que el método loadDashboardView existe en MainController
+    $reflection = new ReflectionClass('MainController');
+    if ($reflection->hasMethod('loadDashboardView')) {
+        echo "<div style='color: green;'>✅ Método loadDashboardView existe en MainController</div>";
+    } else {
+        echo "<div style='color: red;'>❌ Método loadDashboardView NO existe en MainController</div>";
+    }
+    
+    echo "<h2>3. Verificación de Constantes</h2>";
+    
+    // Verificar constantes necesarias
+    if (defined('ROOT')) {
+        echo "<div style='color: green;'>✅ Constante ROOT definida: " . ROOT . "</div>";
+    } else {
+        echo "<div style='color: red;'>❌ Constante ROOT NO definida</div>";
+    }
+    
+    if (defined('url')) {
+        echo "<div style='color: green;'>✅ Constante url definida: " . url . "</div>";
+    } else {
+        echo "<div style='color: red;'>❌ Constante url NO definida</div>";
+    }
+    
+    echo "<h2>4. Prueba de Carga del Dashboard</h2>";
+    
+    // Intentar cargar el dashboard
+    echo "<p>Intentando cargar el dashboard del director...</p>";
+    
+    // Capturar la salida
+    ob_start();
+    
+    try {
+        $controller->showDashboard();
+        $output = ob_get_clean();
         
-        // Verificar constantes después de cargar config.php
-        if (defined('url') && defined('app') && defined('rq')) {
-            echo "<p style='color: green;'>✅ Todas las constantes están definidas después de cargar config.php</p>";
-            echo "<p>url = " . url . "</p>";
-            echo "<p>app = " . app . "</p>";
-            echo "<p>rq = " . rq . "</p>";
+        // Verificar si el footer está en la salida
+        if (strpos($output, 'Byfrost &copy; 2026') !== false) {
+            echo "<div style='color: green;'>✅ Footer encontrado en la salida</div>";
         } else {
-            echo "<p style='color: red;'>❌ Algunas constantes NO están definidas después de cargar config.php</p>";
+            echo "<div style='color: red;'>❌ Footer NO encontrado en la salida</div>";
         }
-    } else {
-        echo "<p style='color: red;'>❌ No se pudo cargar config.php</p>";
+        
+        // Verificar si los scripts están cargados
+        if (strpos($output, 'jquery-3.6.0.min.js') !== false) {
+            echo "<div style='color: green;'>✅ Scripts de jQuery encontrados</div>";
+        } else {
+            echo "<div style='color: red;'>❌ Scripts de jQuery NO encontrados</div>";
+        }
+        
+        // Mostrar las primeras 500 caracteres de la salida
+        echo "<h3>Primeras 500 caracteres de la salida:</h3>";
+        echo "<pre>" . htmlspecialchars(substr($output, 0, 500)) . "...</pre>";
+        
+    } catch (Exception $e) {
+        $output = ob_get_clean();
+        echo "<div style='color: red;'>❌ Error al cargar el dashboard: " . $e->getMessage() . "</div>";
+        echo "<pre>" . htmlspecialchars($output) . "</pre>";
     }
     
-    // Probar carga del dashHeader
-    if (file_exists(ROOT . '/app/views/layouts/dashHeader.php')) {
-        echo "<p style='color: green;'>✅ dashHeader.php existe y se puede cargar</p>";
+    echo "<h2>5. Verificación Manual del Footer</h2>";
+    
+    // Verificar contenido del dashFooter.php
+    $footerContent = file_get_contents($footerPath);
+    
+    if (strpos($footerContent, 'Byfrost &copy; 2026') !== false) {
+        echo "<div style='color: green;'>✅ Footer contiene el copyright correcto</div>";
     } else {
-        echo "<p style='color: red;'>❌ dashHeader.php no existe</p>";
+        echo "<div style='color: red;'>❌ Footer NO contiene el copyright correcto</div>";
     }
     
-    // Probar carga del dashFooter
-    if (file_exists(ROOT . '/app/views/layouts/dashFooter.php')) {
-        echo "<p style='color: green;'>✅ dashFooter.php existe y se puede cargar</p>";
+    if (strpos($footerContent, '</body>') !== false && strpos($footerContent, '</html>') !== false) {
+        echo "<div style='color: green;'>✅ Footer tiene las etiquetas de cierre correctas</div>";
     } else {
-        echo "<p style='color: red;'>❌ dashFooter.php no existe</p>";
+        echo "<div style='color: red;'>❌ Footer NO tiene las etiquetas de cierre correctas</div>";
     }
+    
+    echo "<h2>6. Recomendaciones</h2>";
+    echo "<ul>";
+    echo "<li>El controlador debe usar loadDashboardView() que incluye automáticamente dashFooter.php</li>";
+    echo "<li>Verificar que no hay errores de PHP que impidan la carga completa</li>";
+    echo "<li>Limpiar el caché del navegador</li>";
+    echo "<li>Verificar que todas las constantes están definidas correctamente</li>";
+    echo "</ul>";
     
 } catch (Exception $e) {
-    echo "<p style='color: red;'>❌ Error durante la simulación: " . $e->getMessage() . "</p>";
+    echo "<div style='color: red;'>Error general: " . $e->getMessage() . "</div>";
 }
-
-echo "<h2>🔗 URLs de Prueba</h2>";
-echo "<ul>";
-echo "<li><a href='http://localhost:8000/?view=directorDashboard' target='_blank'>Dashboard Director (vía controlador)</a></li>";
-echo "<li><a href='http://localhost:8000/?view=director&action=dashboard' target='_blank'>Dashboard Director (vía director controller)</a></li>";
-echo "</ul>";
-
-echo "<h2>💡 Recomendaciones</h2>";
-echo "<ul>";
-echo "<li>Si el footer no aparece, verifica que las constantes url, app, rq estén definidas</li>";
-echo "<li>El dashboard debe cargarse a través del controlador DirectorDashboardController</li>";
-echo "<li>El controlador debe usar loadDashboardView() que incluye automáticamente dashFooter.php</li>";
-echo "<li>Si cargas el dashboard directamente, asegúrate de incluir config.php antes de dashFooter.php</li>";
-echo "</ul>";
 ?> 

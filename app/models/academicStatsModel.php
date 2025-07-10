@@ -13,20 +13,21 @@ class AcademicStatsModel extends MainModel
     {
         $query = "
         SELECT 
-            at.academic_term_name,
-            at.academic_term_id,
+            at.term_name,
+            at.term_id,
             ROUND(AVG(ss.score), 2) AS average_score,
             COUNT(ss.score_id) AS total_scores,
-            MIN(ss.score) AS min_score,
-            MAX(ss.score) AS max_score,
-            ROUND(STDDEV(ss.score), 2) AS standard_deviation,
             COUNT(CASE WHEN ss.score >= 3.0 THEN 1 END) AS passing_scores,
-            COUNT(CASE WHEN ss.score < 3.0 THEN 1 END) AS failing_scores
-        FROM subject_score ss
-        JOIN academic_term at ON ss.academic_term_id = at.academic_term_id
-        WHERE ss.is_active = 1
-        GROUP BY at.academic_term_id, at.academic_term_name
-        ORDER BY at.academic_term_id ASC
+            COUNT(CASE WHEN ss.score < 3.0 THEN 1 END) AS failing_scores,
+            ROUND(
+                (COUNT(CASE WHEN ss.score >= 3.0 THEN 1 END) / COUNT(ss.score_id)) * 100, 1
+            ) AS pass_rate
+        FROM student_scores ss
+        JOIN academic_terms at ON ss.activity_id IN (
+            SELECT activity_id FROM activities WHERE term_id = at.term_id
+        )
+        GROUP BY at.term_id, at.term_name
+        ORDER BY at.term_id ASC
         ";
         
         $stmt = $this->dbConn->prepare($query);
@@ -45,16 +46,15 @@ class AcademicStatsModel extends MainModel
             s.subject_id,
             ROUND(AVG(ss.score), 2) AS average_score,
             COUNT(ss.score_id) AS total_scores,
-            MIN(ss.score) AS min_score,
-            MAX(ss.score) AS max_score,
             COUNT(CASE WHEN ss.score >= 3.0 THEN 1 END) AS passing_scores,
             COUNT(CASE WHEN ss.score < 3.0 THEN 1 END) AS failing_scores,
             ROUND(
                 (COUNT(CASE WHEN ss.score >= 3.0 THEN 1 END) / COUNT(ss.score_id)) * 100, 1
             ) AS pass_rate
-        FROM subject_score ss
-        JOIN subject s ON ss.subject_id = s.subject_id
-        WHERE ss.is_active = 1
+        FROM student_scores ss
+        JOIN activities a ON ss.activity_id = a.activity_id
+        JOIN professor_subjects ps ON a.professor_subject_id = ps.professor_subject_id
+        JOIN subjects s ON ps.subject_id = s.subject_id
         GROUP BY s.subject_id, s.subject_name
         ORDER BY average_score DESC
         ";
@@ -71,8 +71,9 @@ class AcademicStatsModel extends MainModel
     {
         $query = "
         SELECT 
-            t.teacher_name,
-            t.teacher_id,
+            u.first_name,
+            u.last_name,
+            u.user_id,
             ROUND(AVG(ss.score), 2) AS average_score,
             COUNT(ss.score_id) AS total_scores,
             COUNT(CASE WHEN ss.score >= 3.0 THEN 1 END) AS passing_scores,
@@ -80,10 +81,11 @@ class AcademicStatsModel extends MainModel
             ROUND(
                 (COUNT(CASE WHEN ss.score >= 3.0 THEN 1 END) / COUNT(ss.score_id)) * 100, 1
             ) AS pass_rate
-        FROM subject_score ss
-        JOIN teacher t ON ss.teacher_id = t.teacher_id
-        WHERE ss.is_active = 1
-        GROUP BY t.teacher_id, t.teacher_name
+        FROM student_scores ss
+        JOIN activities a ON ss.activity_id = a.activity_id
+        JOIN professor_subjects ps ON a.professor_subject_id = ps.professor_subject_id
+        JOIN users u ON ps.professor_user_id = u.user_id
+        GROUP BY u.user_id, u.first_name, u.last_name
         ORDER BY average_score DESC
         ";
         
@@ -109,10 +111,10 @@ class AcademicStatsModel extends MainModel
             ROUND(
                 (COUNT(CASE WHEN ss.score >= 3.0 THEN 1 END) / COUNT(ss.score_id)) * 100, 1
             ) AS global_pass_rate,
-            COUNT(DISTINCT ss.student_id) AS total_students,
-            COUNT(DISTINCT ss.subject_id) AS total_subjects
-        FROM subject_score ss
-        WHERE ss.is_active = 1
+            COUNT(DISTINCT ss.student_user_id) AS total_students,
+            COUNT(DISTINCT a.activity_id) AS total_activities
+        FROM student_scores ss
+        JOIN activities a ON ss.activity_id = a.activity_id
         ";
         
         $stmt = $this->dbConn->prepare($query);
@@ -127,15 +129,14 @@ class AcademicStatsModel extends MainModel
     {
         $query = "
         SELECT 
-            DATE_FORMAT(ss.created_at, '%Y-%m') AS month,
+            DATE_FORMAT(ss.graded_at, '%Y-%m') AS month,
             ROUND(AVG(ss.score), 2) AS average_score,
             COUNT(ss.score_id) AS total_scores,
             COUNT(CASE WHEN ss.score >= 3.0 THEN 1 END) AS passing_scores,
             COUNT(CASE WHEN ss.score < 3.0 THEN 1 END) AS failing_scores
-        FROM subject_score ss
-        WHERE ss.created_at >= DATE_SUB(CURDATE(), INTERVAL :months MONTH)
-            AND ss.is_active = 1
-        GROUP BY DATE_FORMAT(ss.created_at, '%Y-%m')
+        FROM student_scores ss
+        WHERE ss.graded_at >= DATE_SUB(CURDATE(), INTERVAL :months MONTH)
+        GROUP BY DATE_FORMAT(ss.graded_at, '%Y-%m')
         ORDER BY month ASC
         ";
         
@@ -160,9 +161,8 @@ class AcademicStatsModel extends MainModel
                 ELSE 'Insuficiente (0.0-1.9)'
             END AS score_range,
             COUNT(*) AS count,
-            ROUND((COUNT(*) / (SELECT COUNT(*) FROM subject_score WHERE is_active = 1)) * 100, 1) AS percentage
-        FROM subject_score
-        WHERE is_active = 1
+            ROUND((COUNT(*) / (SELECT COUNT(*) FROM student_scores)) * 100, 1) AS percentage
+        FROM student_scores
         GROUP BY 
             CASE 
                 WHEN score >= 4.5 THEN 'Excelente (4.5-5.0)'
@@ -187,22 +187,20 @@ class AcademicStatsModel extends MainModel
     }
 
     /**
-     * Obtiene mejores estudiantes por período
+     * Obtiene mejores estudiantes
      */
     public function getTopStudents($limit = 10)
     {
         $query = "
         SELECT 
-            st.student_name,
-            st.student_id,
-            at.academic_term_name,
+            u.first_name,
+            u.last_name,
+            u.user_id,
             ROUND(AVG(ss.score), 2) AS average_score,
             COUNT(ss.score_id) AS total_scores
-        FROM subject_score ss
-        JOIN student st ON ss.student_id = st.student_id
-        JOIN academic_term at ON ss.academic_term_id = at.academic_term_id
-        WHERE ss.is_active = 1
-        GROUP BY st.student_id, st.student_name, at.academic_term_id, at.academic_term_name
+        FROM student_scores ss
+        JOIN users u ON ss.student_user_id = u.user_id
+        GROUP BY u.user_id, u.first_name, u.last_name
         HAVING COUNT(ss.score_id) >= 3
         ORDER BY average_score DESC
         LIMIT :limit
@@ -229,9 +227,10 @@ class AcademicStatsModel extends MainModel
             ROUND(
                 (COUNT(CASE WHEN ss.score >= 3.0 THEN 1 END) / COUNT(ss.score_id)) * 100, 1
             ) AS pass_rate
-        FROM subject_score ss
-        JOIN subject s ON ss.subject_id = s.subject_id
-        WHERE ss.is_active = 1
+        FROM student_scores ss
+        JOIN activities a ON ss.activity_id = a.activity_id
+        JOIN professor_subjects ps ON a.professor_subject_id = ps.professor_subject_id
+        JOIN subjects s ON ps.subject_id = s.subject_id
         GROUP BY s.subject_id, s.subject_name
         HAVING COUNT(ss.score_id) >= 5
         ORDER BY average_score DESC
@@ -251,8 +250,8 @@ class AcademicStatsModel extends MainModel
     {
         $query = "
         SELECT 
-            at.academic_term_name,
-            at.academic_term_id,
+            at.term_name,
+            at.term_id,
             ROUND(AVG(ss.score), 2) AS average_score,
             COUNT(ss.score_id) AS total_scores,
             COUNT(CASE WHEN ss.score >= 3.0 THEN 1 END) AS passing_scores,
@@ -261,11 +260,39 @@ class AcademicStatsModel extends MainModel
                 (COUNT(CASE WHEN ss.score >= 3.0 THEN 1 END) / COUNT(ss.score_id)) * 100, 1
             ) AS pass_rate,
             ROUND(STDDEV(ss.score), 2) AS standard_deviation
-        FROM subject_score ss
-        JOIN academic_term at ON ss.academic_term_id = at.academic_term_id
-        WHERE ss.is_active = 1
-        GROUP BY at.academic_term_id, at.academic_term_name
-        ORDER BY at.academic_term_id ASC
+        FROM student_scores ss
+        JOIN activities a ON ss.activity_id = a.activity_id
+        JOIN academic_terms at ON a.term_id = at.term_id
+        GROUP BY at.term_id, at.term_name
+        ORDER BY at.term_id ASC
+        ";
+        
+        $stmt = $this->dbConn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Obtiene estadísticas por grupo de clase
+     */
+    public function getStatsByClassGroup()
+    {
+        $query = "
+        SELECT 
+            cg.group_name,
+            cg.class_group_id,
+            ROUND(AVG(ss.score), 2) AS average_score,
+            COUNT(ss.score_id) AS total_scores,
+            COUNT(CASE WHEN ss.score >= 3.0 THEN 1 END) AS passing_scores,
+            COUNT(CASE WHEN ss.score < 3.0 THEN 1 END) AS failing_scores,
+            ROUND(
+                (COUNT(CASE WHEN ss.score >= 3.0 THEN 1 END) / COUNT(ss.score_id)) * 100, 1
+            ) AS pass_rate
+        FROM student_scores ss
+        JOIN activities a ON ss.activity_id = a.activity_id
+        JOIN class_groups cg ON a.class_group_id = cg.class_group_id
+        GROUP BY cg.class_group_id, cg.group_name
+        ORDER BY average_score DESC
         ";
         
         $stmt = $this->dbConn->prepare($query);

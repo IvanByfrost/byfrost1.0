@@ -106,7 +106,9 @@ class LoginController extends MainController
                         unset($user['password_hash']);
 
                         // Guardar el rol en la sesión para que charger.php sepa a dónde redirigir
-                        $this->sessionManager->setSessionData('ByFrost_redirect', $user['role'] . '&action=dashboard');
+                        // Usar la URL correcta según el rol
+                        $redirectUrl = $this->getCorrectDashboardUrl($user['role']);
+                        $this->sessionManager->setSessionData('ByFrost_redirect', $redirectUrl);
 
                         echo json_encode([
                             "status" => "ok",
@@ -145,5 +147,22 @@ class LoginController extends MainController
         // Redirigir al login
         header("Location: " . $loginUrl);
         exit;
+    }
+
+    /**
+     * Obtiene la URL correcta del dashboard según el rol
+     */
+    private function getCorrectDashboardUrl($role)
+    {
+        $dashboardUrls = [
+            'root' => 'root&action=dashboard',
+            'director' => 'directorDashboard',
+            'coordinator' => 'coordinator&action=dashboard',
+            'teacher' => 'teacher&action=dashboard',
+            'student' => 'student&action=dashboard',
+            'parent' => 'parent&action=dashboard'
+        ];
+
+        return $dashboardUrls[$role] ?? 'index&action=login';
     }
 } 

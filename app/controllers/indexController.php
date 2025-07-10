@@ -101,12 +101,13 @@ class IndexController extends MainController
     private function redirectToDashboard($role) 
     {
         $dashboardUrls = [
-            'root' => '?view=root&action=dashboard',
-            'director' => '?view=director&action=dashboard',
-            'coordinator' => '?view=coordinator&action=dashboard',
-            'teacher' => '?view=teacher&action=dashboard',
-            'student' => '?view=student&action=dashboard',
-            'parent' => '?view=parent&action=dashboard'
+            'root' => '?view=rootDashboard',
+            'director' => '?view=directorDashboard',
+            'coordinator' => '?view=coordinatorDashboard',
+            'teacher' => '?view=teacherDashboard',
+            'student' => '?view=studentDashboard',
+            'parent' => '?view=parentDashboard',
+            'treasurer' => '?view=treasurerDashboard'
         ];
 
         $url = $dashboardUrls[$role] ?? '?view=index&action=login';

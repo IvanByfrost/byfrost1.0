@@ -7,7 +7,7 @@ $paymentStats = $paymentModel->getPaymentStatistics();
 $revenueSummary = $paymentModel->getRevenueSummary();
 $overduePayments = $paymentModel->getOverduePayments(30);
 $recentPayments = $paymentModel->getRecentPayments(5);
-$paymentMethods = $paymentModel->getPaymentMethodStatistics();
+$paymentConcepts = $paymentModel->getPaymentConceptStatistics();
 ?>
 
 <div class="payment-widget">
@@ -30,8 +30,8 @@ $paymentMethods = $paymentModel->getPaymentMethodStatistics();
                 <i class="fas fa-users"></i>
             </div>
             <div class="metric-content">
-                <h4><?php echo number_format($paymentStats['total_accounts'] ?? 0); ?></h4>
-                <p>Total Cuentas</p>
+                <h4><?php echo number_format($paymentStats['total_payments'] ?? 0); ?></h4>
+                <p>Total Pagos</p>
             </div>
         </div>
 
@@ -112,21 +112,21 @@ $paymentMethods = $paymentModel->getPaymentMethodStatistics();
             <?php foreach ($overduePayments as $payment): ?>
             <div class="overdue-item">
                 <div class="student-info">
-                    <strong><?php echo htmlspecialchars($payment['student_name']); ?></strong>
-                    <span class="email"><?php echo htmlspecialchars($payment['email']); ?></span>
+                    <strong><?php echo htmlspecialchars($payment['first_name'] . ' ' . $payment['last_name']); ?></strong>
+                    <span class="concept"><?php echo htmlspecialchars($payment['concept']); ?></span>
                 </div>
                 <div class="payment-details">
-                    <span class="amount">$<?php echo number_format($payment['tuition_amount'], 2); ?></span>
+                    <span class="amount">$<?php echo number_format($payment['amount'], 2); ?></span>
                     <span class="days-overdue"><?php echo $payment['days_overdue']; ?> días atrasado</span>
                 </div>
                 <div class="payment-actions">
-                    <button class="btn btn-sm btn-outline-primary" onclick="viewStudent(<?php echo $payment['student_id']; ?>)">
+                    <button class="btn btn-sm btn-outline-primary" onclick="viewStudent(<?php echo $payment['student_user_id']; ?>)">
                         <i class="fas fa-eye"></i>
                     </button>
-                    <button class="btn btn-sm btn-outline-success" onclick="markAsPaid(<?php echo $payment['payment_id'] ?? 0; ?>)">
+                    <button class="btn btn-sm btn-outline-success" onclick="markAsPaid(<?php echo $payment['payment_id']; ?>)">
                         <i class="fas fa-check"></i>
                     </button>
-                    <button class="btn btn-sm btn-outline-warning" onclick="sendReminder(<?php echo $payment['student_id']; ?>)">
+                    <button class="btn btn-sm btn-outline-warning" onclick="sendReminder(<?php echo $payment['student_user_id']; ?>)">
                         <i class="fas fa-bell"></i>
                     </button>
                 </div>
@@ -149,11 +149,11 @@ $paymentMethods = $paymentModel->getPaymentMethodStatistics();
                 <?php foreach ($recentPayments as $payment): ?>
                 <div class="payment-item">
                     <div class="payment-info">
-                        <strong><?php echo htmlspecialchars($payment['student_name']); ?></strong>
-                        <span class="payment-method"><?php echo htmlspecialchars($payment['payment_method'] ?? 'N/A'); ?></span>
+                        <strong><?php echo htmlspecialchars($payment['first_name'] . ' ' . $payment['last_name']); ?></strong>
+                        <span class="concept"><?php echo htmlspecialchars($payment['concept']); ?></span>
                     </div>
                     <div class="payment-amount">
-                        <span class="amount">$<?php echo number_format($payment['tuition_amount'], 2); ?></span>
+                        <span class="amount">$<?php echo number_format($payment['amount'], 2); ?></span>
                         <small><?php echo date('d/m/Y', strtotime($payment['payment_date'])); ?></small>
                     </div>
                     <div class="payment-status">
@@ -165,20 +165,20 @@ $paymentMethods = $paymentModel->getPaymentMethodStatistics();
         </div>
     </div>
 
-    <!-- Métodos de pago -->
-    <?php if (!empty($paymentMethods)): ?>
-    <div class="payment-methods">
-        <h5><i class="fas fa-credit-card"></i> Métodos de Pago</h5>
-        <div class="methods-list">
-            <?php foreach ($paymentMethods as $method): ?>
-            <div class="method-item">
-                <div class="method-info">
-                    <strong><?php echo htmlspecialchars($method['payment_method']); ?></strong>
-                    <span><?php echo $method['total_payments']; ?> pagos</span>
+    <!-- Conceptos de pago -->
+    <?php if (!empty($paymentConcepts)): ?>
+    <div class="payment-concepts">
+        <h5><i class="fas fa-tags"></i> Conceptos de Pago</h5>
+        <div class="concepts-list">
+            <?php foreach ($paymentConcepts as $concept): ?>
+            <div class="concept-item">
+                <div class="concept-info">
+                    <strong><?php echo htmlspecialchars($concept['concept']); ?></strong>
+                    <span><?php echo $concept['total_payments']; ?> pagos</span>
                 </div>
-                <div class="method-stats">
-                    <span class="success-rate"><?php echo $method['success_rate']; ?>% éxito</span>
-                    <span class="completed"><?php echo $method['completed']; ?> completados</span>
+                <div class="concept-stats">
+                    <span class="success-rate"><?php echo $concept['success_rate']; ?>% éxito</span>
+                    <span class="completed"><?php echo $concept['completed']; ?> completados</span>
                 </div>
             </div>
             <?php endforeach; ?>
@@ -240,7 +240,7 @@ $paymentMethods = $paymentModel->getPaymentMethodStatistics();
 
 .payment-metrics {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 15px;
     margin-bottom: 25px;
 }
@@ -251,33 +251,43 @@ $paymentMethods = $paymentModel->getPaymentMethodStatistics();
     padding: 15px;
     border-radius: 8px;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    transition: transform 0.2s ease;
+    border-left: 4px solid #007bff;
+    transition: all 0.3s ease;
 }
 
 .metric-card:hover {
     transform: translateY(-2px);
-}
-
-.metric-card.total {
-    border-left: 4px solid #007bff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .metric-card.completed {
-    border-left: 4px solid #28a745;
+    border-left-color: #28a745;
 }
 
 .metric-card.pending {
-    border-left: 4px solid #ffc107;
+    border-left-color: #ffc107;
 }
 
 .metric-card.overdue {
-    border-left: 4px solid #dc3545;
+    border-left-color: #dc3545;
 }
 
 .metric-icon {
     margin-right: 15px;
     font-size: 1.5rem;
     color: #007bff;
+}
+
+.metric-card.completed .metric-icon {
+    color: #28a745;
+}
+
+.metric-card.pending .metric-icon {
+    color: #ffc107;
+}
+
+.metric-card.overdue .metric-icon {
+    color: #dc3545;
 }
 
 .metric-content h4 {
@@ -288,14 +298,14 @@ $paymentMethods = $paymentModel->getPaymentMethodStatistics();
 }
 
 .metric-content p {
-    margin: 0;
+    margin: 5px 0 0 0;
     color: #666;
     font-size: 0.9rem;
 }
 
 .metric-content small {
-    color: #999;
-    font-size: 0.8rem;
+    color: #007bff;
+    font-weight: 600;
 }
 
 .revenue-summary {
@@ -305,8 +315,8 @@ $paymentMethods = $paymentModel->getPaymentMethodStatistics();
 .revenue-summary h5 {
     margin: 0 0 15px 0;
     color: #333;
+    font-size: 1.1rem;
     font-weight: 600;
-    font-size: 1rem;
 }
 
 .revenue-summary h5 i {
@@ -316,7 +326,7 @@ $paymentMethods = $paymentModel->getPaymentMethodStatistics();
 
 .revenue-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 15px;
 }
 
@@ -326,82 +336,88 @@ $paymentMethods = $paymentModel->getPaymentMethodStatistics();
     padding: 15px;
     border-radius: 8px;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    transition: transform 0.2s ease;
+    border-left: 4px solid #007bff;
+    transition: all 0.3s ease;
 }
 
 .revenue-card:hover {
     transform: translateY(-2px);
-}
-
-.revenue-card.total {
-    border-left: 4px solid #007bff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .revenue-card.collected {
-    border-left: 4px solid #28a745;
+    border-left-color: #28a745;
 }
 
 .revenue-card.pending {
-    border-left: 4px solid #ffc107;
+    border-left-color: #ffc107;
 }
 
 .revenue-icon {
     margin-right: 15px;
     font-size: 1.5rem;
+    color: #007bff;
+}
+
+.revenue-card.collected .revenue-icon {
     color: #28a745;
+}
+
+.revenue-card.pending .revenue-icon {
+    color: #ffc107;
 }
 
 .revenue-content h4 {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 700;
     color: #333;
 }
 
 .revenue-content p {
-    margin: 0;
+    margin: 5px 0 0 0;
     color: #666;
     font-size: 0.9rem;
 }
 
 .revenue-content small {
-    color: #999;
-    font-size: 0.8rem;
+    color: #007bff;
+    font-weight: 600;
 }
 
-.overdue-section, .recent-payments, .payment-methods {
+.overdue-section, .recent-payments, .payment-concepts {
     margin-bottom: 20px;
 }
 
-.overdue-section h5, .recent-payments h5, .payment-methods h5 {
+.overdue-section h5, .recent-payments h5, .payment-concepts h5 {
     margin: 0 0 15px 0;
     color: #333;
+    font-size: 1.1rem;
     font-weight: 600;
-    font-size: 1rem;
 }
 
-.overdue-section h5 i, .recent-payments h5 i, .payment-methods h5 i {
+.overdue-section h5 i, .recent-payments h5 i, .payment-concepts h5 i {
     margin-right: 8px;
 }
 
-.overdue-list, .payments-list, .methods-list {
+.overdue-list, .payments-list, .concepts-list {
     max-height: 300px;
     overflow-y: auto;
 }
 
-.overdue-item, .payment-item, .method-item {
+.overdue-item, .payment-item, .concept-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px;
-    border-radius: 8px;
+    padding: 12px 15px;
     margin-bottom: 8px;
+    border-radius: 6px;
     background: #f8f9fa;
     border-left: 4px solid #dc3545;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
 }
 
-.overdue-item:hover, .payment-item:hover, .method-item:hover {
+.overdue-item:hover, .payment-item:hover, .concept-item:hover {
     background: #e9ecef;
     transform: translateX(5px);
 }
@@ -410,39 +426,46 @@ $paymentMethods = $paymentModel->getPaymentMethodStatistics();
     border-left-color: #28a745;
 }
 
-.method-item {
+.concept-item {
     border-left-color: #007bff;
 }
 
-.student-info, .payment-info, .method-info {
+.student-info, .payment-info, .concept-info {
     display: flex;
     flex-direction: column;
     flex: 1;
 }
 
-.student-info strong, .payment-info strong, .method-info strong {
+.student-info strong, .payment-info strong, .concept-info strong {
     color: #333;
     font-weight: 600;
 }
 
-.student-info .email, .payment-info .payment-method, .method-info span {
+.student-info .concept, .payment-info .concept, .concept-info span {
     font-size: 0.85rem;
     color: #666;
 }
 
-.payment-details, .payment-amount, .method-stats {
+.payment-details, .payment-amount, .concept-stats {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    margin: 0 15px;
+    align-items: flex-end;
+    text-align: right;
 }
 
 .payment-details .amount, .payment-amount .amount {
-    font-weight: 600;
+    font-size: 1.1rem;
+    font-weight: 700;
     color: #333;
 }
 
-.payment-details .days-overdue, .payment-amount small {
+.payment-details .days-overdue {
+    font-size: 0.85rem;
+    color: #dc3545;
+    font-weight: 600;
+}
+
+.payment-amount small {
     font-size: 0.8rem;
     color: #666;
 }
@@ -450,109 +473,119 @@ $paymentMethods = $paymentModel->getPaymentMethodStatistics();
 .payment-actions {
     display: flex;
     gap: 5px;
-}
-
-.payment-status {
     margin-left: 15px;
 }
 
+.concept-stats .success-rate {
+    font-size: 0.9rem;
+    color: #28a745;
+    font-weight: 600;
+}
+
+.concept-stats .completed {
+    font-size: 0.8rem;
+    color: #666;
+}
+
 .no-payments {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    text-align: center;
     padding: 30px;
-    color: #999;
-    font-style: italic;
+    color: #666;
 }
 
 .no-payments i {
-    margin-right: 8px;
-    font-size: 1.2rem;
+    font-size: 2rem;
+    margin-bottom: 10px;
+    display: block;
 }
 
 .quick-actions {
     display: flex;
     gap: 10px;
-    justify-content: center;
-    padding-top: 15px;
-    border-top: 1px solid #f0f0f0;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+}
+
+.quick-actions .btn {
+    flex: 1;
+    min-width: 150px;
 }
 
 @media (max-width: 768px) {
     .payment-metrics {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
     }
     
     .revenue-cards {
         grid-template-columns: 1fr;
     }
     
-    .overdue-item, .payment-item, .method-item {
+    .overdue-item, .payment-item, .concept-item {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
     }
     
-    .payment-details, .payment-amount, .method-stats {
+    .payment-details, .payment-amount, .concept-stats {
         align-items: flex-start;
         margin: 0;
+    }
+    
+    .payment-actions {
+        margin-left: 0;
+        width: 100%;
+        justify-content: center;
     }
     
     .quick-actions {
         flex-direction: column;
     }
+    
+    .quick-actions .btn {
+        min-width: auto;
+    }
 }
 </style>
 
 <script>
-// Función para refrescar datos de pagos
 function refreshPayments() {
     location.reload();
 }
 
-// Función para ver detalles del estudiante
-function viewStudent(studentId) {
-    if (studentId > 0) {
-        loadView('student/view&id=' + studentId);
-    }
-}
-
-// Función para marcar como pagado
-function markAsPaid(paymentId) {
-    if (paymentId > 0) {
-        if (confirm('¿Marcar este pago como completado?')) {
-            // Aquí iría la lógica AJAX para actualizar el estado
-            loadView('payment/updateStatus&id=' + paymentId + '&status=pagado');
-        }
-    }
-}
-
-// Función para enviar recordatorio
-function sendReminder(studentId) {
-    if (studentId > 0) {
-        if (confirm('¿Enviar recordatorio de pago?')) {
-            loadView('payment/sendReminder&id=' + studentId);
-        }
-    }
-}
-
-// Función para crear nuevo pago
 function createPayment() {
-    loadView('payment/create');
+    // Implementar creación de pago
+    alert('Función de crear pago en desarrollo');
 }
 
-// Función para ver todos los pagos
+function viewStudent(studentId) {
+    // Implementar vista de estudiante
+    alert('Vista de estudiante en desarrollo - ID: ' + studentId);
+}
+
+function markAsPaid(paymentId) {
+    // Implementar marcar como pagado
+    alert('Marcar como pagado en desarrollo - ID: ' + paymentId);
+}
+
+function sendReminder(studentId) {
+    // Implementar envío de recordatorio
+    alert('Envío de recordatorio en desarrollo - ID: ' + studentId);
+}
+
 function viewAllPayments() {
-    loadView('payment/list');
+    // Implementar vista de todos los pagos
+    alert('Vista de todos los pagos en desarrollo');
 }
 
-// Función para exportar reporte
 function exportPayments() {
-    window.open('<?php echo url; ?>?view=payment&action=export', '_blank');
+    // Implementar exportación
+    alert('Exportación de pagos en desarrollo');
 }
 
-// Función para ver tendencias
 function viewPaymentTrends() {
-    loadView('payment/trends');
+    // Implementar vista de tendencias
+    alert('Vista de tendencias en desarrollo');
 }
 </script> 

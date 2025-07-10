@@ -1,7 +1,7 @@
 <div class="root-dashboard">
     <div class="root-sidebar">
         <ul>
-            <li><a href="?view=director&action=dashboard"><i data-lucide="home"></i>Inicio</a></li>
+            <li><a href="?view=directorDashboard"><i data-lucide="home"></i>Inicio</a></li>
             <li class="has-submenu"><a href="#"><i data-lucide="school"></i>Colegios</a>
                 <ul class="submenu">
                     <li><a href="#" onclick="safeLoadView('school/createSchool')"><i data-lucide="sparkles"></i>Registrar Colegio</a></li>
