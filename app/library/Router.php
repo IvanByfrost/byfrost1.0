@@ -1,6 +1,6 @@
 <?php
 /**
- * UnifiedSmartRouter - Sistema de Routing Unificado e Inteligente
+ * Router - Sistema de Routing Unificado e Inteligente
  * 
  * Combina lo mejor de todos los sistemas:
  * - Detección automática de controladores
@@ -11,7 +11,7 @@
  * - Mantenimiento cero
  */
 
-class UnifiedSmartRouter
+class Router
 {
     private $dbConn;
     private $sessionManager;
@@ -34,14 +34,14 @@ class UnifiedSmartRouter
      */
     public function processRoute($view, $action = null)
     {
-        $this->log("UnifiedSmartRouter: Procesando ruta - view: $view, action: $action");
+        $this->log("Router: Procesando ruta - view: $view, action: $action");
         
         // Cache inteligente
         $cacheKey = "route_$view" . ($action ? "_$action" : '');
         $cachedResult = $this->getCache($cacheKey);
         
         if ($cachedResult !== null) {
-            $this->log("Cache hit para: $cacheKey");
+            $this->log("Router cache hit para: $cacheKey");
             return $cachedResult;
         }
         
@@ -126,7 +126,7 @@ class UnifiedSmartRouter
         foreach ($conventions as $controllerName) {
             $filePath = $this->controllersDir . $controllerName . '.php';
             if (file_exists($filePath)) {
-                $this->log("Controlador encontrado por convención: $controllerName");
+                $this->log("Router: Controlador encontrado por convención: $controllerName");
                 return $controllerName;
             }
         }
@@ -171,7 +171,7 @@ class UnifiedSmartRouter
         }
         
         if ($bestMatch) {
-            $this->log("Controlador encontrado por similitud: $bestMatch (score: $bestScore%)");
+            $this->log("Router: Controlador encontrado por similitud: $bestMatch (score: $bestScore%)");
         }
         
         return $bestMatch;
@@ -208,7 +208,7 @@ class UnifiedSmartRouter
             ];
             
             if (in_array(true, $patterns)) {
-                $this->log("Controlador encontrado por patrón: $controllerName");
+                $this->log("Router: Controlador encontrado por patrón: $controllerName");
                 return $controllerName;
             }
         }
@@ -467,7 +467,7 @@ class UnifiedSmartRouter
             'cache_size' => count($this->cache),
             'controllers_dir' => $this->controllersDir,
             'views_dir' => $this->viewsDir,
-            'version' => 'UnifiedSmartRouter - Completamente Automático'
+            'version' => 'Router - Completamente Automático'
         ];
     }
     

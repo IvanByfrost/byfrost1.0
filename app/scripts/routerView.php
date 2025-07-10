@@ -59,21 +59,21 @@ if (
     exit;
 }
 
-// UnifiedSmartRouter - Sistema unificado e inteligente
-require_once ROOT . '/app/library/UnifiedSmartRouter.php';
+// Router - Sistema unificado e inteligente
+require_once ROOT . '/app/library/Router.php';
 
 // Obtener conexión a base de datos
-        require_once ROOT . '/app/scripts/connection.php';
-        $dbConn = getConnection();
-        
-// Sistema automático de mapeo de controladores usando UnifiedSmartRouter
+require_once ROOT . '/app/scripts/connection.php';
+$dbConn = getConnection();
+
+// Sistema automático de mapeo de controladores usando Router
 function getControllerMapping() {
-    $unifiedRouter = new UnifiedSmartRouter($GLOBALS['dbConn']);
-    return $unifiedRouter->generateControllerMapping();
+    $router = new Router($GLOBALS['dbConn']);
+    return $router->generateControllerMapping();
 }
 
-// Usar UnifiedSmartRouter para procesar rutas automáticamente
-$unifiedRouter = new UnifiedSmartRouter($dbConn);
+// Usar Router para procesar rutas automáticamente
+$router = new Router($dbConn);
 
-// Procesar la ruta usando UnifiedSmartRouter
-$unifiedRouter->processRoute($view, $action);
+// Procesar la ruta usando Router
+$router->processRoute($view, $action);

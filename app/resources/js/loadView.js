@@ -1,35 +1,35 @@
 window.loadView = function(viewName, useAction = false) {
     const target = document.getElementById("mainContent");
-    console.log("UnifiedSmartRouter - Target mainContent:", target);
+    console.log("Router - Target mainContent:", target);
     if (!target) {
-        console.error("UnifiedSmartRouter - Elemento con id 'mainContent' no encontrado.");
+        console.error("Router - Elemento con id 'mainContent' no encontrado.");
         return;
     }
 
-    console.log("UnifiedSmartRouter - Cargando vista:", viewName);
+    console.log("Router - Cargando vista:", viewName);
     
     // Mostrar indicador de carga
-    target.innerHTML = '<div class="text-center p-4"><i class="fas fa-spinner fa-spin"></i> UnifiedSmartRouter cargando...</div>';
+    target.innerHTML = '<div class="text-center p-4"><i class="fas fa-spinner fa-spin"></i> Router cargando...</div>';
     
-    // Función para construir URL usando UnifiedSmartRouter
+    // Función para construir URL usando Router
     function buildViewUrl(viewName) {
         const baseUrl = window.location.origin + window.location.pathname;
         
-        // UnifiedSmartRouter - Procesamiento automático de rutas
+        // Router - Procesamiento automático de rutas
         if (viewName.includes('?')) {
             const [view, params] = viewName.split('?');
-            // UnifiedSmartRouter maneja automáticamente los parámetros
+            // Router maneja automáticamente los parámetros
             return `${baseUrl}?view=${view}&${params}`;
         }
         
-        // UnifiedSmartRouter - Rutas con módulos (ej: school/createSchool)
+        // Router - Rutas con módulos (ej: school/createSchool)
         if (viewName.includes('/')) {
             const [module, action] = viewName.split('/');
-            // UnifiedSmartRouter detecta automáticamente la acción
+            // Router detecta automáticamente la acción
             return `${baseUrl}?view=${module}&action=${action}`;
         }
         
-        // UnifiedSmartRouter - Vista directa
+        // Router - Vista directa
         return `${baseUrl}?view=${viewName}`;
     }
     
