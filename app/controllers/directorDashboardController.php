@@ -131,38 +131,5 @@ class DirectorDashboardController extends MainController {
         $metrics = $this->getDashboardMetrics();
         echo json_encode($metrics);
     }
-
-    /**
-     * Carga una vista parcial para AJAX (sidebar dinámico)
-     */
-    public function loadPartial() {
-        $view = $_POST['view'] ?? $_GET['view'] ?? '';
-        $action = $_POST['action'] ?? $_GET['action'] ?? 'index';
-        // Seguridad básica: solo permitir vistas del director
-        $allowedViews = [
-            'dashboard', 'createEvent', 'editDirector', 'createDirector',
-            'studentStats/dashboard', 'activity/dashboard', 'schedule/schedule',
-            'student/academicHistory', 'academicAverages',
-            'user/consultUser', 'user/assignRole', 'user/roleHistory',
-            'payroll/dashboard', 'payroll/employees', 'payroll/periods',
-            'user/settingsRoles',
-            // agrega aquí más vistas si lo necesitas
-        ];
-        // Normalizar para rutas tipo 'activity/dashboard'
-        $viewKey = $view;
-        if ($action && $action !== 'index') {
-            $viewKey .= '/' . $action;
-        }
-        // LOG DEBUG
-        error_log("[loadPartial] view: $view | action: $action | viewKey: $viewKey");
-        if (!in_array($viewKey, $allowedViews)) {
-            error_log("[loadPartial] Vista NO permitida: $viewKey");
-            echo "<div class='alert alert-danger'>Vista no permitida: $viewKey</div>";
-            return;
-        }
-        error_log("[loadPartial] Vista permitida: $viewKey. Cargando vista parcial...");
-        // Cargar la vista parcial
-        $this->renderPartial($view, $action);
-    }
 }
 ?> 
