@@ -1,51 +1,40 @@
 <?php
-require_once __DIR__ . '/../library/SessionMiddleware.php';
+/**
+ * MainController - ByFrost
+ * Controlador principal que maneja la lógica común de todos los controladores
+ */
 
-class MainController
-{
-    //Conexión a la base de datos.
+class MainController {
     protected $dbConn;
     protected $view;
-    protected $sessionManager;
-    
+
     public function __construct($dbConn, $view = null)
     {
+        // Asegurar que session_start() solo se llame una vez y antes de cualquier salida
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
         $this->dbConn = $dbConn;
         $this->view = $view;
-        
-        // Usar el middleware de sesión
-        SessionMiddleware::handle(function() {
-            // Incluir SessionManager explícitamente
-            require_once __DIR__ . '/../library/SessionManager.php';
-            $this->sessionManager = new SessionManager();
-        });
     }
 
-    // Función para renderizar vistas
+    /**
+     * Renderiza una vista con layout completo
+     * 
+     * @param string $folder Carpeta de la vista
+     * @param string $file Archivo de la vista
+     * @param array $data Datos a pasar a la vista
+     * @return void
+     */
     protected function render($folder, $file = 'index', $data = [])
     {
-        // Debug temporal
-        //error_log("DEBUG render - folder: " . var_export($folder, true) . ", file: " . var_export($file, true));
-        //error_log("DEBUG render - folder type: " . gettype($folder) . ", file type: " . gettype($file));
-        
-        // Validar que folder y file sean strings
-        if (!is_string($folder)) {
-            error_log("Error: folder debe ser string, se recibió: " . gettype($folder));
-            $folder = 'Error';
-        }
-        
-        if (!is_string($file)) {
-            //error_log("Error: file debe ser string, se recibió: " . gettype($file));
-            $file = 'error';
-        }
-        
         $viewPath = ROOT . "/app/views/{$folder}/{$file}.php";
-        error_log("DEBUG render - viewPath: " . $viewPath);
-    
+        
         if (file_exists($viewPath)) {
             extract($data);
             require ROOT . '/app/views/layouts/head.php';
-            require ROOT . '/app/views/layouts/header.php'; // opcional
+            require ROOT . '/app/views/layouts/header.php';
             require $viewPath;
             require ROOT . '/app/views/layouts/footer.php';
         } else {
@@ -155,7 +144,8 @@ class MainController
         }
         
         // Método 3: Verificar si hay parámetros específicos de AJAX
-        if (isset(htmlspecialchars($_POST['ajax'])) || isset(htmlspecialchars($_GET['ajax']))) {
+        if ((isset($_POST['ajax']) && htmlspecialchars($_POST['ajax'])) || 
+            (isset($_GET['ajax']) && htmlspecialchars($_GET['ajax']))) {
             return true;
         }
         
@@ -167,12 +157,12 @@ class MainController
         }
         
         // Método 5: Verificar si la acción es loadPartial (indicador de AJAX)
-        if (isset(htmlspecialchars($_GET['action'])) && htmlspecialchars($_GET['action']) === 'loadPartial') {
+        if (isset($_GET['action']) && htmlspecialchars($_GET['action']) === 'loadPartial') {
             return true;
         }
         
         // Método 6: Verificar si hay parámetro partialView (indicador de AJAX)
-        if (isset(htmlspecialchars($_GET['partialView']))) {
+        if (isset($_GET['partialView']) && htmlspecialchars($_GET['partialView'])) {
             return true;
         }
         
@@ -248,3 +238,4 @@ class MainController
         }
     }
 }
+?>

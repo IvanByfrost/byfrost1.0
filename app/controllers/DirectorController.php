@@ -9,6 +9,10 @@ class DirectorController extends MainController {
     
     public function __construct($dbConn)
     {
+        // Asegurar que session_start() solo se llame una vez y antes de cualquier salida
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         parent::__construct($dbConn);
         $this->dbConn = $dbConn;
         $this->directorModel = new DirectorModel();
@@ -447,8 +451,8 @@ class DirectorController extends MainController {
         $view = htmlspecialchars($_POST['view']) ?? htmlspecialchars($_GET['view']) ?? '';
         $action = htmlspecialchars($_POST['action']) ?? htmlspecialchars($_GET['action']) ?? 'index';
         $partialView = htmlspecialchars($_POST['partialView']) ?? htmlspecialchars($_GET['partialView']) ?? '';
-        $force = isset(htmlspecialchars($_POST['force'])) || isset(htmlspecialchars($_GET['force']));
-        $debug = isset(htmlspecialchars($_POST['debug'])) || isset(htmlspecialchars($_GET['debug']));
+        $force = isset(_POST['force']) && htmlspecialchars(_POST['force']) || isset(_GET['force']) && htmlspecialchars(_GET['force']);
+        $debug = isset(_POST['debug']) && htmlspecialchars(_POST['debug']) || isset(_GET['debug']) && htmlspecialchars(_GET['debug']);
 
         // Debug: mostrar información
         if ($debug) {

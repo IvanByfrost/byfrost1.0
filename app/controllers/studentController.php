@@ -19,6 +19,10 @@ class StudentController extends MainController
     protected $documentModel;
     public function __construct($dbConn)
     {
+        // Asegurar que session_start() solo se llame una vez y antes de cualquier salida
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         $this->dbConn = $dbConn;
         $this->categoryModel = new StudentCategoryModel($dbConn);
         $this->taskModel = new TaskModel($dbConn);
@@ -411,7 +415,7 @@ class StudentController extends MainController
         $view = htmlspecialchars($_POST['view']) ?? htmlspecialchars($_GET['view']) ?? '';
         $action = htmlspecialchars($_POST['action']) ?? htmlspecialchars($_GET['action']) ?? 'index';
         $partialView = htmlspecialchars($_POST['partialView']) ?? htmlspecialchars($_GET['partialView']) ?? '';
-        $force = isset(htmlspecialchars($_POST['force'])) || isset(htmlspecialchars($_GET['force']));
+        $force = isset(_POST['force']) && htmlspecialchars(_POST['force']) || isset(_GET['force']) && htmlspecialchars(_GET['force']);
 
         if (!$this->isAjaxRequest() && !$force) {
             if (empty($partialView)) {

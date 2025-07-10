@@ -9,6 +9,10 @@ class TreasurerController extends MainController {
     private $payrollModel;
     
     public function __construct($dbConn) {
+        // Asegurar que session_start() solo se llame una vez y antes de cualquier salida
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         parent::__construct($dbConn);
         $this->payrollModel = new PayrollModel();
     }

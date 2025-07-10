@@ -5,6 +5,10 @@ class TreasurerDashboardController extends MainController
 {
     public function __construct($dbConn)
     {
+        // Asegurar que session_start() solo se llame una vez y antes de cualquier salida
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         parent::__construct($dbConn);
         
         // Verificar permisos de treasurer
@@ -87,7 +91,7 @@ class TreasurerDashboardController extends MainController
     {
         $view = htmlspecialchars($_POST['view']) ?? htmlspecialchars($_GET['view']) ?? '';
         $action = htmlspecialchars($_POST['action']) ?? htmlspecialchars($_GET['action']) ?? 'index';
-        $force = isset(htmlspecialchars($_POST['force'])) || isset(htmlspecialchars($_GET['force']));
+        $force = isset(_POST['force']) && htmlspecialchars(_POST['force']) || isset(_GET['force']) && htmlspecialchars(_GET['force']);
 
         if (!$this->isAjaxRequest() && !$force) {
             if (empty($view)) {

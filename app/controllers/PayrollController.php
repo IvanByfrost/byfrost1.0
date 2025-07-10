@@ -10,6 +10,10 @@ class PayrollController extends MainController {
     protected $securityMiddleware;
     
     public function __construct($dbConn = null, $view = null) {
+        // Asegurar que session_start() solo se llame una vez y antes de cualquier salida
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         $this->payrollModel = new PayrollModel();
         $this->sessionManager = new SessionManager();
         $this->securityMiddleware = new SecurityMiddleware();
@@ -89,8 +93,8 @@ class PayrollController extends MainController {
         
         try {
             $filters = [];
-            if (isset(htmlspecialchars($_GET['department']))) $filters['department'] = htmlspecialchars($_GET['department']);
-            if (isset(htmlspecialchars($_GET['position']))) $filters['position'] = htmlspecialchars($_GET['position']);
+            if (isset(_GET['department']) && htmlspecialchars(_GET['department'])) $filters['department'] = htmlspecialchars($_GET['department']);
+            if (isset(_GET['position']) && htmlspecialchars(_GET['position'])) $filters['position'] = htmlspecialchars($_GET['position']);
             
             $employees = $this->payrollModel->getAllEmployees($filters);
             
@@ -288,8 +292,8 @@ class PayrollController extends MainController {
         
         try {
             $filters = [];
-            if (isset(htmlspecialchars($_GET['status']))) $filters['status'] = htmlspecialchars($_GET['status']);
-            if (isset(htmlspecialchars($_GET['year']))) $filters['year'] = htmlspecialchars($_GET['year']);
+            if (isset(_GET['status']) && htmlspecialchars(_GET['status'])) $filters['status'] = htmlspecialchars($_GET['status']);
+            if (isset(_GET['year']) && htmlspecialchars(_GET['year'])) $filters['year'] = htmlspecialchars($_GET['year']);
             
             $periods = $this->payrollModel->getAllPeriods($filters);
             
@@ -511,8 +515,8 @@ class PayrollController extends MainController {
         
         try {
             $filters = [];
-            if (isset(htmlspecialchars($_GET['employee_id']))) $filters['employee_id'] = htmlspecialchars($_GET['employee_id']);
-            if (isset(htmlspecialchars($_GET['period_id']))) $filters['period_id'] = htmlspecialchars($_GET['period_id']);
+            if (isset(_GET['employee_id']) && htmlspecialchars(_GET['employee_id'])) $filters['employee_id'] = htmlspecialchars($_GET['employee_id']);
+            if (isset(_GET['period_id']) && htmlspecialchars(_GET['period_id'])) $filters['period_id'] = htmlspecialchars($_GET['period_id']);
             
             $absences = $this->payrollModel->getAllAbsences($filters);
             
@@ -546,7 +550,7 @@ class PayrollController extends MainController {
                     'start_date' => htmlspecialchars($_POST['start_date']),
                     'end_date' => htmlspecialchars($_POST['end_date']),
                     'days_count' => htmlspecialchars($_POST['days_count']),
-                    'is_paid' => isset(htmlspecialchars($_POST['is_paid'])) ? 1 : 0,
+                    'is_paid' => isset(_POST['is_paid']) && htmlspecialchars(_POST['is_paid']) ? 1 : 0,
                     'reason' => htmlspecialchars($_POST['reason']) ?? null
                 ];
                 
@@ -594,8 +598,8 @@ class PayrollController extends MainController {
         
         try {
             $filters = [];
-            if (isset(htmlspecialchars($_GET['employee_id']))) $filters['employee_id'] = htmlspecialchars($_GET['employee_id']);
-            if (isset(htmlspecialchars($_GET['period_id']))) $filters['period_id'] = htmlspecialchars($_GET['period_id']);
+            if (isset(_GET['employee_id']) && htmlspecialchars(_GET['employee_id'])) $filters['employee_id'] = htmlspecialchars($_GET['employee_id']);
+            if (isset(_GET['period_id']) && htmlspecialchars(_GET['period_id'])) $filters['period_id'] = htmlspecialchars($_GET['period_id']);
             
             $overtime = $this->payrollModel->getAllOvertime($filters);
             
@@ -679,8 +683,8 @@ class PayrollController extends MainController {
         
         try {
             $filters = [];
-            if (isset(htmlspecialchars($_GET['employee_id']))) $filters['employee_id'] = htmlspecialchars($_GET['employee_id']);
-            if (isset(htmlspecialchars($_GET['period_id']))) $filters['period_id'] = htmlspecialchars($_GET['period_id']);
+            if (isset(_GET['employee_id']) && htmlspecialchars(_GET['employee_id'])) $filters['employee_id'] = htmlspecialchars($_GET['employee_id']);
+            if (isset(_GET['period_id']) && htmlspecialchars(_GET['period_id'])) $filters['period_id'] = htmlspecialchars($_GET['period_id']);
             
             $bonuses = $this->payrollModel->getAllBonuses($filters);
             
@@ -812,7 +816,7 @@ class PayrollController extends MainController {
         $view = htmlspecialchars($_POST['view']) ?? htmlspecialchars($_GET['view']) ?? '';
         $action = htmlspecialchars($_POST['action']) ?? htmlspecialchars($_GET['action']) ?? 'index';
         $partialView = htmlspecialchars($_POST['partialView']) ?? htmlspecialchars($_GET['partialView']) ?? '';
-        $force = isset(htmlspecialchars($_POST['force'])) || isset(htmlspecialchars($_GET['force']));
+        $force = isset(_POST['force']) && htmlspecialchars(_POST['force']) || isset(_GET['force']) && htmlspecialchars(_GET['force']);
 
         if (!$this->isAjaxRequest() && !$force) {
             if (empty($partialView)) {

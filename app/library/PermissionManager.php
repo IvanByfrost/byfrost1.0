@@ -13,6 +13,10 @@ class PermissionManager {
     private $rootModel;
     
     public function __construct($dbConn = null) {
+        // Asegurar que session_start() solo se llame una vez y antes de cualquier salida
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         if ($dbConn) {
             $this->dbConn = $dbConn;
         } else {

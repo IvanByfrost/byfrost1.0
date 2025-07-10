@@ -7,6 +7,10 @@ class StudentStatsController extends MainController
 
     public function __construct()
     {
+        // Asegurar que session_start() solo se llame una vez y antes de cualquier salida
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         parent::__construct();
         $this->studentStatsModel = new StudentStatsModel($this->dbConn);
     }
@@ -116,7 +120,7 @@ class StudentStatsController extends MainController
         }
 
         try {
-            $limit = isset(htmlspecialchars($_GET['limit'])) ? (int)htmlspecialchars($_GET['limit']) : 10;
+            $limit = isset(_GET['limit']) && htmlspecialchars(_GET['limit']) ? (int)htmlspecialchars($_GET['limit']) : 10;
             $students = $this->studentStatsModel->getTopPerformingStudents($limit);
             echo json_encode(['success' => true, 'data' => $students]);
         } catch (Exception $e) {
@@ -138,7 +142,7 @@ class StudentStatsController extends MainController
         }
 
         try {
-            $limit = isset(htmlspecialchars($_GET['limit'])) ? (int)htmlspecialchars($_GET['limit']) : 10;
+            $limit = isset(_GET['limit']) && htmlspecialchars(_GET['limit']) ? (int)htmlspecialchars($_GET['limit']) : 10;
             $students = $this->studentStatsModel->getStudentsNeedingAttention($limit);
             echo json_encode(['success' => true, 'data' => $students]);
         } catch (Exception $e) {
