@@ -144,5 +144,77 @@ class DirectorController extends MainController {
             exit;
         }
     }
+
+    /**
+     * Carga una vista parcial vía AJAX para el módulo director
+     */
+    public function loadPartial()
+    {
+        $view = $_POST['view'] ?? $_GET['view'] ?? '';
+        $action = $_POST['action'] ?? $_GET['action'] ?? 'index';
+        $partialView = $_POST['partialView'] ?? $_GET['partialView'] ?? '';
+        $force = isset($_POST['force']) || isset($_GET['force']);
+        $debug = isset($_POST['debug']) || isset($_GET['debug']);
+
+        // Debug: mostrar información
+        if ($debug) {
+            echo "DEBUG INFO:<br>";
+            echo "view: " . htmlspecialchars($view) . "<br>";
+            echo "action: " . htmlspecialchars($action) . "<br>";
+            echo "partialView: " . htmlspecialchars($partialView) . "<br>";
+            echo "force: " . ($force ? 'true' : 'false') . "<br>";
+            echo "isAjaxRequest: " . ($this->isAjaxRequest() ? 'true' : 'false') . "<br>";
+            echo "ROOT: " . ROOT . "<br>";
+        }
+
+        if (!$this->isAjaxRequest() && !$force) {
+            if (empty($partialView)) {
+                echo '<div class="alert alert-warning">Vista no especificada. Use: ?view=director&action=loadPartial&partialView=vista</div>';
+                return;
+            }
+            $viewPath = 'director/' . $partialView;
+            $fullPath = ROOT . "/app/views/{$viewPath}.php";
+            
+            if ($debug) {
+                echo "viewPath: " . htmlspecialchars($viewPath) . "<br>";
+                echo "fullPath: " . htmlspecialchars($fullPath) . "<br>";
+                echo "file_exists: " . (file_exists($fullPath) ? 'true' : 'false') . "<br>";
+            }
+            
+            if (!file_exists($fullPath)) {
+                echo '<div class="alert alert-danger">Vista no encontrada: ' . htmlspecialchars($viewPath) . '</div>';
+                return;
+            }
+            try {
+                $this->loadPartialView($viewPath);
+            } catch (Exception $e) {
+                echo '<div class="alert alert-danger">Error al cargar la vista: ' . htmlspecialchars($e->getMessage()) . '</div>';
+            }
+            return;
+        }
+        if (empty($partialView)) {
+            echo json_encode(['success' => false, 'message' => 'Vista no especificada']);
+            return;
+        }
+        $viewPath = 'director/' . $partialView;
+        $fullPath = ROOT . "/app/views/{$viewPath}.php";
+        
+        if ($debug) {
+            echo "AJAX DEBUG INFO:<br>";
+            echo "viewPath: " . htmlspecialchars($viewPath) . "<br>";
+            echo "fullPath: " . htmlspecialchars($fullPath) . "<br>";
+            echo "file_exists: " . (file_exists($fullPath) ? 'true' : 'false') . "<br>";
+        }
+        
+        if (!file_exists($fullPath)) {
+            echo json_encode(['success' => false, 'message' => "Vista no encontrada: {$viewPath}"]);
+            return;
+        }
+        try {
+            $this->loadPartialView($viewPath);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Error al cargar la vista: ' . $e->getMessage()]);
+        }
+    }
 }
 ?>

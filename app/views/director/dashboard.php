@@ -1,6 +1,5 @@
 <?php
-error_log('DEBUG: Cargando app/views/director/dashboard.php');
-echo '<!-- DEBUG: Cargando app/views/director/dashboard.php -->';
+// Dashboard del Director - Versión Modular y Simplificada
 if (!defined('ROOT')) {
     define('ROOT', dirname(dirname(dirname(__DIR__))));
 }
@@ -8,632 +7,94 @@ if (!defined('ROOT')) {
 require_once ROOT . '/config.php';
 require_once ROOT . '/app/library/SessionManager.php';
 
-
 // Inicializar SessionManager
 $sessionManager = new SessionManager();
 
 // Verificar que el usuario esté logueado y sea director
-if (!$sessionManager->isLoggedIn()) {
+if (!$sessionManager->isLoggedIn() || !$sessionManager->hasRole('director')) {
     header("Location: " . url . "?view=index&action=login");
-    exit;
-}
-
-if (!$sessionManager->hasRole('director')) {
-    header("Location: " . url . "?view=unauthorized");
     exit;
 }
 
 require_once ROOT . '/app/views/layouts/dashHeader.php';
 ?>
-
-<script>
-console.log("BASE_URL será configurada en dashFooter.php");
-
-// Función de respaldo para loadView
-window.safeLoadView = function(viewName) {
-    console.log('safeLoadView llamado desde dashboard con:', viewName);
-    
-    if (typeof loadView === 'function') {
-        console.log('loadView disponible, ejecutando...');
-        loadView(viewName);
-    } else {
-        console.error('loadView no está disponible, redirigiendo...');
-        // Fallback: redirigir a la página
-        const url = `${BASE_URL}?view=${viewName.replace('/', '&action=')}`;
-        window.location.href = url;
-    }
-};
-</script>
-
+<link rel="stylesheet" href="<?= url . app . rq ?>css/dashboard.css">
 <div class="dashboard-container">
     <aside class="sidebar">
         <?php require_once __DIR__ . '/directorSidebar.php'; ?>
     </aside>
-    
-    <div id="mainContent" class="mainContent">
-        <!-- Dashboard del Director -->
+    <main class="mainContent" id="mainContent">
         <div class="container-fluid">
+            <!-- KPIs -->
             <div class="row mb-4">
-                <div class="col-12">
-                    <p class="text-muted">Panel de control y gestión integral del colegio</p>
-                </div>
+                <?php require_once __DIR__ . '/components/kpiCards.php'; ?>
             </div>
-
-            <!-- 1. SECCIÓN DE MÉTRICAS (KPIs) - DESPLEGABLE -->
+            <!-- Widgets principales -->
             <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header bg-primary text-white" style="cursor: pointer;" onclick="toggleSection('metricsSection')">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">
-                                    <i class="fas fa-tachometer-alt"></i>
-                                    Métricas Clave (KPIs)
-                                </h5>
-                                <i class="fas fa-chevron-down" id="metricsIcon"></i>
-                            </div>
-                        </div>
-                        <div class="card-body" id="metricsSection">
-                            <div class="row">
-                                <div class="col-md-3 mb-3">
-                                    <div class="kpi-card bg-success text-white p-3 rounded">
-                                        <div class="d-flex justify-content-between">
-                                            <div>
-                                                <h3 class="mb-0" id="totalStudents">0</h3>
-                                                <p class="mb-0">Total Estudiantes</p>
-                                            </div>
-                                            <div class="align-self-center">
-                                                <i class="fas fa-user-graduate fa-2x"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <div class="kpi-card bg-info text-white p-3 rounded">
-                                        <div class="d-flex justify-content-between">
-                                            <div>
-                                                <h3 class="mb-0" id="totalTeachers">0</h3>
-                                                <p class="mb-0">Total Docentes</p>
-                                            </div>
-                                            <div class="align-self-center">
-                                                <i class="fas fa-chalkboard-teacher fa-2x"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <div class="kpi-card bg-warning text-white p-3 rounded">
-                                        <div class="d-flex justify-content-between">
-                                            <div>
-                                                <h3 class="mb-0" id="attendanceRate">0%</h3>
-                                                <p class="mb-0">Asistencia Promedio</p>
-                                            </div>
-                                            <div class="align-self-center">
-                                                <i class="fas fa-percentage fa-2x"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <div class="kpi-card bg-danger text-white p-3 rounded">
-                                        <div class="d-flex justify-content-between">
-                                            <div>
-                                                <h3 class="mb-0" id="pendingTasks">0</h3>
-                                                <p class="mb-0">Tareas Pendientes</p>
-                                            </div>
-                                            <div class="align-self-center">
-                                                <i class="fas fa-tasks fa-2x"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- WIDGET DE ASISTENCIA -->
-            <div class="row mb-4">
-                <div class="col-md-6">
+                <div class="col-md-6 mb-3">
                     <?php require_once ROOT . '/app/views/widgets/attendanceWidget.php'; ?>
                 </div>
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5><i class="fas fa-chart-line"></i> Resumen Rápido</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="text-center">
-                                        <h4 class="text-primary"><?= date('d/m/Y') ?></h4>
-                                        <p class="text-muted">Fecha Actual</p>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="text-center">
-                                        <h4 class="text-success"><?= date('H:i') ?></h4>
-                                        <p class="text-muted">Hora Actual</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="col-md-6 mb-3">
+                    <?php require_once ROOT . '/app/views/layouts/studentRiskWidget.php'; ?>
                 </div>
             </div>
-
-            <!-- WIDGET DE GRÁFICOS -->
+            <!-- Secciones académica y administrativa -->
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <?php require_once __DIR__ . '/components/academicSection.php'; ?>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <?php require_once __DIR__ . '/components/adminSection.php'; ?>
+                </div>
+            </div>
+            <!-- Gráficos y estadísticas -->
             <div class="row mb-4">
                 <div class="col-12">
                     <?php require_once ROOT . '/app/views/widgets/chartsWidget.php'; ?>
                 </div>
             </div>
-
-            <!-- WIDGET DE ESTADÍSTICAS DE ESTUDIANTES -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <?php require_once ROOT . '/app/views/layouts/studentStatsWidget.php'; ?>
-                </div>
-            </div>
-
-            <!-- WIDGET DE ALERTAS DE RIESGO ACADÉMICO -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <?php require_once ROOT . '/app/views/layouts/studentRiskWidget.php'; ?>
-                </div>
-            </div>
-
-            <!-- WIDGET DE EVENTOS PRÓXIMOS -->
-            <div class="row mb-4">
-                <div class="col-12">
+            <!-- Otros widgets -->
+            <div class="row">
+                <div class="col-md-4 mb-3">
                     <?php require_once ROOT . '/app/views/layouts/upcomingEventsWidget.php'; ?>
                 </div>
-            </div>
-
-            <!-- WIDGET DE GESTIÓN DE PAGOS -->
-            <div class="row mb-4">
-                <div class="col-12">
+                <div class="col-md-4 mb-3">
                     <?php require_once ROOT . '/app/views/layouts/paymentWidget.php'; ?>
                 </div>
-            </div>
-
-            <!-- WIDGET DE ESTADÍSTICAS ACADÉMICAS -->
-            <div class="row mb-4">
-                <div class="col-12">
+                <div class="col-md-4 mb-3">
                     <?php require_once ROOT . '/app/views/layouts/academicStatsWidget.php'; ?>
                 </div>
             </div>
-
-            <!-- 2. SECCIÓN ACADÉMICA - DESPLEGABLE -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header bg-success text-white" style="cursor: pointer;" onclick="toggleSection('academicSection')">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">
-                                    <i class="fas fa-graduation-cap"></i>
-                                    Gestión Académica
-                                </h5>
-                                <i class="fas fa-chevron-down" id="academicIcon"></i>
-                            </div>
-                        </div>
-                        <div class="card-body" id="academicSection">
-                            <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    <div class="card h-100 border-success">
-                                        <div class="card-body text-center">
-                                            <i class="fas fa-calendar-alt fa-3x text-success mb-3"></i>
-                                            <h5 class="card-title">Actividades Académicas</h5>
-                                            <p class="card-text">Gestiona eventos, actividades y calendario escolar</p>
-                                            <button class="btn btn-success" onclick="loadView('activity/dashboard')">
-                                                <i class="fas fa-plus"></i> Gestionar Actividades
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <div class="card h-100 border-info">
-                                        <div class="card-body text-center">
-                                            <i class="fas fa-clock fa-3x text-info mb-3"></i>
-                                            <h5 class="card-title">Horarios</h5>
-                                            <p class="card-text">Administra horarios de clases y eventos</p>
-                                            <button class="btn btn-info" onclick="loadView('schedule/schedule')">
-                                                <i class="fas fa-edit"></i> Gestionar Horarios
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <div class="card h-100 border-warning">
-                                        <div class="card-body text-center">
-                                            <i class="fas fa-graduation-cap fa-3x text-warning mb-3"></i>
-                                            <h5 class="card-title">Historial Académico</h5>
-                                            <p class="card-text">Consulta y gestiona el historial de estudiantes</p>
-                                            <button class="btn btn-warning" onclick="loadView('student/academicHistory')">
-                                                <i class="fas fa-search"></i> Ver Historial
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 3. SECCIÓN ADMINISTRATIVA - DESPLEGABLE -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header bg-primary text-white" style="cursor: pointer;" onclick="toggleSection('adminSection')">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">
-                                    <i class="fas fa-cogs"></i>
-                                    Gestión Administrativa
-                                </h5>
-                                <i class="fas fa-chevron-down" id="adminIcon"></i>
-                            </div>
-                        </div>
-                        <div class="card-body" id="adminSection">
-                            <div class="row">
-                                <div class="col-md-3 mb-3">
-                                    <div class="card h-100 border-primary">
-                                        <div class="card-body text-center">
-                                            <i class="fas fa-school fa-3x text-primary mb-3"></i>
-                                            <h6 class="card-title">Colegios</h6>
-                                            <button class="btn btn-primary btn-sm" onclick="loadView('school/createSchool')">
-                                                <i class="fas fa-plus"></i> Registrar
-                                            </button>
-                                            <button class="btn btn-outline-primary btn-sm" onclick="loadView('school/consultSchool')">
-                                                <i class="fas fa-search"></i> Consultar
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <div class="card h-100 border-info">
-                                        <div class="card-body text-center">
-                                            <i class="fas fa-users fa-3x text-info mb-3"></i>
-                                            <h6 class="card-title">Usuarios</h6>
-                                            <button class="btn btn-info btn-sm" onclick="loadView('user/consultUser')">
-                                                <i class="fas fa-users"></i> Gestionar
-                                            </button>
-                                            <button class="btn btn-outline-info btn-sm" onclick="loadView('user/assignRole')">
-                                                <i class="fas fa-user-tag"></i> Roles
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <div class="card h-100 border-success">
-                                        <div class="card-body text-center">
-                                            <i class="fas fa-money-bill-wave fa-3x text-success mb-3"></i>
-                                            <h6 class="card-title">Nómina</h6>
-                                            <button class="btn btn-success btn-sm" onclick="loadView('payroll/dashboard')">
-                                                <i class="fas fa-chart-bar"></i> Dashboard
-                                            </button>
-                                            <button class="btn btn-outline-success btn-sm" onclick="loadView('payroll/employees')">
-                                                <i class="fas fa-user-tie"></i> Empleados
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <div class="card h-100 border-warning">
-                                        <div class="card-body text-center">
-                                            <i class="fas fa-file-alt fa-3x text-warning mb-3"></i>
-                                            <h6 class="card-title">Reportes</h6>
-                                            <button class="btn btn-warning btn-sm" onclick="loadView('director/editDirector')">
-                                                <i class="fas fa-plus"></i> Crear
-                                            </button>
-                                            <button class="btn btn-outline-warning btn-sm" onclick="loadView('director/createDirector')">
-                                                <i class="fas fa-search"></i> Consultar
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 4. SECCIÓN DE COMUNICACIÓN - DESPLEGABLE -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header bg-info text-white" style="cursor: pointer;" onclick="toggleSection('communicationSection')">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">
-                                    <i class="fas fa-comments"></i>
-                                    Comunicación y Notificaciones
-                                </h5>
-                                <i class="fas fa-chevron-down" id="communicationIcon"></i>
-                            </div>
-                        </div>
-                        <div class="card-body" id="communicationSection">
-                            <!-- Banner de Anuncio Importante -->
-                            <div class="row mb-4" id="importantAnnouncements">
-                                <!-- Los anuncios se cargarán dinámicamente aquí -->
-                            </div>
-
-                            <div class="row">
-                                <!-- Eventos del Mes -->
-                                <div class="col-md-4 mb-3">
-                                    <div class="card h-100 border-info">
-                                        <div class="card-header bg-info text-white">
-                                            <h6 class="mb-0">
-                                                <i class="fas fa-calendar-alt"></i>
-                                                Eventos del Mes
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="list-group list-group-flush" id="monthlyEventsList">
-                                                <!-- Los eventos se cargarán dinámicamente aquí -->
-                                            </div>
-                                            <button class="btn btn-info btn-sm w-100 mt-3" onclick="loadView('activity/dashboard')">
-                                                <i class="fas fa-plus"></i> Agregar Evento
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Comunicaciones con Padres -->
-                                <div class="col-md-4 mb-3">
-                                    <div class="card h-100 border-success">
-                                        <div class="card-header bg-success text-white">
-                                            <h6 class="mb-0">
-                                                <i class="fas fa-users"></i>
-                                                Comunicaciones con Padres
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="row text-center mb-3">
-                                                <div class="col-6">
-                                                    <div class="border-end">
-                                                        <h4 class="text-success mb-0" id="totalMessagesSent">0</h4>
-                                                        <small class="text-muted">Mensajes Enviados</small>
-                                                    </div>
-                                                </div>
-                                                <div class="col-6">
-                                                    <h4 class="text-info mb-0" id="readRate">0%</h4>
-                                                    <small class="text-muted">Tasa de Lectura</small>
-                                                </div>
-                                            </div>
-                                            <div class="progress mb-3">
-                                                <div class="progress-bar bg-success" id="readRateProgress" style="width: 0%"></div>
-                                            </div>
-                                            <div class="d-grid gap-2">
-                                                <button class="btn btn-success btn-sm" onclick="loadView('director/createDirector')">
-                                                    <i class="fas fa-envelope"></i> Nuevo Mensaje
-                                                </button>
-                                                <button class="btn btn-outline-success btn-sm" onclick="loadView('director/editDirector')">
-                                                    <i class="fas fa-chart-bar"></i> Ver Estadísticas
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Notificaciones Recientes -->
-                                <div class="col-md-4 mb-3">
-                                    <div class="card h-100 border-warning">
-                                        <div class="card-header bg-warning text-white">
-                                            <h6 class="mb-0">
-                                                <i class="fas fa-bell"></i>
-                                                Notificaciones Recientes
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="list-group list-group-flush" id="recentNotificationsList">
-                                                <!-- Las notificaciones se cargarán dinámicamente aquí -->
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 5. GRÁFICOS Y VISUALIZACIONES - DESPLEGABLE -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header bg-warning text-white" style="cursor: pointer;" onclick="toggleSection('chartsSection')">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">
-                                    <i class="fas fa-chart-pie"></i>
-                                    Gráficos y Visualizaciones
-                                </h5>
-                                <i class="fas fa-chevron-down" id="chartsIcon"></i>
-                            </div>
-                        </div>
-                        <div class="card-body" id="chartsSection">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <div class="card h-100">
-                                        <div class="card-body">
-                                            <h6 class="card-title">Asistencia por Mes</h6>
-                                            <canvas id="attendanceChart" width="400" height="200"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="card h-100">
-                                        <div class="card-body">
-                                            <h6 class="card-title">Distribución de Estudiantes por Grado</h6>
-                                            <canvas id="studentsChart" width="400" height="200"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <h6 class="card-title">Rendimiento Académico - Últimos 6 Meses</h6>
-                                            <canvas id="performanceChart" width="800" height="300"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
-    </div>
+    </main>
 </div>
 
-<!-- Scripts para gráficos -->
+<!-- Cargar Chart.js primero -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Cargar dashboard.js -->
+<script src="<?= url . app . rq ?>js/dashboard.js"></script>
+
+<!-- Debug y verificación -->
 <script>
-// Verificar que Chart.js esté disponible
-if (typeof Chart === 'undefined') {
-    console.error('Chart.js no está cargado');
-} else {
-    console.log('Chart.js cargado correctamente');
-}
-// Función para alternar secciones
-function toggleSection(sectionId) {
-    const section = document.getElementById(sectionId);
-    const icon = document.getElementById(sectionId.replace('Section', 'Icon'));
+console.log('Dashboard cargado, verificando JavaScript...');
+
+// Verificar después de un breve delay
+setTimeout(function() {
+    console.log('=== VERIFICACIÓN FINAL ===');
+    console.log('loadView:', typeof window.loadView);
+    console.log('safeLoadView:', typeof window.safeLoadView);
     
-    if (section.style.display === 'none') {
-        section.style.display = 'block';
-        icon.className = 'fas fa-chevron-down';
+    if (typeof window.loadView === 'function') {
+        console.log('✅ loadView está disponible y funcionando');
+        // Test simple
+        console.log('Probando loadView con consultUser...');
+        window.loadView('consultUser');
     } else {
-        section.style.display = 'none';
-        icon.className = 'fas fa-chevron-right';
-    }
-}
-
-// Cargar datos de KPIs
-function loadKPIs() {
-    // Simular datos - en producción estos vendrían de la base de datos
-    document.getElementById('totalStudents').textContent = '1,247';
-    document.getElementById('totalTeachers').textContent = '89';
-    document.getElementById('attendanceRate').textContent = '94.2%';
-    document.getElementById('pendingTasks').textContent = '12';
-}
-
-// Gráfico de asistencia
-function createAttendanceChart() {
-    const ctx = document.getElementById('attendanceChart');
-    if (!ctx) {
-        console.log('Canvas attendanceChart no encontrado');
-        return;
+        console.log('❌ loadView NO está disponible');
     }
     
-    try {
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-                datasets: [{
-                    label: 'Asistencia (%)',
-                    data: [92, 94, 91, 95, 93, 94],
-                    borderColor: 'rgb(75, 192, 192)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    tension: 0.1
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100
-                    }
-                }
-            }
-        });
-    } catch (error) {
-        console.error('Error creando gráfico de asistencia:', error);
-    }
-}
-
-// Gráfico de distribución de estudiantes
-function createStudentsChart() {
-    const ctx = document.getElementById('studentsChart');
-    if (!ctx) {
-        console.log('Canvas studentsChart no encontrado');
-        return;
-    }
-    
-    try {
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Primaria', 'Secundaria', 'Bachillerato'],
-                datasets: [{
-                    data: [450, 380, 417],
-                    backgroundColor: [
-                        'rgb(255, 99, 132)',
-                        'rgb(54, 162, 235)',
-                        'rgb(255, 205, 86)'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true
-            }
-        });
-    } catch (error) {
-        console.error('Error creando gráfico de estudiantes:', error);
-    }
-}
-
-// Gráfico de rendimiento académico
-function createPerformanceChart() {
-    const ctx = document.getElementById('performanceChart');
-    if (!ctx) {
-        console.log('Canvas performanceChart no encontrado');
-        return;
-    }
-    
-    try {
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-                datasets: [{
-                    label: 'Promedio General',
-                    data: [85, 87, 86, 89, 88, 90],
-                    backgroundColor: 'rgba(54, 162, 235, 0.8)'
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100
-                    }
-                }
-            }
-        });
-    } catch (error) {
-        console.error('Error creando gráfico de rendimiento:', error);
-    }
-}
-
-// Inicializar cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM cargado, inicializando dashboard...');
-    
-    // Cargar KPIs
-    loadKPIs();
-    
-    // Esperar un poco más para asegurar que los canvas estén disponibles
-    setTimeout(function() {
-        console.log('Creando gráficos...');
-        createAttendanceChart();
-        createStudentsChart();
-        createPerformanceChart();
-    }, 100);
-});
+    console.log('=== FIN VERIFICACIÓN ===');
+}, 2000);
 </script>
 

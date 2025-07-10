@@ -2,245 +2,79 @@
 if (!defined('ROOT')) {
     define('ROOT', dirname(dirname(dirname(__DIR__))));
 }
-
 require_once ROOT . '/config.php';
 require_once ROOT . '/app/library/SessionManager.php';
-
-// Inicializar SessionManager
 $sessionManager = new SessionManager();
-
-// Verificar que el usuario esté logueado y sea director
-if (!$sessionManager->isLoggedIn()) {
-    header("Location: " . url . "?view=index&action=login");
+if (!$sessionManager->isLoggedIn() || !$sessionManager->hasRole('director')) {
+    header('Location: ' . url . '?view=index&action=login');
     exit;
 }
-
-if (!$sessionManager->hasRole('director')) {
-    header("Location: " . url . "?view=unauthorized");
-    exit;
-}
-
 require_once ROOT . '/app/views/layouts/dashHeader.php';
 ?>
 
-<div class="dashboard-container">
-    <aside class="sidebar">
-        <?php require_once __DIR__ . '/directorSidebar.php'; ?>
-    </aside>
-    
-    <div id="mainContent" class="mainContent">
-        <div class="container-fluid">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="#" onclick="loadView('directorDashboard')">
-                                    <i class="fas fa-home"></i> Dashboard
-                                </a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">
-                                <i class="fas fa-plus"></i> Crear Evento
-                            </li>
-                        </ol>
-                    </nav>
+<link rel="stylesheet" href="<?= url . app . rq ?>css/dashboard-modern.css">
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-calendar-plus"></i> Crear Nuevo Evento</h4>
                 </div>
-            </div>
-
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0">
-                                <i class="fas fa-calendar-plus"></i>
-                                Crear Nuevo Evento
-                            </h5>
+                <div class="card-body">
+                    <form id="createEventForm" method="post" action="<?= url . app ?>processes/eventProcess.php">
+                        <div class="mb-3">
+                            <label for="eventTitle" class="form-label">Título del Evento</label>
+                            <input type="text" class="form-control" id="eventTitle" name="eventTitle" required maxlength="100">
                         </div>
-                        <div class="card-body">
-                            <form id="createEventForm" method="POST">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="event_title" class="form-label">
-                                                <i class="fas fa-tag"></i> Título del Evento *
-                                            </label>
-                                            <input type="text" class="form-control" id="event_title" name="event_title" 
-                                                   placeholder="Ej: Reunión de Padres" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="event_type" class="form-label">
-                                                <i class="fas fa-list"></i> Tipo de Evento *
-                                            </label>
-                                            <select class="form-select" id="event_type" name="event_type" required>
-                                                <option value="">Seleccionar tipo</option>
-                                                <option value="important">Importante</option>
-                                                <option value="academic">Académico</option>
-                                                <option value="cultural">Cultural</option>
-                                                <option value="sports">Deportes</option>
-                                                <option value="administrative">Administrativo</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="event_date" class="form-label">
-                                                <i class="fas fa-calendar"></i> Fecha del Evento *
-                                            </label>
-                                            <input type="date" class="form-control" id="event_date" name="event_date" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="event_time" class="form-label">
-                                                <i class="fas fa-clock"></i> Hora del Evento
-                                            </label>
-                                            <input type="time" class="form-control" id="event_time" name="event_time">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="event_location" class="form-label">
-                                                <i class="fas fa-map-marker-alt"></i> Ubicación
-                                            </label>
-                                            <input type="text" class="form-control" id="event_location" name="event_location" 
-                                                   placeholder="Ej: Auditorio principal">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="event_priority" class="form-label">
-                                                <i class="fas fa-exclamation-triangle"></i> Prioridad
-                                            </label>
-                                            <select class="form-select" id="event_priority" name="event_priority">
-                                                <option value="normal">Normal</option>
-                                                <option value="high">Alta</option>
-                                                <option value="urgent">Urgente</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="event_description" class="form-label">
-                                        <i class="fas fa-align-left"></i> Descripción del Evento
-                                    </label>
-                                    <textarea class="form-control" id="event_description" name="event_description" 
-                                              rows="4" placeholder="Describe los detalles del evento..."></textarea>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="event_participants" class="form-label">
-                                        <i class="fas fa-users"></i> Participantes
-                                    </label>
-                                    <select class="form-select" id="event_participants" name="event_participants" multiple>
-                                        <option value="students">Estudiantes</option>
-                                        <option value="parents">Padres de Familia</option>
-                                        <option value="teachers">Docentes</option>
-                                        <option value="administrative">Personal Administrativo</option>
-                                        <option value="all">Toda la Comunidad</option>
-                                    </select>
-                                    <small class="form-text text-muted">Mantén presionado Ctrl (Cmd en Mac) para seleccionar múltiples opciones</small>
-                                </div>
-
-                                <div class="d-flex justify-content-between">
-                                    <button type="button" class="btn btn-secondary" onclick="loadView('directorDashboard')">
-                                        <i class="fas fa-arrow-left"></i> Volver al Dashboard
-                                    </button>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-save"></i> Crear Evento
-                                    </button>
-                                </div>
-                            </form>
+                        <div class="mb-3">
+                            <label for="eventDescription" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="eventDescription" name="eventDescription" rows="3" maxlength="500" required></textarea>
                         </div>
-                    </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="eventDate" class="form-label">Fecha</label>
+                                <input type="date" class="form-control" id="eventDate" name="eventDate" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="eventTime" class="form-label">Hora</label>
+                                <input type="time" class="form-control" id="eventTime" name="eventTime" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventLocation" class="form-label">Lugar</label>
+                            <input type="text" class="form-control" id="eventLocation" name="eventLocation" maxlength="100" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventType" class="form-label">Tipo de Evento</label>
+                            <select class="form-select" id="eventType" name="eventType" required>
+                                <option value="">Selecciona...</option>
+                                <option value="Academico">Académico</option>
+                                <option value="Cultural">Cultural</option>
+                                <option value="Deportivo">Deportivo</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar Evento</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Establecer fecha mínima como hoy
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('event_date').min = today;
-
-    // Manejar envío del formulario
-    document.getElementById('createEventForm').addEventListener('submit', function(e) {
+document.getElementById('createEventForm').addEventListener('submit', function(e) {
+    // Validación básica extra
+    const title = document.getElementById('eventTitle').value.trim();
+    const desc = document.getElementById('eventDescription').value.trim();
+    if (title.length < 3) {
+        alert('El título debe tener al menos 3 caracteres.');
         e.preventDefault();
-        
-        const formData = new FormData(this);
-        const eventData = {
-            title: formData.get('event_title'),
-            type: formData.get('event_type'),
-            date: formData.get('event_date'),
-            time: formData.get('event_time'),
-            location: formData.get('event_location'),
-            priority: formData.get('event_priority'),
-            description: formData.get('event_description'),
-            participants: Array.from(formData.getAll('event_participants'))
-        };
-
-        // Mostrar loading
-        const submitBtn = this.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando...';
-        submitBtn.disabled = true;
-
-        // Enviar datos al servidor
-        fetch(`${BASE_URL}?view=directorDashboard&action=createEvent`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(eventData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                Swal.fire({
-                    title: '¡Éxito!',
-                    text: 'Evento creado correctamente',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    loadView('directorDashboard');
-                });
-            } else {
-                Swal.fire({
-                    title: 'Error',
-                    text: data.message || 'Error al crear el evento',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire({
-                title: 'Error',
-                text: 'Error de conexión al crear el evento',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        })
-        .finally(() => {
-            // Restaurar botón
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        });
-    });
+    }
+    if (desc.length < 10) {
+        alert('La descripción debe tener al menos 10 caracteres.');
+        e.preventDefault();
+    }
 });
-</script>
-
-<?php
-require_once __DIR__ . '/../layouts/dashFooter.php';
-?> 
+</script> 

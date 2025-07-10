@@ -11,21 +11,58 @@ window.loadView = function(viewName) {
     // Mostrar indicador de carga
     target.innerHTML = '<div class="text-center p-4"><i class="fas fa-spinner fa-spin"></i> Cargando...</div>';
     
-    // Si la vista tiene formato 'controller/action', construye la URL
+    // Mapeo universal de vistas a módulos
+    const viewToModuleMap = {
+        // User module
+        'consultUser': 'user', 'assignRole': 'user', 'roleHistory': 'user', 'settingsRoles': 'user', 'changePasswordForm': 'user', 'assignPerm': 'user',
+        // Director module
+        'editDirector': 'director', 'createDirector': 'director', 'directorLists': 'director', 'createEvent': 'director', 'menuDirector': 'director', 'reports': 'director', 'attendanceDetails': 'director', 'directorDashboard': 'director', 'dashboard': 'director', 'dashboardPartial': 'director',
+        // School module
+        'createSchool': 'school', 'editSchool': 'school', 'consultSchool': 'school', 'completeSchool': 'school',
+        // Student module
+        'academicHistory': 'student', 'academicHistoryForm': 'student', 'academicHistoryList': 'student', 'createStudent': 'student', 'editStudent': 'student', 'consultStudent': 'student',
+        // Teacher module
+        'assessStudent': 'teacher', 'readSchedule': 'teacher', 'teacherDashboard': 'teacher',
+        // Payroll module
+        'payrollDashboard': 'payroll', 'employees': 'payroll', 'periods': 'payroll', 'absences': 'payroll', 'bonuses': 'payroll',
+        // Activity module
+        'create': 'activity', 'edit': 'activity', 'list': 'activity', 'view': 'activity',
+        // Schedule module
+        'schedule': 'schedule', 'Events': 'schedule',
+        // Coordinator module
+        'coordinatorDashboard': 'coordinator', 'studentManagement': 'coordinator', 'teacherManagement': 'coordinator',
+        // Treasurer module
+        'treasurerDashboard': 'treasurer', 'paymentManagement': 'treasurer', 'financialReports': 'treasurer',
+        // Parent module
+        'parentDashboard': 'parent', 'childrenProgress': 'parent',
+        // Root module
+        'rootDashboard': 'root', 'userManagement': 'root', 'roleManagement': 'root', 'systemSettings': 'root',
+        // Role module
+        'editRole': 'role', 'listRoles': 'role',
+        // Academic averages module
+        'academicAveragesDashboard': 'academicAverages', 'academicAveragesForm': 'academicAverages',
+        // Student stats module
+        'studentStatsDashboard': 'studentStats', 'studentStatsForm': 'studentStats'
+    };
+    
+    // Construir URL según el tipo de vista
     let url;
     const baseUrl = window.location.origin + window.location.pathname;
     
     if (viewName.includes('/')) {
-        const [controller, actionWithParams] = viewName.split('/');
-        const [action, params] = actionWithParams.split('?');
-        url = `${baseUrl}?view=${controller}&action=${action}`;
-        
-        // Agregar parámetros adicionales si existen
-        if (params) {
-            url += `&${params}`;
-        }
+        // Vista con módulo explícito (ej: school/createSchool)
+        const [module, partialView] = viewName.split('/');
+        url = `${baseUrl}?view=${module}&action=loadPartial&partialView=${partialView}`;
+        console.log('Vista con módulo explícito:', url);
+    } else if (viewToModuleMap[viewName]) {
+        // Vista mapeada a un módulo específico
+        const module = viewToModuleMap[viewName];
+        url = `${baseUrl}?view=${module}&action=loadPartial&partialView=${viewName}`;
+        console.log('Vista mapeada a módulo:', url);
     } else {
-        url = `${baseUrl}?view=${viewName}`;
+        // Vista directa (fallback)
+        url = `${baseUrl}?view=${viewName}&action=loadPartial`;
+        console.log('Vista directa (fallback):', url);
     }
     
     console.log("URL construida:", url);
@@ -212,9 +249,8 @@ window.safeLoadView = function(viewName) {
             url = `${baseUrl}?view=${viewName}`;
         }
         
-        console.log('URL construida manualmente:', url);
+        console.log("URL de fallback:", url);
         
-        // Hacer la petición manualmente
         fetch(url, {
             method: 'GET',
             headers: {
@@ -229,8 +265,8 @@ window.safeLoadView = function(viewName) {
             target.innerHTML = html;
         })
         .catch(err => {
-            console.error("Error al cargar la vista:", err);
-            target.innerHTML = '<div class="alert alert-danger">Error al cargar la vista: ' + err.message + '</div>';
+            console.error("Error en fallback:", err);
+            target.innerHTML = '<div class="alert alert-danger">Error: ' + err.message + '</div>';
         });
     }
 };

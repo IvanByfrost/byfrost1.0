@@ -274,4 +274,49 @@ class ActivityController extends MainController
         $activities = $this->activityModel->getActivities();
         echo json_encode($activities);
     }
+
+    /**
+     * Carga una vista parcial vía AJAX para el módulo activity
+     */
+    public function loadPartial()
+    {
+        $view = $_POST['view'] ?? $_GET['view'] ?? '';
+        $action = $_POST['action'] ?? $_GET['action'] ?? 'index';
+        $partialView = $_POST['partialView'] ?? $_GET['partialView'] ?? '';
+        $force = isset($_POST['force']) || isset($_GET['force']);
+
+        if (!$this->isAjaxRequest() && !$force) {
+            if (empty($partialView)) {
+                echo '<div class="alert alert-warning">Vista no especificada. Use: ?view=activity&action=loadPartial&partialView=vista</div>';
+                return;
+            }
+            $viewPath = 'activity/' . $partialView;
+            $fullPath = ROOT . "/app/views/{$viewPath}.php";
+            if (!file_exists($fullPath)) {
+                echo '<div class="alert alert-danger">Vista no encontrada: ' . htmlspecialchars($viewPath) . '</div>';
+                return;
+            }
+            try {
+                $this->loadPartialView($viewPath);
+            } catch (Exception $e) {
+                echo '<div class="alert alert-danger">Error al cargar la vista: ' . htmlspecialchars($e->getMessage()) . '</div>';
+            }
+            return;
+        }
+        if (empty($partialView)) {
+            echo json_encode(['success' => false, 'message' => 'Vista no especificada']);
+            return;
+        }
+        $viewPath = 'activity/' . $partialView;
+        $fullPath = ROOT . "/app/views/{$viewPath}.php";
+        if (!file_exists($fullPath)) {
+            echo json_encode(['success' => false, 'message' => "Vista no encontrada: {$viewPath}"]);
+            return;
+        }
+        try {
+            $this->loadPartialView($viewPath);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Error al cargar la vista: ' . $e->getMessage()]);
+        }
+    }
 }

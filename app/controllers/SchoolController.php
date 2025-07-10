@@ -420,6 +420,51 @@ class SchoolController extends MainController
         }
     }
 
+    /**
+     * Carga una vista parcial vía AJAX para el módulo school
+     */
+    public function loadPartial()
+    {
+        $view = $_POST['view'] ?? $_GET['view'] ?? '';
+        $action = $_POST['action'] ?? $_GET['action'] ?? 'index';
+        $partialView = $_POST['partialView'] ?? $_GET['partialView'] ?? '';
+        $force = isset($_POST['force']) || isset($_GET['force']);
+
+        if (!$this->isAjaxRequest() && !$force) {
+            if (empty($partialView)) {
+                echo '<div class="alert alert-warning">Vista no especificada. Use: ?view=school&action=loadPartial&partialView=vista</div>';
+                return;
+            }
+            $viewPath = 'school/' . $partialView;
+            $fullPath = ROOT . "/app/views/{$viewPath}.php";
+            if (!file_exists($fullPath)) {
+                echo '<div class="alert alert-danger">Vista no encontrada: ' . htmlspecialchars($viewPath) . '</div>';
+                return;
+            }
+            try {
+                $this->loadPartialView($viewPath);
+            } catch (Exception $e) {
+                echo '<div class="alert alert-danger">Error al cargar la vista: ' . htmlspecialchars($e->getMessage()) . '</div>';
+            }
+            return;
+        }
+        if (empty($partialView)) {
+            echo json_encode(['success' => false, 'message' => 'Vista no especificada']);
+            return;
+        }
+        $viewPath = 'school/' . $partialView;
+        $fullPath = ROOT . "/app/views/{$viewPath}.php";
+        if (!file_exists($fullPath)) {
+            echo json_encode(['success' => false, 'message' => "Vista no encontrada: {$viewPath}"]);
+            return;
+        }
+        try {
+            $this->loadPartialView($viewPath);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Error al cargar la vista: ' . $e->getMessage()]);
+        }
+    }
+
     // Protección de acceso solo para escuela o tesorero
     private function protectSchool() {
         if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn() || !$this->sessionManager->hasAnyRole(['director', 'coordinator', 'treasurer', 'root'])) {
