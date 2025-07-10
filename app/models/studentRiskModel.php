@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/mainModel.php';
+require_once ROOT . '/app/models/MainModel.php';
 
 class StudentRiskModel extends MainModel
 {

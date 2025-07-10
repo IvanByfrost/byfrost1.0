@@ -56,7 +56,7 @@ try {
 // 4. Probar MainModel
 echo "<h2>4. Probar MainModel:</h2>";
 try {
-    require_once ROOT . 'app/models/mainModel.php';
+    require_once ROOT . '/app/models/MainModel.php';
     $mainModel = new MainModel();
     echo "<div style='color: green;'>✅ MainModel creado exitosamente</div>";
     

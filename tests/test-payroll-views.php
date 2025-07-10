@@ -10,7 +10,7 @@ require_once '../config.php';
 require_once ROOT . '/app/scripts/connection.php';
 require_once ROOT . '/app/library/SessionManager.php';
 require_once ROOT . '/app/controllers/MainController.php';
-require_once ROOT . '/app/controllers/payrollController.php';
+require_once ROOT . '/app/controllers/PayrollController.php';
 
 // Inicializar conexión y controlador
 $dbConn = getConnection();

@@ -4,7 +4,7 @@ if (!defined('ROOT')) {
 }
 
 require_once ROOT . '/app/scripts/connection.php';
-require_once ROOT . '/app/controllers/registerController.php';
+require_once ROOT . '/app/controllers/RegisterController.php';
 
 // Debug: mostrar datos recibidos
 error_log("DEBUG registerProcess - POST data: " . print_r($_POST, true));

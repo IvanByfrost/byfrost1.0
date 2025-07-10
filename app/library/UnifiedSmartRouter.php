@@ -525,7 +525,7 @@ class UnifiedSmartRouter
             echo json_encode(['success' => false, 'message' => $message]);
         } else {
             http_response_code($code);
-            require_once ROOT . '/app/controllers/errorController.php';
+            require_once ROOT . '/app/controllers/ErrorController.php';
             $error = new ErrorController($this->dbConn);
             $error->Error($code);
         }

@@ -1,8 +1,8 @@
 <?php
 // Modelo para manejar a los profesores
-require_once 'mainModel.php';
+require_once ROOT . '/app/models/MainModel.php';
 
-class TeacherModel extends mainModel
+class TeacherModel extends MainModel
 {
     public function __construct()
     {

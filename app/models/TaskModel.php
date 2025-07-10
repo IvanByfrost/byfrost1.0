@@ -1,5 +1,7 @@
 <?php
-class TaskModel extends mainModel {
+require_once ROOT . '/app/models/MainModel.php';
+
+class TaskModel extends MainModel {
     public function getAllByStudent($studentId) {
         $stmt = $this->dbConn->prepare("SELECT a.* FROM activities a
             JOIN student_scores ss ON ss.activity_id = a.activity_id

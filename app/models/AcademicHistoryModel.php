@@ -1,5 +1,7 @@
 <?php
-class AcademicHistoryModel extends mainModel {
+require_once ROOT . '/app/models/MainModel.php';
+
+class AcademicHistoryModel extends MainModel {
     public function getAllByStudent($studentId) {
         $stmt = $this->dbConn->prepare("SELECT * FROM academic_history WHERE student_id = ?");
         $stmt->execute([$studentId]);

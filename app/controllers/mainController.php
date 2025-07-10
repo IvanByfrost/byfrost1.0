@@ -51,7 +51,7 @@ class MainController
         } else {
             // Redirigir a la página de error 404
             http_response_code(404);
-            require_once ROOT . '/app/controllers/errorController.php';
+            require_once ROOT . '/app/controllers/ErrorController.php';
             $error = new ErrorController($this->dbConn);
             $error->Error('404');
         }
@@ -129,7 +129,7 @@ class MainController
         } else {
             // Redirigir a la página de error 404
             http_response_code(404);
-            require_once ROOT . '/app/controllers/errorController.php';
+            require_once ROOT . '/app/controllers/ErrorController.php';
             $error = new ErrorController($this->dbConn);
             $error->Error('404');
         }
@@ -242,7 +242,7 @@ class MainController
             require ROOT . '/app/views/layouts/dashFooter.php';
         } else {
             http_response_code(404);
-            require_once ROOT . '/app/controllers/errorController.php';
+            require_once ROOT . '/app/controllers/ErrorController.php';
             $error = new ErrorController($this->dbConn);
             $error->Error('404');
         }

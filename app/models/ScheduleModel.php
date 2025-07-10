@@ -1,7 +1,8 @@
 <?php
-require_once 'mainModel.php';
+require_once ROOT . '/app/models/MainModel.php';
 
-class scheduleModel extends mainModel {
+class ScheduleModel extends MainModel
+{
     public function __construct()
     {
         parent::__construct();

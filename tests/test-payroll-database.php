@@ -91,7 +91,7 @@ try {
 
 echo "<h2>4. Test del Controlador de Nómina:</h2>";
 try {
-    require_once ROOT . '/app/controllers/payrollController.php';
+    require_once ROOT . '/app/controllers/PayrollController.php';
     require_once ROOT . '/app/library/SessionManager.php';
     
     $sessionManager = new SessionManager();

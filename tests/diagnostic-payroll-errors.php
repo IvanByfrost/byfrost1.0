@@ -109,7 +109,7 @@ try {
 
 // Probar PayrollController
 try {
-    require_once 'app/controllers/payrollController.php';
+    require_once 'app/controllers/PayrollController.php';
     $payrollController = new PayrollController();
     echo "✅ PayrollController cargado correctamente<br>\n";
 } catch (Exception $e) {

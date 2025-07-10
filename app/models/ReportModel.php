@@ -1,5 +1,7 @@
 <?php
-class ReportModel extends mainModel {
+require_once ROOT . '/app/models/MainModel.php';
+
+class ReportModel extends MainModel {
     public function getAllByStudent($studentId) {
         $stmt = $this->dbConn->prepare("SELECT * FROM academic_reports WHERE student_user_id = ?");
         $stmt->execute([$studentId]);

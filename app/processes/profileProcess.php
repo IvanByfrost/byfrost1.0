@@ -4,7 +4,7 @@ if (!defined('ROOT')) {
 }
 
 require_once ROOT . '/app/scripts/connection.php';
-require_once ROOT . '/app/controllers/registerController.php';
+require_once ROOT . '/app/controllers/RegisterController.php';
 require_once ROOT . '/app/controllers/UserController.php';
 
 $dbConn = getConnection();

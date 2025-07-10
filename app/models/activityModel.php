@@ -1,6 +1,6 @@
 <?php
 // Modelo para manejar a las actividades
-require_once 'mainModel.php';
+require_once ROOT . '/app/models/MainModel.php';
 
 class ActivityModel extends MainModel
 {

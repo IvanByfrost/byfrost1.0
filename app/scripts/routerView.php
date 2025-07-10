@@ -63,9 +63,9 @@ if (
 require_once ROOT . '/app/library/UnifiedSmartRouter.php';
 
 // Obtener conexión a base de datos
-require_once ROOT . '/app/scripts/connection.php';
-$dbConn = getConnection();
-
+        require_once ROOT . '/app/scripts/connection.php';
+        $dbConn = getConnection();
+        
 // Sistema automático de mapeo de controladores usando UnifiedSmartRouter
 function getControllerMapping() {
     $unifiedRouter = new UnifiedSmartRouter($GLOBALS['dbConn']);

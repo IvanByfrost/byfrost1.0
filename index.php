@@ -128,7 +128,7 @@ $routerPath = trim($path, '/');
 if (strpos($routerPath, 'app/views/') === 0 || strpos($routerPath, 'app/controllers/') === 0 || strpos($routerPath, 'app/models/') === 0 || strpos($routerPath, 'app/library/') === 0 || strpos($routerPath, 'app/scripts/') === 0 || strpos($routerPath, 'app/processes/') === 0) {
     error_log("DEBUG - Intento de acceso directo a archivo o directorio protegido: " . $routerPath);
     http_response_code(404);
-    require_once ROOT . '/app/controllers/errorController.php';
+    require_once ROOT . '/app/controllers/ErrorController.php';
     $error = new ErrorController($dbConn, $view);
     $error->Error('404');
     exit;

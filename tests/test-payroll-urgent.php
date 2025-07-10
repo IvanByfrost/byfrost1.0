@@ -67,7 +67,7 @@ try {
 
 echo "<h2>7. Test de Controlador:</h2>";
 try {
-    require_once ROOT . '/app/controllers/payrollController.php';
+    require_once ROOT . '/app/controllers/PayrollController.php';
     if (class_exists('PayrollController')) {
         echo "<p>✅ PayrollController existe</p>";
         

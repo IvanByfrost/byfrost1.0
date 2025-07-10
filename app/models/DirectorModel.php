@@ -1,5 +1,5 @@
 <?php
-require_once 'mainModel.php';
+require_once ROOT . '/app/models/MainModel.php';
 
 // software_academico/app/models/RectorModel.php
 

@@ -1,5 +1,7 @@
 <?php
-class WorkModel extends mainModel {
+require_once ROOT . '/app/models/MainModel.php';
+
+class WorkModel extends MainModel {
     public function getAllByStudent($studentId) {
         $stmt = $this->dbConn->prepare("SELECT a.* FROM activities a
             JOIN activity_types at ON a.activity_type_id = at.activity_type_id

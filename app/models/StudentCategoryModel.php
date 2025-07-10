@@ -1,5 +1,7 @@
 <?php
-class StudentCategoryModel extends mainModel {
+require_once ROOT . '/app/models/MainModel.php';
+
+class StudentCategoryModel extends MainModel {
     public function getAllCategories() {
         return $this->getAll('student_categories');
     }

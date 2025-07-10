@@ -23,7 +23,7 @@ echo "</ul>";
 
 try {
     // Incluir el controlador
-    require_once '../app/controllers/payrollController.php';
+    require_once '../app/controllers/PayrollController.php';
     
     // Crear instancia del controlador
     $controller = new PayrollController();

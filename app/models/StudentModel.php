@@ -1,7 +1,7 @@
 <?php
-require_once 'mainModel.php';
+require_once ROOT . '/app/models/MainModel.php';
 
-class studentModel extends mainModel
+class StudentModel extends MainModel
 {
     public function __construct()
     {

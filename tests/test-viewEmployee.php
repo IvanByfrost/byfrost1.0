@@ -1,7 +1,7 @@
 <?php
 // Script de prueba para verificar viewEmployee
 require_once '../config.php';
-require_once '../app/controllers/payrollController.php';
+require_once '../app/controllers/PayrollController.php';
 
 echo "<h1>Prueba de viewEmployee</h1>";
 
