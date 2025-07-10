@@ -14,7 +14,6 @@ require_once ROOT . '/app/views/layouts/dashHeader.php';
     </nav>
 </body>
 
-<script src="https://unpkg.com/lucide@latest"></script>
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     lucide.createIcons();

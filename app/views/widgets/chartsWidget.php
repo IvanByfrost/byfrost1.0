@@ -71,7 +71,6 @@ $studentPerformance = $statsModel->getStudentPerformance();
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 // Datos del gráfico
 const chartData = {

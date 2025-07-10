@@ -13,7 +13,32 @@ class IndexController extends MainController
      */
     public function index() 
     {
+        // Si el usuario está logueado, redirigir al dashboard correspondiente
+        if (isset($this->sessionManager) && $this->sessionManager->isLoggedIn()) {
+            $role = $this->sessionManager->getUserRole();
+            $this->redirectToDashboard($role);
+            return;
+        }
+        
+        // Si no está logueado, mostrar la página principal
         $this->render('index', 'index');
+    }
+
+    /**
+     * Dashboard por defecto (cuando se accede sin especificar vista)
+     */
+    public function dashboard() 
+    {
+        // Si el usuario está logueado, redirigir al dashboard correspondiente
+        if (isset($this->sessionManager) && $this->sessionManager->isLoggedIn()) {
+            $role = $this->sessionManager->getUserRole();
+            $this->redirectToDashboard($role);
+            return;
+        }
+        
+        // Si no está logueado, redirigir al login
+        header('Location: ' . url . '?view=index&action=login');
+        exit;
     }
 
     /**
@@ -124,7 +149,11 @@ class IndexController extends MainController
         // Obtener parámetros
         $view = $_POST['view'] ?? $_GET['view'] ?? '';
         $action = $_POST['action'] ?? $_GET['action'] ?? 'index';
+        $partialView = $_POST['partialView'] ?? $_GET['partialView'] ?? '';
         $force = isset($_POST['force']) || isset($_GET['force']); // Permitir forzar la carga
+        
+        // Debug
+        error_log("DEBUG loadPartial - view: $view, action: $action, partialView: $partialView");
         
         // Verificar que sea una petición AJAX o esté forzada
         if (!$this->isAjaxRequest() && !$force) {
@@ -152,6 +181,11 @@ class IndexController extends MainController
             return;
         }
         
+        // Si no hay vista especificada, intentar usar partialView
+        if (empty($view) && !empty($partialView)) {
+            $view = $partialView;
+        }
+        
         if (empty($view)) {
             $this->sendJsonResponse(false, 'Vista no especificada');
             return;
@@ -162,6 +196,8 @@ class IndexController extends MainController
         
         // Verificar que el archivo existe
         $fullPath = ROOT . "/app/views/{$viewPath}.php";
+        
+        error_log("DEBUG loadPartial - Intentando cargar: $fullPath");
         
         if (!file_exists($fullPath)) {
             $this->sendJsonResponse(false, "Vista no encontrada: {$viewPath}");

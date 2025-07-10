@@ -156,7 +156,7 @@ class LoginController extends MainController
     {
         $dashboardUrls = [
             'root' => 'root&action=dashboard',
-            'director' => 'directorDashboard',
+            'director' => 'director',
             'coordinator' => 'coordinator&action=dashboard',
             'teacher' => 'teacher&action=dashboard',
             'student' => 'student&action=dashboard',

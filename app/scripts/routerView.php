@@ -187,6 +187,14 @@ if (isset($controllerMapping[$view])) {
                     http_response_code(403);
                     echo "<h2>Error 403</h2><p>Acceso no autorizado.</p>";
                 }
+            } elseif ($view === 'index') {
+                // Para la vista index, usar el método index()
+                if (method_exists($controller, 'index')) {
+                    $controller->index();
+                } else {
+                    http_response_code(404);
+                    echo "<h2>Error 404</h2><p>El método index() no existe en el controlador <code>" . htmlspecialchars($controllerName) . "</code>.</p>";
+                }
             } elseif (method_exists($controller, 'index')) {
                 $controller->index();
             } elseif (method_exists($controller, 'dashboard')) {

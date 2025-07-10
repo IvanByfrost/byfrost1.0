@@ -124,7 +124,4 @@
     </div>
 </div>
 
-<!-- Incluir archivo JavaScript separado -->
-<script src="app/resources/js/activityForm.js"></script>
-
 <?php require_once 'app/views/layouts/footer.php'; ?> 

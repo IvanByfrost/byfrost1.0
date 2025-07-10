@@ -11,63 +11,38 @@ window.loadView = function(viewName) {
     // Mostrar indicador de carga
     target.innerHTML = '<div class="text-center p-4"><i class="fas fa-spinner fa-spin"></i> Cargando...</div>';
     
-    // Mapeo universal de vistas a módulos
-    const viewToModuleMap = {
-        // User module
-        'consultUser': 'user', 'assignRole': 'user', 'roleHistory': 'user', 'settingsRoles': 'user', 'changePasswordForm': 'user', 'assignPerm': 'user',
-        // Director module
-        'editDirector': 'director', 'createDirector': 'director', 'directorLists': 'director', 'createEvent': 'director', 'menuDirector': 'director', 'reports': 'director', 'attendanceDetails': 'director', 'directorDashboard': 'director', 'dashboard': 'director', 'dashboardPartial': 'director',
-        // School module
-        'createSchool': 'school', 'editSchool': 'school', 'consultSchool': 'school', 'completeSchool': 'school',
-        // Student module
-        'academicHistory': 'student', 'academicHistoryForm': 'student', 'academicHistoryList': 'student', 'createStudent': 'student', 'editStudent': 'student', 'consultStudent': 'student',
-        // Teacher module
-        'assessStudent': 'teacher', 'readSchedule': 'teacher', 'teacherDashboard': 'teacher',
-        // Payroll module
-        'payrollDashboard': 'payroll', 'employees': 'payroll', 'periods': 'payroll', 'absences': 'payroll', 'bonuses': 'payroll',
-        // Activity module
-        'create': 'activity', 'edit': 'activity', 'list': 'activity', 'view': 'activity',
-        // Schedule module
-        'schedule': 'schedule', 'Events': 'schedule',
-        // Coordinator module
-        'coordinatorDashboard': 'coordinator', 'studentManagement': 'coordinator', 'teacherManagement': 'coordinator',
-        // Treasurer module
-        'treasurerDashboard': 'treasurer', 'paymentManagement': 'treasurer', 'financialReports': 'treasurer',
-        // Parent module
-        'parentDashboard': 'parent', 'childrenProgress': 'parent',
-        // Root module
-        'rootDashboard': 'root', 'userManagement': 'root', 'roleManagement': 'root', 'systemSettings': 'root',
-        // Role module
-        'editRole': 'role', 'listRoles': 'role',
-        // Academic averages module
-        'academicAveragesDashboard': 'academicAverages', 'academicAveragesForm': 'academicAverages',
-        // Student stats module
-        'studentStatsDashboard': 'studentStats', 'studentStatsForm': 'studentStats'
-    };
-    
-    // Construir URL según el tipo de vista
-    let url;
-    const baseUrl = window.location.origin + window.location.pathname;
-    
-    if (viewName.includes('/')) {
-        // Vista con módulo explícito (ej: school/createSchool)
-        const [module, partialView] = viewName.split('/');
-        url = `${baseUrl}?view=${module}&action=loadPartial&partialView=${partialView}`;
-        console.log('Vista con módulo explícito:', url);
-    } else if (viewToModuleMap[viewName]) {
-        // Vista mapeada a un módulo específico
-        const module = viewToModuleMap[viewName];
-        url = `${baseUrl}?view=${module}&action=loadPartial&partialView=${viewName}`;
-        console.log('Vista mapeada a módulo:', url);
-    } else {
-        // Vista directa (fallback)
-        url = `${baseUrl}?view=${viewName}&action=loadPartial`;
-        console.log('Vista directa (fallback):', url);
+    // Función para construir URL de manera consistente
+    function buildViewUrl(viewName) {
+        const baseUrl = window.location.origin + window.location.pathname;
+        
+        // Si la vista incluye parámetros (ej: user/assignRole?section=usuarios)
+        if (viewName.includes('?')) {
+            const [view, params] = viewName.split('?');
+            // Extraer el module y partialView si la vista tiene formato module/view
+            let module = view;
+            let partialView = view;
+            if (view.includes('/')) {
+                const parts = view.split('/');
+                module = parts[0];
+                partialView = parts[1];
+            }
+            return `${baseUrl}?view=${module}&action=loadPartial&partialView=${partialView}&${params}`;
+        }
+        
+        // Si la vista tiene módulo explícito (ej: school/createSchool)
+        if (viewName.includes('/')) {
+            const [module, partialView] = viewName.split('/');
+            return `${baseUrl}?view=${module}&action=loadPartial&partialView=${partialView}`;
+        }
+        
+        // Vista directa
+        return `${baseUrl}?view=${viewName}&action=loadPartial`;
     }
     
-    console.log("URL construida:", url);
+    const localUrl = buildViewUrl(viewName);
+    console.log("URL construida:", localUrl);
     
-    fetch(url, {
+    fetch(localUrl, {
         method: 'GET',
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
@@ -159,6 +134,26 @@ window.loadView = function(viewName) {
         }
         
         // Inicializar JavaScript específico según la vista cargada
+        if (viewName === 'director/dashboard') {
+            if (typeof window.initDirectorDashboard === 'function') {
+                window.initDirectorDashboard();
+            }
+        }
+        if (viewName === 'director/dashboard-simple') {
+            if (typeof window.initDirectorDashboardSimple === 'function') {
+                window.initDirectorDashboardSimple();
+            }
+        }
+        if (viewName === 'director/dashboardPartial') {
+            if (typeof window.initDirectorDashboardPartial === 'function') {
+                window.initDirectorDashboardPartial();
+            }
+        }
+        if (viewName === 'director/dashboardHome') {
+            if (typeof window.initDirectorDashboardHome === 'function') {
+                window.initDirectorDashboardHome();
+            }
+        }
         if (viewName === 'school/createSchool') {
             if (typeof window.initCreateSchoolForm === 'function') {
                 window.initCreateSchoolForm();
@@ -169,11 +164,28 @@ window.loadView = function(viewName) {
             viewName === 'user/showRoleHistory' || viewName.includes('showRoleHistory') ||
             viewName === 'user/roleHistory' || viewName.includes('roleHistory')) {
             console.log('Vista de gestión de usuarios cargada, inicializando JavaScript...');
-            if (typeof initUserManagementAfterLoad === 'function') {
-                initUserManagementAfterLoad();
-            } else {
-                console.warn('Función initUserManagementAfterLoad no encontrada');
+            
+            // Función para intentar inicializar con retraso
+            function tryInitUserManagement(attempts = 0) {
+                if (typeof initUserManagementAfterLoad === 'function') {
+                    console.log('✅ initUserManagementAfterLoad encontrada, ejecutando...');
+                    try {
+                        initUserManagementAfterLoad();
+                        console.log('✅ initUserManagementAfterLoad ejecutada exitosamente');
+                    } catch (error) {
+                        console.error('❌ Error al ejecutar initUserManagementAfterLoad:', error);
+                    }
+                } else if (attempts < 10) {
+                    console.log(`⏳ initUserManagementAfterLoad no disponible (intento ${attempts + 1}/10), reintentando en 200ms...`);
+                    setTimeout(() => tryInitUserManagement(attempts + 1), 200);
+                } else {
+                    console.warn('❌ Función initUserManagementAfterLoad no encontrada después de 10 intentos');
+                    console.log('Esto puede ser normal si la vista no requiere inicialización específica');
+                }
             }
+            
+            // Intentar inicializar inmediatamente
+            tryInitUserManagement();
         }
         if (viewName === 'role/index' || viewName.includes('role')) {
             console.log('Vista de gestión de roles cargada');
@@ -183,6 +195,14 @@ window.loadView = function(viewName) {
                     initRoleEditForm();
                 }, 100);
             }
+        }
+        
+        // Reinicializar submenús después de cargar contenido dinámicamente
+        if (typeof window.reinitializeSidebarSubmenus === 'function') {
+            console.log('Reinicializando submenús del sidebar...');
+            setTimeout(() => {
+                window.reinitializeSidebarSubmenus();
+            }, 100);
         }
     })
     .catch(err => {
@@ -234,24 +254,24 @@ window.safeLoadView = function(viewName) {
         target.innerHTML = '<div class="text-center p-4"><i class="fas fa-spinner fa-spin"></i> Cargando...</div>';
         
         // Construir URL manualmente
-        let url;
+        let localUrl;
         const baseUrl = window.location.origin + window.location.pathname;
         
         if (viewName.includes('/')) {
             const [controller, actionWithParams] = viewName.split('/');
             const [action, params] = actionWithParams.split('?');
-            url = `${baseUrl}?view=${controller}&action=${action}`;
+            localUrl = `${baseUrl}?view=${controller}&action=${action}`;
             
             if (params) {
-                url += `&${params}`;
+                localUrl += `&${params}`;
             }
         } else {
-            url = `${baseUrl}?view=${viewName}`;
+            localUrl = `${baseUrl}?view=${viewName}`;
         }
         
-        console.log("URL de fallback:", url);
+        console.log("URL de fallback:", localUrl);
         
-        fetch(url, {
+        fetch(localUrl, {
             method: 'GET',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'

@@ -233,8 +233,5 @@
     </form>
   </div>
 
-  <script src="<?php echo url; ?>app/resources/js/jquery-3.3.1.min.js"></script>
-  <script src="<?php echo url; ?>app/resources/js/bootstrap.bundle.js"></script>
-  <script src="<?php echo url; ?>app/resources/js/profileSettings.js"></script>
 </body>
 </html>

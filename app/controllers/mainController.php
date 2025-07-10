@@ -166,6 +166,16 @@ class MainController
             return true;
         }
         
+        // Método 5: Verificar si la acción es loadPartial (indicador de AJAX)
+        if (isset($_GET['action']) && $_GET['action'] === 'loadPartial') {
+            return true;
+        }
+        
+        // Método 6: Verificar si hay parámetro partialView (indicador de AJAX)
+        if (isset($_GET['partialView'])) {
+            return true;
+        }
+        
         return false;
     }
 

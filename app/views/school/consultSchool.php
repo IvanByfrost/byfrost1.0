@@ -36,13 +36,13 @@ $search = $search ?? '';
             <?php endif; ?>
 
             <!-- Formulario de búsqueda -->
-            <form method="GET" class="mb-4">
+            <form id="schoolSearchForm" class="mb-4" onsubmit="return searchSchoolAJAX(event);">
                 <input type="hidden" name="view" value="school">
                 <input type="hidden" name="action" value="consultSchool">
                 <div class="row">
                     <div class="col-md-8">
                         <div class="input-group">
-                            <input type="text" name="search" class="form-control" 
+                            <input type="text" name="search" id="schoolSearchInput" class="form-control" 
                                    placeholder="Buscar por nombre, código DANE o NIT..." 
                                    value="<?php echo htmlspecialchars($search); ?>">
                             <button type="submit" class="btn btn-primary">

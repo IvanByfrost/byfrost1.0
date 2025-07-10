@@ -92,7 +92,4 @@ require_once ROOT . '/app/views/layouts/dashHeader.php';
             </div>
         </div>
     </div>
-</div>
-
-<!-- JavaScript Modular -->
-<script src="<?= url . app . rq ?>js/dashboard.js"></script> 
+</div> 

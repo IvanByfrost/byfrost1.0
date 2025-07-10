@@ -1,0 +1,265 @@
+/* Estilos para sidebars y submenús */
+
+/* Contenedor principal del sidebar */
+.root-sidebar,
+.coordinator-sidebar,
+.treasurer-sidebar,
+.student-sidebar,
+.teacher-sidebar {
+    width: 180px;
+    padding: 10px 0;
+    background-color: #88e1ff;
+    color: #333;
+    flex-shrink: 0;
+    margin: 0;
+    border: none;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+/* Lista del sidebar */
+.root-sidebar ul,
+.coordinator-sidebar ul,
+.treasurer-sidebar ul,
+.student-sidebar ul,
+.teacher-sidebar ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+/* Elementos de la lista */
+.root-sidebar ul li,
+.coordinator-sidebar ul li,
+.treasurer-sidebar ul li,
+.student-sidebar ul li,
+.teacher-sidebar ul li {
+    width: 100%;
+    margin: 0;
+}
+
+/* Enlaces del sidebar */
+.root-sidebar ul li a,
+.coordinator-sidebar ul li a,
+.treasurer-sidebar ul li a,
+.student-sidebar ul li a,
+.teacher-sidebar ul li a {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 44px;
+    box-sizing: border-box;
+    padding: 0 16px;
+    gap: 10px;
+    color: #333;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Hover en enlaces */
+.root-sidebar ul li a:hover,
+.coordinator-sidebar ul li a:hover,
+.treasurer-sidebar ul li a:hover,
+.student-sidebar ul li a:hover,
+.teacher-sidebar ul li a:hover {
+    background-color: #f0f4ff;
+    color: #00613f;
+    border-radius: 6px;
+}
+
+/* Elementos con submenús */
+.has-submenu {
+    position: relative;
+}
+
+.has-submenu > a {
+    cursor: pointer;
+}
+
+/* Submenús */
+.submenu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.3s;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    margin-left: 10px;
+    border-radius: 4px;
+}
+
+.has-submenu.active .submenu {
+    max-height: 500px;
+    opacity: 1;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+/* Enlaces de submenú */
+.submenu li a {
+    height: 36px !important;
+    font-size: 13px !important;
+    padding: 0 12px !important;
+    margin: 2px 0;
+}
+
+/* Iconos */
+.root-sidebar i[data-lucide],
+.coordinator-sidebar i[data-lucide],
+.treasurer-sidebar i[data-lucide],
+.student-sidebar i[data-lucide],
+.teacher-sidebar i[data-lucide] {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+}
+
+/* Contenedor del dashboard */
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    max-width: 100vw !important;
+    margin: 0 !important;
+    box-sizing: border-box;
+    background: #fff !important;
+}
+
+/* Contenido principal */
+.mainContent {
+    flex: 1 1 0%;
+    min-height: 100vh;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 20px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .root-sidebar,
+    .coordinator-sidebar,
+    .treasurer-sidebar,
+    .student-sidebar,
+    .teacher-sidebar {
+        width: 180px;
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 1000;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .sidebar-open .root-sidebar,
+    .sidebar-open .coordinator-sidebar,
+    .sidebar-open .treasurer-sidebar,
+    .sidebar-open .student-sidebar,
+    .sidebar-open .teacher-sidebar {
+        transform: translateX(0);
+    }
+    
+    .dashboard-container {
+        flex-direction: row;
+    }
+    
+    .mainContent {
+        padding: 10px;
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    /* Botón para abrir/cerrar sidebar en móvil */
+    .sidebar-toggle {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 1001;
+        background: #88e1ff;
+        border: none;
+        border-radius: 4px;
+        padding: 8px;
+        cursor: pointer;
+        display: block;
+    }
+    
+    .sidebar-toggle:hover {
+        background: #f0f4ff;
+    }
+}
+
+@media (min-width: 769px) {
+    .sidebar-toggle {
+        display: none;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.submenu li {
+    animation: fadeIn 0.3s ease;
+}
+
+/* Estados activos */
+.root-sidebar ul li.active > a,
+.coordinator-sidebar ul li.active > a,
+.treasurer-sidebar ul li.active > a,
+.student-sidebar ul li.active > a,
+.teacher-sidebar ul li.active > a {
+    background-color: #00613f;
+    color: #fff;
+    border-radius: 6px;
+}
+
+/* Scrollbar personalizado */
+.root-sidebar::-webkit-scrollbar,
+.coordinator-sidebar::-webkit-scrollbar,
+.treasurer-sidebar::-webkit-scrollbar,
+.student-sidebar::-webkit-scrollbar,
+.teacher-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.root-sidebar::-webkit-scrollbar-track,
+.coordinator-sidebar::-webkit-scrollbar-track,
+.treasurer-sidebar::-webkit-scrollbar-track,
+.student-sidebar::-webkit-scrollbar-track,
+.teacher-sidebar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+}
+
+.root-sidebar::-webkit-scrollbar-thumb,
+.coordinator-sidebar::-webkit-scrollbar-thumb,
+.treasurer-sidebar::-webkit-scrollbar-thumb,
+.student-sidebar::-webkit-scrollbar-thumb,
+.teacher-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+}
+
+.root-sidebar::-webkit-scrollbar-thumb:hover,
+.coordinator-sidebar::-webkit-scrollbar-thumb:hover,
+.treasurer-sidebar::-webkit-scrollbar-thumb:hover,
+.student-sidebar::-webkit-scrollbar-thumb:hover,
+.teacher-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.5);
+} 

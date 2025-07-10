@@ -60,7 +60,4 @@ if (empty($token)) {
 
     <?php
     require_once __DIR__ . '/../layouts/footer.php';
-    ?>
-    
-    <!-- Scripts específicos -->
-    <script src="<?php echo url . app .rq ?>js/forgotPassword.js"></script> 
+    ?> 

@@ -291,8 +291,8 @@ class DashboardManager {
         // AJAX universal: si la vista contiene '/', separar módulo y vista
         if (viewName.includes('/')) {
             const [module, partialView] = viewName.split('/');
-            const url = `?view=${encodeURIComponent(module)}&action=loadPartial&partialView=${encodeURIComponent(partialView)}`;
-            fetch(url, {
+            const localUrl = `?view=${encodeURIComponent(module)}&action=loadPartial&partialView=${encodeURIComponent(partialView)}`;
+            fetch(localUrl, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
                 .then(response => response.text())
@@ -305,8 +305,8 @@ class DashboardManager {
         } else if (viewToModuleMap[viewName]) {
             // Vistas que tienen un módulo específico asignado
             const module = viewToModuleMap[viewName];
-            const url = `?view=${encodeURIComponent(module)}&action=loadPartial&partialView=${encodeURIComponent(viewName)}`;
-            fetch(url, {
+            const localUrl = `?view=${encodeURIComponent(module)}&action=loadPartial&partialView=${encodeURIComponent(viewName)}`;
+            fetch(localUrl, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
                 .then(response => response.text())
@@ -318,8 +318,8 @@ class DashboardManager {
                 });
         } else {
             // Método actual para vistas propias del dashboard (fallback)
-            const url = `?view=${encodeURIComponent(viewName)}&action=loadPartial`;
-            fetch(url, {
+            const localUrl = `?view=${encodeURIComponent(viewName)}&action=loadPartial`;
+            fetch(localUrl, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
                 .then(response => response.text())
@@ -333,30 +333,47 @@ class DashboardManager {
     }
 }
 
-// Inicializar cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM cargado, inicializando dashboard...');
-    
-    // Verificar que Chart.js esté disponible
-    if (typeof Chart === 'undefined') {
-        console.error('Chart.js no está cargado');
-        return;
-    }
-    
-    // Crear instancia del dashboard
-    window.dashboardManager = new DashboardManager();
-    
-    // Hacer loadView disponible globalmente
-    window.loadView = function(viewName) {
-        if (window.dashboardManager && typeof window.dashboardManager.safeLoadView === 'function') {
-            window.dashboardManager.safeLoadView(viewName);
-        } else {
-            window.location.href = '?view=' + viewName;
+// Modularización para inicialización por vista
+window.initDirectorDashboard = function() {
+    if (!window.dashboardManager) {
+        if (typeof Chart === 'undefined') {
+            console.error('Chart.js no está cargado');
+            return;
         }
-    };
+        window.dashboardManager = new DashboardManager();
+    }
+};
 
-    window.safeLoadView = function(viewName) {
-        // NO llamar a loadView aquí, solo redirigir
-        window.location.href = '?view=' + viewName;
-    };
-}); 
+window.initDirectorDashboardSimple = function() {
+    // Si hay lógica específica para dashboard-simple, ponla aquí
+    // Por ahora, reutiliza la misma inicialización
+    window.initDirectorDashboard();
+};
+
+// Eliminar la inicialización automática en DOMContentLoaded
+// document.addEventListener('DOMContentLoaded', function() {
+//     console.log('DOM cargado, inicializando dashboard...');
+    
+//     // Verificar que Chart.js esté disponible
+//     if (typeof Chart === 'undefined') {
+//         console.error('Chart.js no está cargado');
+//         return;
+//     }
+    
+//     // Crear instancia del dashboard
+//     window.dashboardManager = new DashboardManager();
+    
+//     // Hacer loadView disponible globalmente
+//     window.loadView = function(viewName) {
+//         if (window.dashboardManager && typeof window.dashboardManager.safeLoadView === 'function') {
+//             window.dashboardManager.safeLoadView(viewName);
+//         } else {
+//             window.location.href = '?view=' + viewName;
+//         }
+//     };
+
+//     window.safeLoadView = function(viewName) {
+//         // NO llamar a loadView aquí, solo redirigir
+//         window.location.href = '?view=' + viewName;
+//     };
+// }); 

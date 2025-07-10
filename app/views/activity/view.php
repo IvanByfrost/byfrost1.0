@@ -178,9 +178,6 @@
     </div>
 </div>
 
-<!-- Incluir archivo JavaScript separado -->
-<script src="app/resources/js/activityView.js"></script>
-
 <script>
 function editActivity(activityId) {
     window.location.href = `activity/showEditForm/${activityId}`;

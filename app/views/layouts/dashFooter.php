@@ -69,12 +69,14 @@
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/app.js"></script>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/profileSettings.js"></script> 
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/payrollManagement.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/sidebarToggle.js"></script>
     
     <?php 
     // Cargar script específico del director si es necesario
     if ($userRole === 'director'): 
     ?>
     <script type="text/javascript" src="<?php echo url . app . rq ?>js/directorDashboard.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/dashboard.js"></script>
     <?php endif; ?>
 
     <script>

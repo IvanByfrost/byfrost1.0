@@ -290,8 +290,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (typeof loadView === 'function') {
             loadView(viewName);
         } else {
-            const url = `${BASE_URL}?view=${viewName.replace('/', '&action=')}`;
-            window.location.href = url;
+            const localUrl = `${BASE_URL}?view=${viewName.replace('/', '&action=')}`;
+            window.location.href = localUrl;
         }
     };
 }); 

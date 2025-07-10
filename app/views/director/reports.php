@@ -162,7 +162,6 @@ $gradesByMonth = $statsModel->getGradesByMonth();
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 // Datos para los gráficos
 const chartData = {

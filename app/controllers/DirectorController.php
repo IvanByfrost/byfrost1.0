@@ -23,8 +23,22 @@ class DirectorController extends MainController {
     // Dashboard del director
     public function dashboard() {
         $this->protectDirector();
-        // Cargar la vista completa del dashboard del director (con layouts y menú)
+        // Cargar la vista de inicio moderna del dashboard del director
         require_once ROOT . '/app/views/director/dashboard.php';
+    }
+
+    // Dashboard parcial del director (vista principal)
+    public function dashboardPartial() {
+        $this->protectDirector();
+        // Cargar la vista parcial del dashboard del director
+        require_once ROOT . '/app/views/director/dashboardPartial.php';
+    }
+
+    // Vista de inicio del dashboard del director
+    public function dashboardHome() {
+        $this->protectDirector();
+        // Cargar la vista de inicio del dashboard del director
+        require_once ROOT . '/app/views/director/dashboardHome.php';
     }
 
     // Menú principal del director

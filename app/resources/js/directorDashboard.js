@@ -619,8 +619,8 @@ class DirectorDashboard {
             window.loadView(viewName);
         } else {
             // Fallback: redirigir a la página
-            const url = `${this.baseUrl}?view=${viewName.replace('/', '&action=')}`;
-            window.location.href = url;
+            const localUrl = `${this.baseUrl}?view=${viewName.replace('/', '&action=')}`;
+            window.location.href = localUrl;
         }
     }
 
@@ -683,13 +683,32 @@ class DirectorDashboard {
     }
 }
 
-// Inicializar el dashboard cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', function() {
-    // Verificar que estamos en el dashboard del director
-    if (document.querySelector('.dashboard-container')) {
+// Modularización para inicialización por vista
+window.initDirectorDashboard = function() {
+    if (!window.directorDashboard) {
         window.directorDashboard = new DirectorDashboard();
     }
-});
+};
+
+window.initDirectorDashboardSimple = function() {
+    // Si hay lógica específica para dashboard-simple, ponla aquí
+    // Por ahora, reutiliza la misma inicialización
+    window.initDirectorDashboard();
+};
+
+window.initDirectorDashboardPartial = function() {
+    // Inicialización específica para dashboardPartial
+    if (!window.directorDashboard) {
+        window.directorDashboard = new DirectorDashboard();
+    }
+    console.log('Dashboard parcial del director inicializado');
+};
+
+window.initDirectorDashboardHome = function() {
+    // Inicialización específica para dashboardHome
+    console.log('Vista de inicio del dashboard cargada');
+    // No necesita inicialización compleja, solo logging
+};
 
 // Funciones globales para compatibilidad
 window.loadMetrics = function() {

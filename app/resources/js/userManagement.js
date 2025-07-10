@@ -75,6 +75,9 @@ function initUserManagementAfterLoad() {
     }, 100);
 }
 
+// Asegurar que la función esté disponible globalmente
+window.initUserManagementAfterLoad = initUserManagementAfterLoad;
+
 // Inicializar específicamente para asignación de roles
 function initializeAssignRole() {
     console.log('Inicializando funcionalidad de asignación de roles...');
@@ -237,10 +240,9 @@ function waitForDOM() {
 
 // Iniciar el proceso de espera solo si no estamos usando loadViews.js
 // Verificar si estamos en una página que usa loadViews.js
-const isLoadViewsPage = window.location.search.includes('view=index&action=loadPartial') || 
-                       document.getElementById('mainContent') !== null;
+window.isLoadViewsPage = window.isLoadViewsPage || window.location.search.includes('view=index&action=loadPartial') || false;
 
-if (!isLoadViewsPage) {
+if (!window.isLoadViewsPage) {
     console.log('Página de carga directa detectada, iniciando waitForDOM...');
     waitForDOM();
 } else {

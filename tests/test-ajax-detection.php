@@ -1,152 +1,215 @@
 <?php
 require_once '../config.php';
-require_once '../app/scripts/connection.php';
-require_once '../app/library/SessionManager.php';
-require_once '../app/library/PermissionManager.php';
+require_once '../app/controllers/mainController.php';
+require_once '../app/controllers/IndexController.php';
 
-// Iniciar sesión
-session_start();
-
-// Verificar si el usuario está logueado
-if (!isset($_SESSION['user_id'])) {
-    echo "Error: Usuario no logueado";
-    exit;
-}
-
-?>
-<!DOCTYPE html>
-<html lang="es">
+echo "<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test AJAX Detection</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet'>
 </head>
 <body>
-    <div class="container mt-4">
-        <h1>Test AJAX Detection</h1>
-        <p>Verificando si la detección de AJAX funciona correctamente</p>
+    <div class='container mt-4'>
+        <h1>🔍 Test AJAX Detection</h1>
         
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Tests de AJAX</h5>
+        <div class='row'>
+            <div class='col-md-6'>
+                <div class='card'>
+                    <div class='card-header'>
+                        <h5>1. Test de Detección AJAX</h5>
                     </div>
-                    <div class="card-body">
-                        <button class="btn btn-primary mb-2 w-100" onclick="testAjaxDetection()">Test AJAX Detection</button>
-                        <button class="btn btn-success mb-2 w-100" onclick="testDirectAccess()">Test Acceso Directo</button>
-                        <button class="btn btn-info mb-2 w-100" onclick="testLoadPartial()">Test loadPartial</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Resultados</h5>
-                    </div>
-                    <div class="card-body">
-                        <div id="results">
-                            <p class="text-muted">Los resultados aparecerán aquí...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    <div class='card-body'>";
+
+// Test del controlador
+$indexController = new IndexController($dbConn);
+
+echo "<h6>Test de isAjaxRequest con diferentes headers:</h6>";
+
+// Simular diferentes tipos de peticiones
+$testCases = [
+    'Normal GET' => [],
+    'AJAX con X-Requested-With' => ['HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest'],
+    'AJAX con Accept JSON' => ['HTTP_ACCEPT' => 'application/json'],
+    'AJAX con parámetro ajax' => ['GET' => ['ajax' => '1']],
+    'AJAX con action=loadPartial' => ['GET' => ['action' => 'loadPartial']],
+    'AJAX con partialView' => ['GET' => ['partialView' => 'test']]
+];
+
+foreach ($testCases as $name => $headers) {
+    echo "<p><strong>$name:</strong></p>";
+    
+    // Simular headers
+    foreach ($headers as $key => $value) {
+        if ($key === 'GET') {
+            $_GET = array_merge($_GET ?? [], $value);
+        } else {
+            $_SERVER[$key] = $value;
+        }
+    }
+    
+    // Usar reflexión para acceder al método protegido
+    $reflection = new ReflectionClass($indexController);
+    $method = $reflection->getMethod('isAjaxRequest');
+    $method->setAccessible(true);
+    $isAjax = $method->invoke($indexController);
+    echo "<p>Resultado: " . ($isAjax ? "✅ AJAX detectado" : "❌ No es AJAX") . "</p>";
+    
+    // Limpiar para el siguiente test
+    unset($_SERVER['HTTP_X_REQUESTED_WITH'], $_SERVER['HTTP_ACCEPT'], $_GET['ajax'], $_GET['action'], $_GET['partialView']);
+}
+
+echo "</div></div></div>";
+
+echo "<div class='col-md-6'>
+    <div class='card'>
+        <div class='card-header'>
+            <h5>2. Test de Construcción de URLs</h5>
         </div>
-        
-        <div class="mt-4">
-            <h4>Logs de Consola</h4>
-            <div id="console-log" class="bg-dark text-light p-3" style="height: 200px; overflow-y: auto; font-family: monospace; font-size: 12px;">
-                <div>Test iniciado...</div>
+        <div class='card-body'>
+            <h6>URLs que debería generar loadView.js:</h6>
+            <ul>
+                <li><strong>school/createSchool:</strong> ?view=school&action=loadPartial&partialView=createSchool</li>
+                <li><strong>user/assignRole:</strong> ?view=user&action=loadPartial&partialView=assignRole</li>
+                <li><strong>user/assignRole?section=usuarios:</strong> ?view=user&action=loadPartial&partialView=assignRole&section=usuarios</li>
+            </ul>
+        </div>
+    </div>
+</div>";
+
+echo "</div>";
+
+echo "<div class='row mt-4'>
+    <div class='col-12'>
+        <div class='card'>
+            <div class='card-header'>
+                <h5>3. Test de Respuesta del Servidor</h5>
+            </div>
+            <div class='card-body'>";
+
+// Test de respuestas del servidor
+echo "<h6>Test de loadPartial con diferentes vistas:</h6>";
+
+$testViews = [
+    'school/createSchool' => ['view' => 'school', 'action' => 'loadPartial', 'partialView' => 'createSchool'],
+    'user/assignRole' => ['view' => 'user', 'action' => 'loadPartial', 'partialView' => 'assignRole'],
+    'payroll/dashboard' => ['view' => 'payroll', 'action' => 'loadPartial', 'partialView' => 'dashboard']
+];
+
+foreach ($testViews as $viewName => $params) {
+    echo "<p><strong>Test: $viewName</strong></p>";
+    
+    // Simular parámetros
+    $_GET = $params;
+    $_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
+    
+    echo "<p>Parámetros: " . implode(', ', array_map(fn($k, $v) => "$k=$v", array_keys($params), $params)) . "</p>";
+    
+    ob_start();
+    $indexController->loadPartial();
+    $output = ob_get_clean();
+    
+    if (strpos($output, 'Vista parcial no encontrada') !== false) {
+        echo "<p class='text-danger'>❌ Error: Vista no encontrada</p>";
+        echo "<p>Output: " . htmlspecialchars(substr($output, 0, 200)) . "...</p>";
+    } else {
+        echo "<p class='text-success'>✅ Vista cargada correctamente</p>";
+        echo "<p>Output: " . htmlspecialchars(substr($output, 0, 200)) . "...</p>";
+    }
+    
+    echo "<hr>";
+}
+
+echo "</div></div></div>";
+
+echo "<div class='row mt-4'>
+    <div class='col-12'>
+        <div class='card'>
+            <div class='card-header'>
+                <h5>4. Test de JavaScript</h5>
+            </div>
+            <div class='card-body'>
+                <button class='btn btn-primary' onclick='testUrlConstruction()'>Test Construcción de URLs</button>
+                <button class='btn btn-info' onclick='testAjaxRequest()'>Test Petición AJAX</button>
+                <div id='jsResult' class='mt-3 alert alert-info'>Haz clic en un botón para ver el resultado</div>
             </div>
         </div>
     </div>
+</div>";
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+echo "<script>
+function testUrlConstruction() {
+    const resultDiv = document.getElementById('jsResult');
+    resultDiv.innerHTML = '<div class=\"spinner-border spinner-border-sm\"></div> Probando construcción de URLs...';
+    resultDiv.className = 'alert alert-info';
     
-    <script>
-        // Interceptar console.log
-        const originalLog = console.log;
-        const originalError = console.error;
-        const consoleDiv = document.getElementById('console-log');
+    // Simular la función buildViewUrl de loadView.js
+    function buildViewUrl(viewName) {
+        const baseUrl = window.location.origin + window.location.pathname;
         
-        function addToConsole(message, type = 'log') {
-            const timestamp = new Date().toLocaleTimeString();
-            const color = type === 'error' ? '#ff6b6b' : type === 'warn' ? '#ffd93d' : '#6bcf7f';
-            consoleDiv.innerHTML += `<div style="color: ${color};">[${timestamp}] ${message}</div>`;
-            consoleDiv.scrollTop = consoleDiv.scrollHeight;
-        }
-        
-        console.log = function(...args) {
-            originalLog.apply(console, args);
-            addToConsole(args.join(' '));
-        };
-        
-        console.error = function(...args) {
-            originalError.apply(console, args);
-            addToConsole(args.join(' '), 'error');
-        };
-        
-        function testAjaxDetection() {
-            console.log('=== Test AJAX Detection ===');
-            
-            // Test 1: Request con header X-Requested-With
-            fetch('?view=director&action=loadPartial&partialView=dashboardPartial', {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => {
-                console.log('Respuesta AJAX:', response.status, response.statusText);
-                return response.text();
-            })
-            .then(html => {
-                console.log('Contenido AJAX:', html.substring(0, 200) + '...');
-                document.getElementById('results').innerHTML = '<div class="alert alert-success">AJAX funcionando</div>' + html;
-            })
-            .catch(err => {
-                console.error('Error AJAX:', err);
-                document.getElementById('results').innerHTML = '<div class="alert alert-danger">Error AJAX: ' + err.message + '</div>';
-            });
-        }
-        
-        function testDirectAccess() {
-            console.log('=== Test Acceso Directo ===');
-            
-            // Test 2: Request sin header AJAX
-            fetch('?view=director&action=loadPartial&partialView=dashboardPartial')
-            .then(response => {
-                console.log('Respuesta Directa:', response.status, response.statusText);
-                return response.text();
-            })
-            .then(html => {
-                console.log('Contenido Directo:', html.substring(0, 200) + '...');
-                document.getElementById('results').innerHTML = '<div class="alert alert-info">Acceso directo funcionando</div>' + html;
-            })
-            .catch(err => {
-                console.error('Error Directo:', err);
-                document.getElementById('results').innerHTML = '<div class="alert alert-danger">Error Directo: ' + err.message + '</div>';
-            });
-        }
-        
-        function testLoadPartial() {
-            console.log('=== Test loadPartial ===');
-            
-            // Test 3: Usando loadView
-            if (typeof loadView === 'function') {
-                console.log('loadView disponible, probando...');
-                loadView('dashboardPartial');
-            } else {
-                console.error('loadView no disponible');
-                document.getElementById('results').innerHTML = '<div class="alert alert-warning">loadView no está disponible</div>';
+        if (viewName.includes('?')) {
+            const [view, params] = viewName.split('?');
+            let partialView = view;
+            if (view.includes('/')) {
+                const parts = view.split('/');
+                partialView = parts[1];
             }
+            return `${baseUrl}?view=${view}&action=loadPartial&partialView=${partialView}&${params}`;
         }
         
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('=== Test AJAX Detection Iniciado ===');
-        });
-    </script>
+        if (viewName.includes('/')) {
+            const [module, partialView] = viewName.split('/');
+            return `${baseUrl}?view=${module}&action=loadPartial&partialView=${partialView}`;
+        }
+        
+        return `${baseUrl}?view=${viewName}&action=loadPartial`;
+    }
+    
+    const testCases = [
+        'school/createSchool',
+        'user/assignRole',
+        'user/assignRole?section=usuarios',
+        'payroll/dashboard'
+    ];
+    
+    let results = [];
+    testCases.forEach(testCase => {
+        const url = buildViewUrl(testCase);
+        results.push(`${testCase} → ${url}`);
+    });
+    
+    resultDiv.innerHTML = '<strong>URLs construidas:</strong><br>' + results.join('<br>');
+    resultDiv.className = 'alert alert-success';
+}
+
+function testAjaxRequest() {
+    const resultDiv = document.getElementById('jsResult');
+    resultDiv.innerHTML = '<div class=\"spinner-border spinner-border-sm\"></div> Probando petición AJAX...';
+    resultDiv.className = 'alert alert-info';
+    
+    const url = window.location.origin + window.location.pathname + '?view=school&action=loadPartial&partialView=createSchool';
+    
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
+        resultDiv.innerHTML += '<br>Status: ' + response.status + ' ' + response.statusText;
+        return response.text();
+    })
+    .then(html => {
+        resultDiv.innerHTML += '<br>Contenido: ' + html.substring(0, 100) + '...';
+        resultDiv.className = 'alert alert-success';
+    })
+    .catch(err => {
+        resultDiv.innerHTML += '<br>Error: ' + err.message;
+        resultDiv.className = 'alert alert-danger';
+    });
+}
+</script>
+
 </body>
-</html> 
+</html>";
+?> 

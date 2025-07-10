@@ -215,7 +215,4 @@
     </div>
 </div>
 
-<!-- Incluir archivo JavaScript separado -->
-<script src="app/resources/js/activityDashboard.js"></script>
-
 <?php require_once 'app/views/layouts/footer.php'; ?> 
