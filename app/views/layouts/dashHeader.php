@@ -13,11 +13,12 @@ $sessionManager = new SessionManager();
 // Obtener datos del usuario actual
 $currentUser = $sessionManager->getCurrentUser();
 $userName = $currentUser['full_name'] ?: 'Usuario';
-$userRole = $currentUser['role'] ?: 'Sin rol asignado';
+$userRole = $sessionManager->getUserRole() ?: 'Sin rol asignado';
 
 // Debug: mostrar información del usuario para diagnóstico
-if (empty($currentUser['role'])) {
+if (empty($userRole)) {
     error_log("dashHeader.php - Usuario sin rol: " . json_encode($currentUser));
+    error_log("dashHeader.php - getUserRole(): " . $sessionManager->getUserRole());
 }
 
 require_once ROOT . '/app/views/layouts/dashHead.php';

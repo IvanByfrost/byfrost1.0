@@ -8,6 +8,7 @@ if (!defined('ROOT')) {
 require_once ROOT . '/config.php';
 require_once ROOT . '/app/library/SessionManager.php';
 
+
 // Inicializar SessionManager
 $sessionManager = new SessionManager();
 
@@ -128,6 +129,78 @@ window.safeLoadView = function(viewName) {
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- WIDGET DE ASISTENCIA -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <?php require_once ROOT . '/app/views/widgets/attendanceWidget.php'; ?>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-line"></i> Resumen Rápido</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <h4 class="text-primary"><?= date('d/m/Y') ?></h4>
+                                        <p class="text-muted">Fecha Actual</p>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <h4 class="text-success"><?= date('H:i') ?></h4>
+                                        <p class="text-muted">Hora Actual</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WIDGET DE GRÁFICOS -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <?php require_once ROOT . '/app/views/widgets/chartsWidget.php'; ?>
+                </div>
+            </div>
+
+            <!-- WIDGET DE ESTADÍSTICAS DE ESTUDIANTES -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <?php require_once ROOT . '/app/views/layouts/studentStatsWidget.php'; ?>
+                </div>
+            </div>
+
+            <!-- WIDGET DE ALERTAS DE RIESGO ACADÉMICO -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <?php require_once ROOT . '/app/views/layouts/studentRiskWidget.php'; ?>
+                </div>
+            </div>
+
+            <!-- WIDGET DE EVENTOS PRÓXIMOS -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <?php require_once ROOT . '/app/views/layouts/upcomingEventsWidget.php'; ?>
+                </div>
+            </div>
+
+            <!-- WIDGET DE GESTIÓN DE PAGOS -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <?php require_once ROOT . '/app/views/layouts/paymentWidget.php'; ?>
+                </div>
+            </div>
+
+            <!-- WIDGET DE ESTADÍSTICAS ACADÉMICAS -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <?php require_once ROOT . '/app/views/layouts/academicStatsWidget.php'; ?>
                 </div>
             </div>
 
@@ -529,6 +602,3 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<?php
-require_once __DIR__ . '/../layouts/dashFooter.php';
-?>

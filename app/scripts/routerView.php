@@ -77,7 +77,8 @@ function getControllerMapping() {
         'completeProf' => 'IndexController',
         'unauthorized' => 'ErrorController',
         'Error' => 'ErrorController',
-        'directorDashboard' => 'DirectorDashboardController'
+        'directorDashboard' => 'DirectorDashboardController',
+        'academicAverages' => 'AcademicAveragesController'
     ];
     
     // Escanear directorio de controladores automáticamente
