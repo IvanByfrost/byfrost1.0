@@ -1,57 +1,36 @@
 window.loadView = function(viewName, useAction = false) {
     const target = document.getElementById("mainContent");
-    console.log("Target mainContent:", target);
+    console.log("UnifiedSmartRouter - Target mainContent:", target);
     if (!target) {
-        console.error("Elemento con id 'mainContent' no encontrado.");
+        console.error("UnifiedSmartRouter - Elemento con id 'mainContent' no encontrado.");
         return;
     }
 
-    console.log("Cargando vista:", viewName);
+    console.log("UnifiedSmartRouter - Cargando vista:", viewName);
     
     // Mostrar indicador de carga
-    target.innerHTML = '<div class="text-center p-4"><i class="fas fa-spinner fa-spin"></i> Cargando...</div>';
+    target.innerHTML = '<div class="text-center p-4"><i class="fas fa-spinner fa-spin"></i> UnifiedSmartRouter cargando...</div>';
     
-    // Función para construir URL de manera consistente
+    // Función para construir URL usando UnifiedSmartRouter
     function buildViewUrl(viewName) {
         const baseUrl = window.location.origin + window.location.pathname;
         
-        // Si la vista incluye parámetros (ej: user/assignRole?section=usuarios)
+        // UnifiedSmartRouter - Procesamiento automático de rutas
         if (viewName.includes('?')) {
             const [view, params] = viewName.split('?');
-            // Extraer el module y partialView si la vista tiene formato module/view
-            let module = view;
-            let partialView = view;
-            if (view.includes('/')) {
-                const parts = view.split('/');
-                module = parts[0];
-                partialView = parts[1];
-            }
-            return `${baseUrl}?view=${module}&action=loadPartial&partialView=${partialView}&${params}`;
+            // UnifiedSmartRouter maneja automáticamente los parámetros
+            return `${baseUrl}?view=${view}&${params}`;
         }
         
-        // Si la vista tiene módulo explícito (ej: school/createSchool)
+        // UnifiedSmartRouter - Rutas con módulos (ej: school/createSchool)
         if (viewName.includes('/')) {
-            const [module, partialView] = viewName.split('/');
-            // Lista de vistas que requieren acción directa (sincronizada con UnifiedRouter)
-            const directActionViews = [
-                'school/consultSchool',
-                'user/consultUser', 
-                'user/assignRole',
-                'user/roleHistory',
-                'payroll/dashboard',
-                'activity/dashboard',
-                'student/academicHistory'
-            ];
-            
-            // Si la vista está en la lista de acciones directas
-            if (directActionViews.includes(viewName)) {
-                return `${baseUrl}?view=${module}&action=${partialView}`;
-            }
-            return `${baseUrl}?view=${module}&action=loadPartial&partialView=${partialView}`;
+            const [module, action] = viewName.split('/');
+            // UnifiedSmartRouter detecta automáticamente la acción
+            return `${baseUrl}?view=${module}&action=${action}`;
         }
         
-        // Vista directa
-        return `${baseUrl}?view=${viewName}&action=loadPartial`;
+        // UnifiedSmartRouter - Vista directa
+        return `${baseUrl}?view=${viewName}`;
     }
     
     const localUrl = buildViewUrl(viewName);
