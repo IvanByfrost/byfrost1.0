@@ -71,6 +71,8 @@ window.loadView = function(viewName) {
                 </div>
                 <div class="card-body">
                     <form method="GET" action="#" class="row g-3">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
                         <div class="col-md-3">
                             <label for="report_type" class="form-label">Tipo de Reporte</label>
                             <select class="form-select" id="report_type" name="report_type" onchange="updateReportOptions()">

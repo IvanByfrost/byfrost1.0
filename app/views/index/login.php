@@ -7,7 +7,9 @@ require_once ROOT . '/app/views/layouts/header.php';
 <body>
     <br>
     <div class="container">
-        <form id="loginForm" class="login-box" method="POST" action="<?php echo url ?>app/processes/loginProcess.php">
+        <form id="loginForm" class="login-box" method="POST" action="<?php echo url ?>
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+app/processes/loginProcess.php">
             <!--<div class="logo">
             <a href="index.php">
                 <img src="<?php echo url . rq ?>img\horizontal-logo.svg" alt="Byfrost Logo">

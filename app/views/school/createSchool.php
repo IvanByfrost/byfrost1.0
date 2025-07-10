@@ -7,6 +7,8 @@ $coordinators = $coordinators ?? [];
 ?>
 
 <form method="POST" id="createSchool" class="dash-form">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
 <div class="card-body">
             <h2>Crear Nueva Escuela</h2>
             <p>Complete la información para crear una nueva escuela.</p>
@@ -122,6 +124,8 @@ $coordinators = $coordinators ?? [];
       </div>
       <div class="modal-body">
         <form id="completeSchoolForm">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
           <div class="row g-3">
             <div class="col-md-6 col-12">
               <div class="form-group mb-3">
@@ -176,6 +180,8 @@ $coordinators = $coordinators ?? [];
       </div>
       <div class="modal-body">
         <form id="searchDirectorForm" class="mb-3" autocomplete="off">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
           <div class="input-group">
             <input type="text" class="form-control w-100" id="search_director_query" placeholder="Número de documento">
             <button type="submit" class="btn btn-primary">Buscar</button>
@@ -197,6 +203,8 @@ $coordinators = $coordinators ?? [];
       </div>
       <div class="modal-body">
         <form id="searchCoordinatorForm" class="mb-3" autocomplete="off">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
           <div class="input-group">
             <input type="text" class="form-control w-100" id="search_coordinator_query" placeholder="Número de documento">
             <button type="submit" class="btn btn-primary">Buscar</button>

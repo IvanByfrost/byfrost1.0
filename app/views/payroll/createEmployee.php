@@ -40,6 +40,8 @@ include 'app/views/layouts/formView.php';
                 </div>
                 <div class="card-body">
                     <form method="POST" action="index.php?view=payroll&action=createEmployee" id="createEmployeeForm">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
                         <div class="row">
                             <!-- Información básica -->
                             <div class="col-md-6">

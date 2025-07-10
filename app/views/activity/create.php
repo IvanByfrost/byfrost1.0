@@ -29,6 +29,8 @@
                     <?php endif; ?>
                     
                     <form id="createActivityForm" method="POST" action="activity/createActivity">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">

@@ -37,6 +37,8 @@ $search = $search ?? '';
 
             <!-- Formulario de búsqueda -->
             <form id="schoolSearchForm" class="mb-4" onsubmit="return searchSchoolAJAX(event);">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
                 <input type="hidden" name="view" value="school">
                 <input type="hidden" name="action" value="consultSchool">
                 <div class="row">

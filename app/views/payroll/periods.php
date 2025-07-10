@@ -88,6 +88,8 @@ window.loadView = function(viewName) {
                 </div>
                 <div class="card-body">
                     <form method="GET" action="#" class="row g-3">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
                         <div class="col-md-3">
                             <label for="year" class="form-label">Año</label>
                             <select class="form-select" id="year" name="year">

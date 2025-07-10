@@ -11,6 +11,8 @@
         <h1>Horarios de Estudiantes</h1>
 
         <form action="#" method="post">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
             <label for="estudiante">Seleccionar Estudiante:</label>
             <select name="estudiante" id="estudiante">
                 <option value="0">Seleccione un estudiante</option>

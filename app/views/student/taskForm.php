@@ -11,6 +11,8 @@
         <div class="content-card">
             <div class="card-body">
                 <form method="POST" class="form-horizontal">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
                     <div class="row">
                         <div class="col-md-8">
                             <div class="form-group">

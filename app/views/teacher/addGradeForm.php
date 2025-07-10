@@ -4,6 +4,8 @@
     </div>
     <div class="card-body">
         <form id="addGradeForm">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">

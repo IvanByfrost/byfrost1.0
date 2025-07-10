@@ -16,6 +16,8 @@
     <span id="closeEditUserModal" style="position:absolute; top:10px; right:15px; cursor:pointer; font-size:1.5rem;">&times;</span>
     <h3>Editar usuario</h3>
     <form id="editUserForm">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
       <input type="hidden" id="editUserId" name="user_id">
       <div class="mb-2">
         <input type="text" class="inputEstilo1" id="editFirstName" name="first_name" placeholder="Nombre" required>

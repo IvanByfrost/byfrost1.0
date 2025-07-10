@@ -33,6 +33,8 @@ if (empty($formData) && !empty($school)) {
             <?php endif; ?>
             
             <form method="POST" id="editSchoolForm" class="dash-form">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
                 <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0">
@@ -168,6 +170,8 @@ if (empty($formData) && !empty($school)) {
       </div>
       <div class="modal-body">
         <form id="searchDirectorForm" class="mb-3" autocomplete="off">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
           <div class="input-group">
             <input type="text" class="form-control w-100" id="search_director_query" placeholder="Número de documento">
             <button type="submit" class="btn btn-primary">Buscar</button>
@@ -203,6 +207,8 @@ if (empty($formData) && !empty($school)) {
       </div>
       <div class="modal-body">
         <form id="searchCoordinatorForm" class="mb-3" autocomplete="off">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
           <div class="input-group">
             <input type="text" class="form-control w-100" id="search_coordinator_query" placeholder="Número de documento">
             <button type="submit" class="btn btn-primary">Buscar</button>

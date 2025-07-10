@@ -15,6 +15,8 @@
                     <?php if (isset($permissions) && !empty($permissions)): ?>
                         <!-- Formulario de edición de permisos -->
                         <form id="editRoleForm" method="post">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
                             <input type="hidden" name="role_type" value="<?= htmlspecialchars($permissions['role_type']) ?>">
                             
                             <div class="row">
@@ -70,6 +72,8 @@
                     <?php else: ?>
                         <!-- Selector de rol -->
                         <form method="get" action="">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
                             <input type="hidden" name="view" value="role">
                             <input type="hidden" name="action" value="edit">
                             

@@ -1,4 +1,6 @@
 <form id="changePasswordForm">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
     <div class="mb-3">
         <input type="password" class="inputEstilo1" id="currentPassword" name="currentPassword"
             placeholder="Contraseña actual" required>

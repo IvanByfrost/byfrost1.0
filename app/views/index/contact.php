@@ -11,6 +11,8 @@ require_once __DIR__ . '/../layouts/header.php';
   <div class="form-container">
     <h2>Contáctanos</h2>
     <form action="#" method="POST">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
       <div class="form-group">
         <label for="nombre">Nombre completo *</label>
         <input type="text" id="nombre" name="nombre" required minlength="3" maxlength="50" placeholder="Tu nombre">

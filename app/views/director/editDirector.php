@@ -4,6 +4,8 @@
     <br><br>
     <?php if (isset($director)): ?>
     <form action="/software_academico/rector/actualizar" method="POST">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
         <input type="hidden" name="id_rector" value="<?php echo htmlspecialchars($director['id_rector']); ?>">
 
         <label for="nombre">Nombre:</label><br>

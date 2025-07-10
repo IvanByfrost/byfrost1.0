@@ -36,6 +36,8 @@ if (!function_exists('renderRoleOptions')) {
                 </div>
                 <div class="card-body">
                     <form id="searchUserForm" method="POST" action="#" onsubmit="return false;">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group">

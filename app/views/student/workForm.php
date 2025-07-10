@@ -1,5 +1,7 @@
 <h2><?= isset($work) ? 'Editar' : 'Nuevo' ?> Trabajo</h2>
 <form method="post" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
     <input type="text" name="title" required placeholder="Título" value="<?= htmlspecialchars($work['title'] ?? '') ?>">
     <textarea name="description" placeholder="Descripción"><?= htmlspecialchars($work['description'] ?? '') ?></textarea>
     <input type="date" name="due_date" value="<?= htmlspecialchars($work['due_date'] ?? '') ?>">

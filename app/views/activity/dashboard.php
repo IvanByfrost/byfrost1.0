@@ -116,6 +116,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="createActivityForm">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6">

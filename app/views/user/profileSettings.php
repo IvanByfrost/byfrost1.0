@@ -177,6 +177,8 @@
 
     <!-- Formulario de configuración -->
     <form id="profileSettingsForm" enctype="multipart/form-data" method="post">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
       <!-- Sección de documento -->
       <div class="document-section">
         <h4>📋 Información de Documento</h4>

@@ -28,6 +28,8 @@ if (empty($token)) {
                     </div>
                     
                     <form id="resetPasswordForm">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
                         <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
                         
                         <div class="mb-3">

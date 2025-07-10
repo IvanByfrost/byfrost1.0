@@ -12,6 +12,8 @@ require_once ROOT . '/app/views/layouts/header.php';
 <br>
 <div class="container">
     <form id="completeProfile" class="login-box">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
         <h2>¡Vamos a completar tu perfil!</h2>
         <br>
         <input type="hidden" name="userDocument" value="<?php echo htmlspecialchars($_GET['user'] ?? '') ?>">

@@ -60,6 +60,8 @@ function renderRoleOptions($userRole, $selected = '') {
                 </div>
                 <div class="card-body">
                     <form id="searchUserForm" method="POST" action="#" onsubmit="return false;">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
@@ -142,6 +144,8 @@ function renderRoleOptions($userRole, $selected = '') {
             </div>
             <div class="modal-body">
                 <form id="assignRoleForm" onsubmit="return false;">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
                     <input type="hidden" id="modal_user_id" name="user_id">
                     
                     <div class="mb-3">

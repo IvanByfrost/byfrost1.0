@@ -21,7 +21,9 @@ require_once ROOT . '/app/views/layouts/dashHeader.php';
                     <h4 class="mb-0"><i class="fas fa-calendar-plus"></i> Crear Nuevo Evento</h4>
                 </div>
                 <div class="card-body">
-                    <form id="createEventForm" method="post" action="<?= url . app ?>processes/eventProcess.php">
+                    <form id="createEventForm" method="post" action="<?= url . app ?>
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+processes/eventProcess.php">
                         <div class="mb-3">
                             <label for="eventTitle" class="form-label">Título del Evento</label>
                             <input type="text" class="form-control" id="eventTitle" name="eventTitle" required maxlength="100">

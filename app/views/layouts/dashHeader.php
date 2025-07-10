@@ -64,7 +64,9 @@ require_once ROOT . '/app/views/layouts/dashHead.php';
                 <button type="button" onclick="loadView('user/settingsRoles?section=recuperar'); closeUserMenu();" class="dropdown-btn">Recuperar contraseña</button>
                 <button type="button" onclick="loadView('user/profileSettings'); closeUserMenu();" class="dropdown-btn">Mi perfil</button>
             </div>
-            <form action="<?php echo url . app ?>processes/outProcess.php" method="get" style="margin: 0; padding: 10px;">
+            <form action="<?php echo url . app ?>
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+processes/outProcess.php" method="get" style="margin: 0; padding: 10px;">
                 <button type="submit" class="logout-btn">Cerrar sesión</button>
             </form>
         </div>

@@ -21,6 +21,8 @@ require_once ROOT . '/app/views/layouts/header.php';
                     </div>
                     
                     <form id="forgotPasswordForm">
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+
                         <div class="mb-3">
                             <select class="inputEstilo1" id="credType" name="credType" required>
                                 <option value="">Seleccione tipo de documento</option>

@@ -10,7 +10,9 @@
                     </h4>
                 </div>
                 <div class="card-body">
-                    <form id="editActivityForm" method="POST" action="activity/updateActivity/<?= $activity['activity_id'] ?>">
+                    <form id="editActivityForm" method="POST" action="activity/updateActivity/<?= $activity['activity_id'] ?>
+    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
+">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
