@@ -225,5 +225,106 @@ function refreshIcons() {
     }
 }
 
+// Función para búsqueda AJAX
+function searchUserAJAX(e) {
+    e.preventDefault();
+    
+    const searchType = document.getElementById('search_type').value;
+    let searchData = {};
+    
+    // Validación específica para cada tipo de búsqueda
+    switch(searchType) {
+        case 'document':
+            const credentialType = document.getElementById('credential_type').value;
+            const credentialNumber = document.getElementById('credential_number').value;
+            
+            if (!credentialType || !credentialNumber) {
+                alert('Por favor, selecciona el tipo de documento e ingresa el número.');
+                return false;
+            }
+            
+            searchData = {
+                search_type: 'document',
+                credential_type: credentialType,
+                credential_number: credentialNumber
+            };
+            break;
+            
+        case 'role':
+            const roleType = document.getElementById('role_type').value;
+            
+            if (!roleType) {
+                alert('Por favor, selecciona un rol.');
+                return false;
+            }
+            
+            searchData = {
+                search_type: 'role',
+                role_type: roleType
+            };
+            break;
+            
+        case 'name':
+            const nameSearch = document.getElementById('name_search').value.trim();
+            
+            if (!nameSearch) {
+                alert('Por favor, ingresa un nombre para buscar.');
+                return false;
+            }
+            
+            searchData = {
+                search_type: 'name',
+                name_search: nameSearch
+            };
+            break;
+            
+        default:
+            alert('Por favor, selecciona un tipo de búsqueda.');
+            return false;
+    }
+    
+    // Construir URL con parámetros
+    const params = new URLSearchParams(searchData);
+    
+    // Usar loadView si está disponible, sino redirigir
+    if (typeof loadView === 'function') {
+        loadView('user/consultUser?' + params.toString());
+    } else {
+        const url = `${window.location.origin}${window.location.pathname}?view=user&action=consultUser&${params.toString()}`;
+        window.location.href = url;
+    }
+    
+    return false;
+}
+
+// Función para confirmar eliminación de usuario
+function confirmDeleteUser(userId) {
+    if (confirm('¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.')) {
+        if (typeof loadView === 'function') {
+            loadView('user/delete?id=' + userId);
+        } else {
+            const url = `${window.location.origin}${window.location.pathname}?view=user&action=delete&id=${userId}`;
+            window.location.href = url;
+        }
+    }
+}
+
+// Función para confirmar desactivación de usuario
+function confirmDeactivateUser(userId) {
+    if (confirm('¿Estás seguro de que deseas desactivar este usuario? El usuario no podrá acceder al sistema.')) {
+        loadView('user/deactivate?id=' + userId);
+    }
+}
+
+// Función para confirmar activación de usuario
+function confirmActivateUser(userId) {
+    if (confirm('¿Estás seguro de que deseas activar este usuario? El usuario podrá acceder al sistema nuevamente.')) {
+        loadView('user/activate?id=' + userId);
+    }
+}
+
+// Inicializar campos al cargar la página
+// Eliminar la función inline toggleSearchFields y su llamada en DOMContentLoaded
+
 // Inicializar cuando el DOM esté listo
 waitForDOM();
