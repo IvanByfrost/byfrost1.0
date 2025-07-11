@@ -1,5 +1,4 @@
 <?php
-// Verificar si hay datos de la escuela
 $school = $school ?? [];
 ?>
 
@@ -12,7 +11,7 @@ $school = $school ?? [];
                     <p>Información completa de la escuela.</p>
                 </div>
                 <div>
-                    <button type="button" class="btn btn-warning me-2" onclick="loadView('school/edit?id=<?php echo $school['school_id']; ?>')">
+                    <button type="button" class="btn btn-warning me-2" onclick="loadView('school/edit?id=<?= $school['school_id']; ?>')">
                         <i class="fas fa-edit"></i> Editar
                     </button>
                     <button type="button" class="btn btn-secondary" onclick="loadView('school/consultSchool')">
@@ -20,18 +19,18 @@ $school = $school ?? [];
                     </button>
                 </div>
             </div>
-            
-            <?php if (empty($school)): ?>
+
+            <?php if (empty($school)) : ?>
                 <div class="alert alert-warning">
                     <i class="fas fa-exclamation-triangle"></i> 
                     No se encontró información de la escuela.
                 </div>
-            <?php else: ?>
+            <?php else : ?>
                 <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0">
                             <i class="fas fa-school"></i> 
-                            <?php echo htmlspecialchars($school['school_name']); ?>
+                            <?= htmlspecialchars($school['school_name']); ?>
                         </h5>
                     </div>
                     <div class="card-body">
@@ -41,23 +40,23 @@ $school = $school ?? [];
                                 <table class="table table-borderless">
                                     <tr>
                                         <td><strong>ID:</strong></td>
-                                        <td><?php echo htmlspecialchars($school['school_id']); ?></td>
+                                        <td><?= htmlspecialchars($school['school_id']); ?></td>
                                     </tr>
                                     <tr>
                                         <td><strong>Nombre:</strong></td>
-                                        <td><?php echo htmlspecialchars($school['school_name']); ?></td>
+                                        <td><?= htmlspecialchars($school['school_name']); ?></td>
                                     </tr>
                                     <tr>
                                         <td><strong>Código DANE:</strong></td>
-                                        <td><?php echo htmlspecialchars($school['school_dane']); ?></td>
+                                        <td><?= htmlspecialchars($school['school_dane']); ?></td>
                                     </tr>
                                     <tr>
                                         <td><strong>NIT:</strong></td>
-                                        <td><?php echo htmlspecialchars($school['school_document']); ?></td>
+                                        <td><?= htmlspecialchars($school['school_document']); ?></td>
                                     </tr>
                                     <tr>
                                         <td><strong>Cupo Total:</strong></td>
-                                        <td><?php echo htmlspecialchars($school['total_quota'] ?? 'No especificado'); ?></td>
+                                        <td><?= htmlspecialchars($school['total_quota'] ?? 'No especificado'); ?></td>
                                     </tr>
                                 </table>
                             </div>
@@ -66,20 +65,20 @@ $school = $school ?? [];
                                 <table class="table table-borderless">
                                     <tr>
                                         <td><strong>Dirección:</strong></td>
-                                        <td><?php echo htmlspecialchars($school['address'] ?? 'No especificada'); ?></td>
+                                        <td><?= htmlspecialchars($school['address'] ?? 'No especificada'); ?></td>
                                     </tr>
                                     <tr>
                                         <td><strong>Teléfono:</strong></td>
-                                        <td><?php echo htmlspecialchars($school['phone'] ?? 'No especificado'); ?></td>
+                                        <td><?= htmlspecialchars($school['phone'] ?? 'No especificado'); ?></td>
                                     </tr>
                                     <tr>
                                         <td><strong>Email:</strong></td>
                                         <td>
-                                            <?php if (!empty($school['email'])): ?>
-                                                <a href="mailto:<?php echo htmlspecialchars($school['email']); ?>">
-                                                    <?php echo htmlspecialchars($school['email']); ?>
+                                            <?php if (!empty($school['email'])) : ?>
+                                                <a href="mailto:<?= htmlspecialchars($school['email']); ?>">
+                                                    <?= htmlspecialchars($school['email']); ?>
                                                 </a>
-                                            <?php else: ?>
+                                            <?php else : ?>
                                                 No especificado
                                             <?php endif; ?>
                                         </td>
@@ -87,9 +86,9 @@ $school = $school ?? [];
                                 </table>
                             </div>
                         </div>
-                        
+
                         <hr>
-                        
+
                         <div class="row">
                             <div class="col-md-6">
                                 <h6 class="text-primary mb-3">Personal Asignado</h6>
@@ -97,11 +96,11 @@ $school = $school ?? [];
                                     <tr>
                                         <td><strong>Director:</strong></td>
                                         <td>
-                                            <?php if (!empty($school['director_name'])): ?>
+                                            <?php if (!empty($school['director_name'])) : ?>
                                                 <span class="badge bg-primary">
-                                                    <?php echo htmlspecialchars($school['director_name']); ?>
+                                                    <?= htmlspecialchars($school['director_name']); ?>
                                                 </span>
-                                            <?php else: ?>
+                                            <?php else : ?>
                                                 <span class="badge bg-secondary">No asignado</span>
                                             <?php endif; ?>
                                         </td>
@@ -109,11 +108,11 @@ $school = $school ?? [];
                                     <tr>
                                         <td><strong>Coordinador:</strong></td>
                                         <td>
-                                            <?php if (!empty($school['coordinator_name'])): ?>
+                                            <?php if (!empty($school['coordinator_name'])) : ?>
                                                 <span class="badge bg-info">
-                                                    <?php echo htmlspecialchars($school['coordinator_name']); ?>
+                                                    <?= htmlspecialchars($school['coordinator_name']); ?>
                                                 </span>
-                                            <?php else: ?>
+                                            <?php else : ?>
                                                 <span class="badge bg-secondary">No asignado</span>
                                             <?php endif; ?>
                                         </td>
@@ -126,9 +125,9 @@ $school = $school ?? [];
                                     <tr>
                                         <td><strong>Estado:</strong></td>
                                         <td>
-                                            <?php if ($school['is_active']): ?>
+                                            <?php if (!empty($school['is_active'])) : ?>
                                                 <span class="badge bg-success">Activa</span>
-                                            <?php else: ?>
+                                            <?php else : ?>
                                                 <span class="badge bg-danger">Inactiva</span>
                                             <?php endif; ?>
                                         </td>
@@ -136,14 +135,14 @@ $school = $school ?? [];
                                 </table>
                             </div>
                         </div>
-                        
+
                         <div class="mt-4">
                             <h6 class="text-primary mb-3">Acciones</h6>
                             <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-warning" onclick="loadView('school/edit?id=<?php echo $school['school_id']; ?>')">
+                                <button type="button" class="btn btn-warning" onclick="loadView('school/edit?id=<?= $school['school_id']; ?>')">
                                     <i class="fas fa-edit"></i> Editar Escuela
                                 </button>
-                                <button type="button" class="btn btn-danger" onclick="confirmDelete(<?php echo $school['school_id']; ?>)">
+                                <button type="button" class="btn btn-danger" onclick="confirmDelete(<?= $school['school_id']; ?>)">
                                     <i class="fas fa-trash"></i> Eliminar Escuela
                                 </button>
                                 <button type="button" class="btn btn-secondary" onclick="loadView('school/consultSchool')">
@@ -157,11 +156,3 @@ $school = $school ?? [];
         </div>
     </div>
 </div>
-
-<script>
-function confirmDelete(schoolId) {
-    if (confirm('¿Estás seguro de que deseas eliminar esta escuela? Esta acción no se puede deshacer.')) {
-        loadView('school/delete?id=' + schoolId);
-    }
-}
-</script> 

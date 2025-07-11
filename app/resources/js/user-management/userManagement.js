@@ -1,17 +1,15 @@
 /**
- * JavaScript para manejar la gestión de usuarios (asignación de roles, consulta e historial)
- * Módulo principal que coordina los sub-módulos
+ * JavaScript para gestión de usuarios (asignación, consulta e historial)
+ * Módulo principal
  */
 
-// Definir la URL base solo si no está definida
 if (typeof window.USER_MANAGEMENT_BASE_URL === 'undefined') {
     window.USER_MANAGEMENT_BASE_URL = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
 }
 
-// Función para mostrar errores
 function showError(message) {
-    console.error('Error:', message);
-    
+    console.error('[UserManagement] Error:', message);
+
     if (typeof Swal !== 'undefined') {
         Swal.fire({
             title: 'Error',
@@ -24,7 +22,30 @@ function showError(message) {
     }
 }
 
-// Función para esperar a que el DOM esté listo
+function showConfirm({ title, text, confirmButtonText, onConfirm }) {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title,
+            text,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: confirmButtonText || 'Sí, continuar'
+        }).then(result => {
+            if (result.isConfirmed && typeof onConfirm === 'function') {
+                onConfirm();
+            }
+        });
+    } else {
+        if (confirm(text)) {
+            if (typeof onConfirm === 'function') {
+                onConfirm();
+            }
+        }
+    }
+}
+
 function waitForDOM() {
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initializeUserManagement);
@@ -33,295 +54,247 @@ function waitForDOM() {
     }
 }
 
-// Función para inicializar cuando el DOM esté listo
 function initializeUserManagement() {
-    console.log('Inicializando sistema de gestión de usuarios...');
-    
-    // Verificar que jQuery esté disponible
-    if (typeof $ === 'undefined') {
-        console.error('jQuery no está disponible. El sistema de gestión de usuarios no funcionará.');
-        return;
-    }
-    
-    // Verificar que los elementos necesarios existan
+    console.log('[UserManagement] Inicializando...');
+
     const searchForm = document.getElementById('searchUserForm');
     const roleHistoryForm = document.getElementById('roleHistoryForm');
     const usersTable = document.getElementById('usersWithoutRoleTable');
     const modal = document.getElementById('assignRoleModal');
-    
-    console.log('Elementos encontrados:', {
+
+    console.log('[UserManagement] Elementos encontrados:', {
         searchForm: !!searchForm,
         roleHistoryForm: !!roleHistoryForm,
         usersTable: !!usersTable,
         modal: !!modal
     });
-    
-    // Si no encontramos ningún formulario, probablemente no estamos en la página correcta
+
     if (!searchForm && !roleHistoryForm) {
-        console.log('No estamos en una página de gestión de usuarios. Saltando inicialización.');
+        console.log('[UserManagement] No es una página de gestión de usuarios.');
         return;
     }
-    
-    // Configurar formularios para usar AJAX
+
     if (searchForm) {
-        console.log('Configurando eventos del formulario de búsqueda...');
         searchForm.removeEventListener('submit', handleSearchSubmit);
         searchForm.addEventListener('submit', handleSearchSubmit);
     }
-    
+
     if (roleHistoryForm) {
-        console.log('Configurando eventos del formulario de historial de roles...');
         roleHistoryForm.removeEventListener('submit', handleRoleHistorySubmit);
         roleHistoryForm.addEventListener('submit', handleRoleHistorySubmit);
     }
-    
-    // Determinar qué tipo de página es y inicializar específicamente
+
     if (usersTable && modal) {
-        // Es la página de asignación de roles
-        console.log('Detectada página de asignación de roles...');
+        console.log('[UserManagement] Página de asignación de roles detectada.');
         initializeAssignRole();
     } else if (roleHistoryForm) {
-        // Es la página de historial de roles
-        console.log('Detectada página de historial de roles...');
+        console.log('[UserManagement] Página de historial de roles detectada.');
         initializeRoleHistory();
     } else {
-        // Es la página de consulta de usuarios
-        console.log('Detectada página de consulta de usuarios...');
+        console.log('[UserManagement] Página de consulta de usuarios detectada.');
         initializeConsultUser();
     }
 }
 
-// Función para inicializar después de que loadViews.js cargue el contenido
-function initUserManagementAfterLoad() {
-    console.log('Inicializando gestión de usuarios después de carga de vista...');
-    
-    // Pequeño delay para asegurar que el DOM esté actualizado
+window.initUserManagementAfterLoad = function() {
+    console.log('[UserManagement] Reinicializando tras carga dinámica...');
     setTimeout(() => {
         initializeUserManagement();
     }, 100);
-}
+};
 
-// Asegurar que la función esté disponible globalmente
-window.initUserManagementAfterLoad = initUserManagementAfterLoad;
-
-// Inicializar específicamente para asignación de roles
 function initializeAssignRole() {
-    console.log('Inicializando funcionalidad de asignación de roles...');
-    
-    const usersTable = document.getElementById('usersWithoutRoleTable');
-    const modal = document.getElementById('assignRoleModal');
-    
-    if (!usersTable) {
-        console.error('Tabla de usuarios sin rol no encontrada');
-        return;
-    }
-    
-    if (!modal) {
-        console.error('Modal de asignación no encontrado');
-    }
-    
-    // Cargar usuarios sin rol al cargar la página
-    console.log('Cargando usuarios sin rol...');
+    console.log('[UserManagement] Inicializando asignación de roles...');
     loadUsersWithoutRole();
 }
 
-// Inicializar específicamente para historial de roles
 function initializeRoleHistory() {
-    console.log('Inicializando funcionalidad de historial de roles...');
-    console.log('Formulario de historial de roles configurado correctamente');
+    console.log('[UserManagement] Inicializando historial de roles...');
 }
 
-// Inicializar específicamente para consulta de usuarios
 function initializeConsultUser() {
-    console.log('Inicializando funcionalidad de consulta de usuarios...');
-    
-    // Configurar campos dinámicos para búsqueda
+    console.log('[UserManagement] Inicializando consulta de usuarios...');
     const searchType = document.getElementById('search_type');
     if (searchType) {
         searchType.addEventListener('change', window.toggleSearchFields);
     }
-    
-    console.log('Formulario de consulta configurado correctamente');
 }
 
-// Manejador del envío del formulario de búsqueda general
 function handleSearchSubmit(e) {
-    e.preventDefault(); // Prevenir envío normal del formulario
-    console.log('Formulario enviado, procesando búsqueda...');
-    
-    // Determinar qué tipo de página es
+    e.preventDefault();
+    console.log('[UserManagement] Formulario de búsqueda enviado.');
+
     const usersTable = document.getElementById('usersWithoutRoleTable');
     const modal = document.getElementById('assignRoleModal');
-    
+
     if (usersTable && modal) {
-        // Es asignación de roles - búsqueda por documento
         const credentialType = document.getElementById('credential_type').value;
         const credentialNumber = document.getElementById('credential_number').value;
-        
+
         if (!credentialType || !credentialNumber) {
             showError('Por favor, selecciona el tipo de documento e ingresa el número.');
             return;
         }
-        
-        console.log('Realizando búsqueda para asignación de roles...');
+
+        console.log('[UserManagement] Búsqueda para asignación de roles...');
         searchUsersByDocument(credentialType, credentialNumber);
     } else {
-        // Es consulta de usuarios - puede ser por documento o por rol
         const searchType = document.getElementById('search_type').value;
-        
+
         if (!searchType) {
             showError('Por favor, selecciona el tipo de búsqueda.');
             return;
         }
-        
+
         if (searchType === 'document') {
             const credentialType = document.getElementById('credential_type').value;
             const credentialNumber = document.getElementById('credential_number').value;
-            
+
             if (!credentialType || !credentialNumber) {
                 showError('Por favor, selecciona el tipo de documento e ingresa el número.');
                 return;
             }
-            
-            console.log('Realizando búsqueda por documento para consulta...');
+
+            console.log('[UserManagement] Búsqueda por documento.');
             searchUsersForConsult(credentialType, credentialNumber);
         } else if (searchType === 'role') {
             const roleType = document.getElementById('role_type').value;
-            
+
             if (!roleType) {
                 showError('Por favor, selecciona un rol.');
                 return;
             }
-            
-            console.log('Realizando búsqueda por rol para consulta...');
+
+            console.log('[UserManagement] Búsqueda por rol.');
             searchUsersByRole(roleType);
         }
     }
 }
 
-// Manejador del envío del formulario de historial de roles
 function handleRoleHistorySubmit(e) {
-    e.preventDefault(); // Prevenir envío normal del formulario
-    console.log('Formulario de historial enviado, procesando búsqueda...');
-    
+    e.preventDefault();
+    console.log('[UserManagement] Formulario de historial enviado.');
+
     const credentialType = document.getElementById('credential_type').value;
     const credentialNumber = document.getElementById('credential_number').value;
-    
+
     if (!credentialType || !credentialNumber) {
         showError('Por favor, selecciona el tipo de documento e ingresa el número.');
         return;
     }
-    
-    console.log('Realizando búsqueda de historial de roles...');
+
+    console.log('[UserManagement] Buscando historial de roles...');
     searchRoleHistory(credentialType, credentialNumber);
 }
 
-// Función para refrescar iconos (si es necesario)
 function refreshIcons() {
-    // Esta función puede ser útil para refrescar iconos de FontAwesome
-    // si se cargan dinámicamente
     if (typeof FontAwesome !== 'undefined') {
         FontAwesome.dom.i2svg();
     }
 }
 
-// Función para búsqueda AJAX
 function searchUserAJAX(e) {
     e.preventDefault();
-    
+
     const searchType = document.getElementById('search_type').value;
     let searchData = {};
-    
-    // Validación específica para cada tipo de búsqueda
-    switch(searchType) {
+
+    switch (searchType) {
         case 'document':
             const credentialType = document.getElementById('credential_type').value;
             const credentialNumber = document.getElementById('credential_number').value;
-            
+
             if (!credentialType || !credentialNumber) {
-                alert('Por favor, selecciona el tipo de documento e ingresa el número.');
+                showError('Por favor, completa los datos de documento.');
                 return false;
             }
-            
+
             searchData = {
                 search_type: 'document',
                 credential_type: credentialType,
                 credential_number: credentialNumber
             };
             break;
-            
+
         case 'role':
             const roleType = document.getElementById('role_type').value;
-            
+
             if (!roleType) {
-                alert('Por favor, selecciona un rol.');
+                showError('Por favor, selecciona un rol.');
                 return false;
             }
-            
+
             searchData = {
                 search_type: 'role',
                 role_type: roleType
             };
             break;
-            
+
         case 'name':
             const nameSearch = document.getElementById('name_search').value.trim();
-            
+
             if (!nameSearch) {
-                alert('Por favor, ingresa un nombre para buscar.');
+                showError('Por favor, ingresa un nombre.');
                 return false;
             }
-            
+
             searchData = {
                 search_type: 'name',
                 name_search: nameSearch
             };
             break;
-            
+
         default:
-            alert('Por favor, selecciona un tipo de búsqueda.');
+            showError('Selecciona un tipo de búsqueda.');
             return false;
     }
-    
-    // Construir URL con parámetros
+
     const params = new URLSearchParams(searchData);
-    
-    // Usar loadView si está disponible, sino redirigir
     if (typeof loadView === 'function') {
         loadView('user/consultUser?' + params.toString());
     } else {
         const url = `${window.location.origin}${window.location.pathname}?view=user&action=consultUser&${params.toString()}`;
         window.location.href = url;
     }
-    
+
     return false;
 }
 
-// Función para confirmar eliminación de usuario
 function confirmDeleteUser(userId) {
-    if (confirm('¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.')) {
-        if (typeof loadView === 'function') {
-            loadView('user/delete?id=' + userId);
-        } else {
-            const url = `${window.location.origin}${window.location.pathname}?view=user&action=delete&id=${userId}`;
-            window.location.href = url;
+    showConfirm({
+        title: 'Eliminar Usuario',
+        text: '¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.',
+        confirmButtonText: 'Sí, eliminar',
+        onConfirm: () => {
+            if (typeof loadView === 'function') {
+                loadView(`user/delete?id=${userId}`);
+            } else {
+                window.location.href = `${window.location.origin}${window.location.pathname}?view=user&action=delete&id=${userId}`;
+            }
         }
-    }
+    });
 }
 
-// Función para confirmar desactivación de usuario
 function confirmDeactivateUser(userId) {
-    if (confirm('¿Estás seguro de que deseas desactivar este usuario? El usuario no podrá acceder al sistema.')) {
-        loadView('user/deactivate?id=' + userId);
-    }
+    showConfirm({
+        title: 'Desactivar Usuario',
+        text: '¿Estás seguro de que deseas desactivar este usuario? No podrá acceder al sistema.',
+        confirmButtonText: 'Sí, desactivar',
+        onConfirm: () => {
+            loadView(`user/deactivate?id=${userId}`);
+        }
+    });
 }
 
-// Función para confirmar activación de usuario
 function confirmActivateUser(userId) {
-    if (confirm('¿Estás seguro de que deseas activar este usuario? El usuario podrá acceder al sistema nuevamente.')) {
-        loadView('user/activate?id=' + userId);
-    }
+    showConfirm({
+        title: 'Activar Usuario',
+        text: '¿Estás seguro de que deseas activar este usuario? Podrá acceder al sistema nuevamente.',
+        confirmButtonText: 'Sí, activar',
+        onConfirm: () => {
+            loadView(`user/activate?id=${userId}`);
+        }
+    });
 }
 
-// Inicializar cuando el DOM esté listo
 waitForDOM();

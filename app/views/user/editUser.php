@@ -38,51 +38,11 @@ try {
     exit;
 }
 
-// Procesar formulario si se envió
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $success = false;
-    $message = '';
-    $error = '';
-    
-    try {
-        // Validar datos del formulario
-        $firstName = htmlspecialchars($_POST['first_name'] ?? '');
-        $lastName = htmlspecialchars($_POST['last_name'] ?? '');
-        $email = htmlspecialchars($_POST['email'] ?? '');
-        $phone = htmlspecialchars($_POST['phone'] ?? '');
-        $address = htmlspecialchars($_POST['address'] ?? '');
-        $dateOfBirth = htmlspecialchars($_POST['date_of_birth'] ?? '');
-        $credentialType = htmlspecialchars($_POST['credential_type'] ?? '');
-        $credentialNumber = htmlspecialchars($_POST['credential_number'] ?? '');
-        
-        // Validaciones básicas
-        if (empty($firstName) || empty($lastName) || empty($email)) {
-            throw new Exception('Los campos nombre, apellido y email son obligatorios.');
-        }
-        
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new Exception('El formato del email no es válido.');
-        }
-        
-        // Aquí normalmente guardarías los datos en la base de datos
-        // Por ahora simulamos éxito
-        $success = true;
-        $message = 'Usuario actualizado exitosamente.';
-        
-        // Actualizar datos del usuario para mostrar en el formulario
-        $user['first_name'] = $firstName;
-        $user['last_name'] = $lastName;
-        $user['email'] = $email;
-        $user['phone'] = $phone;
-        $user['address'] = $address;
-        $user['date_of_birth'] = $dateOfBirth;
-        $user['credential_type'] = $credentialType;
-        $user['credential_number'] = $credentialNumber;
-        
-    } catch (Exception $e) {
-        $error = $e->getMessage();
-    }
-}
+// Mensajes que podrías pasar tras redirección desde tu proceso
+$success = $_GET['success'] ?? false;
+$message = $_GET['message'] ?? '';
+$error = $_GET['error'] ?? '';
+
 ?>
 
 <div class="container mt-4">
@@ -105,14 +65,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <!-- Mensajes -->
-            <?php if (isset($success) && $success && !empty($message)): ?>
+            <?php if ($success && !empty($message)) : ?>
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($message); ?>
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             <?php endif; ?>
 
-            <?php if (isset($error) && !empty($error)): ?>
+            <?php if (!empty($error)) : ?>
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <i class="fas fa-exclamation-triangle"></i> <?php echo htmlspecialchars($error); ?>
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -127,22 +87,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST" id="editUserForm">
-                        <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
-                        
+                    <form method="POST" id="editUserForm" action="?view=user&action=updateUser">
+                        <input type="hidden" name="csrf_token" value="<?= Validator::generateCSRFToken() ?>">
+                        <input type="hidden" name="user_id" value="<?= htmlspecialchars($user['user_id']) ?>">
+
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="first_name" class="form-label">Nombre *</label>
-                                    <input type="text" class="form-control" id="first_name" name="first_name" 
-                                           value="<?php echo htmlspecialchars($user['first_name']); ?>" required>
+                                    <input type="text" class="form-control" id="first_name" name="first_name"
+                                           value="<?= htmlspecialchars($user['first_name']) ?>" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="last_name" class="form-label">Apellido *</label>
-                                    <input type="text" class="form-control" id="last_name" name="last_name" 
-                                           value="<?php echo htmlspecialchars($user['last_name']); ?>" required>
+                                    <input type="text" class="form-control" id="last_name" name="last_name"
+                                           value="<?= htmlspecialchars($user['last_name']) ?>" required>
                                 </div>
                             </div>
                         </div>
@@ -151,15 +112,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="email" class="form-label">Email *</label>
-                                    <input type="email" class="form-control" id="email" name="email" 
-                                           value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                                    <input type="email" class="form-control" id="email" name="email"
+                                           value="<?= htmlspecialchars($user['email']) ?>" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="phone" class="form-label">Teléfono</label>
-                                    <input type="tel" class="form-control" id="phone" name="phone" 
-                                           value="<?php echo htmlspecialchars($user['phone']); ?>">
+                                    <input type="tel" class="form-control" id="phone" name="phone"
+                                           value="<?= htmlspecialchars($user['phone']) ?>">
                                 </div>
                             </div>
                         </div>
@@ -180,8 +141,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="credential_number" class="form-label">Número de Documento</label>
-                                    <input type="text" class="form-control" id="credential_number" name="credential_number" 
-                                           value="<?php echo htmlspecialchars($user['credential_number']); ?>">
+                                    <input type="text" class="form-control" id="credential_number" name="credential_number"
+                                           value="<?= htmlspecialchars($user['credential_number']) ?>">
                                 </div>
                             </div>
                         </div>
@@ -190,15 +151,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="date_of_birth" class="form-label">Fecha de Nacimiento</label>
-                                    <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" 
-                                           value="<?php echo htmlspecialchars($user['date_of_birth']); ?>">
+                                    <input type="date" class="form-control" id="date_of_birth" name="date_of_birth"
+                                           value="<?= htmlspecialchars($user['date_of_birth']) ?>">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="address" class="form-label">Dirección</label>
-                                    <input type="text" class="form-control" id="address" name="address" 
-                                           value="<?php echo htmlspecialchars($user['address']); ?>">
+                                    <input type="text" class="form-control" id="address" name="address"
+                                           value="<?= htmlspecialchars($user['address']) ?>">
                                 </div>
                             </div>
                         </div>
@@ -208,9 +169,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="mb-3">
                                     <label class="form-label">Estado Actual</label>
                                     <p class="form-control-plaintext">
-                                        <?php if ($user['is_active']): ?>
+                                        <?php if ($user['is_active']) : ?>
                                             <span class="badge bg-success">Activo</span>
-                                        <?php else: ?>
+                                        <?php else : ?>
                                             <span class="badge bg-danger">Inactivo</span>
                                         <?php endif; ?>
                                     </p>
@@ -221,7 +182,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <label class="form-label">Rol Actual</label>
                                     <p class="form-control-plaintext">
                                         <span class="badge bg-primary">
-                                            <?php echo htmlspecialchars(ucfirst($user['role_type'])); ?>
+                                            <?= htmlspecialchars(ucfirst($user['role_type'])) ?>
                                         </span>
                                     </p>
                                 </div>
@@ -229,11 +190,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
 
                         <div class="d-flex justify-content-between">
-                            <button type="button" class="btn btn-secondary" onclick="loadView('user/view?id=<?php echo $user['user_id']; ?>')">
+                            <button type="button" class="btn btn-secondary" onclick="loadView('user/view?id=<?= $user['user_id'] ?>')">
                                 <i class="fas fa-times"></i> Cancelar
                             </button>
                             <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-warning" onclick="loadView('user/changePassword?id=<?php echo $user['user_id']; ?>')">
+                                <button type="button" class="btn btn-warning" onclick="loadView('user/changePassword?id=<?= $user['user_id'] ?>')">
                                     <i class="fas fa-key"></i> Cambiar Contraseña
                                 </button>
                                 <button type="submit" class="btn btn-primary">
@@ -254,19 +215,19 @@ document.getElementById('editUserForm').addEventListener('submit', function(e) {
     const firstName = document.getElementById('first_name').value.trim();
     const lastName = document.getElementById('last_name').value.trim();
     const email = document.getElementById('email').value.trim();
-    
+
     if (!firstName || !lastName || !email) {
         e.preventDefault();
         alert('Por favor, completa todos los campos obligatorios.');
         return false;
     }
-    
+
     if (!email.includes('@')) {
         e.preventDefault();
         alert('Por favor, ingresa un email válido.');
         return false;
     }
-    
+
     return true;
 });
-</script> 
+</script>

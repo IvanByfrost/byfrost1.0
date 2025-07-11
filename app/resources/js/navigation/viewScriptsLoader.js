@@ -4,7 +4,7 @@ export function loadViewScript(view) {
     // Reglas de carga según prefijos de vista
     const scripts = {
         'dashboard': ['dashboard.js'],
-        'school-management': ['schoolForm.js', 'schoolValidation.js', 'schoolDirectorSearch.js'],
+        'school-management': ['schoolActions.js', 'schoolSearch.js','schoolForm.js', 'schoolValidation.js', 'schoolDirectorSearch.js'],
         'user-management': ['userManagement.js', 'roleManagement.js', 'userSearch.js'],
         'role-management': ['roleManagement.js'],
         'payroll': ['payrollManagement.js'],

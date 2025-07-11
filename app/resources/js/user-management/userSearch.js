@@ -1,16 +1,17 @@
 /**
  * Módulo de búsqueda de usuarios
+ * Refactorizado sin jQuery
  */
 
-// Establece una URL base para las peticiones si no está definida
 if (typeof window.USER_MANAGEMENT_BASE_URL === 'undefined') {
     window.USER_MANAGEMENT_BASE_URL = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
 }
 
-// Usar la función global toggleSearchFields si está disponible, sino crear una local
+// Toggle de campos en el formulario de búsqueda
 if (typeof window.toggleSearchFields === 'undefined') {
     window.toggleSearchFields = function() {
         const searchType = document.getElementById('search_type')?.value;
+
         document.getElementById('document_type_field')?.style.setProperty('display', 'none');
         document.getElementById('document_number_field')?.style.setProperty('display', 'none');
         document.getElementById('role_type_field')?.style.setProperty('display', 'none');
@@ -24,29 +25,45 @@ if (typeof window.toggleSearchFields === 'undefined') {
     };
 }
 
-// Función AJAX genérica para búsquedas
-function searchUsers(options) {
-    const { data, onSuccess } = options;
+// Genérica función fetch para búsquedas
+function searchUsers({ data, onSuccess }) {
+    console.log('[UserSearch] Enviando búsqueda:', data);
 
-    $.ajax({
-        url: window.USER_MANAGEMENT_BASE_URL + 'app/processes/assignProcess.php',
+    const params = new URLSearchParams(data);
+    fetch(`${window.USER_MANAGEMENT_BASE_URL}app/processes/assignProcess.php`, {
         method: 'POST',
-        data: data,
-        success: function(response) {
-            try {
-                const result = JSON.parse(response);
-                if (result.status === 'ok') {
-                    onSuccess(result.data);
-                } else {
-                    showError(result.msg || 'Error en la búsqueda');
-                }
-            } catch {
-                showError('Error procesando la respuesta del servidor');
-            }
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
         },
-        error: function() {
-            showError('Error de conexión con el servidor');
+        body: params
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error ${response.status}`);
         }
+        return response.text();
+    })
+    .then(text => {
+        console.log('[UserSearch] Respuesta:', text);
+        let result;
+        try {
+            result = JSON.parse(text);
+        } catch (e) {
+            console.error(e);
+            showError('Error procesando la respuesta del servidor');
+            return;
+        }
+
+        if (result.status === 'ok') {
+            onSuccess(result.data);
+        } else {
+            showError(result.msg || 'Error en la búsqueda');
+        }
+    })
+    .catch(error => {
+        console.error('[UserSearch] Error:', error);
+        showError('Error de conexión con el servidor');
     });
 }
 
@@ -85,43 +102,25 @@ function searchUsersByRole(roleType) {
     });
 }
 
-// Mostrar resultados de búsqueda con botón de asignación
+// Muestra resultados de búsqueda (para asignación de roles)
 function displaySearchResults(users) {
-    const container = document.getElementById('searchResults');
-    if (!container) return;
-
-    if (!users || users.length === 0) {
-        container.innerHTML = '<div class="alert alert-info">No se encontraron usuarios con los criterios especificados.</div>';
-        return;
-    }
-
-    const html = `
-        <div class="table-responsive">
-        <table class="table table-striped">
-            <thead><tr><th>Usuario</th><th>Email</th><th>Rol Actual</th><th>Acciones</th></tr></thead>
-            <tbody>
-                ${users.map(user => `
-                    <tr>
-                        <td>${user.first_name} ${user.last_name}</td>
-                        <td>${user.email}</td>
-                        <td><span class="badge bg-secondary">${traducirRol(user.role_type || 'Sin rol')}</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-primary" onclick="showAssignRoleModal(${user.user_id}, '${user.first_name} ${user.last_name}', '${user.role_type || ''}')">
-                                <i class="fas fa-user-plus"></i> Asignar Rol
-                            </button>
-                        </td>
-                    </tr>
-                `).join('')}
-            </tbody>
-        </table>
-        </div>`;
-    
-    container.innerHTML = html;
+    renderUserTable(users, {
+        showActions: true,
+        containerId: 'searchResults'
+    });
 }
 
-// Mostrar resultados de consulta sin acciones
+// Muestra resultados de consulta (sin acciones)
 function displayConsultResults(users) {
-    const container = document.getElementById('searchResults');
+    renderUserTable(users, {
+        showActions: false,
+        containerId: 'searchResults'
+    });
+}
+
+// Renderiza tabla de usuarios
+function renderUserTable(users, { showActions, containerId }) {
+    const container = document.getElementById(containerId);
     if (!container) return;
 
     if (!users || users.length === 0) {
@@ -129,27 +128,48 @@ function displayConsultResults(users) {
         return;
     }
 
-    const html = `
+    const rows = users.map(user => {
+        return `
+            <tr>
+                <td>${user.first_name} ${user.last_name}</td>
+                <td>${user.email}</td>
+                <td>
+                    <span class="badge bg-${user.role_type ? 'primary' : 'secondary'}">
+                        ${traducirRol(user.role_type || 'Sin rol')}
+                    </span>
+                </td>
+                <td>
+                    ${showActions ? `
+                        <button class="btn btn-sm btn-primary" 
+                            onclick="showAssignRoleModal(${user.user_id}, '${user.first_name} ${user.last_name}', '${user.role_type || ''}')">
+                            <i class="fas fa-user-plus"></i> Asignar Rol
+                        </button>` 
+                        : `<span class="badge bg-success">Activo</span>`
+                    }
+                </td>
+            </tr>`;
+    }).join('');
+
+    const tableHtml = `
         <div class="table-responsive">
-        <table class="table table-striped">
-            <thead><tr><th>Usuario</th><th>Email</th><th>Rol</th><th>Estado</th></tr></thead>
-            <tbody>
-                ${users.map(user => `
+            <table class="table table-striped">
+                <thead>
                     <tr>
-                        <td>${user.first_name} ${user.last_name}</td>
-                        <td>${user.email}</td>
-                        <td><span class="badge bg-${user.role_type ? 'primary' : 'secondary'}">${traducirRol(user.role_type || 'Sin rol')}</span></td>
-                        <td><span class="badge bg-success">Activo</span></td>
+                        <th>Usuario</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th>${showActions ? 'Acciones' : 'Estado'}</th>
                     </tr>
-                `).join('')}
-            </tbody>
-        </table>
-        </div>`;
-    
-    container.innerHTML = html;
+                </thead>
+                <tbody>${rows}</tbody>
+            </table>
+        </div>
+    `;
+
+    container.innerHTML = tableHtml;
 }
 
-// Traducción de tipos de rol
+// Traduce el tipo de rol
 function traducirRol(rol) {
     const roles = {
         root: 'Administrador',
@@ -165,7 +185,7 @@ function traducirRol(rol) {
 
 // Mostrar errores
 function showError(message) {
-    console.error('Error:', message);
+    console.error('[UserSearch] Error:', message);
     if (typeof Swal !== 'undefined') {
         Swal.fire('Error', message, 'error');
     } else {
@@ -180,9 +200,9 @@ function clearSearchForm() {
     if (container) container.innerHTML = '';
 }
 
-// Inicializar formulario de búsqueda
+// Inicializa formulario de búsqueda
 function initializeConsultUserForm() {
-    window.toggleSearchFields(); // Usar la función global
+    window.toggleSearchFields();
 
     const form = document.getElementById('searchUserForm');
     if (!form) return;
@@ -198,7 +218,6 @@ function initializeConsultUserForm() {
                 return showError('Debes seleccionar el tipo y número de documento');
             }
             searchUsersForConsult(credentialType, credentialNumber);
-
         } else if (searchType === 'role') {
             const roleType = document.getElementById('role_type')?.value;
             if (!roleType) {
@@ -216,8 +235,8 @@ function initializeConsultUserForm() {
 
 // Inicialización automática
 function initializeWhenReady() {
-    console.log('userSearch.js: Inicializando...');
-    window.toggleSearchFields(); // Usar la función global
+    console.log('[UserSearch] Inicializando...');
+    window.toggleSearchFields();
     initializeConsultUserForm();
 }
 

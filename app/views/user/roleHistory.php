@@ -5,16 +5,7 @@ if (!isset($user) || !isset($roleHistory)) {
     return;
 }
 
-// Procesar formulario de búsqueda si se envió
-$searchError = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $credentialType = htmlspecialchars($_POST['credential_type'] ?? '');
-    $credentialNumber = htmlspecialchars($_POST['credential_number'] ?? '');
-    
-    if (empty($credentialType) || empty($credentialNumber)) {
-        $searchError = 'Por favor, completa todos los campos de búsqueda.';
-    }
-}
+$searchError = $searchError ?? '';
 ?>
 
 <div class="container mt-4">
@@ -27,10 +18,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <p>Consulta el historial completo de roles asignados a un usuario.</p>
                 </div>
                 <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-info" onclick="loadView('user/view?id=<?php echo $user['user_id']; ?>')">
+                    <button type="button" class="btn btn-info" onclick="loadView('user/view?id=<?= $user['user_id'] ?>')">
                         <i class="fas fa-eye"></i> Ver Usuario
                     </button>
-                    <button type="button" class="btn btn-warning" onclick="loadView('user/edit?id=<?php echo $user['user_id']; ?>')">
+                    <button type="button" class="btn btn-warning" onclick="loadView('user/edit?id=<?= $user['user_id'] ?>')">
                         <i class="fas fa-edit"></i> Editar Usuario
                     </button>
                     <button type="button" class="btn btn-secondary" onclick="loadView('user/consultUser')">
@@ -48,7 +39,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <div class="card-body">
                     <form method="POST" id="roleHistoryForm">
-                        
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="mb-3">
@@ -66,19 +56,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="credential_number" class="form-label">Número de Documento</label>
-                                    <input type="text" class="form-control" id="credential_number" name="credential_number" 
-                                           value="<?php echo htmlspecialchars($user['credential_number']); ?>" 
+                                    <input type="text" class="form-control" id="credential_number" name="credential_number"
+                                           value="<?= htmlspecialchars($user['credential_number']) ?>"
                                            placeholder="Ingrese el número de documento" required>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label class="form-label">&nbsp;</label>
-                                    <div class="d-grid">
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="fas fa-search"></i> Buscar
-                                        </button>
-                                    </div>
+                                    <label class="form-label d-block">&nbsp;</label>
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fas fa-search"></i> Buscar
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -86,10 +74,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
 
-            <!-- Mensajes de Error -->
+            <!-- Mensajes de error -->
             <?php if (!empty($searchError)): ?>
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="fas fa-exclamation-triangle"></i> <?php echo htmlspecialchars($searchError); ?>
+                    <i class="fas fa-exclamation-triangle"></i> <?= htmlspecialchars($searchError) ?>
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             <?php endif; ?>
@@ -106,22 +94,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="col-md-4">
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Nombre Completo:</label>
-                                <p class="form-control-plaintext"><?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?></p>
+                                <p class="form-control-plaintext"><?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?></p>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Email:</label>
-                                <p class="form-control-plaintext"><?php echo htmlspecialchars($user['email']); ?></p>
+                                <p class="form-control-plaintext"><?= htmlspecialchars($user['email']) ?></p>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Documento:</label>
                                 <p class="form-control-plaintext">
-                                    <span class="badge bg-info">
-                                        <?php echo htmlspecialchars($user['credential_type'] . ': ' . $user['credential_number']); ?>
-                                    </span>
+                                    <span class="badge bg-info"><?= htmlspecialchars($user['credential_type'] . ': ' . $user['credential_number']) ?></span>
                                 </p>
                             </div>
                         </div>
@@ -154,9 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <?php foreach ($roleHistory as $role): ?>
                                         <tr>
                                             <td>
-                                                <span class="badge bg-primary">
-                                                    <?php echo htmlspecialchars(ucfirst($role['role_type'])); ?>
-                                                </span>
+                                                <span class="badge bg-primary"><?= htmlspecialchars(ucfirst($role['role_type'])) ?></span>
                                             </td>
                                             <td>
                                                 <?php if ($role['is_active']): ?>
@@ -165,26 +149,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     <span class="badge bg-secondary">Inactivo</span>
                                                 <?php endif; ?>
                                             </td>
-                                            <td><?php echo htmlspecialchars(date('d/m/Y H:i', strtotime($role['created_at']))); ?></td>
+                                            <td><?= htmlspecialchars(date('d/m/Y H:i', strtotime($role['created_at']))) ?></td>
                                             <td>
                                                 <?php if (!$role['is_active']): ?>
-                                                    <?php echo htmlspecialchars(date('d/m/Y H:i', strtotime($role['updated_at'] ?? $role['created_at']))); ?>
+                                                    <?= htmlspecialchars(date('d/m/Y H:i', strtotime($role['updated_at'] ?? $role['created_at']))) ?>
                                                 <?php else: ?>
                                                     <span class="text-muted">-</span>
                                                 <?php endif; ?>
                                             </td>
-                                            <td>
-                                                <span class="text-muted">Sistema</span>
-                                            </td>
+                                            <td><span class="text-muted">Sistema</span></td>
                                             <td>
                                                 <?php if ($role['is_active']): ?>
-                                                    <button type="button" class="btn btn-sm btn-outline-danger" 
-                                                            onclick="confirmDeactivateRole(<?php echo $user['user_id']; ?>, '<?php echo $role['role_type']; ?>')">
+                                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                                            onclick="confirmDeactivateRole(<?= $user['user_id'] ?>, '<?= $role['role_type'] ?>')">
                                                         <i class="fas fa-user-slash"></i> Desactivar
                                                     </button>
                                                 <?php else: ?>
-                                                    <button type="button" class="btn btn-sm btn-outline-success" 
-                                                            onclick="confirmReactivateRole(<?php echo $user['user_id']; ?>, '<?php echo $role['role_type']; ?>')">
+                                                    <button type="button" class="btn btn-sm btn-outline-success"
+                                                            onclick="confirmReactivateRole(<?= $user['user_id'] ?>, '<?= $role['role_type'] ?>')">
                                                         <i class="fas fa-user-check"></i> Reactivar
                                                     </button>
                                                 <?php endif; ?>
@@ -202,37 +184,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
 
-            <!-- Estadísticas del Historial -->
+            <!-- Estadísticas -->
             <div class="row mt-4">
                 <div class="col-md-3">
-                    <div class="card bg-primary text-white">
-                        <div class="card-body text-center">
+                    <div class="card bg-primary text-white text-center">
+                        <div class="card-body">
                             <h5 class="card-title">Total de Roles</h5>
-                            <h3><?php echo count($roleHistory); ?></h3>
+                            <h3><?= count($roleHistory) ?></h3>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="card bg-success text-white">
-                        <div class="card-body text-center">
+                    <div class="card bg-success text-white text-center">
+                        <div class="card-body">
                             <h5 class="card-title">Roles Activos</h5>
-                            <h3><?php echo count(array_filter($roleHistory, function($role) { return $role['is_active']; })); ?></h3>
+                            <h3><?= count(array_filter($roleHistory, fn($r) => $r['is_active'])) ?></h3>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="card bg-secondary text-white">
-                        <div class="card-body text-center">
+                    <div class="card bg-secondary text-white text-center">
+                        <div class="card-body">
                             <h5 class="card-title">Roles Inactivos</h5>
-                            <h3><?php echo count(array_filter($roleHistory, function($role) { return !$role['is_active']; })); ?></h3>
+                            <h3><?= count(array_filter($roleHistory, fn($r) => !$r['is_active'])) ?></h3>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="card bg-info text-white">
-                        <div class="card-body text-center">
+                    <div class="card bg-info text-white text-center">
+                        <div class="card-body">
                             <h5 class="card-title">Primer Rol</h5>
-                            <h6><?php echo !empty($roleHistory) ? ucfirst($roleHistory[count($roleHistory)-1]['role_type']) : 'N/A'; ?></h6>
+                            <h6><?= !empty($roleHistory) ? ucfirst($roleHistory[count($roleHistory)-1]['role_type']) : 'N/A' ?></h6>
                         </div>
                     </div>
                 </div>
@@ -240,33 +222,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 </div>
-
-<script>
-// Validación del formulario
-document.getElementById('roleHistoryForm').addEventListener('submit', function(e) {
-    const credentialType = document.getElementById('credential_type').value;
-    const credentialNumber = document.getElementById('credential_number').value.trim();
-    
-    if (!credentialType || !credentialNumber) {
-        e.preventDefault();
-        alert('Por favor, completa todos los campos de búsqueda.');
-        return false;
-    }
-    
-    return true;
-});
-
-// Función para confirmar desactivación de rol
-function confirmDeactivateRole(userId, roleType) {
-    if (confirm('¿Estás seguro de que deseas desactivar el rol "' + roleType + '" para este usuario?')) {
-        loadView('user/deactivateRole?user_id=' + userId + '&role_type=' + roleType);
-    }
-}
-
-// Función para confirmar reactivación de rol
-function confirmReactivateRole(userId, roleType) {
-    if (confirm('¿Estás seguro de que deseas reactivar el rol "' + roleType + '" para este usuario?')) {
-        loadView('user/reactivateRole?user_id=' + userId + '&role_type=' + roleType);
-    }
-}
-</script> 

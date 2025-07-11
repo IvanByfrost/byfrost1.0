@@ -1,72 +1,80 @@
 console.log("Script de olvidé contraseña cargado");
 
-$(document).ready(function() {
-    console.log("Document ready ejecutado");
-    console.log("ROOT disponible:", ROOT);
-    
-    // Manejar clic en el enlace de olvidé contraseña
-    $("#forgotPassword").on("click", function(e) {
-        console.log("Clic en olvidé contraseña detectado");
-        e.preventDefault();
-        const targetUrl = ROOT + "app/views/index/forgotPassword.php";
-        console.log("Redirigiendo a:", targetUrl);
-        window.location.href = targetUrl;
-    });
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("DOM listo");
 
-    // Manejar formulario de solicitud de restablecimiento
-    $("#forgotPasswordForm").on("submit", function(e) {
-        console.log("Formulario de olvidé contraseña enviado");
-        e.preventDefault();
-        
-        const formData = {
-            credType: $('#credType').val(),
-            userDocument: $('#userDocument').val(),
-            userEmail: $('#userEmail').val(),
-            subject: 'requestReset'
-        };
+    const forgotPasswordLink = document.getElementById("forgotPassword");
+    const forgotPasswordForm = document.getElementById("forgotPasswordForm");
+    const resetPasswordForm = document.getElementById("resetPasswordForm");
 
-        console.log("Datos del formulario:", formData);
+    // Click en el enlace "Olvidé mi contraseña"
+    if (forgotPasswordLink) {
+        forgotPasswordLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            const targetUrl = ROOT + "app/views/index/forgotPassword.php";
+            console.log("Redirigiendo a:", targetUrl);
+            window.location.href = targetUrl;
+        });
+    }
 
-        // Validaciones
-        if (!formData.credType || !formData.userDocument || !formData.userEmail) {
-            Swal.fire({
-                title: 'Error',
-                text: 'Todos los campos son obligatorios',
-                icon: 'error'
-            });
-            return;
-        }
+    // Enviar formulario de solicitud de recuperación
+    if (forgotPasswordForm) {
+        forgotPasswordForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-        // Mostrar indicador de carga
-        const submitBtn = $(this).find('button[type="submit"]');
-        const originalText = submitBtn.text();
-        submitBtn.text('Enviando...').prop('disabled', true);
+            const credType = document.getElementById('credType').value;
+            const userDocument = document.getElementById('userDocument').value;
+            const userEmail = document.getElementById('userEmail').value;
 
-        const processUrl = ROOT + 'app/processes/forgotPasswordProcess.php';
-        console.log("Enviando a:", processUrl);
+            console.log("Datos del formulario:", { credType, userDocument, userEmail });
 
-        $.ajax({
-            type: 'POST',
-            url: processUrl,
-            data: formData,
-            dataType: 'json',
-            success: function(response) {
-                console.log('Respuesta recibida:', response);
-                
-                if (response.status === 'ok') {
+            if (!credType || !userDocument || !userEmail) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Todos los campos son obligatorios',
+                    icon: 'error'
+                });
+                return;
+            }
+
+            const submitBtn = forgotPasswordForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Enviando...';
+            submitBtn.disabled = true;
+
+            const processUrl = ROOT + 'app/processes/forgotPasswordProcess.php';
+            console.log("Enviando a:", processUrl);
+
+            try {
+                const response = await fetch(processUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        subject: 'requestReset',
+                        credType,
+                        userDocument,
+                        userEmail
+                    })
+                });
+
+                const data = await response.json();
+                console.log('Respuesta recibida:', data);
+
+                if (data.status === 'ok') {
                     Swal.fire({
                         title: '¡Enlace enviado!',
-                        text: response.msg,
+                        text: data.msg,
                         icon: 'success',
                         confirmButtonText: 'Entendido'
                     }).then(() => {
-                        // En desarrollo, mostrar el enlace
-                        if (response.resetLink) {
+                        if (data.resetLink) {
                             Swal.fire({
                                 title: 'Enlace de desarrollo',
                                 text: 'Para desarrollo, usa este enlace:',
                                 input: 'text',
-                                inputValue: response.resetLink,
+                                inputValue: data.resetLink,
                                 inputAttributes: {
                                     readonly: true
                                 },
@@ -75,7 +83,7 @@ $(document).ready(function() {
                                 cancelButtonText: 'Cerrar'
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    navigator.clipboard.writeText(response.resetLink);
+                                    navigator.clipboard.writeText(data.resetLink);
                                     Swal.fire('¡Copiado!', 'Enlace copiado al portapapeles', 'success');
                                 }
                             });
@@ -84,88 +92,91 @@ $(document).ready(function() {
                 } else {
                     Swal.fire({
                         title: 'Error',
-                        text: response.msg,
+                        text: data.msg,
                         icon: 'error'
                     });
                 }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error AJAX:', xhr.responseText, status, error);
+            } catch (error) {
+                console.error('Error AJAX:', error);
                 Swal.fire({
                     title: 'Error de conexión',
                     text: 'No se pudo conectar con el servidor. Inténtalo de nuevo.',
                     icon: 'error'
                 });
-            },
-            complete: function() {
-                // Restaurar botón
-                submitBtn.text(originalText).prop('disabled', false);
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
             }
         });
-    });
+    }
 
-    // Manejar formulario de restablecimiento de contraseña
-    $("#resetPasswordForm").on("submit", function(e) {
-        console.log("Formulario de reset password enviado");
-        e.preventDefault();
-        
-        const formData = {
-            token: $('input[name="token"]').val(),
-            newPassword: $('#newPassword').val(),
-            confirmPassword: $('#confirmPassword').val(),
-            subject: 'resetPassword'
-        };
+    // Enviar formulario de restablecimiento de contraseña
+    if (resetPasswordForm) {
+        resetPasswordForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-        console.log("Datos del formulario reset:", formData);
+            const token = document.querySelector('input[name="token"]').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
 
-        // Validaciones
-        if (!formData.newPassword || !formData.confirmPassword) {
-            Swal.fire({
-                title: 'Error',
-                text: 'Todos los campos son obligatorios',
-                icon: 'error'
-            });
-            return;
-        }
+            console.log("Datos del formulario reset:", { token, newPassword, confirmPassword });
 
-        if (formData.newPassword !== formData.confirmPassword) {
-            Swal.fire({
-                title: 'Error',
-                text: 'Las contraseñas no coinciden',
-                icon: 'error'
-            });
-            return;
-        }
+            if (!newPassword || !confirmPassword) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Todos los campos son obligatorios',
+                    icon: 'error'
+                });
+                return;
+            }
 
-        if (formData.newPassword.length < 6) {
-            Swal.fire({
-                title: 'Error',
-                text: 'La contraseña debe tener al menos 6 caracteres',
-                icon: 'error'
-            });
-            return;
-        }
+            if (newPassword !== confirmPassword) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Las contraseñas no coinciden',
+                    icon: 'error'
+                });
+                return;
+            }
 
-        // Mostrar indicador de carga
-        const submitBtn = $(this).find('button[type="submit"]');
-        const originalText = submitBtn.text();
-        submitBtn.text('Cambiando...').prop('disabled', true);
+            if (newPassword.length < 6) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'La contraseña debe tener al menos 6 caracteres',
+                    icon: 'error'
+                });
+                return;
+            }
 
-        const processUrl = ROOT + 'app/processes/forgotPasswordProcess.php';
-        console.log("Enviando reset a:", processUrl);
+            const submitBtn = resetPasswordForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Cambiando...';
+            submitBtn.disabled = true;
 
-        $.ajax({
-            type: 'POST',
-            url: processUrl,
-            data: formData,
-            dataType: 'json',
-            success: function(response) {
-                console.log('Respuesta reset recibida:', response);
-                
-                if (response.status === 'ok') {
+            const processUrl = ROOT + 'app/processes/forgotPasswordProcess.php';
+            console.log("Enviando reset a:", processUrl);
+
+            try {
+                const response = await fetch(processUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        subject: 'resetPassword',
+                        token,
+                        newPassword,
+                        confirmPassword
+                    })
+                });
+
+                const data = await response.json();
+                console.log('Respuesta reset recibida:', data);
+
+                if (data.status === 'ok') {
                     Swal.fire({
                         title: '¡Contraseña actualizada!',
-                        text: response.msg,
+                        text: data.msg,
                         icon: 'success',
                         confirmButtonText: 'Ir al login'
                     }).then(() => {
@@ -174,23 +185,21 @@ $(document).ready(function() {
                 } else {
                     Swal.fire({
                         title: 'Error',
-                        text: response.msg,
+                        text: data.msg,
                         icon: 'error'
                     });
                 }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error AJAX reset:', xhr.responseText, status, error);
+            } catch (error) {
+                console.error('Error AJAX reset:', error);
                 Swal.fire({
                     title: 'Error de conexión',
                     text: 'No se pudo conectar con el servidor. Inténtalo de nuevo.',
                     icon: 'error'
                 });
-            },
-            complete: function() {
-                // Restaurar botón
-                submitBtn.text(originalText).prop('disabled', false);
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
             }
         });
-    });
-}); 
+    }
+});
