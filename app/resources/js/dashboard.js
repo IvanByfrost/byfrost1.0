@@ -337,6 +337,7 @@ class DashboardManager {
 window.toggleSearchFields = function() {
     const searchTypeSelect = document.getElementById('search_type');
     if (!searchTypeSelect) return;
+    
     const searchType = searchTypeSelect.value;
     const documentTypeField = document.getElementById('document_type_field');
     const documentNumberField = document.getElementById('document_number_field');
@@ -380,35 +381,6 @@ window.initDirectorDashboardSimple = function() {
     // Por ahora, reutiliza la misma inicialización
     window.initDirectorDashboard();
 };
-
-// Función para mostrar/ocultar campos según el tipo de búsqueda
-function toggleSearchFields() {
-    const searchType = document.getElementById('search_type').value;
-    const documentTypeField = document.getElementById('document_type_field');
-    const documentNumberField = document.getElementById('document_number_field');
-    const roleTypeField = document.getElementById('role_type_field');
-    const nameSearchField = document.getElementById('name_search_field');
-    
-    // Ocultar todos los campos primero
-    documentTypeField.style.display = 'none';
-    documentNumberField.style.display = 'none';
-    roleTypeField.style.display = 'none';
-    nameSearchField.style.display = 'none';
-    
-    // Mostrar campos según el tipo de búsqueda
-    switch(searchType) {
-        case 'document':
-            documentTypeField.style.display = 'block';
-            documentNumberField.style.display = 'block';
-            break;
-        case 'role':
-            roleTypeField.style.display = 'block';
-            break;
-        case 'name':
-            nameSearchField.style.display = 'block';
-            break;
-    }
-}
 
 // Función de respaldo para loadView si no está disponible
 if (typeof loadView === 'undefined') {

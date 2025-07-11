@@ -138,7 +138,7 @@ function initializeConsultUser() {
     // Configurar campos dinámicos para búsqueda
     const searchType = document.getElementById('search_type');
     if (searchType) {
-        searchType.addEventListener('change', toggleSearchFields);
+        searchType.addEventListener('change', window.toggleSearchFields);
     }
     
     console.log('Formulario de consulta configurado correctamente');
@@ -322,9 +322,6 @@ function confirmActivateUser(userId) {
         loadView('user/activate?id=' + userId);
     }
 }
-
-// Inicializar campos al cargar la página
-// Eliminar la función inline toggleSearchFields y su llamada en DOMContentLoaded
 
 // Inicializar cuando el DOM esté listo
 waitForDOM();
