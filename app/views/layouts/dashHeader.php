@@ -1,62 +1,48 @@
 <?php
-// Define the ROOT constant if it is not already defined
+// Asegurar constante ROOT
 if (!defined('ROOT')) {
     define('ROOT', dirname(dirname(dirname(__DIR__))));
 }
 
 require_once ROOT . '/config.php';
-require_once ROOT . '/app/library/SessionManager.php';
+require_once ROOT . '/app/helpers/SessionHelper.php';
+require_once ROOT . '/app/library/Validator.php';
 
-// Inicializar SessionManager
-$sessionManager = new SessionManager();
+// Obtener sesión y datos de usuario
+$session = getSession();
+$currentUser = $session->getCurrentUser();
+$userName = $session->getUserFullName();
+$userRole = ucfirst($session->getUserRole() ?: 'Sin rol');
 
-// Obtener datos del usuario actual
-$currentUser = $sessionManager->getCurrentUser();
-$userName = '';
-
-// Construir el nombre del usuario usando los campos correctos
-if (isset($currentUser['first_name']) && isset($currentUser['last_name'])) {
-    $userName = trim($currentUser['first_name'] . ' ' . $currentUser['last_name']);
-} elseif (isset($currentUser['first_name'])) {
-    $userName = $currentUser['first_name'];
-} elseif (isset($currentUser['last_name'])) {
-    $userName = $currentUser['last_name'];
-} elseif (isset($currentUser['full_name'])) {
-    $userName = $currentUser['full_name'];
-} else {
-    $userName = 'Usuario';
-}
-
-$userRole = $sessionManager->getUserRole() ?: 'Sin rol asignado';
-
-// Debug: mostrar información del usuario para diagnóstico
-error_log("dashHeader.php - Datos del usuario: " . json_encode($currentUser));
-error_log("dashHeader.php - Nombre construido: " . $userName);
+// Debug opcional
+error_log("dashHeader.php - Usuario: " . json_encode($currentUser));
+error_log("dashHeader.php - Nombre: " . $userName);
 error_log("dashHeader.php - Rol: " . $userRole);
 
+// Head global
 require_once ROOT . '/app/views/layouts/dashHead.php';
 ?>
 
 <header>
     <div class="main-header">
         <a href="#">
-            <img src="<?php echo url . app . rq ?>img/horizontal-logo.svg" alt="Byfrost Logo" width="200">
+            <img src="<?= url . app . rq ?>img/horizontal-logo.svg" alt="Byfrost Logo" width="200">
         </a>
     </div>
 
     <div class="user-menu">
         <div class="user-menu-trigger" onclick="toggleUserMenu(event)">
             <?php
-            $profilePhoto = isset($currentUser['profile_photo']) && $currentUser['profile_photo'] && file_exists(ROOT . '/app/resources/img/profiles/' . $currentUser['profile_photo'])
+            $profilePhoto = !empty($currentUser['profile_photo']) && file_exists(ROOT . '/app/resources/img/profiles/' . $currentUser['profile_photo'])
                 ? url . 'app/resources/img/profiles/' . $currentUser['profile_photo']
                 : url . app . rq . 'img/user-photo.png';
             ?>
-            <img src="<?php echo $profilePhoto; ?>" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; cursor: pointer;">
+            <img src="<?= $profilePhoto ?>" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; cursor: pointer;">
         </div>
         <div class="user-menu-container">
             <div style="text-align: center; padding: 10px;">
-                <strong><?php echo htmlspecialchars($userName); ?></strong><br>
-                <small><?php echo ucfirst($userRole); ?></small>
+                <strong><?= htmlspecialchars($userName) ?></strong><br>
+                <small><?= $userRole ?></small>
             </div>
             <hr>
             <div class="user-settings-submenu" style="padding: 0 10px 10px 10px;">
@@ -71,6 +57,7 @@ require_once ROOT . '/app/views/layouts/dashHead.php';
         </div>
     </div>
 </header>
+
 
 <style>
 .user-menu {
