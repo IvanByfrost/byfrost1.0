@@ -64,7 +64,7 @@ window.initCreateSchoolForm = function() {
             }
             
             // Enviar datos via AJAX
-            fetch(`${url}app/scripts/routerView.php?view=school&action=createSchool`, {
+            fetch(`${url}app/scripts/schoolProcess.php`, {
                 method: 'POST',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'

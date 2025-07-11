@@ -441,4 +441,38 @@ class SchoolController extends MainController
             exit;
         }
     }
+
+    public function searchDirectorAjax()
+{
+    $this->protectSchool();
+
+    header('Content-Type: application/json');
+
+    $document = trim(htmlspecialchars($_POST['document'] ?? ''));
+
+    if (empty($document)) {
+        echo json_encode([
+            'status' => 'error',
+            'msg' => 'No se proporcionó el documento de búsqueda'
+        ]);
+        return;
+    }
+
+    try {
+        $results = $this->schoolModel->searchDirectorsByDocument($document);
+
+        echo json_encode([
+            'status' => 'ok',
+            'data' => $results
+        ]);
+    } catch (Exception $e) {
+        error_log("Error en searchDirectorAjax: " . $e->getMessage());
+
+        echo json_encode([
+            'status' => 'error',
+            'msg' => 'Error en el servidor: ' . $e->getMessage()
+        ]);
+    }
+}
+
 }
