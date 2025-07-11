@@ -1,7 +1,7 @@
 // loadView.js - Sistema de carga dinámica de vistas
 // ByFrost - Navegación SPA + carga de scripts modular
 
-import { loadScriptsFor } from './navigation/viewScriptsLoader.js';
+import { loadViewScript } from './navigation/viewScriptsLoader.js';
 
 const baseUrl = window.location.origin + window.location.pathname;
 let currentView = '';
