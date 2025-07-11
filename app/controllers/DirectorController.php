@@ -1,10 +1,8 @@
 <?php
 require_once 'app/models/DirectorModel.php';
-require_once 'app/controllers/mainController.php';
+require_once 'app/controllers/MainController.php';
 
 class DirectorController extends MainController {
-    protected $dbConn;
-    protected $view;
     protected $directorModel;
     
     public function __construct($dbConn)
@@ -14,7 +12,6 @@ class DirectorController extends MainController {
             session_start();
         }
         parent::__construct($dbConn);
-        $this->dbConn = $dbConn;
         $this->directorModel = new DirectorModel();
     }
 
@@ -27,22 +24,31 @@ class DirectorController extends MainController {
     // Dashboard del director
     public function dashboard() {
         $this->protectDirector();
-        // Cargar la vista de inicio moderna del dashboard del director
-        require_once ROOT . '/app/views/director/dashboard.php';
+        try {
+            // Obtener estadísticas para el dashboard
+            $stats = $this->getDashboardStats();
+            
+            // Cargar la vista del dashboard
+            $this->loadDashboardView('director/dashboard', [
+                'stats' => $stats,
+                'currentUser' => $this->sessionManager->getCurrentUser()
+            ]);
+        } catch (Exception $e) {
+            ErrorHandler::logError("Error en dashboard del director: " . $e->getMessage());
+            $this->loadView('Error/500', ['error' => $e->getMessage()]);
+        }
     }
 
     // Dashboard parcial del director (vista principal)
     public function dashboardPartial() {
         $this->protectDirector();
-        // Cargar la vista parcial del dashboard del director
-        require_once ROOT . '/app/views/director/dashboardPartial.php';
+        $this->loadPartialView('director/dashboardPartial');
     }
 
     // Vista de inicio del dashboard del director
     public function dashboardHome() {
         $this->protectDirector();
-        // Cargar la vista de inicio del dashboard del director
-        require_once ROOT . '/app/views/director/dashboardHome.php';
+        $this->loadPartialView('director/dashboardHome');
     }
 
     // Menú principal del director
@@ -56,463 +62,193 @@ class DirectorController extends MainController {
         $this->dashboard();
     }
 
-
     // Mostrar la lista de rectores
     public function listAction() {
         $this->protectDirector();
-        $directors = $this->directorModel->getAllDirector();
-        // Cargar la vista
-        require_once app.views . 'director/directorLists.php';
+        try {
+            $directors = $this->directorModel->getAllDirector();
+            $this->loadView('director/directorLists', ['directors' => $directors]);
+        } catch (Exception $e) {
+            ErrorHandler::logError("Error en listAction: " . $e->getMessage());
+            $this->loadView('Error/500', ['error' => $e->getMessage()]);
+        }
     }
 
     // Mostrar el formulario para agregar un nuevo rector
     public function newDirector() {
         $this->protectDirector();
-        // Cargar la vista del formulario
-        require_once app.views . 'director/createDirector.php';
+        $this->loadView('director/createDirector');
     }
 
     // Procesar la adición de un nuevo rector
     public function addDirector() {
-
-        // Validaciones básicas para addDirector
-        try {
-            // Sanitizar todas las variables POST/GET
-            $postData = [];
-            $getData = [];
-            
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                foreach ($_POST as $key => $value) {
-                    $postData[$key] = Validator::sanitizePost($key);
-                }
-            }
-            
-            if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-                foreach ($_GET as $key => $value) {
-                    $getData[$key] = Validator::sanitizeGet($key);
-                }
-            }
-            
-            // Validar sesión si es necesario
-            if (strpos('addDirector', 'dashboard') !== false || strpos('addDirector', 'list') !== false) {
-                if (!Validator::validateSession('user_id')) {
-                    $_SESSION['error'] = 'Debe iniciar sesión para acceder a esta función';
-                    header('Location: ' . url . 'login');
-                    exit();
-                }
-            }
-            
-        } catch (Exception $e) {
-            Validator::logValidationError('addDirector', $e->getMessage(), $_SESSION['user_id'] ?? null);
-            $_SESSION['error'] = 'Error de validación en DirectorController.php';
-            header('Location: ' . url . 'error');
-            exit();
-        }
-
-
-        // Validaciones básicas para addDirector
-        try {
-            // Sanitizar todas las variables POST/GET
-            $postData = [];
-            $getData = [];
-            
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                foreach ($_POST as $key => $value) {
-                    $postData[$key] = Validator::sanitizePost($key);
-                }
-            }
-            
-            if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-                foreach ($_GET as $key => $value) {
-                    $getData[$key] = Validator::sanitizeGet($key);
-                }
-            }
-            
-            // Validar sesión si es necesario
-            if (strpos('addDirector', 'dashboard') !== false || strpos('addDirector', 'list') !== false) {
-                if (!Validator::validateSession('user_id')) {
-                    $_SESSION['error'] = 'Debe iniciar sesión para acceder a esta función';
-                    header('Location: ' . url . 'login');
-                    exit();
-                }
-            }
-            
-        } catch (Exception $e) {
-            Validator::logValidationError('addDirector', $e->getMessage(), $_SESSION['user_id'] ?? null);
-            $_SESSION['error'] = 'Error de validación en DirectorController.php';
-            header('Location: ' . url . 'error');
-            exit();
-        }
-
         $this->protectDirector();
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $userName = htmlspecialchars($_POST['userName']) ?? '';
-            $userLastName = htmlspecialchars($_POST['userLastName']) ?? '';
-            $userEmail = htmlspecialchars($_POST['email']) ?? '';
-            $userPassword = htmlspecialchars($_POST['password']) ?? ''; // La contraseña en texto plano
-            $phoneUser = htmlspecialchars($_POST['phoneUser']) ?? null;
+        
+        try {
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                // Validar datos requeridos
+                $requiredFields = ['userName', 'userLastName', 'email', 'password'];
+                foreach ($requiredFields as $field) {
+                    if (empty($_POST[$field])) {
+                        throw new Exception("El campo $field es obligatorio");
+                    }
+                }
+                
+                $userName = htmlspecialchars($_POST['userName']);
+                $userLastName = htmlspecialchars($_POST['userLastName']);
+                $userEmail = htmlspecialchars($_POST['email']);
+                $userPassword = $_POST['password']; // No hashear aquí, el modelo se encarga
+                $phoneUser = htmlspecialchars($_POST['phoneUser'] ?? '');
 
-            // Validar que la contraseña no esté vacía
-            if (empty($userPassword)) {
-                echo "Error: La contraseña es obligatoria.";
-                return;
-            }
-
-            if ($this->directorModel->createDirector($userName, $userLastName, $userEmail, $userPassword, $phoneUser)) {
-                header('Location: /software_academico/rector/listar'); // Redirigir a la lista
-                exit();
+                if ($this->directorModel->createDirector($userName, $userLastName, $userEmail, $userPassword, $phoneUser)) {
+                    $_SESSION['success'] = 'Director creado exitosamente';
+                    $this->redirect(url . '?view=director&action=listAction');
+                } else {
+                    throw new Exception('Error al crear el director');
+                }
             } else {
-                echo "Error al guardar el rector.";
+                $this->loadView('director/createDirector');
             }
-        } else {
-            header('Location: /software_academico/rector/crear'); // Si no es POST, redirigir al formulario
-            exit();
+        } catch (Exception $e) {
+            ErrorHandler::logError("Error en addDirector: " . $e->getMessage());
+            $_SESSION['error'] = $e->getMessage();
+            $this->loadView('director/createDirector');
         }
     }
 
     // Mostrar el formulario para editar un rector existente
     public function editDirector() {
-
-        // Validaciones básicas para editDirector
-        try {
-            // Sanitizar todas las variables POST/GET
-            $postData = [];
-            $getData = [];
-            
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                foreach ($_POST as $key => $value) {
-                    $postData[$key] = Validator::sanitizePost($key);
-                }
-            }
-            
-            if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-                foreach ($_GET as $key => $value) {
-                    $getData[$key] = Validator::sanitizeGet($key);
-                }
-            }
-            
-            // Validar sesión si es necesario
-            if (strpos('editDirector', 'dashboard') !== false || strpos('editDirector', 'list') !== false) {
-                if (!Validator::validateSession('user_id')) {
-                    $_SESSION['error'] = 'Debe iniciar sesión para acceder a esta función';
-                    header('Location: ' . url . 'login');
-                    exit();
-                }
-            }
-            
-        } catch (Exception $e) {
-            Validator::logValidationError('editDirector', $e->getMessage(), $_SESSION['user_id'] ?? null);
-            $_SESSION['error'] = 'Error de validación en DirectorController.php';
-            header('Location: ' . url . 'error');
-            exit();
-        }
-
-
-        // Validaciones básicas para editDirector
-        try {
-            // Sanitizar todas las variables POST/GET
-            $postData = [];
-            $getData = [];
-            
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                foreach ($_POST as $key => $value) {
-                    $postData[$key] = Validator::sanitizePost($key);
-                }
-            }
-            
-            if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-                foreach ($_GET as $key => $value) {
-                    $getData[$key] = Validator::sanitizeGet($key);
-                }
-            }
-            
-            // Validar sesión si es necesario
-            if (strpos('editDirector', 'dashboard') !== false || strpos('editDirector', 'list') !== false) {
-                if (!Validator::validateSession('user_id')) {
-                    $_SESSION['error'] = 'Debe iniciar sesión para acceder a esta función';
-                    header('Location: ' . url . 'login');
-                    exit();
-                }
-            }
-            
-        } catch (Exception $e) {
-            Validator::logValidationError('editDirector', $e->getMessage(), $_SESSION['user_id'] ?? null);
-            $_SESSION['error'] = 'Error de validación en DirectorController.php';
-            header('Location: ' . url . 'error');
-            exit();
-        }
-
         $this->protectDirector();
-        $id = htmlspecialchars($_GET['id']) ?? null; // Obtener ID de la URL
-        if ($id) {
-            $director = $this->directorModel->getDirectorById($id);
-            if ($director) {
-                require_once app.views. 'rector/editar.php';
-            } else {
-                echo "Rector no encontrado.";
+        
+        try {
+            $directorId = htmlspecialchars($_GET['id'] ?? '');
+            if (empty($directorId)) {
+                throw new Exception('ID de director no proporcionado');
             }
-        } else {
-            echo "ID de rector no proporcionado.";
+            
+            $director = $this->directorModel->getDirectorById($directorId);
+            if (!$director) {
+                throw new Exception('Director no encontrado');
+            }
+            
+            $this->loadView('director/editDirector', ['director' => $director]);
+        } catch (Exception $e) {
+            ErrorHandler::logError("Error en editDirector: " . $e->getMessage());
+            $_SESSION['error'] = $e->getMessage();
+            $this->redirect(url . '?view=director&action=listAction');
         }
     }
 
     // Procesar la actualización de un rector
     public function directorUpdate() {
-
-        // Validaciones básicas para directorUpdate
-        try {
-            // Sanitizar todas las variables POST/GET
-            $postData = [];
-            $getData = [];
-            
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                foreach ($_POST as $key => $value) {
-                    $postData[$key] = Validator::sanitizePost($key);
-                }
-            }
-            
-            if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-                foreach ($_GET as $key => $value) {
-                    $getData[$key] = Validator::sanitizeGet($key);
-                }
-            }
-            
-            // Validar sesión si es necesario
-            if (strpos('directorUpdate', 'dashboard') !== false || strpos('directorUpdate', 'list') !== false) {
-                if (!Validator::validateSession('user_id')) {
-                    $_SESSION['error'] = 'Debe iniciar sesión para acceder a esta función';
-                    header('Location: ' . url . 'login');
-                    exit();
-                }
-            }
-            
-        } catch (Exception $e) {
-            Validator::logValidationError('directorUpdate', $e->getMessage(), $_SESSION['user_id'] ?? null);
-            $_SESSION['error'] = 'Error de validación en DirectorController.php';
-            header('Location: ' . url . 'error');
-            exit();
-        }
-
-
-        // Validaciones básicas para directorUpdate
-        try {
-            // Sanitizar todas las variables POST/GET
-            $postData = [];
-            $getData = [];
-            
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                foreach ($_POST as $key => $value) {
-                    $postData[$key] = Validator::sanitizePost($key);
-                }
-            }
-            
-            if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-                foreach ($_GET as $key => $value) {
-                    $getData[$key] = Validator::sanitizeGet($key);
-                }
-            }
-            
-            // Validar sesión si es necesario
-            if (strpos('directorUpdate', 'dashboard') !== false || strpos('directorUpdate', 'list') !== false) {
-                if (!Validator::validateSession('user_id')) {
-                    $_SESSION['error'] = 'Debe iniciar sesión para acceder a esta función';
-                    header('Location: ' . url . 'login');
-                    exit();
-                }
-            }
-            
-        } catch (Exception $e) {
-            Validator::logValidationError('directorUpdate', $e->getMessage(), $_SESSION['user_id'] ?? null);
-            $_SESSION['error'] = 'Error de validación en DirectorController.php';
-            header('Location: ' . url . 'error');
-            exit();
-        }
-
         $this->protectDirector();
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id = htmlspecialchars($_POST['id_rector']) ?? null;
-            $userName = htmlspecialchars($_POST['userName']) ?? '';
-            $userLastName = htmlspecialchars($_POST['userLastName']) ?? '';
-            $userEmail = htmlspecialchars($_POST['email']) ?? '';
-            $phoneUser = htmlspecialchars($_POST['phoneUser']) ?? null;
-
-            $userEmail = htmlspecialchars($_POST['email']) ?? '';
-            if ($id && $this->directorModel->updateDirector($id, $userName, $userLastName, $userEmail, $phoneUser)) {
-                header('Location: /software_academico/rector/listar');
-                exit();
-            } else {
-                echo "Error al actualizar el rector.";
+        
+        try {
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                throw new Exception('Método no permitido');
             }
-        } else {
-            header('Location: /software_academico/rector/listar'); // Redirigir si no es POST
-            exit();
+            
+            $directorId = htmlspecialchars($_POST['director_id'] ?? '');
+            if (empty($directorId)) {
+                throw new Exception('ID de director no proporcionado');
+            }
+            
+            $userName = htmlspecialchars($_POST['userName'] ?? '');
+            $userLastName = htmlspecialchars($_POST['userLastName'] ?? '');
+            $userEmail = htmlspecialchars($_POST['email'] ?? '');
+            $phoneUser = htmlspecialchars($_POST['phoneUser'] ?? '');
+            
+            // Validar campos requeridos
+            if (empty($userName) || empty($userLastName) || empty($userEmail)) {
+                throw new Exception('Los campos nombre, apellido y email son obligatorios');
+            }
+            
+            if ($this->directorModel->updateDirector($directorId, $userName, $userLastName, $userEmail, $phoneUser)) {
+                $_SESSION['success'] = 'Director actualizado exitosamente';
+            } else {
+                throw new Exception('Error al actualizar el director');
+            }
+            
+            $this->redirect(url . '?view=director&action=listAction');
+        } catch (Exception $e) {
+            ErrorHandler::logError("Error en directorUpdate: " . $e->getMessage());
+            $_SESSION['error'] = $e->getMessage();
+            $this->redirect(url . '?view=director&action=listAction');
         }
     }
 
     // Eliminar un rector
     public function deleteDirector() {
-
-        // Validaciones básicas para deleteDirector
-        try {
-            // Sanitizar todas las variables POST/GET
-            $postData = [];
-            $getData = [];
-            
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                foreach ($_POST as $key => $value) {
-                    $postData[$key] = Validator::sanitizePost($key);
-                }
-            }
-            
-            if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-                foreach ($_GET as $key => $value) {
-                    $getData[$key] = Validator::sanitizeGet($key);
-                }
-            }
-            
-            // Validar sesión si es necesario
-            if (strpos('deleteDirector', 'dashboard') !== false || strpos('deleteDirector', 'list') !== false) {
-                if (!Validator::validateSession('user_id')) {
-                    $_SESSION['error'] = 'Debe iniciar sesión para acceder a esta función';
-                    header('Location: ' . url . 'login');
-                    exit();
-                }
-            }
-            
-        } catch (Exception $e) {
-            Validator::logValidationError('deleteDirector', $e->getMessage(), $_SESSION['user_id'] ?? null);
-            $_SESSION['error'] = 'Error de validación en DirectorController.php';
-            header('Location: ' . url . 'error');
-            exit();
-        }
-
-
-        // Validaciones básicas para deleteDirector
-        try {
-            // Sanitizar todas las variables POST/GET
-            $postData = [];
-            $getData = [];
-            
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                foreach ($_POST as $key => $value) {
-                    $postData[$key] = Validator::sanitizePost($key);
-                }
-            }
-            
-            if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-                foreach ($_GET as $key => $value) {
-                    $getData[$key] = Validator::sanitizeGet($key);
-                }
-            }
-            
-            // Validar sesión si es necesario
-            if (strpos('deleteDirector', 'dashboard') !== false || strpos('deleteDirector', 'list') !== false) {
-                if (!Validator::validateSession('user_id')) {
-                    $_SESSION['error'] = 'Debe iniciar sesión para acceder a esta función';
-                    header('Location: ' . url . 'login');
-                    exit();
-                }
-            }
-            
-        } catch (Exception $e) {
-            Validator::logValidationError('deleteDirector', $e->getMessage(), $_SESSION['user_id'] ?? null);
-            $_SESSION['error'] = 'Error de validación en DirectorController.php';
-            header('Location: ' . url . 'error');
-            exit();
-        }
-
         $this->protectDirector();
-        $id = htmlspecialchars($_GET['id']) ?? null;
-        if ($id) {
-            if ($this->directorModel->deleteDirector($id)) {
-                header('Location: /software_academico/rector/listar');
-                exit();
-            } else {
-                echo "Error al eliminar el rector.";
+        
+        try {
+            $directorId = htmlspecialchars($_GET['id'] ?? '');
+            if (empty($directorId)) {
+                throw new Exception('ID de director no proporcionado');
             }
-        } else {
-            echo "ID de rector no proporcionado para eliminar.";
-        }
-    }
-
-    // Protección de acceso solo para directores
-    private function protectDirector() {
-        if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn() || !$this->sessionManager->hasAnyRole(['director', 'root'])) {
-            header('Location: /?view=unauthorized');
-            exit;
+            
+            if ($this->directorModel->deleteDirector($directorId)) {
+                $_SESSION['success'] = 'Director eliminado exitosamente';
+            } else {
+                throw new Exception('Error al eliminar el director');
+            }
+            
+            $this->redirect(url . '?view=director&action=listAction');
+        } catch (Exception $e) {
+            ErrorHandler::logError("Error en deleteDirector: " . $e->getMessage());
+            $_SESSION['error'] = $e->getMessage();
+            $this->redirect(url . '?view=director&action=listAction');
         }
     }
 
     /**
-     * Carga una vista parcial vía AJAX para el módulo director
+     * Protege las acciones del director
      */
-    public function loadPartial()
-    {
-        $view = htmlspecialchars($_POST['view']) ?? htmlspecialchars($_GET['view']) ?? '';
-        $action = htmlspecialchars($_POST['action']) ?? htmlspecialchars($_GET['action']) ?? 'index';
-        $partialView = htmlspecialchars($_POST['partialView']) ?? htmlspecialchars($_GET['partialView']) ?? '';
-        $force = isset(_POST['force']) && htmlspecialchars(_POST['force']) || isset(_GET['force']) && htmlspecialchars(_GET['force']);
-        $debug = isset(_POST['debug']) && htmlspecialchars(_POST['debug']) || isset(_GET['debug']) && htmlspecialchars(_GET['debug']);
-
-        // Debug: mostrar información
-        if ($debug) {
-            echo "DEBUG INFO:<br>";
-            echo "view: " . htmlspecialchars($view) . "<br>";
-            echo "action: " . htmlspecialchars($action) . "<br>";
-            echo "partialView: " . htmlspecialchars($partialView) . "<br>";
-            echo "force: " . ($force ? 'true' : 'false') . "<br>";
-            echo "isAjaxRequest: " . ($this->isAjaxRequest() ? 'true' : 'false') . "<br>";
-            echo "ROOT: " . ROOT . "<br>";
-        }
-
-        if (!$this->isAjaxRequest() && !$force) {
-            if (empty($partialView)) {
-                echo '<div class="alert alert-warning">Vista no especificada. Use: ?view=director&action=loadPartial&partialView=vista</div>';
-                return;
-            }
-            $viewPath = 'director/' . $partialView;
-            $fullPath = ROOT . "/app/views/{$viewPath}.php";
-            
-            if ($debug) {
-                echo "viewPath: " . htmlspecialchars($viewPath) . "<br>";
-                echo "fullPath: " . htmlspecialchars($fullPath) . "<br>";
-                echo "file_exists: " . (file_exists($fullPath) ? 'true' : 'false') . "<br>";
-            }
-            
-            if (!file_exists($fullPath)) {
-                echo '<div class="alert alert-danger">Vista no encontrada: ' . htmlspecialchars($viewPath) . '</div>';
-                return;
-            }
-            try {
-                $this->loadPartialView($viewPath);
-            } catch (Exception $e) {
-                echo '<div class="alert alert-danger">Error al cargar la vista: ' . htmlspecialchars($e->getMessage()) . '</div>';
-            }
-            return;
-        }
-        if (empty($partialView)) {
-            echo json_encode(['success' => false, 'message' => 'Vista no especificada']);
-            return;
-        }
-        $viewPath = 'director/' . $partialView;
-        $fullPath = ROOT . "/app/views/{$viewPath}.php";
-        
-        if ($debug) {
-            echo "AJAX DEBUG INFO:<br>";
-            echo "viewPath: " . htmlspecialchars($viewPath) . "<br>";
-            echo "fullPath: " . htmlspecialchars($fullPath) . "<br>";
-            echo "file_exists: " . (file_exists($fullPath) ? 'true' : 'false') . "<br>";
+    private function protectDirector() {
+        if (!$this->sessionManager->isLoggedIn()) {
+            $this->redirect(url . '?view=index&action=login');
         }
         
-        if (!file_exists($fullPath)) {
-            echo json_encode(['success' => false, 'message' => "Vista no encontrada: {$viewPath}"]);
-            return;
+        if (!$this->sessionManager->hasRole(['director', 'root'])) {
+            $this->loadView('Error/403');
         }
+    }
+
+    /**
+     * Obtener estadísticas para el dashboard
+     */
+    private function getDashboardStats() {
         try {
-            $this->loadPartialView($viewPath);
+            $stats = [
+                'total_schools' => 0,
+                'total_teachers' => 0,
+                'total_students' => 0,
+                'total_activities' => 0
+            ];
+            
+            // Aquí puedes agregar las consultas reales a la base de datos
+            // Por ahora usamos valores por defecto
+            
+            return $stats;
         } catch (Exception $e) {
-            echo json_encode(['success' => false, 'message' => 'Error al cargar la vista: ' . $e->getMessage()]);
+            ErrorHandler::logError("Error obteniendo estadísticas: " . $e->getMessage());
+            return [];
         }
+    }
+
+    /**
+     * Carga una vista parcial
+     */
+    public function loadPartial() {
+        $this->protectDirector();
+        $view = htmlspecialchars($_GET['partial'] ?? '');
+        
+        if (empty($view)) {
+            echo "Vista parcial no especificada";
+            return;
+        }
+        
+        $this->loadPartialView("director/$view");
     }
 }
 ?>

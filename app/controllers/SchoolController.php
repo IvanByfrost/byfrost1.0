@@ -234,6 +234,11 @@ class SchoolController extends MainController
         
         $schoolId = htmlspecialchars($_GET['id']) ?? null;
         
+        // Debug: Log de la petición
+        error_log("SchoolController::edit - Método: " . $_SERVER['REQUEST_METHOD']);
+        error_log("SchoolController::edit - isAjaxRequest: " . ($this->isAjaxRequest() ? 'true' : 'false'));
+        error_log("SchoolController::edit - HTTP_X_REQUESTED_WITH: " . ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? 'no definido'));
+        
         if (!$schoolId) {
             $this->loadPartialView('school/consultSchool', [
                 'error' => 'ID de escuela no proporcionado',
@@ -307,11 +312,16 @@ class SchoolController extends MainController
                     'email' => trim(htmlspecialchars($_POST['email']) ?? '')
                 ];
                 
+                // Debug: Log antes de actualizar
+                error_log("SchoolController::edit - Antes de actualizar, isAjaxRequest: " . ($this->isAjaxRequest() ? 'true' : 'false'));
+                
                 // Llamar al método del modelo para actualizar
                 $result = $this->schoolModel->updateSchool($data);
                 
                 if ($result) {
                     // Éxito
+                    error_log("SchoolController::edit - Actualización exitosa, isAjaxRequest: " . ($this->isAjaxRequest() ? 'true' : 'false'));
+                    
                     if ($this->isAjaxRequest()) {
                         $this->sendJsonResponse(true, 'Escuela actualizada exitosamente');
                     } else {

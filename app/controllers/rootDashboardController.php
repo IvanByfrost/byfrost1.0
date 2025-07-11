@@ -22,15 +22,19 @@ class RootDashboardController extends MainController
      */
     public function dashboard()
     {
-        error_log('DASHBOARD ROOT - SESSION: ' . print_r($_SESSION, true));
-        // Obtener estadísticas para el dashboard
-        $stats = $this->getDashboardStats();
-        
-        // Cargar la vista del dashboard
-        $this->loadDashboardView('root/dashboard', [
-            'stats' => $stats,
-            'currentUser' => $this->sessionManager->getCurrentUser()
-        ]);
+        try {
+            // Obtener estadísticas para el dashboard
+            $stats = $this->getDashboardStats();
+            
+            // Cargar la vista del dashboard
+            $this->loadDashboardView('root/dashboard', [
+                'stats' => $stats,
+                'currentUser' => $this->sessionManager->getCurrentUser()
+            ]);
+        } catch (Exception $e) {
+            ErrorHandler::logError("Error en dashboard de root: " . $e->getMessage());
+            $this->loadView('Error/500', ['error' => $e->getMessage()]);
+        }
     }
 
     /**
@@ -65,7 +69,7 @@ class RootDashboardController extends MainController
             return $stats;
             
         } catch (Exception $e) {
-            error_log("Error obteniendo estadísticas de root: " . $e->getMessage());
+            ErrorHandler::logError("Error obteniendo estadísticas de root: " . $e->getMessage());
             return [];
         }
     }
@@ -75,9 +79,14 @@ class RootDashboardController extends MainController
      */
     public function userManagement()
     {
-        $this->loadDashboardView('root/userManagement', [
-            'currentUser' => $this->sessionManager->getCurrentUser()
-        ]);
+        try {
+            $this->loadDashboardView('root/userManagement', [
+                'currentUser' => $this->sessionManager->getCurrentUser()
+            ]);
+        } catch (Exception $e) {
+            ErrorHandler::logError("Error en gestión de usuarios: " . $e->getMessage());
+            $this->loadView('Error/500', ['error' => $e->getMessage()]);
+        }
     }
 
     /**
@@ -85,9 +94,14 @@ class RootDashboardController extends MainController
      */
     public function roleManagement()
     {
-        $this->loadDashboardView('root/roleManagement', [
-            'currentUser' => $this->sessionManager->getCurrentUser()
-        ]);
+        try {
+            $this->loadDashboardView('root/roleManagement', [
+                'currentUser' => $this->sessionManager->getCurrentUser()
+            ]);
+        } catch (Exception $e) {
+            ErrorHandler::logError("Error en gestión de roles: " . $e->getMessage());
+            $this->loadView('Error/500', ['error' => $e->getMessage()]);
+        }
     }
 
     /**
@@ -95,52 +109,15 @@ class RootDashboardController extends MainController
      */
     public function systemSettings()
     {
-        $this->loadDashboardView('root/systemSettings', [
-            'currentUser' => $this->sessionManager->getCurrentUser()
-        ]);
-    }
-
-    /**
-     * Carga una vista parcial vía AJAX para el dashboard de root
-     */
-    public function loadPartial()
-    {
-        $view = htmlspecialchars($_POST['view']) ?? htmlspecialchars($_GET['view']) ?? '';
-        $action = htmlspecialchars($_POST['action']) ?? htmlspecialchars($_GET['action']) ?? 'index';
-        $force = isset($_POST['force']) && htmlspecialchars($_POST['force']) || isset($_GET['force']) && htmlspecialchars($_GET['force']);
-
-        if (!$this->isAjaxRequest() && !$force) {
-            if (empty($view)) {
-                echo '<div class="alert alert-warning">Vista no especificada. Use: ?view=rootDashboard&action=loadPartial&view=modulo&action=vista</div>';
-                return;
-            }
-            $viewPath = $view . '/' . $action;
-            $fullPath = ROOT . "/app/views/{$viewPath}.php";
-            if (!file_exists($fullPath)) {
-                echo '<div class="alert alert-danger">Vista no encontrada: ' . htmlspecialchars($viewPath) . '</div>';
-                return;
-            }
-            try {
-                $this->loadPartialView($viewPath);
-            } catch (Exception $e) {
-                echo '<div class="alert alert-danger">Error al cargar la vista: ' . htmlspecialchars($e->getMessage()) . '</div>';
-            }
-            return;
-        }
-        if (empty($view)) {
-            echo json_encode(['success' => false, 'message' => 'Vista no especificada']);
-            return;
-        }
-        $viewPath = $view . '/' . $action;
-        $fullPath = ROOT . "/app/views/{$viewPath}.php";
-        if (!file_exists($fullPath)) {
-            echo json_encode(['success' => false, 'message' => "Vista no encontrada: {$viewPath}"]);
-            return;
-        }
         try {
-            $this->loadPartialView($viewPath);
+            $this->loadDashboardView('root/systemSettings', [
+                'currentUser' => $this->sessionManager->getCurrentUser()
+            ]);
         } catch (Exception $e) {
-            echo json_encode(['success' => false, 'message' => 'Error al cargar la vista: ' . $e->getMessage()]);
+            ErrorHandler::logError("Error en configuración del sistema: " . $e->getMessage());
+            $this->loadView('Error/500', ['error' => $e->getMessage()]);
         }
     }
+
+    // El método loadPartial() se hereda del MainController
 } 

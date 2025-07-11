@@ -169,11 +169,11 @@ if (empty($formData) && !empty($school)) {
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
-        <form id="searchDirectorForm" class="mb-3" autocomplete="off">
+        <form id="searchDirectorForm" class="mb-3" autocomplete="off" novalidate>
     <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
 
           <div class="input-group">
-            <input type="text" class="form-control w-100" id="search_director_query" placeholder="Número de documento">
+            <input type="text" class="form-control w-100" id="search_director_query" placeholder="Número de documento" title="Completa este campo" autocomplete="off">
             <button type="submit" class="btn btn-primary">Buscar</button>
           </div>
         </form>
@@ -206,11 +206,11 @@ if (empty($formData) && !empty($school)) {
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
-        <form id="searchCoordinatorForm" class="mb-3" autocomplete="off">
+        <form id="searchCoordinatorForm" class="mb-3" autocomplete="off" novalidate>
     <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
 
           <div class="input-group">
-            <input type="text" class="form-control w-100" id="search_coordinator_query" placeholder="Número de documento">
+            <input type="text" class="form-control w-100" id="search_coordinator_query" placeholder="Número de documento" autocomplete="off">
             <button type="submit" class="btn btn-primary">Buscar</button>
           </div>
         </form>
@@ -242,89 +242,339 @@ if (empty($formData) && !empty($school)) {
 </style>
 
 <script>
-// Selección de director
+console.log('Script de editSchool.php cargado');
+alert('Script de editSchool.php cargado - Si ves este mensaje, el JavaScript se está ejecutando correctamente');
+
+// Interceptar el envío del formulario para convertirlo en AJAX
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOMContentLoaded ejecutado');
+    const form = document.getElementById('editSchoolForm');
+    console.log('Formulario encontrado:', form);
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            console.log('Formulario enviado, interceptando...');
+            e.preventDefault();
+            
+            // Mostrar indicador de carga
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+            submitBtn.disabled = true;
+            
+            // Recopilar datos del formulario
+            const formData = new FormData(form);
+            console.log('Datos del formulario:', formData);
+            
+            // Agregar header para identificar como AJAX
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', window.location.href, true);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            console.log('URL de envío:', window.location.href);
+            
+            xhr.onload = function() {
+                console.log('Respuesta recibida:', xhr.status, xhr.responseText);
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                
+                if (xhr.status === 200) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        console.log('Respuesta JSON:', response);
+                        
+                        if (response.success) {
+                            // Mostrar mensaje de éxito
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    title: '¡Éxito!',
+                                    text: response.message || 'Escuela actualizada exitosamente',
+                                    icon: 'success',
+                                    confirmButtonText: 'OK'
+                                }).then(() => {
+                                    // Cargar la lista de escuelas
+                                    loadView('school/consultSchool');
+                                });
+                            } else {
+                                alert(response.message || 'Escuela actualizada exitosamente');
+                                loadView('school/consultSchool');
+                            }
+                        } else {
+                            // Mostrar error
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: response.message || 'Error al actualizar la escuela',
+                                    icon: 'error',
+                                    confirmButtonText: 'OK'
+                                });
+                            } else {
+                                alert('Error: ' + (response.message || 'Error al actualizar la escuela'));
+                            }
+                        }
+                    } catch (e) {
+                        console.log('Error parseando JSON:', e);
+                        // Si no es JSON, mostrar como HTML
+                        const mainContent = document.getElementById('mainContent');
+                        if (mainContent) {
+                            mainContent.innerHTML = xhr.responseText;
+                        }
+                    }
+                } else {
+                    // Error HTTP
+                    console.log('Error HTTP:', xhr.status);
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Error al procesar la solicitud',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    } else {
+                        alert('Error al procesar la solicitud');
+                    }
+                }
+            };
+            
+            xhr.onerror = function() {
+                console.log('Error de conexión');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Error de conexión',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    alert('Error de conexión');
+                }
+            };
+            
+            console.log('Enviando petición AJAX...');
+            xhr.send(formData);
+        });
+    } else {
+        console.error('Formulario no encontrado');
+    }
+});
+
+// Funciones para seleccionar director y coordinador
 function selectDirector(userId, name) {
     document.getElementById('director_user_id').value = userId;
     document.getElementById('selectedDirectorName').textContent = name;
-    var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('searchDirectorModal'));
-    modal.hide();
+    document.getElementById('selectedDirectorName').style.display = 'inline';
+    
+    // Cerrar modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('searchDirectorModal'));
+    if (modal) {
+        modal.hide();
+    }
 }
-// Selección de coordinador
+
 function selectCoordinator(userId, name) {
     document.getElementById('coordinator_user_id').value = userId;
     document.getElementById('selectedCoordinatorName').textContent = name;
-    var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('searchCoordinatorModal'));
-    modal.hide();
-}
-// Búsqueda AJAX para director
-const searchDirectorForm = document.getElementById('searchDirectorForm');
-if (searchDirectorForm) {
-    searchDirectorForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const query = document.getElementById('search_director_query').value.trim();
-        if (!query) return;
-        
-        const resultsDiv = document.getElementById('searchDirectorResults');
-        resultsDiv.innerHTML = '<div class="alert alert-info">Buscando...</div>';
-        
-        fetch('app/processes/assignProcess.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'subject=search_users_by_role&role_type=director&search_type=document&query=' + encodeURIComponent(query)
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.status === 'ok' && data.data && data.data.length > 0) {
-                resultsDiv.innerHTML = data.data.map(director =>
-                    `<button type="button" class="list-group-item list-group-item-action" 
-                        onclick="selectDirector('${director.user_id}', '${director.first_name} ${director.last_name}')">
-                        ${director.first_name} ${director.last_name} - ${director.email}
-                    </button>`
-                ).join('');
-            } else {
-                resultsDiv.innerHTML = '<div class="alert alert-warning">No se encontraron directores con ese documento.</div>';
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            resultsDiv.innerHTML = '<div class="alert alert-danger">Error al buscar directores.</div>';
-        });
-    });
+    document.getElementById('selectedCoordinatorName').style.display = 'inline';
+    
+    // Cerrar modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('searchCoordinatorModal'));
+    if (modal) {
+        modal.hide();
+    }
 }
 
-// Búsqueda AJAX para coordinador
-const searchCoordinatorForm = document.getElementById('searchCoordinatorForm');
-if (searchCoordinatorForm) {
-    searchCoordinatorForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const query = document.getElementById('search_coordinator_query').value.trim();
-        if (!query) return;
+// Función para buscar directores
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('=== DEBUG: Inicializando formularios de búsqueda en editSchool ===');
+    
+    // Búsqueda AJAX de director
+    const directorForm = document.getElementById('searchDirectorForm');
+    if (directorForm) {
+        console.log('DEBUG: Formulario de director encontrado en editSchool');
         
-        const resultsDiv = document.getElementById('searchCoordinatorResults');
-        resultsDiv.innerHTML = '<div class="alert alert-info">Buscando...</div>';
-        
-        fetch('app/processes/assignProcess.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'subject=search_users_by_role&role_type=coordinator&search_type=document&query=' + encodeURIComponent(query)
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.status === 'ok' && data.data && data.data.length > 0) {
-                resultsDiv.innerHTML = data.data.map(coordinator =>
-                    `<button type="button" class="list-group-item list-group-item-action" 
-                        onclick="selectCoordinator('${coordinator.user_id}', '${coordinator.first_name} ${coordinator.last_name}')">
-                        ${coordinator.first_name} ${coordinator.last_name} - ${coordinator.email}
-                    </button>`
-                ).join('');
-            } else {
-                resultsDiv.innerHTML = '<div class="alert alert-warning">No se encontraron coordinadores con ese documento.</div>';
+        directorForm.addEventListener('submit', function(e) {
+            console.log('DEBUG: Evento submit de director disparado en editSchool');
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            
+            const queryInput = document.getElementById('search_director_query');
+            const query = queryInput.value.trim();
+            
+            console.log('DEBUG: Query de director en editSchool:', query);
+            
+            // Validación adicional
+            if (!query || query.length === 0) {
+                console.log('DEBUG: Input vacío detectado en editSchool');
+                const resultsDiv = document.getElementById('searchDirectorResults');
+                resultsDiv.innerHTML = '<div class="alert alert-warning">Por favor, ingrese un número de documento para buscar.</div>';
+                queryInput.focus();
+                return false;
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            resultsDiv.innerHTML = '<div class="alert alert-danger">Error al buscar coordinadores.</div>';
+            
+            // Validar que sea solo números
+            if (!/^\d+$/.test(query)) {
+                console.log('DEBUG: Caracteres no numéricos detectados en editSchool');
+                const resultsDiv = document.getElementById('searchDirectorResults');
+                resultsDiv.innerHTML = '<div class="alert alert-warning">Por favor, ingrese solo números para el documento.</div>';
+                queryInput.focus();
+                return false;
+            }
+            
+            console.log('DEBUG: Iniciando búsqueda de director en editSchool');
+            const resultsDiv = document.getElementById('searchDirectorResults');
+            resultsDiv.innerHTML = '<div class="alert alert-info">Buscando...</div>';
+            
+            fetch('app/processes/assignProcess.php', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: 'subject=search_users_by_role&role_type=director&search_type=document&query=' + encodeURIComponent(query)
+            })
+            .then(response => {
+                console.log('DEBUG: Respuesta HTTP en editSchool:', response.status);
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Respuesta de búsqueda de director en editSchool:', data);
+                
+                if (data.status === 'ok' && data.data && data.data.length > 0) {
+                    resultsDiv.innerHTML = data.data.map(director =>
+                        `<button type="button" class="list-group-item list-group-item-action" 
+                            onclick="selectDirector('${director.user_id}', '${director.first_name} ${director.last_name}')">
+                            ${director.first_name} ${director.last_name} - ${director.email}
+                        </button>`
+                    ).join('');
+                } else if (data.status === 'error') {
+                    resultsDiv.innerHTML = `<div class="alert alert-danger">${data.msg || 'Error al buscar directores.'}</div>`;
+                } else {
+                    resultsDiv.innerHTML = '<div class="alert alert-warning">No se encontraron directores con ese documento.</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error en búsqueda de director en editSchool:', error);
+                resultsDiv.innerHTML = '<div class="alert alert-danger">Error de conexión al buscar directores. Intente nuevamente.</div>';
+            });
+            
+            return false;
         });
-    });
-}
+        
+        // Prevenir envío del formulario al presionar Enter en el input
+        const directorInput = document.getElementById('search_director_query');
+        if (directorInput) {
+            directorInput.addEventListener('keypress', function(e) {
+                console.log('DEBUG: Keypress en input de director en editSchool:', e.key);
+                if (e.key === 'Enter') {
+                    console.log('DEBUG: Enter presionado en input de director en editSchool');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    directorForm.dispatchEvent(new Event('submit'));
+                }
+            });
+        }
+    }
+    
+    // Búsqueda AJAX de coordinador
+    const coordinatorForm = document.getElementById('searchCoordinatorForm');
+    if (coordinatorForm) {
+        console.log('DEBUG: Formulario de coordinador encontrado en editSchool');
+        
+        coordinatorForm.addEventListener('submit', function(e) {
+            console.log('DEBUG: Evento submit de coordinador disparado en editSchool');
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            
+            const queryInput = document.getElementById('search_coordinator_query');
+            const query = queryInput.value.trim();
+            
+            console.log('DEBUG: Query de coordinador en editSchool:', query);
+            
+            // Validación adicional
+            if (!query || query.length === 0) {
+                console.log('DEBUG: Input vacío detectado en editSchool');
+                const resultsDiv = document.getElementById('searchCoordinatorResults');
+                resultsDiv.innerHTML = '<div class="alert alert-warning">Por favor, ingrese un número de documento para buscar.</div>';
+                queryInput.focus();
+                return false;
+            }
+            
+            // Validar que sea solo números
+            if (!/^\d+$/.test(query)) {
+                console.log('DEBUG: Caracteres no numéricos detectados en editSchool');
+                const resultsDiv = document.getElementById('searchCoordinatorResults');
+                resultsDiv.innerHTML = '<div class="alert alert-warning">Por favor, ingrese solo números para el documento.</div>';
+                queryInput.focus();
+                return false;
+            }
+            
+            console.log('DEBUG: Iniciando búsqueda de coordinador en editSchool');
+            const resultsDiv = document.getElementById('searchCoordinatorResults');
+            resultsDiv.innerHTML = '<div class="alert alert-info">Buscando...</div>';
+            
+            fetch('app/processes/assignProcess.php', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: 'subject=search_users_by_role&role_type=coordinator&search_type=document&query=' + encodeURIComponent(query)
+            })
+            .then(response => {
+                console.log('DEBUG: Respuesta HTTP en editSchool:', response.status);
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Respuesta de búsqueda de coordinador en editSchool:', data);
+                
+                if (data.status === 'ok' && data.data && data.data.length > 0) {
+                    resultsDiv.innerHTML = data.data.map(coordinator =>
+                        `<button type="button" class="list-group-item list-group-item-action" 
+                            onclick="selectCoordinator('${coordinator.user_id}', '${coordinator.first_name} ${coordinator.last_name}')">
+                            ${coordinator.first_name} ${coordinator.last_name} - ${coordinator.email}
+                        </button>`
+                    ).join('');
+                } else if (data.status === 'error') {
+                    resultsDiv.innerHTML = `<div class="alert alert-danger">${data.msg || 'Error al buscar coordinadores.'}</div>`;
+                } else {
+                    resultsDiv.innerHTML = '<div class="alert alert-warning">No se encontraron coordinadores con ese documento.</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error en búsqueda de coordinador en editSchool:', error);
+                resultsDiv.innerHTML = '<div class="alert alert-danger">Error de conexión al buscar coordinadores. Intente nuevamente.</div>';
+            });
+            
+            return false;
+        });
+        
+        // Prevenir envío del formulario al presionar Enter en el input
+        const coordinatorInput = document.getElementById('search_coordinator_query');
+        if (coordinatorInput) {
+            coordinatorInput.addEventListener('keypress', function(e) {
+                console.log('DEBUG: Keypress en input de coordinador en editSchool:', e.key);
+                if (e.key === 'Enter') {
+                    console.log('DEBUG: Enter presionado en input de coordinador en editSchool');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    coordinatorForm.dispatchEvent(new Event('submit'));
+                }
+            });
+        }
+    }
+    
+    console.log('DEBUG: Formularios de búsqueda en editSchool inicializados');
+});
 </script>

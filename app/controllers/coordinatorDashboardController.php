@@ -23,14 +23,19 @@ class CoordinatorDashboardController extends MainController
      */
     public function dashboard()
     {
-        // Obtener estadísticas para el dashboard
-        $stats = $this->getDashboardStats();
-        
-        // Cargar la vista del dashboard
-        $this->loadDashboardView('coordinator/dashboard', [
-            'stats' => $stats,
-            'currentUser' => $this->sessionManager->getCurrentUser()
-        ]);
+        try {
+            // Obtener estadísticas para el dashboard
+            $stats = $this->getDashboardStats();
+            
+            // Cargar la vista del dashboard
+            $this->loadDashboardView('coordinator/dashboard', [
+                'stats' => $stats,
+                'currentUser' => $this->sessionManager->getCurrentUser()
+            ]);
+        } catch (Exception $e) {
+            ErrorHandler::logError("Error en dashboard de coordinador: " . $e->getMessage());
+            $this->loadView('Error/500', ['error' => $e->getMessage()]);
+        }
     }
 
     /**
@@ -69,7 +74,7 @@ class CoordinatorDashboardController extends MainController
             return $stats;
             
         } catch (Exception $e) {
-            error_log("Error obteniendo estadísticas de coordinator: " . $e->getMessage());
+            ErrorHandler::logError("Error obteniendo estadísticas de coordinador: " . $e->getMessage());
             return [];
         }
     }
@@ -79,9 +84,14 @@ class CoordinatorDashboardController extends MainController
      */
     public function studentManagement()
     {
-        $this->loadDashboardView('coordinator/studentManagement', [
-            'currentUser' => $this->sessionManager->getCurrentUser()
-        ]);
+        try {
+            $this->loadDashboardView('coordinator/studentManagement', [
+                'currentUser' => $this->sessionManager->getCurrentUser()
+            ]);
+        } catch (Exception $e) {
+            ErrorHandler::logError("Error en gestión de estudiantes: " . $e->getMessage());
+            $this->loadView('Error/500', ['error' => $e->getMessage()]);
+        }
     }
 
     /**
@@ -89,9 +99,14 @@ class CoordinatorDashboardController extends MainController
      */
     public function teacherManagement()
     {
-        $this->loadDashboardView('coordinator/teacherManagement', [
-            'currentUser' => $this->sessionManager->getCurrentUser()
-        ]);
+        try {
+            $this->loadDashboardView('coordinator/teacherManagement', [
+                'currentUser' => $this->sessionManager->getCurrentUser()
+            ]);
+        } catch (Exception $e) {
+            ErrorHandler::logError("Error en gestión de profesores: " . $e->getMessage());
+            $this->loadView('Error/500', ['error' => $e->getMessage()]);
+        }
     }
 
     /**
@@ -99,52 +114,15 @@ class CoordinatorDashboardController extends MainController
      */
     public function subjectManagement()
     {
-        $this->loadDashboardView('coordinator/subjectManagement', [
-            'currentUser' => $this->sessionManager->getCurrentUser()
-        ]);
-    }
-
-    /**
-     * Carga una vista parcial vía AJAX para el dashboard de coordinador
-     */
-    public function loadPartial()
-    {
-        $view = htmlspecialchars($_POST['view']) ?? htmlspecialchars($_GET['view']) ?? '';
-        $action = htmlspecialchars($_POST['action']) ?? htmlspecialchars($_GET['action']) ?? 'index';
-        $force = isset($_POST['force']) && htmlspecialchars($_POST['force']) || isset($_GET['force']) && htmlspecialchars($_GET['force']);
-
-        if (!$this->isAjaxRequest() && !$force) {
-            if (empty($view)) {
-                echo '<div class="alert alert-warning">Vista no especificada. Use: ?view=coordinatorDashboard&action=loadPartial&view=modulo&action=vista</div>';
-                return;
-            }
-            $viewPath = $view . '/' . $action;
-            $fullPath = ROOT . "/app/views/{$viewPath}.php";
-            if (!file_exists($fullPath)) {
-                echo '<div class="alert alert-danger">Vista no encontrada: ' . htmlspecialchars($viewPath) . '</div>';
-                return;
-            }
-            try {
-                $this->loadPartialView($viewPath);
-            } catch (Exception $e) {
-                echo '<div class="alert alert-danger">Error al cargar la vista: ' . htmlspecialchars($e->getMessage()) . '</div>';
-            }
-            return;
-        }
-        if (empty($view)) {
-            echo json_encode(['success' => false, 'message' => 'Vista no especificada']);
-            return;
-        }
-        $viewPath = $view . '/' . $action;
-        $fullPath = ROOT . "/app/views/{$viewPath}.php";
-        if (!file_exists($fullPath)) {
-            echo json_encode(['success' => false, 'message' => "Vista no encontrada: {$viewPath}"]);
-            return;
-        }
         try {
-            $this->loadPartialView($viewPath);
+            $this->loadDashboardView('coordinator/subjectManagement', [
+                'currentUser' => $this->sessionManager->getCurrentUser()
+            ]);
         } catch (Exception $e) {
-            echo json_encode(['success' => false, 'message' => 'Error al cargar la vista: ' . $e->getMessage()]);
+            ErrorHandler::logError("Error en gestión de materias: " . $e->getMessage());
+            $this->loadView('Error/500', ['error' => $e->getMessage()]);
         }
     }
+
+    // El método loadPartial() se hereda del MainController
 } 

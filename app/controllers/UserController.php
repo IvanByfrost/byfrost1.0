@@ -20,11 +20,109 @@ class UserController extends MainController
     {
         $this->protectRoot();
         
-        $users = $this->userModel->getUsers();
+        // Obtener parámetros de búsqueda
+        $searchType = htmlspecialchars($_GET['search_type'] ?? '');
+        $search = htmlspecialchars($_GET['search'] ?? '');
+        $roleType = htmlspecialchars($_GET['role_type'] ?? '');
+        $credentialType = htmlspecialchars($_GET['credential_type'] ?? '');
+        $credentialNumber = htmlspecialchars($_GET['credential_number'] ?? '');
+        $nameSearch = htmlspecialchars($_GET['name_search'] ?? '');
         
-        $this->loadPartialView('user/consultUser', [
-            'users' => $users
-        ]);
+        $users = [];
+        $message = '';
+        $error = '';
+        
+        try {
+            // Si hay criterios de búsqueda específicos
+            if (!empty($searchType)) {
+                switch ($searchType) {
+                    case 'document':
+                        if (!empty($credentialType) && !empty($credentialNumber)) {
+                            $users = $this->userModel->searchUsersByDocument($credentialType, $credentialNumber);
+                        }
+                        break;
+                        
+                    case 'role':
+                        if (!empty($roleType)) {
+                            $users = $this->userModel->getUsersByRole($roleType, $this->sessionManager->getUserRole());
+                        }
+                        break;
+                        
+                    case 'name':
+                        if (!empty($nameSearch)) {
+                            // Buscar por nombre usando el método existente o crear uno nuevo
+                            $users = $this->userModel->searchUsersByName($nameSearch);
+                        }
+                        break;
+                        
+                    case 'general':
+                        if (!empty($search)) {
+                            // Búsqueda general en todos los campos
+                            $users = $this->userModel->searchUsersGeneral($search);
+                        }
+                        break;
+                }
+            } else {
+                // Si no hay criterios específicos, obtener todos los usuarios
+                $users = $this->userModel->getUsers();
+            }
+            
+            // Verificar si hay mensaje de éxito
+            $success = htmlspecialchars($_GET['success'] ?? false);
+            $message = htmlspecialchars($_GET['msg'] ?? '');
+            
+        } catch (Exception $e) {
+            $error = 'Error al buscar usuarios: ' . $e->getMessage();
+            error_log("UserController::consultUser - Error: " . $e->getMessage());
+        }
+        
+        // Verificar si estamos en un contexto de dashboard
+        $isDashboardContext = $this->isDashboardContext();
+        
+        // Si es una petición AJAX, usar loadPartialView
+        if ($this->isAjaxRequest()) {
+            $this->loadPartialView('user/consultUser', [
+                'users' => $users,
+                'search' => $search,
+                'searchType' => $searchType,
+                'roleType' => $roleType,
+                'credentialType' => $credentialType,
+                'credentialNumber' => $credentialNumber,
+                'nameSearch' => $nameSearch,
+                'success' => $success,
+                'message' => $message,
+                'error' => $error
+            ]);
+        } elseif ($isDashboardContext) {
+            // Si estamos en dashboard, usar loadPartialView
+            $this->loadPartialView('user/consultUser', [
+                'users' => $users,
+                'search' => $search,
+                'searchType' => $searchType,
+                'roleType' => $roleType,
+                'credentialType' => $credentialType,
+                'credentialNumber' => $credentialNumber,
+                'nameSearch' => $nameSearch,
+                'success' => $success,
+                'message' => $message,
+                'error' => $error
+            ]);
+        } else {
+            // Si no estamos en dashboard, redirigir al dashboard con los parámetros
+            $params = [];
+            if ($search) $params[] = "search=" . urlencode($search);
+            if ($searchType) $params[] = "search_type=$searchType";
+            if ($roleType) $params[] = "role_type=$roleType";
+            if ($credentialType) $params[] = "credential_type=$credentialType";
+            if ($credentialNumber) $params[] = "credential_number=$credentialNumber";
+            if ($nameSearch) $params[] = "name_search=" . urlencode($nameSearch);
+            
+            $paramString = !empty($params) ? '&' . implode('&', $params) : '';
+            $redirectUrl = url . "?view=root&action=dashboard" . $paramString;
+            
+            header("Location: $redirectUrl");
+            exit;
+        }
     }
 
     /**
@@ -254,7 +352,73 @@ class UserController extends MainController
     }
 
     public function roleHistory() {
-        $this->showRoleHistory();
+        $this->protectRoot();
+        
+        $roleHistory = [];
+        $searchError = '';
+        $userInfo = null;
+        $credentialType = htmlspecialchars($_GET['credential_type'] ?? '');
+        $credentialNumber = htmlspecialchars($_GET['credential_number'] ?? '');
+
+        // Si se envía el formulario de búsqueda
+        if ($credentialType && $credentialNumber) {
+            try {
+                // Buscar usuario por documento
+                $users = $this->userModel->searchUsersByDocument($credentialType, $credentialNumber);
+                if (!empty($users)) {
+                    $userInfo = $users[0];
+                    $userId = $users[0]['user_id'];
+                    $roleHistory = $this->userModel->getRoleHistory($userId);
+                } else {
+                    $searchError = 'No se encontró ningún usuario con ese documento.';
+                }
+            } catch (Exception $e) {
+                $searchError = 'Error al buscar usuario: ' . $e->getMessage();
+                error_log("UserController::roleHistory - Error: " . $e->getMessage());
+            }
+        }
+
+        // Verificar si hay mensaje de éxito
+        $success = htmlspecialchars($_GET['success'] ?? false);
+        $message = htmlspecialchars($_GET['msg'] ?? '');
+
+        // Verificar si estamos en un contexto de dashboard
+        $isDashboardContext = $this->isDashboardContext();
+        
+        // Si es una petición AJAX, usar loadPartialView
+        if ($this->isAjaxRequest()) {
+            $this->loadPartialView('user/roleHistory', [
+                'roleHistory' => $roleHistory,
+                'userInfo' => $userInfo,
+                'searchError' => $searchError,
+                'credentialType' => $credentialType,
+                'credentialNumber' => $credentialNumber,
+                'success' => $success,
+                'message' => $message
+            ]);
+        } elseif ($isDashboardContext) {
+            // Si estamos en dashboard, usar loadPartialView
+            $this->loadPartialView('user/roleHistory', [
+                'roleHistory' => $roleHistory,
+                'userInfo' => $userInfo,
+                'searchError' => $searchError,
+                'credentialType' => $credentialType,
+                'credentialNumber' => $credentialNumber,
+                'success' => $success,
+                'message' => $message
+            ]);
+        } else {
+            // Si no estamos en dashboard, redirigir al dashboard con los parámetros
+            $params = [];
+            if ($credentialType) $params[] = "credential_type=$credentialType";
+            if ($credentialNumber) $params[] = "credential_number=$credentialNumber";
+            
+            $paramString = !empty($params) ? '&' . implode('&', $params) : '';
+            $redirectUrl = url . "?view=root&action=dashboard" . $paramString;
+            
+            header("Location: $redirectUrl");
+            exit;
+        }
     }
 
     /**
@@ -491,6 +655,173 @@ class UserController extends MainController
             exit;
         }
         $this->loadPartialView('user/profileSettings');
+    }
+
+    /**
+     * Muestra la vista de detalles del usuario
+     */
+    public function view()
+    {
+        $this->protectRoot();
+        
+        $userId = htmlspecialchars($_GET['id'] ?? '');
+        if (!$userId) {
+            $this->loadPartialView('Error/404');
+            return;
+        }
+        
+        try {
+            $user = $this->userModel->getUser($userId);
+            if (!$user) {
+                $this->loadPartialView('Error/404');
+                return;
+            }
+            
+            $this->loadPartialView('user/viewUser', ['user' => $user]);
+        } catch (Exception $e) {
+            error_log("UserController::view - Error: " . $e->getMessage());
+            $this->loadPartialView('Error/500');
+        }
+    }
+
+    /**
+     * Muestra la vista de edición del usuario
+     */
+    public function edit()
+    {
+        $this->protectRoot();
+        
+        $userId = htmlspecialchars($_GET['id'] ?? '');
+        if (!$userId) {
+            $this->loadPartialView('Error/404');
+            return;
+        }
+        
+        try {
+            $user = $this->userModel->getUser($userId);
+            if (!$user) {
+                $this->loadPartialView('Error/404');
+                return;
+            }
+            
+            $this->loadPartialView('user/editUser', ['user' => $user]);
+        } catch (Exception $e) {
+            error_log("UserController::edit - Error: " . $e->getMessage());
+            $this->loadPartialView('Error/500');
+        }
+    }
+
+    /**
+     * Muestra la vista de historial de roles para un usuario específico
+     */
+    public function viewRoleHistory()
+    {
+        $this->protectRoot();
+        
+        $userId = htmlspecialchars($_GET['id'] ?? '');
+        if (!$userId) {
+            $this->loadPartialView('Error/404');
+            return;
+        }
+        
+        try {
+            $user = $this->userModel->getUser($userId);
+            if (!$user) {
+                $this->loadPartialView('Error/404');
+                return;
+            }
+            
+            $roleHistory = $this->userModel->getRoleHistory($userId);
+            
+            $this->loadPartialView('user/roleHistory', [
+                'user' => $user,
+                'roleHistory' => $roleHistory
+            ]);
+        } catch (Exception $e) {
+            error_log("UserController::viewRoleHistory - Error: " . $e->getMessage());
+            $this->loadPartialView('Error/500');
+        }
+    }
+
+    /**
+     * Muestra la vista de desactivación de usuario
+     */
+    public function deactivate()
+    {
+        $this->protectRoot();
+        
+        $userId = htmlspecialchars($_GET['id'] ?? '');
+        if (!$userId) {
+            $this->loadPartialView('Error/404');
+            return;
+        }
+        
+        try {
+            $user = $this->userModel->getUser($userId);
+            if (!$user) {
+                $this->loadPartialView('Error/404');
+                return;
+            }
+            
+            $this->loadPartialView('user/deactivate', ['user' => $user]);
+        } catch (Exception $e) {
+            error_log("UserController::deactivate - Error: " . $e->getMessage());
+            $this->loadPartialView('Error/500');
+        }
+    }
+
+    /**
+     * Muestra la vista de activación de usuario
+     */
+    public function activate()
+    {
+        $this->protectRoot();
+        
+        $userId = htmlspecialchars($_GET['id'] ?? '');
+        if (!$userId) {
+            $this->loadPartialView('Error/404');
+            return;
+        }
+        
+        try {
+            $user = $this->userModel->getUser($userId);
+            if (!$user) {
+                $this->loadPartialView('Error/404');
+                return;
+            }
+            
+            $this->loadPartialView('user/activate', ['user' => $user]);
+        } catch (Exception $e) {
+            error_log("UserController::activate - Error: " . $e->getMessage());
+            $this->loadPartialView('Error/500');
+        }
+    }
+
+    /**
+     * Muestra la vista de cambio de contraseña
+     */
+    public function changePassword()
+    {
+        $this->protectRoot();
+        
+        $userId = htmlspecialchars($_GET['id'] ?? '');
+        if (!$userId) {
+            $this->loadPartialView('Error/404');
+            return;
+        }
+        
+        try {
+            $user = $this->userModel->getUser($userId);
+            if (!$user) {
+                $this->loadPartialView('Error/404');
+                return;
+            }
+            
+            $this->loadPartialView('user/changePassword', ['user' => $user]);
+        } catch (Exception $e) {
+            error_log("UserController::changePassword - Error: " . $e->getMessage());
+            $this->loadPartialView('Error/500');
+        }
     }
 
     /**

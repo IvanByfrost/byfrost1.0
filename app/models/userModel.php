@@ -376,6 +376,7 @@ class UserModel extends MainModel
                         u.email,
                         u.phone,
                         u.address,
+                        u.is_active,
                         ur.role_type as user_role
                       FROM users u
                       LEFT JOIN user_roles ur ON u.user_id = ur.user_id AND ur.is_active = 1
@@ -432,7 +433,8 @@ class UserModel extends MainModel
                         u.last_name,
                         u.email,
                         u.phone,
-                        u.address
+                        u.address,
+                        u.is_active
                       FROM users u
                       LEFT JOIN user_roles ur ON u.user_id = ur.user_id AND ur.is_active = 1
                       WHERE ur.user_id IS NULL
@@ -474,6 +476,7 @@ class UserModel extends MainModel
                         u.email,
                         u.phone,
                         u.address,
+                        u.is_active,
                         ur.role_type
                       FROM users u
                       INNER JOIN user_roles ur ON u.user_id = ur.user_id
@@ -517,6 +520,7 @@ class UserModel extends MainModel
                             u.email,
                             u.phone,
                             u.address,
+                            u.is_active,
                             ur.role_type
                           FROM users u
                           INNER JOIN user_roles ur ON u.user_id = ur.user_id
@@ -550,7 +554,7 @@ class UserModel extends MainModel
      * @return array
      */
     public function getRoleHistory($userId) {
-        $query = "SELECT role_type, is_active, created_at FROM user_roles WHERE user_id = :user_id ORDER BY created_at DESC";
+        $query = "SELECT role_type, is_active, created_at, updated_at FROM user_roles WHERE user_id = :user_id ORDER BY created_at DESC";
         $stmt = $this->dbConn->prepare($query);
         $stmt->execute([':user_id' => $userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -564,6 +568,11 @@ class UserModel extends MainModel
                 throw new Exception('No tienes permisos para buscar usuarios con ese rol.');
             }
             
+            // Validar parámetros de entrada
+            if (empty($roleType) || empty($credentialNumber)) {
+                throw new Exception('Tipo de rol y número de documento son requeridos.');
+            }
+            
             $query = "SELECT 
                         u.user_id,
                         u.credential_type,
@@ -573,6 +582,7 @@ class UserModel extends MainModel
                         u.email,
                         u.phone,
                         u.address,
+                        u.is_active,
                         ur.role_type
                       FROM users u
                       INNER JOIN user_roles ur ON u.user_id = ur.user_id
@@ -582,14 +592,31 @@ class UserModel extends MainModel
                       AND u.credential_number = :credential_number
                       ORDER BY u.first_name, u.last_name
                       LIMIT 10";
+            
             $stmt = $this->dbConn->prepare($query);
-            $stmt->execute([
+            if (!$stmt) {
+                throw new Exception('Error al preparar la consulta de búsqueda.');
+            }
+            
+            $result = $stmt->execute([
                 ':role_type' => $roleType,
                 ':credential_number' => $credentialNumber
             ]);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            if (!$result) {
+                throw new Exception('Error al ejecutar la consulta de búsqueda.');
+            }
+            
+            $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            error_log("UserModel::searchUsersByRoleAndDocument - Encontrados " . count($users) . " usuarios con rol '$roleType' y documento '$credentialNumber'");
+            
+            return $users;
+        } catch (PDOException $e) {
+            error_log("UserModel::searchUsersByRoleAndDocument PDO Error: " . $e->getMessage());
+            throw new Exception('Error de base de datos al buscar usuarios: ' . $e->getMessage());
         } catch (Exception $e) {
-            throw new Exception('Error al buscar usuarios por rol y documento');
+            error_log("UserModel::searchUsersByRoleAndDocument Error: " . $e->getMessage());
+            throw new Exception('Error al buscar usuarios por rol y documento: ' . $e->getMessage());
         }
     }
 
@@ -623,6 +650,89 @@ class UserModel extends MainModel
             return true;
         } else {
             return 'Error al actualizar la contraseña.';
+        }
+    }
+
+    /**
+     * Busca usuarios por nombre o apellido
+     * 
+     * @param string $nameSearch Término de búsqueda para nombre o apellido
+     * @return array Array de usuarios encontrados
+     */
+    public function searchUsersByName($nameSearch)
+    {
+        try {
+            $query = "SELECT 
+                        u.user_id,
+                        u.credential_type,
+                        u.credential_number,
+                        u.first_name,
+                        u.last_name,
+                        u.email,
+                        u.phone,
+                        u.address,
+                        u.is_active,
+                        ur.role_type as user_role
+                      FROM users u
+                      LEFT JOIN user_roles ur ON u.user_id = ur.user_id AND ur.is_active = 1
+                      WHERE u.is_active = 1
+                      AND (u.first_name LIKE :search 
+                           OR u.last_name LIKE :search 
+                           OR CONCAT(u.first_name, ' ', u.last_name) LIKE :search)
+                      ORDER BY u.first_name, u.last_name
+                      LIMIT 50";
+            
+            $stmt = $this->dbConn->prepare($query);
+            $searchTerm = '%' . $nameSearch . '%';
+            $stmt->execute([':search' => $searchTerm]);
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log("Error en UserModel::searchUsersByName: " . $e->getMessage());
+            throw new Exception('Error al buscar usuarios por nombre');
+        }
+    }
+
+    /**
+     * Búsqueda general de usuarios en múltiples campos
+     * 
+     * @param string $search Término de búsqueda general
+     * @return array Array de usuarios encontrados
+     */
+    public function searchUsersGeneral($search)
+    {
+        try {
+            $query = "SELECT 
+                        u.user_id,
+                        u.credential_type,
+                        u.credential_number,
+                        u.first_name,
+                        u.last_name,
+                        u.email,
+                        u.phone,
+                        u.address,
+                        u.is_active,
+                        ur.role_type as user_role
+                      FROM users u
+                      LEFT JOIN user_roles ur ON u.user_id = ur.user_id AND ur.is_active = 1
+                      WHERE u.is_active = 1
+                      AND (u.first_name LIKE :search 
+                           OR u.last_name LIKE :search 
+                           OR u.credential_number LIKE :search
+                           OR u.email LIKE :search
+                           OR ur.role_type LIKE :search
+                           OR CONCAT(u.first_name, ' ', u.last_name) LIKE :search)
+                      ORDER BY u.first_name, u.last_name
+                      LIMIT 50";
+            
+            $stmt = $this->dbConn->prepare($query);
+            $searchTerm = '%' . $search . '%';
+            $stmt->execute([':search' => $searchTerm]);
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log("Error en UserModel::searchUsersGeneral: " . $e->getMessage());
+            throw new Exception('Error al buscar usuarios');
         }
     }
 }

@@ -125,11 +125,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             try {
+                error_log("DEBUG assignProcess - Iniciando búsqueda por rol: role_type=$roleType, search_type=$searchType, query=$query");
+                
                 if ($searchType === 'document' && $query) {
+                    error_log("DEBUG assignProcess - Buscando usuarios por rol y documento");
                     $users = $model->searchUsersByRoleAndDocument($roleType, $query, $currentUserRole);
                 } elseif ($roleType === 'no_role') {
+                    error_log("DEBUG assignProcess - Buscando usuarios sin rol");
                     $users = $model->getUsersWithoutRole();
                 } else {
+                    error_log("DEBUG assignProcess - Buscando usuarios por rol general");
                     $users = $model->getUsersByRole($roleType, $currentUserRole);
                 }
 
@@ -149,10 +154,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ]);
                 }
             } catch (Exception $e) {
-                error_log("DEBUG assignProcess - Excepción en búsqueda: " . $e->getMessage());
+                error_log("DEBUG assignProcess - Excepción en búsqueda por rol: " . $e->getMessage());
+                error_log("DEBUG assignProcess - Stack trace: " . $e->getTraceAsString());
+                
+                // Determinar el tipo de error para dar una respuesta más específica
+                $errorMessage = $e->getMessage();
+                if (strpos($errorMessage, 'No tienes permisos') !== false) {
+                    $errorMessage = 'No tienes permisos para buscar usuarios con ese rol.';
+                } elseif (strpos($errorMessage, 'Error de base de datos') !== false) {
+                    $errorMessage = 'Error de conexión con la base de datos.';
+                } elseif (strpos($errorMessage, 'Error al preparar') !== false || strpos($errorMessage, 'Error al ejecutar') !== false) {
+                    $errorMessage = 'Error interno del servidor.';
+                }
+                
                 echo json_encode([
                     'status' => 'error',
-                    'msg' => 'Error al buscar usuarios: ' . $e->getMessage()
+                    'msg' => $errorMessage
                 ]);
             }
             break;

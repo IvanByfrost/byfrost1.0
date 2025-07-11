@@ -175,6 +175,24 @@ class MainController {
     }
 
     /**
+     * Verifica si estamos en un contexto de dashboard
+     * 
+     * @return bool
+     */
+    protected function isDashboardContext()
+    {
+        // Verificar si el usuario está logueado y tiene un rol de dashboard
+        if (!isset($this->sessionManager) || !$this->sessionManager->isLoggedIn()) {
+            return false;
+        }
+        
+        $userRole = $this->sessionManager->getUserRole();
+        $dashboardRoles = ['root', 'director', 'coordinator', 'treasurer', 'professor', 'student', 'parent'];
+        
+        return in_array($userRole, $dashboardRoles);
+    }
+
+    /**
      * Envía una respuesta JSON
      * 
      * @param bool $success Indica si la operación fue exitosa
@@ -240,6 +258,72 @@ class MainController {
             require_once ROOT . '/app/controllers/ErrorController.php';
             $error = new ErrorController($this->dbConn);
             $error->Error('404');
+        }
+    }
+
+    /**
+     * Método unificado para cargar vistas parciales
+     * Heredado por todos los dashboards
+     */
+    protected function loadPartial()
+    {
+        try {
+            $view = htmlspecialchars($_POST['view'] ?? $_GET['view'] ?? '');
+            $action = htmlspecialchars($_POST['action'] ?? $_GET['action'] ?? 'index');
+            $force = isset($_POST['force']) && htmlspecialchars($_POST['force']) || isset($_GET['force']) && htmlspecialchars($_GET['force']);
+
+            // Si no es AJAX y no se fuerza, mostrar mensaje de ayuda
+            if (!$this->isAjaxRequest() && !$force) {
+                if (empty($view)) {
+                    echo '<div class="alert alert-warning">Vista no especificada. Use: ?view=dashboard&action=loadPartial&view=modulo&action=vista</div>';
+                    return;
+                }
+                
+                $viewPath = $view . '/' . $action;
+                $fullPath = ROOT . "/app/views/{$viewPath}.php";
+                
+                if (!file_exists($fullPath)) {
+                    echo '<div class="alert alert-danger">Vista no encontrada: ' . htmlspecialchars($viewPath) . '</div>';
+                    return;
+                }
+                
+                try {
+                    $this->loadPartialView($viewPath);
+                } catch (Exception $e) {
+                    ErrorHandler::logError("Error cargando vista parcial: " . $e->getMessage());
+                    echo '<div class="alert alert-danger">Error al cargar la vista: ' . htmlspecialchars($e->getMessage()) . '</div>';
+                }
+                return;
+            }
+
+            // Para peticiones AJAX
+            if (empty($view)) {
+                $this->sendJsonResponse(false, 'Vista no especificada');
+                return;
+            }
+            
+            $viewPath = $view . '/' . $action;
+            $fullPath = ROOT . "/app/views/{$viewPath}.php";
+            
+            if (!file_exists($fullPath)) {
+                $this->sendJsonResponse(false, "Vista no encontrada: {$viewPath}");
+                return;
+            }
+            
+            try {
+                $this->loadPartialView($viewPath);
+            } catch (Exception $e) {
+                ErrorHandler::logError("Error cargando vista parcial AJAX: " . $e->getMessage());
+                $this->sendJsonResponse(false, 'Error al cargar la vista: ' . $e->getMessage());
+            }
+            
+        } catch (Exception $e) {
+            ErrorHandler::logError("Error en loadPartial: " . $e->getMessage());
+            if ($this->isAjaxRequest()) {
+                $this->sendJsonResponse(false, 'Error interno del servidor');
+            } else {
+                echo '<div class="alert alert-danger">Error interno del servidor</div>';
+            }
         }
     }
 }

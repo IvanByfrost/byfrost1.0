@@ -333,6 +333,37 @@ class DashboardManager {
     }
 }
 
+// Función global para mostrar/ocultar campos según el tipo de búsqueda
+window.toggleSearchFields = function() {
+    const searchTypeSelect = document.getElementById('search_type');
+    if (!searchTypeSelect) return;
+    const searchType = searchTypeSelect.value;
+    const documentTypeField = document.getElementById('document_type_field');
+    const documentNumberField = document.getElementById('document_number_field');
+    const roleTypeField = document.getElementById('role_type_field');
+    const nameSearchField = document.getElementById('name_search_field');
+
+    // Ocultar todos los campos primero si existen
+    if (documentTypeField) documentTypeField.style.display = 'none';
+    if (documentNumberField) documentNumberField.style.display = 'none';
+    if (roleTypeField) roleTypeField.style.display = 'none';
+    if (nameSearchField) nameSearchField.style.display = 'none';
+
+    // Mostrar campos según el tipo seleccionado
+    switch(searchType) {
+        case 'document':
+            if (documentTypeField) documentTypeField.style.display = 'block';
+            if (documentNumberField) documentNumberField.style.display = 'block';
+            break;
+        case 'role':
+            if (roleTypeField) roleTypeField.style.display = 'block';
+            break;
+        case 'name':
+            if (nameSearchField) nameSearchField.style.display = 'block';
+            break;
+    }
+};
+
 // Modularización para inicialización por vista
 window.initDirectorDashboard = function() {
     if (!window.dashboardManager) {
@@ -350,30 +381,40 @@ window.initDirectorDashboardSimple = function() {
     window.initDirectorDashboard();
 };
 
-// Eliminar la inicialización automática en DOMContentLoaded
-// document.addEventListener('DOMContentLoaded', function() {
-//     console.log('DOM cargado, inicializando dashboard...');
+// Función para mostrar/ocultar campos según el tipo de búsqueda
+function toggleSearchFields() {
+    const searchType = document.getElementById('search_type').value;
+    const documentTypeField = document.getElementById('document_type_field');
+    const documentNumberField = document.getElementById('document_number_field');
+    const roleTypeField = document.getElementById('role_type_field');
+    const nameSearchField = document.getElementById('name_search_field');
     
-//     // Verificar que Chart.js esté disponible
-//     if (typeof Chart === 'undefined') {
-//         console.error('Chart.js no está cargado');
-//         return;
-//     }
+    // Ocultar todos los campos primero
+    documentTypeField.style.display = 'none';
+    documentNumberField.style.display = 'none';
+    roleTypeField.style.display = 'none';
+    nameSearchField.style.display = 'none';
     
-//     // Crear instancia del dashboard
-//     window.dashboardManager = new DashboardManager();
-    
-//     // Hacer loadView disponible globalmente
-//     window.loadView = function(viewName) {
-//         if (window.dashboardManager && typeof window.dashboardManager.safeLoadView === 'function') {
-//             window.dashboardManager.safeLoadView(viewName);
-//         } else {
-//             window.location.href = '?view=' + viewName;
-//         }
-//     };
+    // Mostrar campos según el tipo de búsqueda
+    switch(searchType) {
+        case 'document':
+            documentTypeField.style.display = 'block';
+            documentNumberField.style.display = 'block';
+            break;
+        case 'role':
+            roleTypeField.style.display = 'block';
+            break;
+        case 'name':
+            nameSearchField.style.display = 'block';
+            break;
+    }
+}
 
-//     window.safeLoadView = function(viewName) {
-//         // NO llamar a loadView aquí, solo redirigir
-//         window.location.href = '?view=' + viewName;
-//     };
-// }); 
+// Función de respaldo para loadView si no está disponible
+if (typeof loadView === 'undefined') {
+    window.loadView = function(viewName) {
+        console.log('loadView no disponible, redirigiendo a:', viewName);
+        const url = `${window.location.origin}${window.location.pathname}?view=${viewName.replace('/', '&action=')}`;
+        window.location.href = url;
+    };
+}

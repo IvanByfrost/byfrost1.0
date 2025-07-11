@@ -23,10 +23,10 @@ if (!$this->sessionManager->hasRole('root')) {
     exit;
 }
 
-// require_once ROOT . '/app/views/layouts/dashHeader.php'; // ELIMINADO: El controlador ya lo incluye
 ?>
 
 <script src="<?php echo url . app . rq ?>js/rootDashboard.js"></script>
+<script src="<?php echo url . app . rq ?>js/loadView.js"></script>
 
 <div class="dashboard-container">
     <aside class="sidebar">

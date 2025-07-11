@@ -228,6 +228,10 @@ class Router
         $controllerName = $controllerInfo['controller'];
         $controllerPath = $this->controllersDir . $controllerName . '.php';
         
+        // Debug: Log de la ejecución
+        $this->log("Router: Ejecutando controlador - Controller: $controllerName, Action: $action, View: $view");
+        $this->log("Router: Path del controlador: $controllerPath");
+        
         if (!file_exists($controllerPath)) {
             $this->handleError(404, "Controlador no encontrado: $controllerName");
             return;
@@ -242,13 +246,18 @@ class Router
         // Determinar acción automáticamente
         if (empty($action)) {
             $action = $this->detectDefaultAction($view, $controller);
+            $this->log("Router: Acción detectada automáticamente: $action");
         }
         
         // Verificar método
         if (!method_exists($controller, $action)) {
+            $this->log("Router: ERROR - Método $action no existe en $controllerName");
             $this->handleError(404, "Acción no encontrada: $action en $controllerName");
             return;
         }
+        
+        // Debug: Log antes de ejecutar
+        $this->log("Router: Ejecutando método $controllerName::$action()");
         
         // Ejecutar
         try {
@@ -401,6 +410,24 @@ class Router
     private function detectDirectActionViews()
     {
         $directViews = [];
+        
+        // Vistas de acción directa conocidas
+        $knownDirectViews = [
+            'school/consultSchool',
+            'user/consultUser',
+            'user/assignRole',
+            'user/roleHistory',
+            'payroll/dashboard',
+            'activity/dashboard',
+            'student/academicHistory',
+            'director/dashboard',
+            'coordinator/dashboard',
+            'treasurer/dashboard',
+            'root/dashboard'
+        ];
+        
+        // Agregar vistas conocidas
+        $directViews = array_merge($directViews, $knownDirectViews);
         
         // Escanear controladores para detectar métodos que no usan loadPartial
         $controllers = $this->scanControllers();

@@ -1,281 +1,341 @@
-window.loadView = function(viewName, useAction = false) {
-    const target = document.getElementById("mainContent");
-    console.log("Router - Target mainContent:", target);
-    if (!target) {
-        console.error("Router - Elemento con id 'mainContent' no encontrado.");
+/**
+ * loadView.js - Sistema de carga dinámica de vistas
+ * ByFrost - Sistema unificado de navegación
+ */
+
+// Configuración global
+const baseUrl = window.location.origin + window.location.pathname;
+let currentView = '';
+let isLoading = false;
+
+/**
+ * Construye una URL para cargar una vista
+ */
+function buildViewUrl(viewName, action = null) {
+    let url = baseUrl + '?view=' + encodeURIComponent(viewName);
+    
+    if (action) {
+        url += '&action=' + encodeURIComponent(action);
+    }
+    
+    return url;
+}
+
+/**
+ * Carga una vista en el contenedor principal
+ */
+function loadView(viewName, action = null, targetElement = '#mainContent') {
+    if (isLoading) {
+        console.log('Ya hay una carga en progreso, esperando...');
         return;
     }
-
-    console.log("Router - Cargando vista:", viewName);
+    
+    isLoading = true;
+    currentView = viewName;
     
     // Mostrar indicador de carga
-    target.innerHTML = '<div class="text-center p-4"><i class="fas fa-spinner fa-spin"></i> Cargando...</div>';
+    showLoadingIndicator(targetElement);
     
-    // Función para construir URL usando Router
-    function buildViewUrl(viewName) {
-        const baseUrl = window.location.origin + window.location.pathname;
-        
-        // Router - Procesamiento automático de rutas
-        if (viewName.includes('?')) {
-            const [view, params] = viewName.split('?');
-            // Router maneja automáticamente los parámetros
-            return `${baseUrl}?view=${view}&${params}`;
-        }
-        
-        // Router - Rutas con módulos (ej: school/createSchool)
-        if (viewName.includes('/')) {
-            const [module, action] = viewName.split('/');
-            // Router detecta automáticamente la acción
-            return `${baseUrl}?view=${module}&action=${action}`;
-        }
-        
-        // Router - Vista directa
-        return `${baseUrl}?view=${viewName}`;
-    }
+    const url = buildViewUrl(viewName, action);
     
-    const localUrl = buildViewUrl(viewName);
-    console.log("URL construida:", localUrl);
+    console.log('Cargando vista:', url);
     
-    fetch(localUrl, {
+    fetch(url, {
         method: 'GET',
         headers: {
-            'X-Requested-With': 'XMLHttpRequest'
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8'
         }
     })
     .then(response => {
-        console.log('Respuesta del servidor:', response.status, response.statusText);
         if (!response.ok) {
-            console.error('Error HTTP:', response.status);
-            throw new Error(`Error ${response.status}: ${response.statusText}`);
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
         return response.text();
     })
     .then(html => {
-        console.log('Contenido de la respuesta:', html.substring(0, 200) + '...');
-        
-        // Detectar si la respuesta es JSON de error
-        let isJson = false;
-        let json = null;
-        
-        // Verificar si la respuesta parece ser HTML (contiene tags HTML)
-        const hasHtmlTags = /<[^>]*>/g.test(html);
-        
-        if (hasHtmlTags) {
-            console.log('Respuesta detectada como HTML (contiene tags HTML)');
-            isJson = false;
-        } else {
-            // Solo intentar parsear como JSON si no parece ser HTML
-            try {
-                json = JSON.parse(html);
-                isJson = typeof json === 'object' && json !== null && 
-                        (json.hasOwnProperty('success') || json.hasOwnProperty('message') || json.hasOwnProperty('msg'));
-                console.log('Respuesta detectada como JSON:', isJson, json);
-            } catch (e) {
-                console.log('No es JSON válido:', e.message);
-            }
-        }
-
-        if (isJson) {
-            // Mostrar el mensaje de error con Swal.fire
-            const errorMessage = json.message || json.msg || 'No tienes permisos para realizar esta acción.';
-            console.log('Error JSON recibido:', json);
-            
-            // Mostrar error en la página primero
-            target.innerHTML = '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
-                '<i class="fas fa-exclamation-triangle"></i> <strong>Error:</strong> ' + errorMessage +
-                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
-                '</div>';
-            
-            // Intentar mostrar SweetAlert2 con retraso para asegurar que esté cargado
-            setTimeout(() => {
-                if (typeof Swal !== "undefined" && Swal.fire) {
-                    console.log('Mostrando SweetAlert2...');
-                    Swal.fire({
-                        title: 'Error',
-                        text: errorMessage,
-                        icon: 'error',
-                        confirmButtonText: 'Entendido',
-                        confirmButtonColor: '#d33',
-                        allowOutsideClick: true,
-                        allowEscapeKey: true
-                    });
-                } else {
-                    console.log('SweetAlert2 no disponible, usando alert nativo');
-                    alert('Error: ' + errorMessage);
-                }
-            }, 100);
-            
-            return;
-        }
-
-        // Si es HTML válido, mostrarlo en el contenedor
-        if (hasHtmlTags) {
-            console.log('Mostrando contenido HTML en el contenedor');
+        const target = document.querySelector(targetElement);
+        if (target) {
             target.innerHTML = html;
-
-            // Ejecutar cualquier <script> embebido en la respuesta
-            const scripts = html.match(/<script>([\s\S]*?)<\/script>/gi);
-            if (scripts) {
-                scripts.forEach(scriptTag => {
-                    const scriptContent = scriptTag.replace(/<script>|<\/script>/gi, '');
-                    try {
-                        eval(scriptContent);
-                    } catch (e) {
-                        console.error('Error ejecutando script embebido:', e);
-                    }
-                });
-            }
+            
+            // Ejecutar scripts en el contenido cargado
+            executeScriptsInContent(target);
+            
+            // Actualizar URL sin recargar la página
+            updateBrowserUrl(viewName, action);
+            
+            // Disparar evento personalizado
+            document.dispatchEvent(new CustomEvent('viewLoaded', {
+                detail: { view: viewName, action: action }
+            }));
+            
+            console.log('Vista cargada exitosamente:', viewName);
         } else {
-            // Si no es HTML, mostrar como texto plano
-            console.log('Mostrando contenido como texto plano');
-            target.innerHTML = '<div class="alert alert-info">' + html + '</div>';
+            console.error('Elemento objetivo no encontrado:', targetElement);
         }
-        
-        // Inicializar JavaScript específico según la vista cargada
-        initializeViewSpecificJS(viewName);
-        
-        // Reinicializar submenús después de cargar contenido dinámicamente
-        if (typeof window.reinitializeSidebarSubmenus === 'function') {
-            console.log('Reinicializando submenús del sidebar...');
-            setTimeout(() => {
-                window.reinitializeSidebarSubmenus();
-            }, 100);
-        }
-        
-        console.log('Vista cargada exitosamente:', viewName);
     })
     .catch(error => {
         console.error('Error cargando vista:', error);
-        
-        // Mostrar error más descriptivo
-        const errorMessage = `Error cargando la vista "${viewName}": ${error.message}`;
-        target.innerHTML = '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
-            '<i class="fas fa-exclamation-triangle"></i> <strong>Error de Carga:</strong> ' + errorMessage +
-            '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
-            '</div>';
-        
-        // Intentar mostrar SweetAlert2
-        setTimeout(() => {
-            if (typeof Swal !== "undefined" && Swal.fire) {
-                Swal.fire({
-                    title: 'Error de Carga',
-                    text: errorMessage,
-                    icon: 'error',
-                    confirmButtonText: 'Entendido',
-                    confirmButtonColor: '#d33'
-                });
-            } else {
-                alert('Error de Carga: ' + errorMessage);
-            }
-        }, 100);
+        showError(targetElement, 'Error al cargar la vista: ' + error.message);
+    })
+    .finally(() => {
+        isLoading = false;
+        hideLoadingIndicator();
     });
-};
+}
 
-// Función para inicializar JavaScript específico de cada vista
-function initializeViewSpecificJS(viewName) {
-    console.log('Inicializando JavaScript específico para:', viewName);
-    
-    // Director views
-    if (viewName === 'director/dashboard') {
-        if (typeof window.initDirectorDashboard === 'function') {
-            window.initDirectorDashboard();
-        }
-    }
-    if (viewName === 'director/dashboard-simple') {
-        if (typeof window.initDirectorDashboardSimple === 'function') {
-            window.initDirectorDashboardSimple();
-        }
-    }
-    if (viewName === 'director/dashboardPartial') {
-        if (typeof window.initDirectorDashboardPartial === 'function') {
-            window.initDirectorDashboardPartial();
-        }
-    }
-    if (viewName === 'director/dashboardHome') {
-        if (typeof window.initDirectorDashboardHome === 'function') {
-            window.initDirectorDashboardHome();
-        }
+/**
+ * Carga una vista parcial (solo el contenido sin layout)
+ */
+function loadPartialView(viewName, action = null, targetElement = '#mainContent') {
+    if (isLoading) {
+        console.log('Ya hay una carga en progreso, esperando...');
+        return;
     }
     
-    // School views
-    if (viewName === 'school/createSchool') {
-        if (typeof window.initCreateSchoolForm === 'function') {
-            window.initCreateSchoolForm();
-        }
-    }
+    isLoading = true;
     
-    // User management views
-    if (viewName === 'user/assignRole' || viewName.includes('assignRole') || 
-        viewName === 'user/consultUser' || viewName.includes('consultUser') ||
-        viewName === 'user/showRoleHistory' || viewName.includes('showRoleHistory') ||
-        viewName === 'user/roleHistory' || viewName.includes('roleHistory')) {
-        console.log('Vista de gestión de usuarios cargada, inicializando JavaScript...');
-        
-        // Función para intentar inicializar con retraso
-        function tryInitUserManagement(attempts = 0) {
-            if (typeof initUserManagementAfterLoad === 'function') {
-                console.log('✅ initUserManagementAfterLoad encontrada, ejecutando...');
-                try {
-                    initUserManagementAfterLoad();
-                    console.log('✅ initUserManagementAfterLoad ejecutada exitosamente');
-                } catch (error) {
-                    console.error('❌ Error al ejecutar initUserManagementAfterLoad:', error);
-                }
-            } else if (attempts < 10) {
-                console.log(`⏳ initUserManagementAfterLoad no disponible (intento ${attempts + 1}/10), reintentando en 200ms...`);
-                setTimeout(() => tryInitUserManagement(attempts + 1), 200);
-            } else {
-                console.warn('❌ Función initUserManagementAfterLoad no encontrada después de 10 intentos');
+    // Mostrar indicador de carga
+    showLoadingIndicator(targetElement);
+    
+    let url = buildViewUrl(viewName, action);
+    url += '&partialView=true';
+    
+    console.log('Cargando vista parcial:', url);
+    
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.text();
+    })
+    .then(html => {
+        const target = document.querySelector(targetElement);
+        if (target) {
+            target.innerHTML = html;
+            
+            // Ejecutar scripts en el contenido cargado
+            executeScriptsInContent(target);
+            
+            console.log('Vista parcial cargada exitosamente:', viewName);
+        } else {
+            console.error('Elemento objetivo no encontrado:', targetElement);
+        }
+    })
+    .catch(error => {
+        console.error('Error cargando vista parcial:', error);
+        showError(targetElement, 'Error al cargar la vista parcial: ' + error.message);
+    })
+    .finally(() => {
+        isLoading = false;
+        hideLoadingIndicator();
+    });
+}
+
+/**
+ * Ejecuta scripts encontrados en el contenido cargado
+ */
+function executeScriptsInContent(container) {
+    const scripts = container.querySelectorAll('script');
+    scripts.forEach(script => {
+        if (script.src) {
+            // Script externo
+            const newScript = document.createElement('script');
+            newScript.src = script.src;
+            document.head.appendChild(newScript);
+        } else {
+            // Script inline
+            try {
+                eval(script.innerHTML);
+            } catch (error) {
+                console.error('Error ejecutando script inline:', error);
             }
         }
-        
-        tryInitUserManagement();
-    }
-    
-    // Role management views
-    if (viewName === 'role/index' || viewName.includes('role')) {
-        console.log('Vista de gestión de roles cargada');
-        if (typeof initRoleEditForm === 'function') {
-            setTimeout(() => {
-                initRoleEditForm();
-            }, 100);
-        }
-    }
-    
-    // Payroll views
-    if (viewName.includes('payroll/')) {
-        console.log('Vista de nómina cargada:', viewName);
-        // Inicializar funcionalidades específicas de nómina si existen
-        if (typeof window.initPayrollView === 'function') {
-            setTimeout(() => {
-                window.initPayrollView(viewName);
-            }, 100);
-        }
-    }
-    
-    // Student views
-    if (viewName.includes('student/')) {
-        console.log('Vista de estudiante cargada:', viewName);
-        if (typeof window.initStudentView === 'function') {
-            setTimeout(() => {
-                window.initStudentView(viewName);
-            }, 100);
-        }
+    });
+}
+
+/**
+ * Muestra un indicador de carga
+ */
+function showLoadingIndicator(targetElement = '#mainContent') {
+    const target = document.querySelector(targetElement);
+    if (target) {
+        target.innerHTML = `
+            <div class="loading-container" style="text-align: center; padding: 50px;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="mt-3 text-muted">Cargando contenido...</p>
+            </div>
+        `;
     }
 }
 
-// Función de respaldo mejorada (solo para casos extremos)
-window.safeLoadView = function(viewName) {
-    console.warn('⚠️ safeLoadView llamado - Esto indica un problema en el routing');
-    console.log('Intentando cargar vista con loadView:', viewName);
-    
-    // Intentar con loadView primero
-    if (typeof loadView === 'function') {
-        loadView(viewName);
-    } else {
-        console.error('❌ loadView no está disponible');
-        // Fallback: redirigir a la página
-        const url = `${window.location.origin}${window.location.pathname}?view=${viewName.replace('/', '&action=')}`;
-        window.location.href = url;
+/**
+ * Oculta el indicador de carga
+ */
+function hideLoadingIndicator() {
+    const loadingContainer = document.querySelector('.loading-container');
+    if (loadingContainer) {
+        loadingContainer.remove();
     }
-};
+}
+
+/**
+ * Muestra un mensaje de error
+ */
+function showError(targetElement, message) {
+    const target = document.querySelector(targetElement);
+    if (target) {
+        target.innerHTML = `
+            <div class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">Error</h4>
+                <p>${message}</p>
+                <hr>
+                <p class="mb-0">
+                    <button class="btn btn-primary" onclick="location.reload()">
+                        Recargar página
+                    </button>
+                </p>
+            </div>
+        `;
+    }
+}
+
+/**
+ * Actualiza la URL del navegador sin recargar la página
+ */
+function updateBrowserUrl(view, action = null) {
+    let url = baseUrl + '?view=' + encodeURIComponent(view);
+    if (action) {
+        url += '&action=' + encodeURIComponent(action);
+    }
+    
+    if (window.history && window.history.pushState) {
+        window.history.pushState({ view: view, action: action }, '', url);
+    }
+}
+
+/**
+ * Navega a una vista específica
+ */
+function navigateTo(view, action = null) {
+    loadView(view, action);
+}
+
+/**
+ * Inicializa el sistema de navegación
+ */
+function initializeNavigation() {
+    // Configurar eventos para enlaces de navegación
+    document.addEventListener('click', function(e) {
+        const link = e.target.closest('[data-view]');
+        if (link) {
+            e.preventDefault();
+            const view = link.getAttribute('data-view');
+            const action = link.getAttribute('data-action');
+            loadView(view, action);
+        }
+    });
+    
+    // Configurar eventos para formularios AJAX
+    document.addEventListener('submit', function(e) {
+        const form = e.target;
+        if (form.hasAttribute('data-ajax')) {
+            e.preventDefault();
+            handleAjaxForm(form);
+        }
+    });
+    
+    console.log('Sistema de navegación inicializado');
+}
+
+/**
+ * Maneja formularios AJAX
+ */
+function handleAjaxForm(form) {
+    const formData = new FormData(form);
+    const url = form.action || baseUrl;
+    
+    fetch(url, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (data.redirect) {
+                loadView(data.redirect.view, data.redirect.action);
+            } else if (data.message) {
+                showSuccessMessage(data.message);
+            }
+        } else {
+            showErrorMessage(data.message || 'Error en el formulario');
+        }
+    })
+    .catch(error => {
+        console.error('Error en formulario AJAX:', error);
+        showErrorMessage('Error al procesar el formulario');
+    });
+}
+
+/**
+ * Muestra un mensaje de éxito
+ */
+function showSuccessMessage(message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-success alert-dismissible fade show';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    const container = document.querySelector('#mainContent');
+    if (container) {
+        container.insertBefore(alertDiv, container.firstChild);
+    }
+}
+
+/**
+ * Muestra un mensaje de error
+ */
+function showErrorMessage(message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    const container = document.querySelector('#mainContent');
+    if (container) {
+        container.insertBefore(alertDiv, container.firstChild);
+    }
+}
+
+// Inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    initializeNavigation();
+    
+    // Configurar manejo del botón atrás/adelante del navegador
+    window.addEventListener('popstate', function(e) {
+        if (e.state && e.state.view) {
+            loadView(e.state.view, e.state.action);
+        }
+    });
+});
+
+// Exportar funciones para uso global
+window.loadView = loadView;
+window.loadPartialView = loadPartialView;
+window.navigateTo = navigateTo;

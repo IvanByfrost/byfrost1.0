@@ -67,5 +67,21 @@ function initCreateSchoolAfterLoad() {
     }, 100);
 }
 
+// Validación adicional
+if (!query || query.length === 0) {
+    const resultsDiv = document.getElementById('searchDirectorResults');
+    resultsDiv.innerHTML = '<div class="alert alert-warning">Por favor, ingrese un número de documento para buscar.</div>';
+    queryInput.focus();
+    return false;
+}
+
+// Validar que sea solo números
+if (!/^\d+$/.test(query)) {
+    const resultsDiv = document.getElementById('searchDirectorResults');
+    resultsDiv.innerHTML = '<div class="alert alert-warning">Por favor, ingrese solo números para el documento.</div>';
+    queryInput.focus();
+    return false;
+}
+
 // Asegurar que la función esté disponible globalmente
 window.initCreateSchoolAfterLoad = initCreateSchoolAfterLoad; 
