@@ -42,17 +42,27 @@ class CoordinatorDashboardController extends MainController
             $stats = [];
             
             // Total de estudiantes
-            $stmt = $this->dbConn->prepare("SELECT COUNT(*) as total FROM students WHERE status = 'active'");
+            $stmt = $this->dbConn->prepare("
+                SELECT COUNT(*) as total 
+                FROM users u
+                JOIN user_roles ur ON u.user_id = ur.user_id
+                WHERE ur.role_type = 'student' AND u.is_active = 1 AND ur.is_active = 1
+            ");
             $stmt->execute();
             $stats['totalStudents'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
             
             // Total de profesores
-            $stmt = $this->dbConn->prepare("SELECT COUNT(*) as total FROM teachers WHERE status = 'active'");
+            $stmt = $this->dbConn->prepare("
+                SELECT COUNT(*) as total 
+                FROM users u
+                JOIN user_roles ur ON u.user_id = ur.user_id
+                WHERE ur.role_type = 'professor' AND u.is_active = 1 AND ur.is_active = 1
+            ");
             $stmt->execute();
             $stats['totalTeachers'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
             
             // Total de materias
-            $stmt = $this->dbConn->prepare("SELECT COUNT(*) as total FROM subjects WHERE status = 'active'");
+            $stmt = $this->dbConn->prepare("SELECT COUNT(*) as total FROM subjects WHERE is_active = 1");
             $stmt->execute();
             $stats['totalSubjects'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
             
@@ -101,7 +111,7 @@ class CoordinatorDashboardController extends MainController
     {
         $view = htmlspecialchars($_POST['view']) ?? htmlspecialchars($_GET['view']) ?? '';
         $action = htmlspecialchars($_POST['action']) ?? htmlspecialchars($_GET['action']) ?? 'index';
-        $force = isset(_POST['force']) && htmlspecialchars(_POST['force']) || isset(_GET['force']) && htmlspecialchars(_GET['force']);
+        $force = isset($_POST['force']) && htmlspecialchars($_POST['force']) || isset($_GET['force']) && htmlspecialchars($_GET['force']);
 
         if (!$this->isAjaxRequest() && !$force) {
             if (empty($view)) {

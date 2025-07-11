@@ -241,18 +241,21 @@ class SchoolModel extends MainModel
     }
 
     // Función para obtener directores disponibles
-    public function getDirectors()
+    public function getDirectors($document = null)
     {
         try {
-            $query = "SELECT user_id, first_name, last_name, email 
+            $query = "SELECT u.user_id, u.first_name, u.last_name, u.email 
                       FROM users u
                       INNER JOIN user_roles ur ON u.user_id = ur.user_id
-                      WHERE ur.role_type = 'director' AND u.is_active = 1 AND ur.is_active = 1
-                      ORDER BY first_name, last_name";
-            
+                      WHERE ur.role_type = 'director' AND u.is_active = 1 AND ur.is_active = 1";
+            $params = [];
+            if ($document) {
+                $query .= " AND u.credential_number = :document";
+                $params[':document'] = $document;
+            }
+            $query .= " ORDER BY u.first_name, u.last_name";
             $stmt = $this->dbConn->prepare($query);
-            $stmt->execute();
-            
+            $stmt->execute($params);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
             error_log("Error en SchoolModel::getDirectors: " . $e->getMessage());
@@ -261,18 +264,21 @@ class SchoolModel extends MainModel
     }
 
     // Función para obtener coordinadores disponibles
-    public function getCoordinators()
+    public function getCoordinators($document = null)
     {
         try {
-            $query = "SELECT user_id, first_name, last_name, email 
+            $query = "SELECT u.user_id, u.first_name, u.last_name, u.email 
                       FROM users u
                       INNER JOIN user_roles ur ON u.user_id = ur.user_id
-                      WHERE ur.role_type = 'coordinator' AND u.is_active = 1 AND ur.is_active = 1
-                      ORDER BY first_name, last_name";
-            
+                      WHERE ur.role_type = 'coordinator' AND u.is_active = 1 AND ur.is_active = 1";
+            $params = [];
+            if ($document) {
+                $query .= " AND u.credential_number = :document";
+                $params[':document'] = $document;
+            }
+            $query .= " ORDER BY u.first_name, u.last_name";
             $stmt = $this->dbConn->prepare($query);
-            $stmt->execute();
-            
+            $stmt->execute($params);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
             error_log("Error en SchoolModel::getCoordinators: " . $e->getMessage());

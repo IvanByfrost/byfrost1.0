@@ -111,9 +111,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
 
         case 'search_users_by_role':
-            $roleType = htmlspecialchars($_POST['role_type']) ?? null;
-            $searchType = htmlspecialchars($_POST['search_type']) ?? null;
-            $query = htmlspecialchars($_POST['query']) ?? null;
+            $roleType = htmlspecialchars($_POST['role_type'] ?? '');
+            $searchType = htmlspecialchars($_POST['search_type'] ?? '');
+            $query = htmlspecialchars($_POST['query'] ?? '');
 
             if (!$roleType) {
                 error_log("DEBUG assignProcess - Falta role_type para búsqueda por rol");
@@ -179,8 +179,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         case 'search_role_history':
             // Buscar historial de roles por documento
-            $credentialType = htmlspecialchars($_POST['credential_type']) ?? null;
-            $credentialNumber = htmlspecialchars($_POST['credential_number']) ?? null;
+            $credentialType = htmlspecialchars($_POST['credential_type'] ?? '');
+            $credentialNumber = htmlspecialchars($_POST['credential_number'] ?? '');
 
             if (!$credentialType || !$credentialNumber) {
                 error_log("DEBUG assignProcess - Faltan datos para búsqueda de historial");
@@ -229,8 +229,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
 
         case 'search_users_by_document':
-            $roleType = htmlspecialchars($_POST['role_type']) ?? null;
-            $credentialNumber = htmlspecialchars($_POST['query']) ?? null;
+            $roleType = htmlspecialchars($_POST['role_type'] ?? '');
+            $credentialNumber = htmlspecialchars($_POST['query'] ?? '');
             if (!$roleType || !$credentialNumber) {
                 echo json_encode([
                     'status' => 'error',

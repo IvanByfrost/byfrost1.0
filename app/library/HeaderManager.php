@@ -28,7 +28,10 @@ class HeaderManager {
                 header($header, $replace);
             }
             
-            error_log("HeaderManager: Header enviado correctamente: $header");
+            // Solo log en modo debug o para headers críticos
+            if (isset($_SERVER['HTTP_X_DEBUG_MODE']) || (isset($_GET['debug']) && $_GET['debug'] === '1')) {
+                error_log("HeaderManager: Header enviado correctamente: $header");
+            }
             return true;
         } catch (Exception $e) {
             error_log("HeaderManager Error: " . $e->getMessage());

@@ -58,10 +58,10 @@ class RoleController extends MainController {
             }
             
             $data = [
-                'can_create' => isset(_POST['can_create']) && htmlspecialchars(_POST['can_create']) ? 1 : 0,
-                'can_read'   => isset(_POST['can_read']) && htmlspecialchars(_POST['can_read']) ? 1 : 0,
-                'can_update' => isset(_POST['can_update']) && htmlspecialchars(_POST['can_update']) ? 1 : 0,
-                'can_delete' => isset(_POST['can_delete']) && htmlspecialchars(_POST['can_delete']) ? 1 : 0
+                'can_create' => isset($_POST['can_create']) && htmlspecialchars($_POST['can_create']) ? 1 : 0,
+'can_read'   => isset($_POST['can_read']) && htmlspecialchars($_POST['can_read']) ? 1 : 0,
+'can_update' => isset($_POST['can_update']) && htmlspecialchars($_POST['can_update']) ? 1 : 0,
+'can_delete' => isset($_POST['can_delete']) && htmlspecialchars($_POST['can_delete']) ? 1 : 0
             ];
 
             $this->model->updatePermissions($role_type, $data);
@@ -92,7 +92,7 @@ class RoleController extends MainController {
         $view = htmlspecialchars($_POST['view']) ?? htmlspecialchars($_GET['view']) ?? '';
         $action = htmlspecialchars($_POST['action']) ?? htmlspecialchars($_GET['action']) ?? 'index';
         $partialView = htmlspecialchars($_POST['partialView']) ?? htmlspecialchars($_GET['partialView']) ?? '';
-        $force = isset(_POST['force']) && htmlspecialchars(_POST['force']) || isset(_GET['force']) && htmlspecialchars(_GET['force']);
+        $force = isset($_POST['force']) && htmlspecialchars($_POST['force']) || isset($_GET['force']) && htmlspecialchars($_GET['force']);
 
         if (!$this->isAjaxRequest() && !$force) {
             if (empty($partialView)) {

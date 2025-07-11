@@ -9,10 +9,6 @@ class UserController extends MainController
 
     public function __construct($dbConn)
     {
-        // Asegurar que session_start() solo se llame una vez y antes de cualquier salida
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
         parent::__construct($dbConn);
         $this->userModel = new UserModel($dbConn);
     }
@@ -43,8 +39,8 @@ class UserController extends MainController
         $error = '';
         
         // Si se envió una búsqueda (GET o POST)
-        $credentialType = htmlspecialchars($_GET['credential_type']) ?? htmlspecialchars($_POST['credential_type']) ?? null;
-        $credentialNumber = htmlspecialchars($_GET['credential_number']) ?? htmlspecialchars($_POST['credential_number']) ?? null;
+        $credentialType = htmlspecialchars($_GET['credential_type'] ?? '') ?: htmlspecialchars($_POST['credential_type'] ?? '');
+        $credentialNumber = htmlspecialchars($_GET['credential_number'] ?? '') ?: htmlspecialchars($_POST['credential_number'] ?? '');
         
         if ($credentialType && $credentialNumber && !empty($credentialNumber)) {
             try {
@@ -180,8 +176,8 @@ class UserController extends MainController
         $userInfo = null;
 
         // Si se envía el formulario de búsqueda
-        $credentialType = htmlspecialchars($_GET['credential_type']) ?? null;
-        $credentialNumber = htmlspecialchars($_GET['credential_number']) ?? null;
+        $credentialType = htmlspecialchars($_GET['credential_type'] ?? '');
+        $credentialNumber = htmlspecialchars($_GET['credential_number'] ?? '');
         
         if ($credentialType && $credentialNumber) {
             // Buscar usuario por documento
@@ -227,8 +223,8 @@ class UserController extends MainController
     {
         $this->protectSchool();
         
-        $role = htmlspecialchars($_GET['role']) ?? '';
-        $query = htmlspecialchars($_GET['query']) ?? '';
+        $role = htmlspecialchars($_GET['role'] ?? '');
+        $query = htmlspecialchars($_GET['query'] ?? '');
         
         if (empty($role) || empty($query)) {
             $this->sendJsonResponse(false, 'Faltan parámetros requeridos');
@@ -502,10 +498,10 @@ class UserController extends MainController
      */
     public function loadPartial()
     {
-        $view = htmlspecialchars($_POST['view']) ?? htmlspecialchars($_GET['view']) ?? '';
-        $action = htmlspecialchars($_POST['action']) ?? htmlspecialchars($_GET['action']) ?? 'index';
-        $partialView = htmlspecialchars($_POST['partialView']) ?? htmlspecialchars($_GET['partialView']) ?? '';
-        $force = isset(_POST['force']) && htmlspecialchars(_POST['force']) || isset(_GET['force']) && htmlspecialchars(_GET['force']);
+        $view = htmlspecialchars($_POST['view'] ?? '') ?: htmlspecialchars($_GET['view'] ?? '');
+        $action = htmlspecialchars($_POST['action'] ?? '') ?: htmlspecialchars($_GET['action'] ?? 'index');
+        $partialView = htmlspecialchars($_POST['partialView'] ?? '') ?: htmlspecialchars($_GET['partialView'] ?? '');
+        $force = !empty($_POST['force']) && htmlspecialchars($_POST['force'] ?? '') || !empty($_GET['force']) && htmlspecialchars($_GET['force'] ?? '');
 
         if (!$this->isAjaxRequest() && !$force) {
             if (empty($partialView)) {

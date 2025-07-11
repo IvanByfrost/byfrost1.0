@@ -37,5 +37,4 @@ if (!$this->sessionManager->hasRole('root')) {
         <?php require_once 'menuRoot.php'; ?>
     </div>
 </div>
-
-<?php require_once ROOT . '/app/views/layouts/dashFooter.php'; ?> 
+ 

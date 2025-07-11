@@ -42,7 +42,7 @@ if (!function_exists('renderRoleOptions')) {
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="search_type">Tipo de Búsqueda</label>
-                                    <select class="form-control" id="search_type" name="search_type" required onchange="toggleSearchFields()">
+                                    <select class="form-control" id="search_type" name="search_type" required>
                                         <option value="">Seleccionar tipo</option>
                                         <option value="document">Por Documento</option>
                                         <option value="role">Por Rol</option>
@@ -96,7 +96,7 @@ if (!function_exists('renderRoleOptions')) {
                 <div class="card-header">
                     <h5 class="card-title">Usuarios Encontrados</h5>
                 </div>
-                <div class="card-body" id="searchResultsContainer">
+                <div class="card-body" id="searchResults">
                     <!-- Se llenará via AJAX -->
                 </div>
             </div>

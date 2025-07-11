@@ -10,7 +10,6 @@ class RootDashboardController extends MainController
             session_start();
         }
         parent::__construct($dbConn);
-        
         // Verificar permisos de root
         if (!$this->sessionManager->isLoggedIn() || $this->sessionManager->getUserRole() !== 'root') {
             header('Location: ' . url . '?view=index&action=login');
@@ -23,6 +22,7 @@ class RootDashboardController extends MainController
      */
     public function dashboard()
     {
+        error_log('DASHBOARD ROOT - SESSION: ' . print_r($_SESSION, true));
         // Obtener estadísticas para el dashboard
         $stats = $this->getDashboardStats();
         
@@ -41,22 +41,23 @@ class RootDashboardController extends MainController
         try {
             $stats = [];
             
-            // Total de usuarios
-            $stmt = $this->dbConn->prepare("SELECT COUNT(*) as total FROM users WHERE status = 'active'");
+            // Total de usuarios activos
+            $stmt = $this->dbConn->prepare("SELECT COUNT(*) as total FROM users WHERE is_active = 1");
             $stmt->execute();
             $stats['totalUsers'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
             
-            // Total de escuelas
-            $stmt = $this->dbConn->prepare("SELECT COUNT(*) as total FROM schools WHERE status = 'active'");
+            // Total de escuelas activas
+            $stmt = $this->dbConn->prepare("SELECT COUNT(*) as total FROM schools WHERE is_active = 1");
             $stmt->execute();
             $stats['totalSchools'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
             
             // Usuarios por rol
             $stmt = $this->dbConn->prepare("
-                SELECT role, COUNT(*) as count 
-                FROM users 
-                WHERE status = 'active' 
-                GROUP BY role
+                SELECT ur.role_type as role, COUNT(*) as count 
+                FROM users u
+                JOIN user_roles ur ON u.user_id = ur.user_id
+                WHERE u.is_active = 1 AND ur.is_active = 1
+                GROUP BY ur.role_type
             ");
             $stmt->execute();
             $stats['usersByRole'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -106,7 +107,7 @@ class RootDashboardController extends MainController
     {
         $view = htmlspecialchars($_POST['view']) ?? htmlspecialchars($_GET['view']) ?? '';
         $action = htmlspecialchars($_POST['action']) ?? htmlspecialchars($_GET['action']) ?? 'index';
-        $force = isset(_POST['force']) && htmlspecialchars(_POST['force']) || isset(_GET['force']) && htmlspecialchars(_GET['force']);
+        $force = isset($_POST['force']) && htmlspecialchars($_POST['force']) || isset($_GET['force']) && htmlspecialchars($_GET['force']);
 
         if (!$this->isAjaxRequest() && !$force) {
             if (empty($view)) {

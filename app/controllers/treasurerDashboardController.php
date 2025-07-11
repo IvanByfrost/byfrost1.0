@@ -47,12 +47,12 @@ class TreasurerDashboardController extends MainController
             $stats['totalPayments'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
             
             // Total de pagos pendientes
-            $stmt = $this->dbConn->prepare("SELECT COUNT(*) as total FROM student_payments WHERE status = 'pending'");
+            $stmt = $this->dbConn->prepare("SELECT COUNT(*) as total FROM student_payments WHERE tuition_status = 'pending'");
             $stmt->execute();
             $stats['pendingPayments'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
             
             // Total de pagos completados
-            $stmt = $this->dbConn->prepare("SELECT COUNT(*) as total FROM student_payments WHERE status = 'completed'");
+            $stmt = $this->dbConn->prepare("SELECT COUNT(*) as total FROM student_payments WHERE tuition_status = 'paid'");
             $stmt->execute();
             $stats['completedPayments'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
             
@@ -91,7 +91,7 @@ class TreasurerDashboardController extends MainController
     {
         $view = htmlspecialchars($_POST['view']) ?? htmlspecialchars($_GET['view']) ?? '';
         $action = htmlspecialchars($_POST['action']) ?? htmlspecialchars($_GET['action']) ?? 'index';
-        $force = isset(_POST['force']) && htmlspecialchars(_POST['force']) || isset(_GET['force']) && htmlspecialchars(_GET['force']);
+        $force = isset($_POST['force']) && htmlspecialchars($_POST['force']) || isset($_GET['force']) && htmlspecialchars($_GET['force']);
 
         if (!$this->isAjaxRequest() && !$force) {
             if (empty($view)) {

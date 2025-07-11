@@ -1,9 +1,9 @@
 <?php
 require_once ROOT . '/app/models/gradeModel.php';
+require_once 'MainController.php';
 
-class GradeController
+class GradeController extends MainController
 {
-    private $dbConn;
     private $gradeModel;
 
     public function __construct($dbConn)
@@ -12,7 +12,7 @@ class GradeController
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        $this->dbConn = $dbConn;
+        parent::__construct($dbConn);
         $this->gradeModel = new GradeModel($dbConn);
     }
 
@@ -188,23 +188,6 @@ class GradeController
         }
 
         echo json_encode(['success' => true, 'grades' => $grades]);
-    }
-
-    /**
-     * Carga una vista parcial
-     */
-    private function loadPartialView($view, $data = [])
-    {
-        extract($data);
-        require ROOT . '/app/views/' . $view . '.php';
-    }
-
-    /**
-     * Carga una vista del dashboard
-     */
-    private function loadDashboardView($view)
-    {
-        require ROOT . '/app/views/' . $view . '.php';
     }
 }
 ?> 

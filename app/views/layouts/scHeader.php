@@ -27,13 +27,10 @@ require_once ROOT . '/app/views/layouts/dashHead.php';
                 <small><?php echo ucfirst($userRole); ?></small>
             </div>
             <hr>
-            <a href="<?php echo url . app ?>processes/outProcess.php" style="
-            display: block;
-            padding: 8px 10px;
-            text-decoration: none;
-            color: #333;
-            font-weight: bold;
-          ">Cerrar sesión</a>
+            <form action="<?= url . app ?>processes/outProcess.php" method="post" style="margin: 0; padding: 10px;">
+                <input type="hidden" name="csrf_token" value="<?= Validator::generateCSRFToken() ?>">
+                <button type="submit" class="logout-btn" style="width: 100%; background: #e3342f; color: #fff; border: none; padding: 8px 0; border-radius: 5px; font-size: 1rem; cursor: pointer; font-weight: bold; margin-top: 8px; transition: background 0.2s; text-align: center;">Cerrar sesión</button>
+            </form>
         </div>
     </div>
 </header>

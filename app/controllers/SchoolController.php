@@ -175,7 +175,7 @@ class SchoolController extends MainController
     {
         $this->protectSchool();
         
-        $search = htmlspecialchars($_GET['search']) ?? '';
+        $search = htmlspecialchars($_GET['search'] ?? '');
         $schools = $this->schoolModel->getAllSchools();
         
         // Si hay término de búsqueda, filtrar los resultados
@@ -188,8 +188,8 @@ class SchoolController extends MainController
         }
         
         // Verificar si hay mensaje de éxito
-        $success = htmlspecialchars($_GET['success']) ?? false;
-        $message = htmlspecialchars($_GET['msg']) ?? '';
+        $success = htmlspecialchars($_GET['success'] ?? false);
+        $message = htmlspecialchars($_GET['msg'] ?? '');
         
         $this->loadPartialView('school/consultSchool', [
             'schools' => $schools,
@@ -421,51 +421,6 @@ class SchoolController extends MainController
                     'schools' => $this->schoolModel->getAllSchools()
                 ]);
             }
-        }
-    }
-
-    /**
-     * Carga una vista parcial vía AJAX para el módulo school
-     */
-    public function loadPartial()
-    {
-        $view = htmlspecialchars($_POST['view']) ?? htmlspecialchars($_GET['view']) ?? '';
-        $action = htmlspecialchars($_POST['action']) ?? htmlspecialchars($_GET['action']) ?? 'index';
-        $partialView = htmlspecialchars($_POST['partialView']) ?? htmlspecialchars($_GET['partialView']) ?? '';
-        $force = isset(_POST['force']) && htmlspecialchars(_POST['force']) || isset(_GET['force']) && htmlspecialchars(_GET['force']);
-
-        if (!$this->isAjaxRequest() && !$force) {
-            if (empty($partialView)) {
-                echo '<div class="alert alert-warning">Vista no especificada. Use: ?view=school&action=loadPartial&partialView=vista</div>';
-                return;
-            }
-            $viewPath = 'school/' . $partialView;
-            $fullPath = ROOT . "/app/views/{$viewPath}.php";
-            if (!file_exists($fullPath)) {
-                echo '<div class="alert alert-danger">Vista no encontrada: ' . htmlspecialchars($viewPath) . '</div>';
-                return;
-            }
-            try {
-                $this->loadPartialView($viewPath);
-            } catch (Exception $e) {
-                echo '<div class="alert alert-danger">Error al cargar la vista: ' . htmlspecialchars($e->getMessage()) . '</div>';
-            }
-            return;
-        }
-        if (empty($partialView)) {
-            echo json_encode(['success' => false, 'message' => 'Vista no especificada']);
-            return;
-        }
-        $viewPath = 'school/' . $partialView;
-        $fullPath = ROOT . "/app/views/{$viewPath}.php";
-        if (!file_exists($fullPath)) {
-            echo json_encode(['success' => false, 'message' => "Vista no encontrada: {$viewPath}"]);
-            return;
-        }
-        try {
-            $this->loadPartialView($viewPath);
-        } catch (Exception $e) {
-            echo json_encode(['success' => false, 'message' => 'Error al cargar la vista: ' . $e->getMessage()]);
         }
     }
 

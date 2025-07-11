@@ -318,6 +318,8 @@ class Router
             $mapping[$viewName] = $controller;
         }
         
+        // Forzar el mapeo correcto para root
+        $mapping['root'] = 'RootDashboardController';
         return $mapping;
     }
     

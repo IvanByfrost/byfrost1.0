@@ -3,6 +3,7 @@ if (!defined('ROOT')) {
     define('ROOT', dirname(dirname(__DIR__)));
 }
 
+require_once ROOT . '/config.php';
 require_once ROOT . '/app/scripts/connection.php';
 require_once ROOT . '/app/controllers/RegisterController.php';
 
@@ -21,7 +22,7 @@ $controller = new RegisterController($dbConn);
 
 // Verificar método y subject
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset(_POST['subject']) && htmlspecialchars(_POST['subject']) && htmlspecialchars($_POST['subject']) === 'register') {
+    if (isset($_POST['subject']) && htmlspecialchars($_POST['subject']) && htmlspecialchars($_POST['subject']) === 'register') {
         error_log("DEBUG registerProcess - Subject válido, llamando registerUser()");
         
         // Capturar cualquier salida antes de la respuesta JSON

@@ -17,6 +17,13 @@
                 </ul>
             </li>
             <li class="has-submenu">
+                <a href="#"><i data-lucide="search"></i>Búsquedas</a>
+                <ul class="submenu">
+                    <li><a href="#" data-bs-toggle="modal" data-bs-target="#searchDirectorModal"><i data-lucide="user-check"></i>Buscar Director</a></li>
+                    <li><a href="#" data-bs-toggle="modal" data-bs-target="#searchCoordinatorModal"><i data-lucide="user-cog"></i>Buscar Coordinador</a></li>
+                </ul>
+            </li>
+            <li class="has-submenu">
                 <a href="#"><i data-lucide="dollar-sign"></i>Nómina</a>
                 <ul class="submenu">
                     <li><a href="#" onclick="loadView('payroll/dashboard')"><i data-lucide="bar-chart-3"></i>Dashboard</a></li>

@@ -263,13 +263,35 @@ if (searchDirectorForm) {
         e.preventDefault();
         const query = document.getElementById('search_director_query').value.trim();
         if (!query) return;
-        fetch('ruta_a_tu_endpoint_de_busqueda_director.php?query=' + encodeURIComponent(query))
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById('searchDirectorResults').innerHTML = html;
-            });
+        
+        const resultsDiv = document.getElementById('searchDirectorResults');
+        resultsDiv.innerHTML = '<div class="alert alert-info">Buscando...</div>';
+        
+        fetch('app/processes/assignProcess.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'subject=search_users_by_role&role_type=director&search_type=document&query=' + encodeURIComponent(query)
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok' && data.data && data.data.length > 0) {
+                resultsDiv.innerHTML = data.data.map(director =>
+                    `<button type="button" class="list-group-item list-group-item-action" 
+                        onclick="selectDirector('${director.user_id}', '${director.first_name} ${director.last_name}')">
+                        ${director.first_name} ${director.last_name} - ${director.email}
+                    </button>`
+                ).join('');
+            } else {
+                resultsDiv.innerHTML = '<div class="alert alert-warning">No se encontraron directores con ese documento.</div>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            resultsDiv.innerHTML = '<div class="alert alert-danger">Error al buscar directores.</div>';
+        });
     });
 }
+
 // Búsqueda AJAX para coordinador
 const searchCoordinatorForm = document.getElementById('searchCoordinatorForm');
 if (searchCoordinatorForm) {
@@ -277,11 +299,32 @@ if (searchCoordinatorForm) {
         e.preventDefault();
         const query = document.getElementById('search_coordinator_query').value.trim();
         if (!query) return;
-        fetch('ruta_a_tu_endpoint_de_busqueda_coordinador.php?query=' + encodeURIComponent(query))
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById('searchCoordinatorResults').innerHTML = html;
-            });
+        
+        const resultsDiv = document.getElementById('searchCoordinatorResults');
+        resultsDiv.innerHTML = '<div class="alert alert-info">Buscando...</div>';
+        
+        fetch('app/processes/assignProcess.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'subject=search_users_by_role&role_type=coordinator&search_type=document&query=' + encodeURIComponent(query)
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok' && data.data && data.data.length > 0) {
+                resultsDiv.innerHTML = data.data.map(coordinator =>
+                    `<button type="button" class="list-group-item list-group-item-action" 
+                        onclick="selectCoordinator('${coordinator.user_id}', '${coordinator.first_name} ${coordinator.last_name}')">
+                        ${coordinator.first_name} ${coordinator.last_name} - ${coordinator.email}
+                    </button>`
+                ).join('');
+            } else {
+                resultsDiv.innerHTML = '<div class="alert alert-warning">No se encontraron coordinadores con ese documento.</div>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            resultsDiv.innerHTML = '<div class="alert alert-danger">Error al buscar coordinadores.</div>';
+        });
     });
 }
 </script>

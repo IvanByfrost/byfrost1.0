@@ -23,6 +23,7 @@ class LoginController extends MainController
     // Muestra el formulario de login
     public function index()
     {
+        error_log('INDEX - SESSION: ' . print_r($_SESSION, true));
         // Si ya está logueado, redirigir al dashboard correspondiente
         if ($this->sessionManager->isLoggedIn()) {
             $userRole = $this->sessionManager->getUserRole();
@@ -37,7 +38,12 @@ class LoginController extends MainController
     public function authUser()
     {
         //Verifica que se hayan enviado los datos necesarios
-        if (empty(htmlspecialchars($_POST['subject'])) || empty(htmlspecialchars($_POST['credType'])) || empty(htmlspecialchars($_POST['userDocument'])) || empty(htmlspecialchars($_POST['userPassword']))) {
+        if (
+            empty(htmlspecialchars($_POST['subject'] ?? '')) ||
+            empty(htmlspecialchars($_POST['credType'] ?? '')) ||
+            empty(htmlspecialchars($_POST['userDocument'] ?? '')) ||
+            empty(htmlspecialchars($_POST['userPassword'] ?? ''))
+        ) {
             echo json_encode([
                 "status" => "error",
                 "msg" => "Faltan uno o más datos obligatorios. Revisa el tipo de documento, el número o la contraseña."
@@ -97,7 +103,7 @@ class LoginController extends MainController
                 if (password_verify($userPassword, $user['password_hash'])) {
                     // Contraseña válida, usar SessionManager para iniciar sesión
                     $userData = [
-                        'id' => $user['user_id'],
+                        'id' => $user['user_id'], // Debe ser 'id' para SessionManager
                         'email' => $user['email'] ?? $user['credential_number'] . '@byfrost.com',
                         'role' => $user['role'],
                         'first_name' => $user['first_name'],
@@ -105,7 +111,8 @@ class LoginController extends MainController
                     ];
                     
                     $loginSuccess = $this->sessionManager->login($userData);
-                    
+                    error_log('DEBUG SESSION después de login: ' . print_r($_SESSION, true));
+                    error_log('LOGIN OK - SESSION: ' . print_r($_SESSION, true));
                     if ($loginSuccess) {
                         unset($user['password_hash']);
 

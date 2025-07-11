@@ -1,5 +1,9 @@
 <?php
-//require_once(__DIR__ . '/../../config.php');
+if (!defined('ROOT')) {
+    define('ROOT', dirname(dirname(dirname(__DIR__))));
+}
+require_once ROOT . '/config.php';
+require_once ROOT . '/app/library/Validator.php';
 require_once ROOT . '/app/views/layouts/head.php';
 require_once ROOT . '/app/views/layouts/header.php';
 ?>
@@ -7,9 +11,8 @@ require_once ROOT . '/app/views/layouts/header.php';
 <body>
     <br>
     <div class="container">
-        <form id="registerForm" class="login-box" method="POST" action="<?php echo url ?>
+        <form id="registerForm" class="login-box" method="POST" action="<?php echo url . 'app/processes/registerProcess.php'; ?>">
     <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
-app/processes/registerProcess.php">
             <!--<div class="logo">
             <a href="index.php">
                 <img src="img\horizontal-logo.svg" alt="Byfrost Logo">

@@ -21,6 +21,37 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inicializar formulario
     initCreateSchoolForm();
     
+    // Reemplazar cualquier fetch de coordinador por el endpoint correcto
+    const form = document.getElementById('searchCoordinatorForm');
+    if (!form) return;
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const query = document.getElementById('search_coordinator_query').value.trim();
+        if (!query) return;
+
+        fetch('?view=school&action=searchCoordinatorAjax', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'document=' + encodeURIComponent(query)
+        })
+        .then(r => r.json())
+        .then(data => {
+            const resultsDiv = document.getElementById('searchCoordinatorResults');
+            if (data.status === 'ok' && data.data.length > 0) {
+                resultsDiv.innerHTML = data.data.map(d =>
+                    `<button type="button" class="list-group-item list-group-item-action select-coordinator-btn"
+                        data-user-id="${d.user_id}"
+                        data-name="${d.first_name} ${d.last_name}">
+                        ${d.first_name} ${d.last_name} - ${d.email}
+                    </button>`
+                ).join('');
+            } else {
+                resultsDiv.innerHTML = '<div class="alert alert-warning">No se encontraron coordinadores con ese documento.</div>';
+            }
+        });
+    });
+    
     console.log('Módulo de creación de escuela inicializado correctamente');
 });
 

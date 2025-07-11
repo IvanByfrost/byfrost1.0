@@ -7,6 +7,7 @@
 class MainController {
     protected $dbConn;
     protected $view;
+    protected $sessionManager;
 
     public function __construct($dbConn, $view = null)
     {
@@ -17,6 +18,10 @@ class MainController {
         
         $this->dbConn = $dbConn;
         $this->view = $view;
+        
+        // Inicializar SessionManager para todos los controladores hijos
+        require_once ROOT . '/app/library/SessionManager.php';
+        $this->sessionManager = new SessionManager();
     }
 
     /**

@@ -64,7 +64,7 @@ $coordinators = $coordinators ?? [];
                     <div class="form-group">
                         <label for="total_quota">Cupo Total</label>
                         <input type="number" class="form-control" id="total_quota" name="total_quota" 
-                               title="Only Numbers" onkeyup="onlyNumbers('total_quota',value);" autocomplete="off"
+                               title="Completa este campo" onkeyup="onlyNumbers('total_quota',value);" autocomplete="off"
                                value="<?php echo isset($formData['total_quota']) ? htmlspecialchars($formData['total_quota']) : ''; ?>" 
                                min="0">
                         <div class="invalid-feedback">
@@ -180,10 +180,9 @@ $coordinators = $coordinators ?? [];
       </div>
       <div class="modal-body">
         <form id="searchDirectorForm" class="mb-3" autocomplete="off">
-    <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
-
+          <input type="hidden" name="csrf_token" value='<?= Validator::generateCSRFToken() ?>'>
           <div class="input-group">
-            <input type="text" class="form-control w-100" id="search_director_query" placeholder="Número de documento">
+            <input type="text" class="form-control w-100" id="search_director_query" placeholder="Número de documento" title="Completa este campo" onkeyup="onlyNumbers('total_quota',value);" autocomplete="off">
             <button type="submit" class="btn btn-primary">Buscar</button>
           </div>
         </form>
@@ -237,4 +236,95 @@ $coordinators = $coordinators ?? [];
     overflow-y: auto;
 }
 </style>
+
+<script>
+// Funciones de selección
+function selectDirector(userId, name) {
+    document.getElementById('director_user_id').value = userId;
+    document.getElementById('selectedDirectorName').textContent = name;
+    var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('searchDirectorModal'));
+    modal.hide();
+}
+
+function selectCoordinator(userId, name) {
+    document.getElementById('coordinator_user_id').value = userId;
+    document.getElementById('selectedCoordinatorName').textContent = name;
+    var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('searchCoordinatorModal'));
+    modal.hide();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Búsqueda AJAX de director
+    const directorForm = document.getElementById('searchDirectorForm');
+    if (directorForm) {
+        directorForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const query = document.getElementById('search_director_query').value.trim();
+            if (!query) return;
+            
+            const resultsDiv = document.getElementById('searchDirectorResults');
+            resultsDiv.innerHTML = '<div class="alert alert-info">Buscando...</div>';
+            
+            fetch('app/processes/assignProcess.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'subject=search_users_by_role&role_type=director&search_type=document&query=' + encodeURIComponent(query)
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'ok' && data.data && data.data.length > 0) {
+                    resultsDiv.innerHTML = data.data.map(director =>
+                        `<button type="button" class="list-group-item list-group-item-action" 
+                            onclick="selectDirector('${director.user_id}', '${director.first_name} ${director.last_name}')">
+                            ${director.first_name} ${director.last_name} - ${director.email}
+                        </button>`
+                    ).join('');
+                } else {
+                    resultsDiv.innerHTML = '<div class="alert alert-warning">No se encontraron directores con ese documento.</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultsDiv.innerHTML = '<div class="alert alert-danger">Error al buscar directores.</div>';
+            });
+        });
+    }
+    
+    // Búsqueda AJAX de coordinador
+    const coordinatorForm = document.getElementById('searchCoordinatorForm');
+    if (coordinatorForm) {
+        coordinatorForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const query = document.getElementById('search_coordinator_query').value.trim();
+            if (!query) return;
+            
+            const resultsDiv = document.getElementById('searchCoordinatorResults');
+            resultsDiv.innerHTML = '<div class="alert alert-info">Buscando...</div>';
+            
+            fetch('app/processes/assignProcess.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'subject=search_users_by_role&role_type=coordinator&search_type=document&query=' + encodeURIComponent(query)
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'ok' && data.data && data.data.length > 0) {
+                    resultsDiv.innerHTML = data.data.map(coordinator =>
+                        `<button type="button" class="list-group-item list-group-item-action" 
+                            onclick="selectCoordinator('${coordinator.user_id}', '${coordinator.first_name} ${coordinator.last_name}')">
+                            ${coordinator.first_name} ${coordinator.last_name} - ${coordinator.email}
+                        </button>`
+                    ).join('');
+                } else {
+                    resultsDiv.innerHTML = '<div class="alert alert-warning">No se encontraron coordinadores con ese documento.</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultsDiv.innerHTML = '<div class="alert alert-danger">Error al buscar coordinadores.</div>';
+            });
+        });
+    }
+});
+</script>
 

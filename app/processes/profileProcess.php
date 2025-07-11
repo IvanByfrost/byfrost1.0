@@ -13,12 +13,12 @@ $userController = new UserController($dbConn);
 
 if (
     $_SERVER['REQUEST_METHOD'] === 'POST' &&
-    isset(_POST['subject']) && htmlspecialchars(_POST['subject']) &&
+    isset($_POST['subject']) && htmlspecialchars($_POST['subject']) &&
     htmlspecialchars($_POST['subject']) === 'changePassword'
 ) {
     $userController->changePasswordAjax();
     exit;
-} else if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset(_POST['subject']) && htmlspecialchars(_POST['subject'])) {
+} else if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject']) && htmlspecialchars($_POST['subject'])) {
     if (htmlspecialchars($_POST['subject']) === 'completeProfile') {
         $controller->completeProfile();
     } else if (htmlspecialchars($_POST['subject']) === 'updateProfile') {

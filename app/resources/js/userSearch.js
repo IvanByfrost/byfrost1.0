@@ -2,9 +2,15 @@
  * Módulo de búsqueda de usuarios
  */
 
+if (typeof window.USER_MANAGEMENT_BASE_URL === 'undefined') {
+    window.USER_MANAGEMENT_BASE_URL = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
+}
+
 // Función para mostrar/ocultar campos según el tipo de búsqueda
 function toggleSearchFields() {
-    const searchType = document.getElementById('search_type').value;
+    const searchTypeSelect = document.getElementById('search_type');
+    if (!searchTypeSelect) return;
+    const searchType = searchTypeSelect.value;
     const documentTypeField = document.getElementById('document_type_field');
     const documentNumberField = document.getElementById('document_number_field');
     const roleTypeField = document.getElementById('role_type_field');
@@ -204,3 +210,114 @@ function clearSearchForm() {
         resultsContainer.innerHTML = '';
     }
 }
+
+// Función para mostrar errores
+function showError(message) {
+    console.error('Error:', message);
+    if (typeof Swal !== 'undefined') {
+        Swal.fire('Error', message, 'error');
+    } else {
+        alert('Error: ' + message);
+    }
+}
+
+// Inicialización del formulario de consulta de usuarios
+function initializeConsultUserForm() {
+    // Mostrar campos correctos al cargar
+    if (typeof toggleSearchFields === 'function') {
+        toggleSearchFields();
+    }
+
+    // Manejar el submit del formulario de búsqueda
+    const form = document.getElementById('searchUserForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const searchType = document.getElementById('search_type').value;
+            if (searchType === 'document') {
+                const credentialType = document.getElementById('credential_type').value;
+                const credentialNumber = document.getElementById('credential_number').value;
+                if (!credentialType || !credentialNumber) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire('Error', 'Debes seleccionar el tipo y número de documento', 'warning');
+                    } else {
+                        alert('Debes seleccionar el tipo y número de documento');
+                    }
+                    return;
+                }
+                searchUsersForConsult(credentialType, credentialNumber);
+            } else if (searchType === 'role') {
+                const roleType = document.getElementById('role_type').value;
+                if (!roleType) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire('Error', 'Debes seleccionar un rol', 'warning');
+                    } else {
+                        alert('Debes seleccionar un rol');
+                    }
+                    return;
+                }
+                searchUsersByRole(roleType);
+            } else {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire('Error', 'Selecciona un tipo de búsqueda', 'warning');
+                } else {
+                    alert('Selecciona un tipo de búsqueda');
+                }
+            }
+            // Mostrar la tarjeta de resultados
+            const resultsCard = document.getElementById('searchResultsCard');
+            if (resultsCard) {
+                resultsCard.style.display = 'block';
+            }
+        });
+    }
+}
+
+// Auto-inicializar cuando el DOM esté listo
+function initializeWhenReady() {
+    console.log('userSearch.js: Inicializando...');
+    
+    // Verificar que las funciones estén disponibles
+    if (typeof toggleSearchFields === 'function') {
+        console.log('userSearch.js: toggleSearchFields disponible');
+        toggleSearchFields();
+    } else {
+        console.error('userSearch.js: toggleSearchFields NO disponible');
+    }
+    
+    if (typeof initializeConsultUserForm === 'function') {
+        console.log('userSearch.js: initializeConsultUserForm disponible');
+        initializeConsultUserForm();
+    } else {
+        console.error('userSearch.js: initializeConsultUserForm NO disponible');
+    }
+}
+
+// Múltiples formas de inicialización para mayor compatibilidad
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeWhenReady);
+} else {
+    // Si ya está cargado, ejecutar inmediatamente
+    initializeWhenReady();
+}
+
+// También ejecutar cuando la ventana esté completamente cargada
+window.addEventListener('load', function() {
+    console.log('userSearch.js: Window load event');
+    if (typeof toggleSearchFields === 'function') {
+        toggleSearchFields();
+    }
+    if (typeof initializeConsultUserForm === 'function') {
+        initializeConsultUserForm();
+    }
+});
+
+// Hacer las funciones disponibles globalmente de forma más explícita
+window.toggleSearchFields = toggleSearchFields;
+window.searchUsersByDocument = searchUsersByDocument;
+window.searchUsersForConsult = searchUsersForConsult;
+window.searchUsersByRole = searchUsersByRole;
+window.displaySearchResults = displaySearchResults;
+window.displayConsultResults = displayConsultResults;
+window.initializeConsultUserForm = initializeConsultUserForm;
+window.showError = showError;

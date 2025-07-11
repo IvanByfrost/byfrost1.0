@@ -38,6 +38,8 @@ define ('models', 'models/');
 define ('controllers', 'controllers/');
 define ('dft', 'views/layouts/');
 define ('rq', 'resources/');
-define ('url', getBaseUrl());
+if (!defined('url')) {
+    define('url', getBaseUrl());
+}
 
 ?>

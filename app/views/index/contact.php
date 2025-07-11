@@ -3,6 +3,7 @@ if (!defined('ROOT')) {
     define('ROOT', dirname(dirname(dirname(__DIR__))));
 }
 require_once ROOT . '/config.php';
+require_once ROOT . '/app/library/Validator.php';
 require_once __DIR__ . '/../layouts/head.php';
 require_once __DIR__ . '/../layouts/header.php';
 ?>

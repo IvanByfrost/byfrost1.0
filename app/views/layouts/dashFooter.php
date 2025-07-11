@@ -106,5 +106,8 @@
             };
         }
     </script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/schoolDirectorSelect.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/schoolDirectorSearch.js"></script>
+    <script type="text/javascript" src="<?php echo url . app . rq ?>js/schoolCoordinatorSelect.js"></script>
     </body>
     </html>
