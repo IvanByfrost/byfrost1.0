@@ -42,27 +42,3 @@
     </div>
 </div>
 
-<script>
-// Debug y fallback mejorado para loadView
-console.log('Sidebar del director cargado, verificando loadView...');
-
-if (typeof loadView !== 'function') {
-    console.log('loadView no está disponible, creando fallback...');
-    window.loadView = function(viewName) {
-        console.log('Fallback loadView llamado con:', viewName);
-        const baseUrl = window.location.origin + window.location.pathname;
-        let url;
-        
-        if (viewName.includes('/')) {
-            const [module, partialView] = viewName.split('/');
-            url = `${baseUrl}?view=${module}&action=loadPartial&partialView=${partialView}`;
-        } else {
-            url = `${baseUrl}?view=${viewName}&action=loadPartial`;
-        }
-        
-        window.location.href = url;
-    };
-} else {
-    console.log('loadView está disponible');
-}
-</script>

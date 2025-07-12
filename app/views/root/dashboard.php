@@ -35,12 +35,9 @@ if ($isAjax && $isPartial) {
 ?>
 
 <!-- Vista completa -->
-<script src="<?php echo url . app . rq ?>js/rootDashboard.js"></script>
-<script src="<?php echo url . app . rq ?>js/loadView.js"></script>
-
 <div class="dashboard-container">
     <aside class="sidebar">
-        <?php require_once __DIR__ . '/rootSidebar.php'; ?>
+        <?php require_once ROOT . '/app/views/layouts/sidebars/rootSidebar.php'; ?>
     </aside>
 
     <div id="mainContent" class="mainContent">

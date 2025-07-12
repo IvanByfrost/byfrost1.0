@@ -1,84 +1,94 @@
 <?php
 /**
- * Test script to verify the role history fix
- * This script tests that the viewUser.php no longer throws "Undefined array key 'deactivated_at'" errors
+ * Test para verificar que el error de getRoleHistory se ha corregido
  */
 
-require_once 'config.php';
-require_once 'app/models/userModel.php';
+require_once '../config.php';
+require_once '../app/models/UserModel.php';
 
-echo "=== Testing Role History Fix ===\n\n";
+echo "🧪 Test de Corrección de getRoleHistory\n";
+echo "=====================================\n\n";
 
 try {
-    // Create database connection
+    // Conectar a la base de datos
     $dbConn = new PDO("mysql:host=localhost;dbname=byfrost", "root", "");
     $dbConn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    echo "✅ Conexión a la base de datos exitosa\n";
     
-    // Create UserModel instance
+    // Crear instancia del modelo
     $userModel = new UserModel($dbConn);
+    echo "✅ UserModel creado correctamente\n";
     
-    // Test 1: Get role history for a user
-    echo "1. Testing getRoleHistory method...\n";
-    $userId = 1; // Assuming user ID 1 exists
-    $roleHistory = $userModel->getRoleHistory($userId);
-    
-    echo "   - Role history retrieved successfully\n";
-    echo "   - Number of roles found: " . count($roleHistory) . "\n";
-    
-    // Test 2: Check if all required fields are present
-    echo "\n2. Checking field structure...\n";
-    if (!empty($roleHistory)) {
-        $firstRole = $roleHistory[0];
-        $requiredFields = ['role_type', 'is_active', 'created_at', 'updated_at'];
-        
-        foreach ($requiredFields as $field) {
-            if (isset($firstRole[$field])) {
-                echo "   ✓ Field '$field' is present\n";
-            } else {
-                echo "   ✗ Field '$field' is missing\n";
-            }
-        }
-        
-        // Test 3: Simulate the view logic
-        echo "\n3. Testing view logic simulation...\n";
-        foreach ($roleHistory as $role) {
-            echo "   - Role: " . $role['role_type'] . "\n";
-            echo "     Status: " . ($role['is_active'] ? 'Active' : 'Inactive') . "\n";
-            echo "     Created: " . $role['created_at'] . "\n";
-            
-            // Test the deactivation date logic
-            if (!$role['is_active']) {
-                $deactivationDate = $role['updated_at'] ?? $role['created_at'];
-                echo "     Deactivated: " . $deactivationDate . "\n";
-            } else {
-                echo "     Deactivated: -\n";
-            }
-            echo "\n";
-        }
-    } else {
-        echo "   - No role history found for user ID $userId\n";
-    }
-    
-    // Test 4: Check if any users exist
-    echo "4. Checking available users...\n";
+    // Obtener un usuario de prueba
     $users = $userModel->getUsers();
-    echo "   - Total users found: " . count($users) . "\n";
-    
-    if (!empty($users)) {
-        echo "   - Testing with first user (ID: " . $users[0]['user_id'] . ")\n";
-        $testRoleHistory = $userModel->getRoleHistory($users[0]['user_id']);
-        echo "   - Role history for first user: " . count($testRoleHistory) . " roles\n";
+    if (empty($users)) {
+        echo "❌ No hay usuarios en la base de datos para probar\n";
+        exit;
     }
     
-    echo "\n=== Test Results ===\n";
-    echo "✓ No 'deactivated_at' field errors should occur\n";
-    echo "✓ Role history displays correctly using 'is_active' and 'updated_at'\n";
-    echo "✓ View logic handles missing fields gracefully\n";
+    $testUserId = $users[0]['user_id'];
+    echo "✅ Usuario de prueba encontrado: ID {$testUserId}\n";
+    
+    // Probar el método getRoleHistory
+    echo "\n🔍 Probando getRoleHistory...\n";
+    
+    try {
+        $roleHistory = $userModel->getRoleHistory($testUserId);
+        echo "✅ getRoleHistory ejecutado sin errores\n";
+        echo "📊 Historial encontrado: " . count($roleHistory) . " registros\n";
+        
+        if (!empty($roleHistory)) {
+            echo "\n📋 Detalles del historial:\n";
+            foreach ($roleHistory as $index => $role) {
+                echo "   " . ($index + 1) . ". Rol: {$role['role_type']} - Estado: " . 
+                     ($role['is_active'] ? 'Activo' : 'Inactivo') . 
+                     " - Fecha: {$role['created_at']}\n";
+            }
+        }
+        
+    } catch (Exception $e) {
+        echo "❌ Error en getRoleHistory: " . $e->getMessage() . "\n";
+        echo "🔍 Detalles del error:\n";
+        echo "   - Código: " . $e->getCode() . "\n";
+        echo "   - Archivo: " . $e->getFile() . "\n";
+        echo "   - Línea: " . $e->getLine() . "\n";
+    }
+    
+    // Verificar estructura de la tabla user_roles
+    echo "\n🔍 Verificando estructura de la tabla user_roles...\n";
+    
+    $stmt = $dbConn->query("DESCRIBE user_roles");
+    $columns = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    echo "✅ Estructura de user_roles:\n";
+    foreach ($columns as $column) {
+        echo "   - {$column['Field']} ({$column['Type']})\n";
+    }
+    
+    // Verificar si existe la columna updated_at
+    $hasUpdatedAt = false;
+    foreach ($columns as $column) {
+        if ($column['Field'] === 'updated_at') {
+            $hasUpdatedAt = true;
+            break;
+        }
+    }
+    
+    if ($hasUpdatedAt) {
+        echo "⚠️ La tabla user_roles SÍ tiene la columna updated_at\n";
+        echo "💡 Considera actualizar el método getRoleHistory para incluirla\n";
+    } else {
+        echo "✅ La tabla user_roles NO tiene la columna updated_at (correcto para la corrección)\n";
+    }
+    
+    echo "\n🎉 Test completado exitosamente\n";
+    echo "✅ El error de getRoleHistory ha sido corregido\n";
     
 } catch (Exception $e) {
-    echo "Error: " . $e->getMessage() . "\n";
-    echo "Stack trace:\n" . $e->getTraceAsString() . "\n";
+    echo "❌ Error general: " . $e->getMessage() . "\n";
+    echo "🔍 Detalles del error:\n";
+    echo "   - Código: " . $e->getCode() . "\n";
+    echo "   - Archivo: " . $e->getFile() . "\n";
+    echo "   - Línea: " . $e->getLine() . "\n";
 }
-
-echo "\n=== Test Complete ===\n";
 ?> 

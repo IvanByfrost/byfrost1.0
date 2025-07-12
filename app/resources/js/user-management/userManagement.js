@@ -7,8 +7,25 @@ if (typeof window.USER_MANAGEMENT_BASE_URL === 'undefined') {
     window.USER_MANAGEMENT_BASE_URL = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
 }
 
-function showError(message) {
+function showError(targetElement, message) {
+    if (typeof message === 'undefined') {
+        message = targetElement;
+        targetElement = null;
+    }
+
     console.error('[UserManagement] Error:', message);
+
+    if (targetElement) {
+        const target = document.querySelector(targetElement);
+        if (target) {
+            target.innerHTML = `
+                <div class="alert alert-danger" role="alert">
+                    <strong>Error:</strong> ${message}
+                </div>
+            `;
+            return;
+        }
+    }
 
     if (typeof Swal !== 'undefined') {
         Swal.fire({
@@ -21,6 +38,7 @@ function showError(message) {
         alert('Error: ' + message);
     }
 }
+
 
 function showConfirm({ title, text, confirmButtonText, onConfirm }) {
     if (typeof Swal !== 'undefined') {
@@ -281,7 +299,7 @@ function confirmDeactivateUser(userId) {
         text: '¿Estás seguro de que deseas desactivar este usuario? No podrá acceder al sistema.',
         confirmButtonText: 'Sí, desactivar',
         onConfirm: () => {
-            loadView(`user/deactivate?id=${userId}`);
+            loadView('user', 'deactivate', '#mainContent', true, { id: userId });
         }
     });
 }
@@ -295,6 +313,162 @@ function confirmActivateUser(userId) {
             loadView(`user/activate?id=${userId}`);
         }
     });
+}
+
+function assignRole() {
+    const userId = document.getElementById('modal_user_id').value;
+    const roleType = document.getElementById('modal_role_type').value;
+
+    if (!roleType) {
+        alert('Selecciona un rol.');
+        return;
+    }
+
+    fetch('?view=user&action=assignRoleAjax', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({
+            user_id: userId,
+            role_type: roleType
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message || 'Rol asignado correctamente.');
+            // Si quieres cerrar el modal:
+            var modal = bootstrap.Modal.getInstance(document.getElementById('assignRoleModal'));
+            modal.hide();
+
+            // Opcional: recargar vista
+            loadView('user', 'consultUser', '#mainContent', true);
+        } else {
+            alert(data.message || 'Error al asignar el rol.');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Error en la solicitud.');
+    });
+}
+
+function assignNewRole(userId) {
+    loadView('user', 'assignRoleView', '#mainContent', true, { id: userId });
+}
+
+function confirmDeactivateUser(userId) {
+    showConfirm({
+        title: 'Desactivar Usuario',
+        text: '¿Estás seguro de que deseas desactivar este usuario?',
+        confirmButtonText: 'Sí, desactivar',
+        onConfirm: () => {
+            fetch('?view=user&action=deleteUserAjax', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ user_id: userId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Éxito',
+                        text: data.message,
+                        icon: 'success'
+                    }).then(() => {
+                        loadView('user', 'consultUser', '#mainContent', true);
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.message,
+                        icon: 'error'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se pudo procesar la solicitud.',
+                    icon: 'error'
+                });
+            });
+        }
+    });
+}
+
+function searchUserAJAX(e) {
+    e.preventDefault();
+
+    const searchType = document.getElementById('search_type').value;
+    let searchData = {};
+
+    switch (searchType) {
+        case 'document':
+            const credentialType = document.getElementById('credential_type').value;
+            const credentialNumber = document.getElementById('credential_number').value;
+
+            if (!credentialType || !credentialNumber) {
+                showError('Por favor, completa los datos de documento.');
+                return false;
+            }
+
+            searchData = {
+                search_type: 'document',
+                credential_type: credentialType,
+                credential_number: credentialNumber
+            };
+            break;
+
+        case 'role':
+            const roleType = document.getElementById('role_type').value;
+
+            if (!roleType) {
+                showError('Por favor, selecciona un rol.');
+                return false;
+            }
+
+            searchData = {
+                search_type: 'role',
+                role_type: roleType
+            };
+            break;
+
+        case 'name':
+            const nameSearch = document.getElementById('name_search').value.trim();
+
+            if (!nameSearch) {
+                showError('Por favor, ingresa un nombre.');
+                return false;
+            }
+
+            searchData = {
+                search_type: 'name',
+                name_search: nameSearch
+            };
+            break;
+
+        default:
+            showError('Selecciona un tipo de búsqueda.');
+            return false;
+    }
+
+    const params = new URLSearchParams(searchData);
+
+    if (typeof loadView === 'function') {
+        loadView('user', 'consultUser', '#mainContent', false, Object.fromEntries(params));
+    } else {
+        const url = `${window.location.origin}${window.location.pathname}?view=user&action=consultUser&${params.toString()}`;
+        window.location.href = url;
+    }
+
+    return false;
 }
 
 waitForDOM();

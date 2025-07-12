@@ -2,18 +2,20 @@
 <br>
 
 <div class="col-md-4">
-        <div class="card p-3">
-            <div class="card-body">
-                <h4 class="card-title">Usuarios</h4>
-                <p class="card-text">Registra y gestiona la información de los usuarios.</p>
-                <div class="d-grid gap-2">
-                    <button class="btn btn-outline-success" onclick="loadView('user/consultUser')">
-                        <i class="fa fa-plus"></i> Consultar usuarios
-                    </button>
-                </div>
+    <div class="card p-3">
+        <div class="card-body">
+            <h4 class="card-title">Usuarios</h4>
+            <p class="card-text">Registra y gestiona la información de los usuarios.</p>
+            <div class="d-grid gap-2">
+                <button class="btn btn-outline-success"
+                onclick="loadView('user/consultUser')">
+                    <i class="fa fa-plus"></i> Consultar usuarios
+                </button>
+
             </div>
         </div>
     </div>
+</div>
 
 <div class="row g-3">
     <div class="col-md-4">

@@ -816,7 +816,7 @@ class PayrollController extends MainController {
         $view = htmlspecialchars($_POST['view']) ?? htmlspecialchars($_GET['view']) ?? '';
         $action = htmlspecialchars($_POST['action']) ?? htmlspecialchars($_GET['action']) ?? 'index';
         $partialView = htmlspecialchars($_POST['partialView']) ?? htmlspecialchars($_GET['partialView']) ?? '';
-        $force = isset(_POST['force']) && htmlspecialchars(_POST['force']) || isset(_GET['force']) && htmlspecialchars(_GET['force']);
+        $force = isset($_POST['force']) && htmlspecialchars($_POST['force']) || isset($_GET['force']) && htmlspecialchars($_GET['force']);
 
         if (!$this->isAjaxRequest() && !$force) {
             if (empty($partialView)) {

@@ -1,7 +1,6 @@
-import { showSuccessMessage, showErrorMessage } from './uiHelpers.js';
-import { loadView } from './viewLoader.js';
+function handleAjaxForm(event, form) {
+    event.preventDefault();
 
-export function handleAjaxForm(form) {
     const formData = new FormData(form);
     const url = form.action || window.location.href;
 
@@ -12,20 +11,47 @@ export function handleAjaxForm(form) {
             'X-Requested-With': 'XMLHttpRequest'
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             if (data.redirect) {
-                loadView(data.redirect.view, data.redirect.action, '#mainContent', true);
+                if (typeof data.redirect === 'string') {
+                    loadView(data.redirect, null, '#mainContent', true, {});
+                } else {
+                    loadView(
+                        data.redirect.view,
+                        data.redirect.action || null,
+                        '#mainContent',
+                        true,
+                        data.redirect.params || {}
+                    );
+                }
             } else if (data.message) {
-                showSuccessMessage(data.message);
+                if (typeof showSuccessMessage === 'function') {
+                    showSuccessMessage(data.message);
+                } else {
+                    alert(data.message);
+                }
             }
         } else {
-            showErrorMessage(data.message || 'Error en el formulario');
+            if (typeof showErrorMessage === 'function') {
+                showErrorMessage(data.message || 'Error en el formulario');
+            } else {
+                alert(data.message || 'Error en el formulario');
+            }
         }
     })
     .catch(error => {
         console.error('Error en formulario AJAX:', error);
-        showErrorMessage('Error al procesar el formulario');
+        if (typeof showErrorMessage === 'function') {
+            showErrorMessage('Error al procesar el formulario');
+        } else {
+            alert('Error al procesar el formulario');
+        }
     });
 }

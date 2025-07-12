@@ -1,136 +1,105 @@
 /**
- * Módulo de historial de roles
+ * Role History Navigation Functions
+ * ByFrost - User Management Module
  */
 
 /**
- * Lanza una búsqueda de historial de roles por documento.
- * @param {string} credentialType
- * @param {string} credentialNumber
+ * Función para obtener el color del badge según el tipo de rol
+ * @param {string} roleType - Tipo de rol
+ * @returns {string} - Clase CSS del color
  */
-async function searchRoleHistory(credentialType, credentialNumber) {
-    console.log('[RoleHistory] Buscando historial de roles para:', credentialType, credentialNumber);
-  
-    const body = new URLSearchParams({
-      subject: 'search_role_history',
-      credential_type: credentialType,
-      credential_number: credentialNumber
-    });
-  
-    try {
-      const res = await fetch(`${window.USER_MANAGEMENT_BASE_URL}app/processes/assignProcess.php`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: body
-      });
-  
-      if (!res.ok) {
-        throw new Error(`HTTP error: ${res.status}`);
-      }
-  
-      const data = await res.json();
-      console.log('[RoleHistory] Respuesta:', data);
-  
-      if (data.status === 'ok') {
-        displayRoleHistory(data.data.role_history, data.data.user_info);
-      } else {
-        showError(data.msg || 'Error en la búsqueda del historial');
-      }
-    } catch (e) {
-      console.error('[RoleHistory] Error:', e);
-      showError('Error de conexión con el servidor');
+function getRoleBadgeColor(roleType) {
+    const colors = {
+        'root': 'danger',
+        'director': 'primary',
+        'coordinator': 'info',
+        'professor': 'warning',
+        'treasurer': 'success',
+        'student': 'secondary',
+        'parent': 'light'
+    };
+    return colors[roleType] || 'secondary';
+}
+
+/**
+ * Función para volver atrás con múltiples opciones de navegación
+ */
+function goBack() {
+    // Opción 1: Intentar usar history.back() primero
+    if (window.history && window.history.length > 1) {
+        window.history.back();
+        return;
     }
-  }
-  
-  /**
-   * Renderiza el historial de roles en el contenedor.
-   * @param {Array} roleHistory
-   * @param {Object|null} userInfo
-   */
-  function displayRoleHistory(roleHistory, userInfo) {
-    const resultsContainer = document.getElementById('roleHistoryResults');
-    if (!resultsContainer) {
-      console.error('[RoleHistory] Contenedor de resultados no encontrado');
-      return;
+    
+    // Opción 2: Si hay función loadView disponible, usarla
+    if (typeof loadView === 'function') {
+        loadView('user', 'consultUser');
+        return;
     }
-  
-    let html = '';
-  
-    if (!userInfo) {
-      html = `<div class="alert alert-warning">
-        No se encontró información del usuario.
-      </div>`;
-      resultsContainer.innerHTML = html;
-      return;
+    
+    // Opción 3: Redirección directa a la consulta de usuarios
+    window.location.href = '?view=user&action=consultUser';
+}
+
+/**
+ * Función para ver el usuario
+ * @param {number} userId - ID del usuario
+ */
+function viewUser(userId) {
+    // Opción 1: Si hay función loadView disponible, usarla
+    if (typeof loadView === 'function') {
+        loadView('user', 'view', '#mainContent', false, {id: userId});
+        return;
     }
-  
-    html += `
-      <div class="card mb-3">
-        <div class="card-header"><h5>Información del Usuario</h5></div>
-        <div class="card-body">
-          <p><strong>Nombre:</strong> ${userInfo.first_name} ${userInfo.last_name}</p>
-          <p><strong>Email:</strong> ${userInfo.email}</p>
-          <p><strong>Documento:</strong> ${userInfo.credential_type} ${userInfo.credential_number}</p>
-        </div>
-      </div>`;
-  
-    if (!roleHistory || roleHistory.length === 0) {
-      html += `<div class="alert alert-info">
-        No se encontró historial de roles para este usuario.
-      </div>`;
-    } else {
-      html += `
-        <div class="card">
-          <div class="card-header"><h5>Historial de Roles</h5></div>
-          <div class="card-body">
-            <div class="table-responsive">
-              <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th>Rol</th>
-                    <th>Fecha de Asignación</th>
-                    <th>Asignado por</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${roleHistory.map(role => {
-                    const fecha = role.assigned_at
-                      ? new Date(role.assigned_at).toLocaleDateString('es-ES')
-                      : 'N/A';
-                    return `
-                      <tr>
-                        <td><span class="badge bg-primary">${traducirRol(role.role_type)}</span></td>
-                        <td>${fecha}</td>
-                        <td>${role.assigned_by_name || 'Sistema'}</td>
-                      </tr>`;
-                  }).join('')}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>`;
+    
+    // Opción 2: Redirección directa
+    window.location.href = `?view=user&action=view&id=${userId}`;
+}
+
+/**
+ * Función para asignar un nuevo rol
+ * @param {number} userId - ID del usuario
+ */
+function assignNewRole(userId) {
+    // Opción 1: Si hay función loadView disponible, usarla
+    if (typeof loadView === 'function') {
+        loadView('user', 'assignRole', '#mainContent', false, {id: userId});
+        return;
     }
-  
-    resultsContainer.innerHTML = html;
-    console.log('[RoleHistory] HTML generado para historial de roles');
-  }
-  
-  /**
-   * Muestra un error con SweetAlert o alert.
-   * @param {string} message
-   */
-  function showError(message) {
-    console.error('[RoleHistory] Error:', message);
-    if (typeof Swal !== 'undefined') {
-      Swal.fire({
-        title: 'Error',
-        text: message,
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-    } else {
-      alert(message);
+    
+    // Opción 2: Redirección directa
+    window.location.href = `?view=user&action=assignRole&id=${userId}`;
+}
+
+/**
+ * Función para desactivar un rol
+ * @param {number} userId - ID del usuario
+ * @param {string} roleType - Tipo de rol
+ */
+function deactivateRole(userId, roleType) {
+    if (confirm('¿Estás seguro de que quieres desactivar este rol?')) {
+        // Implementar lógica de desactivación
+        console.log('Desactivando rol:', roleType, 'para usuario:', userId);
     }
-  }
+}
+
+/**
+ * Función para activar un rol
+ * @param {number} userId - ID del usuario
+ * @param {string} roleType - Tipo de rol
+ */
+function activateRole(userId, roleType) {
+    if (confirm('¿Estás seguro de que quieres activar este rol?')) {
+        // Implementar lógica de activación
+        console.log('Activando rol:', roleType, 'para usuario:', userId);
+    }
+}
+
+// Exponer funciones globalmente
+window.getRoleBadgeColor = getRoleBadgeColor;
+window.goBack = goBack;
+window.viewUser = viewUser;
+window.assignNewRole = assignNewRole;
+window.deactivateRole = deactivateRole;
+window.activateRole = activateRole;
   

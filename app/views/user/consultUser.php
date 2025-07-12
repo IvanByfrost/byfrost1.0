@@ -16,12 +16,13 @@ $userRole = $sessionManager->getUserRole();
 
 // Función para renderizar opciones de roles
 if (!function_exists('renderRoleOptions')) {
-    function renderRoleOptions($userRole, $selected = '') {
+    function renderRoleOptions($userRole, $selected = '')
+    {
         $roles = [
             'student'    => 'Estudiante',
             'parent'     => 'Padre/Acudiente',
             'professor'  => 'Profesor',
-            'coordinator'=> 'Coordinador',
+            'coordinator' => 'Coordinador',
             'director'   => 'Director/Rector',
             'treasurer'  => 'Tesorero',
             'root'       => 'Administrador',
@@ -115,7 +116,7 @@ if (!function_exists('renderRoleOptions')) {
                             <div class="col-md-3" id="document_number_field" style="display: none;">
                                 <label for="credential_number" class="form-label">Número de Documento</label>
                                 <input type="text" class="form-control" id="credential_number" name="credential_number"
-                                       value="<?= htmlspecialchars($credentialNumber) ?>" placeholder="Ingrese el número de documento">
+                                    value="<?= htmlspecialchars($credentialNumber) ?>" placeholder="Ingrese el número de documento">
                             </div>
 
                             <!-- Rol -->
@@ -131,7 +132,7 @@ if (!function_exists('renderRoleOptions')) {
                             <div class="col-md-3" id="name_search_field" style="display: none;">
                                 <label for="name_search" class="form-label">Nombre o Apellido</label>
                                 <input type="text" class="form-control" id="name_search" name="name_search"
-                                       value="<?= htmlspecialchars($search) ?>" placeholder="Ingrese nombre o apellido">
+                                    value="<?= htmlspecialchars($search) ?>" placeholder="Ingrese nombre o apellido">
                             </div>
 
                             <!-- Botones -->
@@ -174,6 +175,9 @@ if (!function_exists('renderRoleOptions')) {
                                 </thead>
                                 <tbody>
                                     <?php foreach ($users as $user) : ?>
+                                        <?php
+                                        if (empty($user['user_role']) && empty($user['role_type'])) continue;
+                                        ?>
                                         <tr>
                                             <td><?= htmlspecialchars($user['user_id']) ?></td>
                                             <td><strong><?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?></strong></td>
@@ -194,36 +198,65 @@ if (!function_exists('renderRoleOptions')) {
                                                 <?php endif; ?>
                                             </td>
                                             <td>
-                                                <?php if (!empty($user['is_active'])) : ?>
-                                                    <span class="badge bg-success">Activo</span>
-                                                <?php else : ?>
-                                                    <span class="badge bg-danger">Inactivo</span>
+                                                <?php if (!empty($user['role_type'])): ?>
+                                                    <?php if (isset($user['role_active']) && $user['role_active']): ?>
+                                                        <span class="badge bg-success">Activo</span>
+                                                    <?php else: ?>
+                                                        <span class="badge bg-danger">Inactivo</span>
+                                                    <?php endif; ?>
+                                                <?php else: ?>
+                                                    <span class="badge bg-secondary">Sin rol</span>
                                                 <?php endif; ?>
                                             </td>
                                             <td>
                                                 <div class="btn-group">
-                                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="loadView('user/view?id=<?= $user['user_id'] ?>')" title="Ver detalles">
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-sm btn-outline-primary"
+                                                        onclick="loadView('user', 'view', '#mainContent', true, { id: <?= $user['user_id'] ?> })"
+                                                        title="Ver detalles">
                                                         <i class="fas fa-eye"></i>
                                                     </button>
-                                                    <button type="button" class="btn btn-sm btn-outline-warning" onclick="loadView('user/edit?id=<?= $user['user_id'] ?>')" title="Editar">
+
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-sm btn-outline-warning"
+                                                        onclick="loadView('user', 'edit', '#mainContent', true, { id: <?= $user['user_id'] ?> })"
+                                                        title="Editar">
                                                         <i class="fas fa-edit"></i>
                                                     </button>
-                                                    <button type="button" class="btn btn-sm btn-outline-info" onclick="loadView('user/viewRoleHistory?id=<?= $user['user_id'] ?>')" title="Historial de roles">
+
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-sm btn-outline-info"
+                                                        onclick="loadView('user', 'viewRoleHistory', '#mainContent', true, { id: <?= $user['user_id'] ?> })"
+                                                        title="Historial de roles">
                                                         <i class="fas fa-history"></i>
                                                     </button>
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="loadView('user/changePassword?id=<?= $user['user_id'] ?>')" title="Cambiar contraseña">
-                                                        <i class="fas fa-key"></i>
-                                                    </button>
+
                                                     <?php if (!empty($user['is_active'])) : ?>
-                                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDeactivateUser(<?= $user['user_id'] ?>)" title="Desactivar">
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-sm btn-outline-danger"
+                                                            onclick="confirmDeactivateUser(<?= $user['user_id'] ?>)"
+                                                            title="Desactivar">
                                                             <i class="fas fa-user-slash"></i>
                                                         </button>
                                                     <?php else : ?>
-                                                        <button type="button" class="btn btn-sm btn-outline-success" onclick="confirmActivateUser(<?= $user['user_id'] ?>)" title="Activar">
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-sm btn-outline-success"
+                                                            onclick="confirmActivateUser(<?= $user['user_id'] ?>)"
+                                                            title="Activar">
                                                             <i class="fas fa-user-check"></i>
                                                         </button>
                                                     <?php endif; ?>
-                                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDeleteUser(<?= $user['user_id'] ?>)" title="Eliminar">
+
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-sm btn-outline-danger"
+                                                        onclick="confirmDeleteUser(<?= $user['user_id'] ?>)"
+                                                        title="Eliminar">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </div>
@@ -231,6 +264,7 @@ if (!function_exists('renderRoleOptions')) {
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
+
                             </table>
                         </div>
                     </div>
@@ -248,5 +282,3 @@ if (!function_exists('renderRoleOptions')) {
         </div>
     </div>
 </div>
-
-<script src="/app/resources/js/dashboard.js"></script>

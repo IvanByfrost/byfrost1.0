@@ -1,34 +1,32 @@
+console.log('✅ Toggles.js cargado');
+
 /**
- * Toggles.js - Maneja el menú de usuario y otros toggles específicos
- * NOTA: Los submenús del sidebar ahora se manejan en sidebarToggle.js
+ * Toggles.js - Maneja el menú de usuario
+ * Compatible con SPA
  */
 
-document.addEventListener('DOMContentLoaded', function () {
-    console.log('Toggles.js: Inicializando toggles de usuario...');
-    
-    // Verificar que el menú de usuario existe
+document.addEventListener('viewLoaded', initUserToggles);
+
+function initUserToggles() {
+    console.log('Toggles.js: Ejecutando initUserToggles()');
+
     const userMenuTrigger = document.querySelector('.user-menu-trigger');
     const userMenuContainer = document.querySelector('.user-menu-container');
-    
+
     if (userMenuTrigger) {
         console.log('Toggles.js: User menu trigger encontrado');
+        userMenuTrigger.addEventListener('click', toggleUserMenu);
     } else {
         console.log('Toggles.js: User menu trigger NO encontrado');
     }
-    
+
     if (userMenuContainer) {
         console.log('Toggles.js: User menu container encontrado');
     } else {
         console.log('Toggles.js: User menu container NO encontrado');
     }
-    
+}
 
-});
-
-/**
- * Toggle del menú de usuario (avatar del usuario)
- * Esta función se llama desde el HTML del header
- */
 function toggleUserMenu() {
     console.log('Toggles.js: toggleUserMenu llamado');
     const menu = document.querySelector('.user-menu-container');
@@ -42,9 +40,6 @@ function toggleUserMenu() {
     }
 }
 
-/**
- * Cerrar menú de usuario al hacer clic fuera
- */
 document.addEventListener('click', function(event) {
     const trigger = document.querySelector('.user-menu-trigger');
     const menu = document.querySelector('.user-menu-container');
@@ -54,10 +49,6 @@ document.addEventListener('click', function(event) {
     }
 });
 
-/**
- * Función para cerrar el menú de usuario programáticamente
- * Útil cuando se navega a otra página o se ejecuta una acción
- */
 function closeUserMenu() {
     const menu = document.querySelector('.user-menu-container');
     if (menu) {
@@ -66,6 +57,28 @@ function closeUserMenu() {
     }
 }
 
-// Hacer la función disponible globalmente
-window.closeUserMenu = closeUserMenu;
 
+function toggleSearchFields() {
+    const searchType = document.getElementById('search_type')?.value;
+
+    // Ocultar todos
+    document.getElementById('document_type_field')?.style.setProperty('display', 'none');
+    document.getElementById('document_number_field')?.style.setProperty('display', 'none');
+    document.getElementById('role_type_field')?.style.setProperty('display', 'none');
+    document.getElementById('name_search_field')?.style.setProperty('display', 'none');
+
+    if (searchType === 'document') {
+        document.getElementById('document_type_field')?.style.setProperty('display', 'block');
+        document.getElementById('document_number_field')?.style.setProperty('display', 'block');
+    } else if (searchType === 'role') {
+        document.getElementById('role_type_field')?.style.setProperty('display', 'block');
+    } else if (searchType === 'name') {
+        document.getElementById('name_search_field')?.style.setProperty('display', 'block');
+    }
+}
+
+// ✅ Exponer globalmente (por si tu HTML usa el atributo `onchange`)
+window.toggleSearchFields = toggleSearchFields;
+
+
+window.closeUserMenu = closeUserMenu;

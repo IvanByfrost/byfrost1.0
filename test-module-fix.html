@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Module Fix</title>
+</head>
+<body>
+    <h1>Test Module Fix</h1>
+    <div id="mainContent">
+        <p>Testing loadView.js module loading...</p>
+    </div>
+    
+    <button onclick="testLoadView()">Test loadView Function</button>
+    
+    <script>
+        function testLoadView() {
+            if (typeof window.loadView === 'function') {
+                console.log('✅ loadView function is available globally');
+                alert('✅ loadView function is available globally');
+            } else {
+                console.log('❌ loadView function is NOT available globally');
+                alert('❌ loadView function is NOT available globally');
+            }
+        }
+    </script>
+    
+    <script type="module" src="app/resources/js/loadView.js"></script>
+</body>
+</html> 

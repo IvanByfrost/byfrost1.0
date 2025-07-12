@@ -5,129 +5,56 @@ class IndexController extends MainController
 {
     public function __construct($dbConn)
     {
-        // Asegurar que session_start() solo se llame una vez y antes de cualquier salida
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        parent::__construct($dbConn);      
+        parent::__construct($dbConn);
     }
 
-    /**
-     * Página principal
-     */
-    public function index() 
+    public function index()
     {
-        // Si el usuario está logueado, redirigir al dashboard correspondiente
         if (isset($this->sessionManager) && $this->sessionManager->isLoggedIn()) {
             $role = $this->sessionManager->getUserRole();
             $this->redirectToDashboard($role);
             return;
         }
-        
-        // Si no está logueado, mostrar la página principal
+
         $this->render('index', 'index');
     }
 
-    /**
-     * Dashboard por defecto (cuando se accede sin especificar vista)
-     */
-    public function dashboard() 
+    public function dashboard()
     {
-        // Si el usuario está logueado, redirigir al dashboard correspondiente
         if (isset($this->sessionManager) && $this->sessionManager->isLoggedIn()) {
             $role = $this->sessionManager->getUserRole();
             $this->redirectToDashboard($role);
             return;
         }
-        
-        // Si no está logueado, redirigir al login
+
         header('Location: ' . url . '?view=index&action=login');
         exit;
     }
 
-    /**
-     * Página de login
-     */
-    public function login() 
+    public function login()
     {
-        // Si ya está logueado, redirigir al dashboard correspondiente
         if (isset($this->sessionManager) && $this->sessionManager->isLoggedIn()) {
             $role = $this->sessionManager->getUserRole();
             $this->redirectToDashboard($role);
             return;
         }
-        
+
         $this->render('index', 'login');
     }
 
-    /**
-     * Página de registro
-     */
-    public function register() 
-    {
-        $this->render('index', 'register');
-    }
+    public function register() { $this->render('index', 'register'); }
+    public function contact() { $this->render('index', 'contact'); }
+    public function about() { $this->render('index', 'about'); }
+    public function plans() { $this->render('index', 'plans'); }
+    public function faq() { $this->render('index', 'faq'); }
+    public function forgotPassword() { $this->render('index', 'forgotPassword'); }
+    public function resetPassword() { $this->render('index', 'resetPassword'); }
+    public function completeProf() { $this->render('index', 'completeProf'); }
 
-    /**
-     * Página de contacto
-     */
-    public function contact() 
-    {
-        $this->render('index', 'contact');
-    }
-
-    /**
-     * Página about
-     */
-    public function about() 
-    {
-        $this->render('index', 'about');
-    }
-
-    /**
-     * Página de planes
-     */
-    public function plans() 
-    {
-        $this->render('index', 'plans');
-    }
-
-    /**
-     * Página FAQ
-     */
-    public function faq() 
-    {
-        $this->render('index', 'faq');
-    }
-
-    /**
-     * Página de forgot password
-     */
-    public function forgotPassword() 
-    {
-        $this->render('index', 'forgotPassword');
-    }
-
-    /**
-     * Página de reset password
-     */
-    public function resetPassword() 
-    {
-        $this->render('index', 'resetPassword');
-    }
-
-    /**
-     * Página de complete profile
-     */
-    public function completeProf() 
-    {
-        $this->render('index', 'completeProf');
-    }
-
-    /**
-     * Redirige al dashboard correspondiente según el rol
-     */
-    private function redirectToDashboard($role) 
+    private function redirectToDashboard($role)
     {
         $dashboardUrls = [
             'root' => '?view=rootDashboard',
@@ -144,39 +71,36 @@ class IndexController extends MainController
         exit;
     }
 
-    /**
-     * Carga una vista parcial vía AJAX
-     * Útil para cargar contenido en dashboards sin header y footer
-     */
     public function loadPartial()
     {
-        // Obtener parámetros
-        $view = htmlspecialchars($_POST['view']) ?? htmlspecialchars($_GET['view']) ?? '';
-        $action = htmlspecialchars($_POST['action']) ?? htmlspecialchars($_GET['action']) ?? 'index';
-        $partialView = htmlspecialchars($_POST['partialView']) ?? htmlspecialchars($_GET['partialView']) ?? '';
-        $force = isset(_POST['force']) && htmlspecialchars(_POST['force']) || isset(_GET['force']) && htmlspecialchars(_GET['force']); // Permitir forzar la carga
-        
-        // Debug
+        $view = isset($_POST['view']) ? htmlspecialchars($_POST['view']) :
+               (isset($_GET['view']) ? htmlspecialchars($_GET['view']) : '');
+
+        $action = isset($_POST['action']) ? htmlspecialchars($_POST['action']) :
+                  (isset($_GET['action']) ? htmlspecialchars($_GET['action']) : 'index');
+
+        $partialView = isset($_POST['partialView']) ? htmlspecialchars($_POST['partialView']) :
+                       (isset($_GET['partialView']) ? htmlspecialchars($_GET['partialView']) : '');
+
+        $force = (isset($_POST['force']) && htmlspecialchars($_POST['force'])) ||
+                 (isset($_GET['force']) && htmlspecialchars($_GET['force']));
+
         error_log("DEBUG loadPartial - view: $view, action: $action, partialView: $partialView");
-        
-        // Verificar que sea una petición AJAX o esté forzada
+
         if (!$this->isAjaxRequest() && !$force) {
-            // Si no es AJAX, mostrar un mensaje de error más informativo
             if (empty($view)) {
                 echo '<div class="alert alert-warning">Vista no especificada. Use: ?view=index&action=loadPartial&view=viewname&action=accionname</div>';
                 return;
             }
-            
-            // Si se especifica una vista, cargarla directamente
-            $viewPath = $view . '/' . $action;
+
+            $viewPath = rtrim($view, '/') . '/' . $action;
             $fullPath = ROOT . "/app/views/{$viewPath}.php";
-            
+
             if (!file_exists($fullPath)) {
                 echo '<div class="alert alert-danger">Vista no encontrada: ' . htmlspecialchars($viewPath) . '</div>';
                 return;
             }
-            
-            // Cargar la vista parcial directamente
+
             try {
                 $this->loadPartialView($viewPath);
             } catch (Exception $e) {
@@ -184,33 +108,29 @@ class IndexController extends MainController
             }
             return;
         }
-        
-        // Si no hay vista especificada, intentar usar partialView
+
         if (empty($view) && !empty($partialView)) {
             $view = $partialView;
         }
-        
+
         if (empty($view)) {
             $this->sendJsonResponse(false, 'Vista no especificada');
             return;
         }
-        
-        // Construir la ruta de la vista
-        $viewPath = $view . '/' . $action;
-        
-        // Verificar que el archivo existe
+
+        $viewPath = rtrim($view, '/') . '/' . $action;
         $fullPath = ROOT . "/app/views/{$viewPath}.php";
-        
+
         error_log("DEBUG loadPartial - Intentando cargar: $fullPath");
-        
+
         if (!file_exists($fullPath)) {
             $this->sendJsonResponse(false, "Vista no encontrada: {$viewPath}");
             return;
         }
-        
-        // Cargar la vista parcial
+
         try {
             $this->loadPartialView($viewPath);
+            exit;
         } catch (Exception $e) {
             $this->sendJsonResponse(false, 'Error al cargar la vista: ' . $e->getMessage());
         }

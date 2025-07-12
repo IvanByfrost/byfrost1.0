@@ -22,13 +22,26 @@
     }
 </script>
 
-<script type="module">
-    import { loadView } from '<?= htmlspecialchars(url . app . rq) ?>js/loadView.js';
+<script src="<?php echo url . app . rq ?>js/loadView.js"></script>
+<script src="<?php echo url . app . rq ?>js/navigation/formHandler.js"></script>
 
-    document.addEventListener('DOMContentLoaded', () => {
-        loadView('dashboard');
-    });
-</script>
+<script src="<?php echo url . app . rq ?>js/onlyNumber.js"></script>
+<script src="<?php echo url . app . rq ?>js/utils/toggles.js"></script>
+<script src="<?php echo url . app . rq ?>js/user-management/Uploadpicture.js"></script>
+<script src="<?php echo url . app . rq ?>js/utils/sidebarToggle.js"></script>
+<script src="<?php echo url . app . rq ?>js/dashboard/rootDashboard.js"></script>
+<script src="<?php echo url . app . rq ?>js/dashboard/payrollDashboard.js"></script>
+<script src="<?php echo url . app . rq ?>js/dashboard/treasurerDashboard.js"></script>
+<script src="<?php echo url . app . rq ?>js/dashboard/studentDashboard.js"></script>
+<script src="<?php echo url . app . rq ?>js/dashboard/teacherDashboard.js"></script>
+<script src="<?php echo url . app . rq ?>js/user-management/userEdit.js"></script>
+<script src="<?php echo url . app . rq ?>js/user-management/roleHistory.js"></script>
+<script src="<?php echo url . app . rq ?>js/user-management/userManagement.js"></script>
+<script src="<?php echo url . app . rq ?>js/school-management/schoolActions.js"></script>
+<script src="<?php echo url . app . rq ?>js/school-management/schoolForm.js"></script>
+<script src="<?php echo url . app . rq ?>js/school-management/schoolManagement.js"></script>
+<script src="<?php echo url . app . rq ?>js/school-management/schoolSearch.js"></script>
+<script src="<?php echo url . app . rq ?>js/school-management/schoolValidation.js"></script>
 
 </body>
 </html>

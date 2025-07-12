@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test loadView Debug</title>
+</head>
+<body>
+    <h1>Test loadView Debug</h1>
+    <div id="mainContent">
+        <p>Testing loadView functionality...</p>
+    </div>
+    
+    <button onclick="testLoadView()">Test loadView</button>
+    <button onclick="testDirectUrl()">Test Direct URL</button>
+    
+    <div id="debug"></div>
+    
+    <script>
+        function testLoadView() {
+            console.log('Testing loadView...');
+            if (typeof window.loadView === 'function') {
+                console.log('✅ loadView function is available');
+                window.loadView('user/consultUser');
+            } else {
+                console.log('❌ loadView function is NOT available');
+                document.getElementById('debug').innerHTML = '<p style="color: red;">loadView function not found</p>';
+            }
+        }
+        
+        function testDirectUrl() {
+            console.log('Testing direct URL...');
+            const url = 'http://localhost:8000/?view=user&action=consultUser';
+            console.log('Fetching:', url);
+            
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8'
+                }
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                return response.text();
+            })
+            .then(html => {
+                console.log('Response HTML length:', html.length);
+                document.getElementById('debug').innerHTML = '<p style="color: green;">Direct URL test successful</p><pre>' + html.substring(0, 500) + '...</pre>';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('debug').innerHTML = '<p style="color: red;">Error: ' + error.message + '</p>';
+            });
+        }
+        
+        // Test on page load
+        window.addEventListener('load', function() {
+            console.log('Page loaded, checking loadView...');
+            if (typeof window.loadView === 'function') {
+                console.log('✅ loadView is available on page load');
+            } else {
+                console.log('❌ loadView is NOT available on page load');
+            }
+        });
+    </script>
+    
+    <script type="module" src="app/resources/js/loadView.js"></script>
+</body>
+</html> 

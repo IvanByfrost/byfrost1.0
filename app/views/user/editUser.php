@@ -6,21 +6,18 @@ require_once ROOT . '/config.php';
 require_once ROOT . '/app/library/SessionManager.php';
 require_once ROOT . '/app/library/Validator.php';
 
-// Verificar que el usuario esté logueado
 $sessionManager = new SessionManager();
 if (!$sessionManager->isLoggedIn()) {
     header("Location: " . url . "?view=index&action=login");
     exit;
 }
 
-// Obtener datos del usuario desde la base de datos
 $userId = htmlspecialchars($_GET['id'] ?? '');
 if (!$userId) {
     header("Location: " . url . "?view=user&action=consultUser");
     exit;
 }
 
-// Cargar datos del usuario desde el modelo
 require_once ROOT . '/app/scripts/connection.php';
 $dbConn = getConnection();
 require_once ROOT . '/app/models/UserModel.php';
@@ -38,48 +35,47 @@ try {
     exit;
 }
 
-// Mensajes que podrías pasar tras redirección desde tu proceso
 $success = $_GET['success'] ?? false;
 $message = $_GET['message'] ?? '';
 $error = $_GET['error'] ?? '';
-
 ?>
 
 <div class="container mt-4">
     <div class="row">
         <div class="col-12">
-            <!-- Header -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h2>Editar Usuario</h2>
                     <p>Modifica la información del usuario seleccionado.</p>
                 </div>
                 <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-info" onclick="loadView('user/view?id=<?php echo $user['user_id']; ?>')">
-                        <i class="fas fa-eye"></i> Ver Detalles
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        onclick="loadView('user', 'view', '#mainContent', true, { id: <?= $user['user_id'] ?> })">
+                        <i class="fas fa-eye"></i> Ver usuario
                     </button>
-                    <button type="button" class="btn btn-secondary" onclick="loadView('user/consultUser')">
+
+                    <button type="button" class="btn btn-secondary" onclick="loadView('user/consultUser', null, '#mainContent', true)">
                         <i class="fas fa-arrow-left"></i> Volver
                     </button>
                 </div>
             </div>
 
-            <!-- Mensajes -->
             <?php if ($success && !empty($message)) : ?>
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($message); ?>
+                    <i class="fas fa-check-circle"></i> <?= htmlspecialchars($message) ?>
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             <?php endif; ?>
 
             <?php if (!empty($error)) : ?>
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="fas fa-exclamation-triangle"></i> <?php echo htmlspecialchars($error); ?>
+                    <i class="fas fa-exclamation-triangle"></i> <?= htmlspecialchars($error) ?>
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             <?php endif; ?>
 
-            <!-- Formulario de Edición -->
             <div class="card">
                 <div class="card-header">
                     <h5 class="card-title mb-0">
@@ -87,7 +83,7 @@ $error = $_GET['error'] ?? '';
                     </h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST" id="editUserForm" action="?view=user&action=updateUser">
+                    <form method="POST" id="editUserForm">
                         <input type="hidden" name="csrf_token" value="<?= Validator::generateCSRFToken() ?>">
                         <input type="hidden" name="user_id" value="<?= htmlspecialchars($user['user_id']) ?>">
 
@@ -96,14 +92,14 @@ $error = $_GET['error'] ?? '';
                                 <div class="mb-3">
                                     <label for="first_name" class="form-label">Nombre *</label>
                                     <input type="text" class="form-control" id="first_name" name="first_name"
-                                           value="<?= htmlspecialchars($user['first_name']) ?>" required>
+                                        value="<?= htmlspecialchars($user['first_name']) ?>" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="last_name" class="form-label">Apellido *</label>
                                     <input type="text" class="form-control" id="last_name" name="last_name"
-                                           value="<?= htmlspecialchars($user['last_name']) ?>" required>
+                                        value="<?= htmlspecialchars($user['last_name']) ?>" required>
                                 </div>
                             </div>
                         </div>
@@ -113,14 +109,14 @@ $error = $_GET['error'] ?? '';
                                 <div class="mb-3">
                                     <label for="email" class="form-label">Email *</label>
                                     <input type="email" class="form-control" id="email" name="email"
-                                           value="<?= htmlspecialchars($user['email']) ?>" required>
+                                        value="<?= htmlspecialchars($user['email']) ?>" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="phone" class="form-label">Teléfono</label>
                                     <input type="tel" class="form-control" id="phone" name="phone"
-                                           value="<?= htmlspecialchars($user['phone']) ?>">
+                                        value="<?= htmlspecialchars($user['phone']) ?>">
                                 </div>
                             </div>
                         </div>
@@ -142,7 +138,7 @@ $error = $_GET['error'] ?? '';
                                 <div class="mb-3">
                                     <label for="credential_number" class="form-label">Número de Documento</label>
                                     <input type="text" class="form-control" id="credential_number" name="credential_number"
-                                           value="<?= htmlspecialchars($user['credential_number']) ?>">
+                                        value="<?= htmlspecialchars($user['credential_number']) ?>">
                                 </div>
                             </div>
                         </div>
@@ -152,14 +148,14 @@ $error = $_GET['error'] ?? '';
                                 <div class="mb-3">
                                     <label for="date_of_birth" class="form-label">Fecha de Nacimiento</label>
                                     <input type="date" class="form-control" id="date_of_birth" name="date_of_birth"
-                                           value="<?= htmlspecialchars($user['date_of_birth']) ?>">
+                                        value="<?= htmlspecialchars($user['date_of_birth']) ?>">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="address" class="form-label">Dirección</label>
                                     <input type="text" class="form-control" id="address" name="address"
-                                           value="<?= htmlspecialchars($user['address']) ?>">
+                                        value="<?= htmlspecialchars($user['address']) ?>">
                                 </div>
                             </div>
                         </div>
@@ -190,14 +186,18 @@ $error = $_GET['error'] ?? '';
                         </div>
 
                         <div class="d-flex justify-content-between">
-                            <button type="button" class="btn btn-secondary" onclick="loadView('user/view?id=<?= $user['user_id'] ?>')">
+                            <button
+                                type="button"
+                                class="btn btn-secondary"
+                                onclick="loadView('user', 'view', '#mainContent', true, { id: <?= $user['user_id'] ?> })">
                                 <i class="fas fa-times"></i> Cancelar
                             </button>
+
                             <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-warning" onclick="loadView('user/changePassword?id=<?= $user['user_id'] ?>')">
+                                <button type="button" class="btn btn-warning" onclick="loadView('user/changePassword', 'id=<?= $user['user_id'] ?>', '#mainContent', true)">
                                     <i class="fas fa-key"></i> Cambiar Contraseña
                                 </button>
-                                <button type="submit" class="btn btn-primary">
+                                <button type="button" class="btn btn-primary" onclick="submitEditUserForm()">
                                     <i class="fas fa-save"></i> Guardar Cambios
                                 </button>
                             </div>
@@ -208,26 +208,3 @@ $error = $_GET['error'] ?? '';
         </div>
     </div>
 </div>
-
-<script>
-// Validación del formulario
-document.getElementById('editUserForm').addEventListener('submit', function(e) {
-    const firstName = document.getElementById('first_name').value.trim();
-    const lastName = document.getElementById('last_name').value.trim();
-    const email = document.getElementById('email').value.trim();
-
-    if (!firstName || !lastName || !email) {
-        e.preventDefault();
-        alert('Por favor, completa todos los campos obligatorios.');
-        return false;
-    }
-
-    if (!email.includes('@')) {
-        e.preventDefault();
-        alert('Por favor, ingresa un email válido.');
-        return false;
-    }
-
-    return true;
-});
-</script>

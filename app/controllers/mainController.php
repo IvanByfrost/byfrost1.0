@@ -136,21 +136,32 @@ class MainController {
      */
     protected function isAjaxRequest()
     {
+        // Debug: Log de todos los headers relevantes
+        error_log("DEBUG isAjaxRequest - HTTP_X_REQUESTED_WITH: " . ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? 'not set'));
+        error_log("DEBUG isAjaxRequest - HTTP_ACCEPT: " . ($_SERVER['HTTP_ACCEPT'] ?? 'not set'));
+        error_log("DEBUG isAjaxRequest - REQUEST_METHOD: " . ($_SERVER['REQUEST_METHOD'] ?? 'not set'));
+        error_log("DEBUG isAjaxRequest - CONTENT_TYPE: " . ($_SERVER['CONTENT_TYPE'] ?? 'not set'));
+        error_log("DEBUG isAjaxRequest - GET action: " . ($_GET['action'] ?? 'not set'));
+        error_log("DEBUG isAjaxRequest - GET partialView: " . ($_GET['partialView'] ?? 'not set'));
+        
         // Método 1: Verificar HTTP_X_REQUESTED_WITH
         if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
             strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            error_log("DEBUG isAjaxRequest - Method 1 passed (HTTP_X_REQUESTED_WITH)");
             return true;
         }
         
         // Método 2: Verificar si es una petición fetch moderna
         if (!empty($_SERVER['HTTP_ACCEPT']) && 
             strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false) {
+            error_log("DEBUG isAjaxRequest - Method 2 passed (HTTP_ACCEPT)");
             return true;
         }
         
         // Método 3: Verificar si hay parámetros específicos de AJAX
         if ((isset($_POST['ajax']) && htmlspecialchars($_POST['ajax'])) || 
             (isset($_GET['ajax']) && htmlspecialchars($_GET['ajax']))) {
+            error_log("DEBUG isAjaxRequest - Method 3 passed (ajax parameter)");
             return true;
         }
         
@@ -158,19 +169,23 @@ class MainController {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && 
             !empty($_SERVER['CONTENT_TYPE']) && 
             strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
+            error_log("DEBUG isAjaxRequest - Method 4 passed (POST with JSON)");
             return true;
         }
         
         // Método 5: Verificar si la acción es loadPartial (indicador de AJAX)
         if (isset($_GET['action']) && htmlspecialchars($_GET['action']) === 'loadPartial') {
+            error_log("DEBUG isAjaxRequest - Method 5 passed (loadPartial action)");
             return true;
         }
         
         // Método 6: Verificar si hay parámetro partialView (indicador de AJAX)
         if (isset($_GET['partialView']) && htmlspecialchars($_GET['partialView'])) {
+            error_log("DEBUG isAjaxRequest - Method 6 passed (partialView parameter)");
             return true;
         }
         
+        error_log("DEBUG isAjaxRequest - All methods failed, returning false");
         return false;
     }
 
@@ -249,10 +264,10 @@ class MainController {
         $viewPath = ROOT . "/app/views/{$viewPath}.php";
         if (file_exists($viewPath)) {
             extract($data);
-            require ROOT . '/app/views/layouts/head.php';
+            require ROOT . '/app/views/layouts/dashHead.php';
             require ROOT . '/app/views/layouts/dashHeader.php';
             require $viewPath;
-            require ROOT . '/app/views/layouts/dashFooter.php';
+            require ROOT . '/app/views/layouts/footers/dashFooter.php';
         } else {
             http_response_code(404);
             require_once ROOT . '/app/controllers/ErrorController.php';

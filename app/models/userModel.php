@@ -12,16 +12,47 @@ class UserModel extends MainModel
         }
     }
 
+    /**
+     * ✅ Devuelve todos los usuarios
+     * mostrando correctamente si están activos o no,
+     * y el rol activo o inactivo.
+     */
     public function getUsers()
     {
         $query = "
-            SELECT u.*, ur.role_type
+            SELECT u.*, ur.role_type, ur.is_active AS role_active
             FROM users u
-            LEFT JOIN user_roles ur ON u.user_id = ur.user_id
+            INNER JOIN user_roles ur ON u.user_id = ur.user_id
             WHERE u.is_active = 1
+              AND ur.is_active = 1
+            ORDER BY u.first_name, u.last_name
         ";
+    
         $stmt = $this->dbConn->query($query);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+
+    /**
+     * ✅ Obtiene un solo usuario
+     */
+    public function getUser($userId)
+    {
+        $query = "
+            SELECT 
+                u.*,
+                ur.role_type,
+                ur.is_active AS role_active
+            FROM users u
+            LEFT JOIN user_roles ur
+                ON u.user_id = ur.user_id
+            WHERE u.user_id = :user_id
+            LIMIT 1
+        ";
+
+        $stmt = $this->dbConn->prepare($query);
+        $stmt->execute([':user_id' => $userId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function createUser($data)
@@ -29,7 +60,6 @@ class UserModel extends MainModel
         $this->dbConn->beginTransaction();
 
         try {
-            // Verificar documento
             $queryCheckDoc = "SELECT COUNT(*) FROM users WHERE credential_number = :credential_number";
             $stmtDoc = $this->dbConn->prepare($queryCheckDoc);
             $stmtDoc->execute([':credential_number' => $data['credential_number']]);
@@ -37,7 +67,6 @@ class UserModel extends MainModel
                 throw new Exception("Ya existe un usuario con ese documento.");
             }
 
-            // Verificar email
             $queryCheckEmail = "SELECT COUNT(*) FROM users WHERE email = :email";
             $stmtEmail = $this->dbConn->prepare($queryCheckEmail);
             $stmtEmail->execute([':email' => $data['email']]);
@@ -49,12 +78,15 @@ class UserModel extends MainModel
 
             $query = "
                 INSERT INTO users (
-                    credential_type, credential_number, first_name, last_name,
-                    date_of_birth, email, phone, address, password_hash, salt_password
-                )
-                VALUES (
-                    :credential_type, :credential_number, :first_name, :last_name,
-                    :date_of_birth, :email, :phone, :address, :password_hash, ''
+                    credential_type, credential_number,
+                    first_name, last_name,
+                    date_of_birth, email, phone, address,
+                    password_hash, salt_password
+                ) VALUES (
+                    :credential_type, :credential_number,
+                    :first_name, :last_name,
+                    :date_of_birth, :email, :phone, :address,
+                    :password_hash, ''
                 )
             ";
 
@@ -85,20 +117,6 @@ class UserModel extends MainModel
             error_log("Error en UserModel::createUser → " . $e->getMessage());
             throw $e;
         }
-    }
-
-    public function getUser($userId)
-    {
-        $query = "
-            SELECT u.*, ur.role_type
-            FROM users u
-            LEFT JOIN user_roles ur ON u.user_id = ur.user_id
-            WHERE u.user_id = :user_id AND u.is_active = 1
-        ";
-
-        $stmt = $this->dbConn->prepare($query);
-        $stmt->execute([':user_id' => $userId]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function updateUser($userId, $data)
@@ -271,6 +289,9 @@ class UserModel extends MainModel
         return false;
     }
 
+    /**
+     * ✅ Asigna un rol a un usuario
+     */
     public function assignRole($userId, $roleType)
     {
         try {
@@ -319,18 +340,23 @@ class UserModel extends MainModel
         }
     }
 
+    /**
+     * ✅ Búsqueda por documento (ahora trae activo/inactivo)
+     */
     public function searchUsersByDocument($credentialType, $credentialNumber)
     {
         $query = "
             SELECT
                 u.user_id, u.credential_type, u.credential_number,
-                u.first_name, u.last_name, u.email, u.phone, u.address, u.is_active,
-                ur.role_type AS user_role
+                u.first_name, u.last_name, u.email, u.phone, u.address,
+                u.is_active,
+                ur.role_type AS user_role,
+                ur.is_active AS role_active
             FROM users u
-            LEFT JOIN user_roles ur ON u.user_id = ur.user_id AND ur.is_active = 1
+            LEFT JOIN user_roles ur 
+                ON u.user_id = ur.user_id
             WHERE u.credential_type = :credential_type
               AND u.credential_number = :credential_number
-              AND u.is_active = 1
             ORDER BY u.first_name, u.last_name
         ";
 
@@ -348,7 +374,8 @@ class UserModel extends MainModel
         $query = "
             SELECT u.*
             FROM users u
-            LEFT JOIN user_roles ur ON u.user_id = ur.user_id AND ur.is_active = 1
+            LEFT JOIN user_roles ur 
+                ON u.user_id = ur.user_id AND ur.is_active = 1
             WHERE ur.user_id IS NULL
               AND u.is_active = 1
             ORDER BY u.first_name, u.last_name
@@ -381,95 +408,13 @@ class UserModel extends MainModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function searchUsersByRole($roleType, $query, $currentUserRole = null)
-    {
-        if ($currentUserRole === 'director' && in_array($roleType, ['root', 'director'])) {
-            throw new Exception('No tienes permisos para buscar usuarios con ese rol.');
-        }
-
-        $sql = "
-            SELECT u.*, ur.role_type
-            FROM users u
-            INNER JOIN user_roles ur ON u.user_id = ur.user_id
-            WHERE ur.role_type = :role_type
-              AND u.is_active = 1
-              AND ur.is_active = 1
-              AND (
-                  u.first_name LIKE :search
-                  OR u.last_name LIKE :search
-                  OR u.credential_number LIKE :search
-                  OR CONCAT(u.first_name, ' ', u.last_name) LIKE :search
-              )
-            ORDER BY u.first_name, u.last_name
-            LIMIT 10
-        ";
-
-        $stmt = $this->dbConn->prepare($sql);
-        $stmt->execute([
-            ':role_type' => $roleType,
-            ':search' => '%' . $query . '%'
-        ]);
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function searchUsersByRoleAndDocument($roleType, $credentialNumber, $currentUserRole = null)
-    {
-        if ($currentUserRole === 'director' && in_array($roleType, ['root', 'director'])) {
-            throw new Exception('No tienes permisos para buscar usuarios con ese rol.');
-        }
-
-        $query = "
-            SELECT u.*, ur.role_type
-            FROM users u
-            INNER JOIN user_roles ur ON u.user_id = ur.user_id
-            WHERE ur.role_type = :role_type
-              AND u.credential_number = :credential_number
-              AND u.is_active = 1
-              AND ur.is_active = 1
-            ORDER BY u.first_name, u.last_name
-            LIMIT 10
-        ";
-
-        $stmt = $this->dbConn->prepare($query);
-        $stmt->execute([
-            ':role_type' => $roleType,
-            ':credential_number' => $credentialNumber
-        ]);
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function changePassword($userId, $currentPassword, $newPassword)
-    {
-        $query = "SELECT password_hash FROM users WHERE user_id = :user_id AND is_active = 1";
-        $stmt = $this->dbConn->prepare($query);
-        $stmt->execute([':user_id' => $userId]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$user) {
-            return 'Usuario no encontrado o inactivo.';
-        }
-
-        if (!password_verify($currentPassword, $user['password_hash'])) {
-            return 'La contraseña actual es incorrecta.';
-        }
-
-        $newHash = password_hash($newPassword, PASSWORD_DEFAULT);
-
-        $update = "UPDATE users SET password_hash = :new_hash WHERE user_id = :user_id";
-        $stmtUpdate = $this->dbConn->prepare($update);
-        $result = $stmtUpdate->execute([':new_hash' => $newHash, ':user_id' => $userId]);
-
-        return $result ? true : 'Error al actualizar la contraseña.';
-    }
-
     public function searchUsersByName($nameSearch)
     {
         $query = "
             SELECT u.*, ur.role_type AS user_role
             FROM users u
-            LEFT JOIN user_roles ur ON u.user_id = ur.user_id AND ur.is_active = 1
+            LEFT JOIN user_roles ur 
+                ON u.user_id = ur.user_id AND ur.is_active = 1
             WHERE u.is_active = 1
               AND (
                   u.first_name LIKE :search
@@ -490,7 +435,8 @@ class UserModel extends MainModel
         $query = "
             SELECT u.*, ur.role_type AS user_role
             FROM users u
-            LEFT JOIN user_roles ur ON u.user_id = ur.user_id AND ur.is_active = 1
+            LEFT JOIN user_roles ur 
+                ON u.user_id = ur.user_id AND ur.is_active = 1
             WHERE u.is_active = 1
               AND (
                   u.first_name LIKE :search
@@ -509,39 +455,46 @@ class UserModel extends MainModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    private function assignDefaultRole($userId, $roleType)
-    {
-        return $this->assignRole($userId, $roleType);
-    }
-
-    public function updateUser($userId, $data)
+    public function getRoleHistory($userId)
 {
-    $sql = "
-        UPDATE user_main
-        SET 
-            first_name = :first_name,
-            last_name = :last_name,
-            email = :email,
-            phone = :phone,
-            address = :address,
-            date_of_birth = :date_of_birth,
-            credential_type = :credential_type,
-            credential_number = :credential_number
-        WHERE user_main_id = :user_id
+    $query = "
+        SELECT 
+            ur.role_type,
+            ur.is_active,
+            ur.created_at
+        FROM user_roles ur
+        WHERE ur.user_id = :user_id
+        ORDER BY ur.created_at DESC
     ";
 
-    $stmt = $this->db->prepare($sql);
-    $stmt->bindValue(':first_name', $data['first_name']);
-    $stmt->bindValue(':last_name', $data['last_name']);
-    $stmt->bindValue(':email', $data['email']);
-    $stmt->bindValue(':phone', $data['phone']);
-    $stmt->bindValue(':address', $data['address']);
-    $stmt->bindValue(':date_of_birth', $data['date_of_birth']);
-    $stmt->bindValue(':credential_type', $data['credential_type']);
-    $stmt->bindValue(':credential_number', $data['credential_number']);
-    $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
-
-    return $stmt->execute();
+    $stmt = $this->dbConn->prepare($query);
+    $stmt->execute([':user_id' => $userId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+public function changePassword($userId, $currentPassword, $newPassword)
+{
+    $query = "SELECT password_hash FROM users WHERE user_id = :user_id AND is_active = 1";
+    $stmt = $this->dbConn->prepare($query);
+    $stmt->execute([':user_id' => $userId]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$user) {
+        return 'Usuario no encontrado o inactivo.';
+    }
+
+    if (!password_verify($currentPassword, $user['password_hash'])) {
+        return 'La contraseña actual es incorrecta.';
+    }
+
+    $newHash = password_hash($newPassword, PASSWORD_DEFAULT);
+
+    $update = "UPDATE users SET password_hash = :new_hash WHERE user_id = :user_id";
+    $stmtUpdate = $this->dbConn->prepare($update);
+    $result = $stmtUpdate->execute([':new_hash' => $newHash, ':user_id' => $userId]);
+
+    return $result ? true : 'Error al actualizar la contraseña.';
+}
+
 
 }

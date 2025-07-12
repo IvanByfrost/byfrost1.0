@@ -5,7 +5,7 @@ if (!defined('ROOT')) {
 }
 
 require_once ROOT . '/config.php';
-require_once ROOT . '/app/helpers/SessionHelper.php';
+require_once ROOT . '/app/library/SessionHelper.php';
 require_once ROOT . '/app/library/Validator.php';
 
 // Obtener sesión y datos de usuario

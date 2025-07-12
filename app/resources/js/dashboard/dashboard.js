@@ -382,11 +382,3 @@ window.initDirectorDashboardSimple = function() {
     window.initDirectorDashboard();
 };
 
-// Función de respaldo para loadView si no está disponible
-if (typeof loadView === 'undefined') {
-    window.loadView = function(viewName) {
-        console.log('loadView no disponible, redirigiendo a:', viewName);
-        const url = `${window.location.origin}${window.location.pathname}?view=${viewName.replace('/', '&action=')}`;
-        window.location.href = url;
-    };
-}

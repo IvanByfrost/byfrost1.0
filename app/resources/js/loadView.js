@@ -1,26 +1,30 @@
 // loadView.js - Sistema de carga dinámica de vistas
 // ByFrost - Navegación SPA + carga modular de scripts
 
-import { loadViewScript } from './navigation/viewScriptsLoader.js';
+// ✅ Import de scripts dinámicos (solo si lo tienes modularizado)
+//// import { loadViewScript } from './navigation/viewScriptsLoader.js';
 
 // Construye la base URL quitando archivo al final (index.php, etc.)
-const baseUrl = (function () {
-    const path = window.location.pathname;
-    return window.location.origin + path.replace(/[^/]*$/, '');
-})();
-
-let currentView = '';
-let isLoading = false;
+window.baseUrl = window.baseUrl || window.BASE_URL || '/';
+window.currentView = window.currentView || '';
+window.isLoading = window.isLoading || false;
 
 /**
- * Construye la URL para una vista
+ * Construye la URL de la vista, incluyendo parámetros
  * @param {string} viewName
  * @param {string|null} action
+ * @param {Object} params
  * @returns {string}
  */
-function buildViewUrl(viewName, action = null) {
-    let url = baseUrl + '?view=' + encodeURIComponent(viewName);
-    if (action) url += '&action=' + encodeURIComponent(action);
+function buildViewUrl(viewName, action = null, params = {}) {
+    let url = `?view=${encodeURIComponent(viewName)}`;
+    console.log("📡 URL construida:", url);
+    if (action) {
+        url += `&action=${encodeURIComponent(action)}`;
+    }
+    for (const [key, value] of Object.entries(params)) {
+        url += `&${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+    }
     return url;
 }
 
@@ -30,8 +34,9 @@ function buildViewUrl(viewName, action = null) {
  * @param {string|null} action
  * @param {string} targetElement
  * @param {boolean} partial
+ * @param {Object} params
  */
-async function loadView(viewName, action = null, targetElement = '#mainContent', partial = false) {
+async function loadView(viewName, action = null, targetElement = '#mainContent', partial = false, params = {}) {
     if (isLoading) {
         console.log('Ya hay una carga en progreso. Esperando...');
         return;
@@ -43,13 +48,13 @@ async function loadView(viewName, action = null, targetElement = '#mainContent',
     showLoadingIndicator(targetElement);
 
     try {
-        let url = buildViewUrl(viewName, action);
+        let url = buildViewUrl(viewName, action, params);
         if (partial) {
             url += '&partialView=true';
         }
 
         console.log(`${partial ? 'Cargando vista parcial:' : 'Cargando vista completa:'} ${url}`);
-
+        console.log('URL que se está solicitando:', url);
         const response = await fetch(url, {
             method: 'GET',
             headers: {
@@ -70,11 +75,11 @@ async function loadView(viewName, action = null, targetElement = '#mainContent',
             target.innerHTML = html;
             executeScriptsInContent(target);
 
-            // 🔥 Carga dinámica de scripts para esta vista
-            await loadViewScript(viewName);
+            // ✅ Si quieres cargar scripts dinámicos:
+            //// await loadViewScript(viewName);
 
             if (!partial) {
-                updateBrowserUrl(viewName, action);
+                updateBrowserUrl(viewName, action, params);
                 document.dispatchEvent(new CustomEvent('viewLoaded', {
                     detail: { view: viewName, action: action }
                 }));
@@ -84,7 +89,6 @@ async function loadView(viewName, action = null, targetElement = '#mainContent',
             }
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
-
         } else {
             console.error('Elemento objetivo no encontrado:', targetElement);
         }
@@ -104,22 +108,22 @@ async function loadView(viewName, action = null, targetElement = '#mainContent',
 function executeScriptsInContent(container) {
     const scripts = container.querySelectorAll('script');
     scripts.forEach(script => {
+        const newScript = document.createElement('script');
+
         if (script.src) {
-            const newScript = document.createElement('script');
             newScript.src = script.src;
-            document.head.appendChild(newScript);
+            newScript.type = script.type || 'text/javascript';
         } else {
-            try {
-                eval(script.textContent);
-            } catch (error) {
-                console.error('Error ejecutando script inline:', error);
-            }
+            newScript.textContent = script.textContent;
+            newScript.type = script.type || 'text/javascript';
         }
+
+        document.head.appendChild(newScript);
     });
 }
 
 /**
- * Muestra un indicador de carga
+ * Muestra indicador de carga
  * @param {string} targetElement
  */
 function showLoadingIndicator(targetElement = '#mainContent') {
@@ -147,7 +151,7 @@ function hideLoadingIndicator() {
 }
 
 /**
- * Muestra un mensaje de error en el target
+ * Muestra error en la vista
  * @param {string} targetElement
  * @param {string} message
  */
@@ -168,124 +172,30 @@ function showError(targetElement, message) {
 }
 
 /**
- * Actualiza la URL en la barra de navegación
+ * Actualiza la URL en el navegador
  * @param {string} view
  * @param {string|null} action
+ * @param {Object} params
  */
-function updateBrowserUrl(view, action = null) {
-    let url = buildViewUrl(view, action);
+function updateBrowserUrl(view, action = null, params = {}) {
+    let url = buildViewUrl(view, action, params);
     if (window.history && window.history.pushState) {
         window.history.pushState({ view, action }, '', url);
     }
 }
 
 /**
- * Navega programáticamente a una vista
+ * Función rápida para navegar
  * @param {string} view
  * @param {string|null} action
+ * @param {Object} params
  */
-function navigateTo(view, action = null) {
-    loadView(view, action);
+function navigateTo(view, action = null, params = {}) {
+    loadView(view, action, '#mainContent', false, params);
 }
 
-/**
- * Inicializa la navegación SPA
- */
-function initializeNavigation() {
-    document.addEventListener('click', function (e) {
-        const link = e.target.closest('[data-view]');
-        if (link) {
-            e.preventDefault();
-            const view = link.getAttribute('data-view');
-            const action = link.getAttribute('data-action');
-            loadView(view, action);
-        }
-    });
-
-    document.addEventListener('submit', function (e) {
-        const form = e.target;
-        if (form.hasAttribute('data-ajax')) {
-            e.preventDefault();
-            handleAjaxForm(form);
-        }
-    });
-
-    console.log('Sistema de navegación SPA inicializado.');
-}
-
-/**
- * Procesa formularios AJAX
- * @param {HTMLFormElement} form
- */
-function handleAjaxForm(form) {
-    const formData = new FormData(form);
-    const url = form.action || baseUrl;
-
-    fetch(url, {
-        method: 'POST',
-        body: formData,
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                if (data.redirect) {
-                    loadView(data.redirect.view, data.redirect.action);
-                } else if (data.message) {
-                    showSuccessMessage(data.message);
-                }
-            } else {
-                showErrorMessage(data.message || 'Error en el formulario');
-            }
-        })
-        .catch(error => {
-            console.error('Error en formulario AJAX:', error);
-            showErrorMessage('Error al procesar el formulario');
-        });
-}
-
-/**
- * Muestra un mensaje de éxito
- * @param {string} message
- */
-function showSuccessMessage(message) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = 'alert alert-success alert-dismissible fade show';
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-    const container = document.querySelector('#mainContent');
-    if (container) container.insertBefore(alertDiv, container.firstChild);
-}
-
-/**
- * Muestra un mensaje de error
- * @param {string} message
- */
-function showErrorMessage(message) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-    const container = document.querySelector('#mainContent');
-    if (container) container.insertBefore(alertDiv, container.firstChild);
-}
-
-// Inicializar al cargar la página
-document.addEventListener('DOMContentLoaded', function () {
-    initializeNavigation();
-
-    window.addEventListener('popstate', function (e) {
-        if (e.state && e.state.view) {
-            loadView(e.state.view, e.state.action);
-        }
-    });
-});
-
-// Exportar globalmente (opcional)
+// ✅ Exponer funciones globalmente
 window.loadView = loadView;
-window.loadPartialView = loadView;
+window.loadPartialView = (view, action, target, params = {}) =>
+    loadView(view, action, target, true, params);
 window.navigateTo = navigateTo;

@@ -13,6 +13,15 @@ class UserController extends MainController
         $this->userModel = new UserModel($dbConn);
     }
 
+    /**
+     * Exponer loadPartial de MainController como público,
+     * para permitir su uso desde el Router.
+     */
+    public function loadPartial()
+    {
+        parent::loadPartial();
+    }
+
     // ------------------------------------------------------------------------
     // Consultas y vistas generales
     // ------------------------------------------------------------------------
@@ -20,18 +29,24 @@ class UserController extends MainController
     public function consultUser()
     {
         $this->protectRoot();
-
+    
+        // Debug: Log de la petición
+        error_log("DEBUG UserController::consultUser - isAjaxRequest: " . ($this->isAjaxRequest() ? 'true' : 'false'));
+        error_log("DEBUG UserController::consultUser - isDashboardContext: " . ($this->isDashboardContext() ? 'true' : 'false'));
+        error_log("DEBUG UserController::consultUser - HTTP_X_REQUESTED_WITH: " . ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? 'not set'));
+    
         $searchType = $_GET['search_type'] ?? '';
         $search = $_GET['search'] ?? '';
         $roleType = $_GET['role_type'] ?? '';
         $credentialType = $_GET['credential_type'] ?? '';
         $credentialNumber = $_GET['credential_number'] ?? '';
         $nameSearch = $_GET['name_search'] ?? '';
-
+    
         $users = [];
         $message = '';
         $error = '';
-
+        $success = $_GET['success'] ?? false;  // ✅ Declarado siempre
+    
         try {
             if (!empty($searchType)) {
                 switch ($searchType) {
@@ -40,18 +55,23 @@ class UserController extends MainController
                             $users = $this->userModel->searchUsersByDocument($credentialType, $credentialNumber);
                         }
                         break;
+    
                     case 'role':
-                        if ($roleType) {
+                        if (!empty($roleType)) {
                             $users = $this->userModel->getUsersByRole($roleType, $this->sessionManager->getUserRole());
+                        } else {
+                            error_log("[UserController::consultUser] Rol vacío en búsqueda por rol");
                         }
                         break;
+    
                     case 'name':
-                        if ($nameSearch) {
+                        if (!empty($nameSearch)) {
                             $users = $this->userModel->searchUsersByName($nameSearch);
                         }
                         break;
+    
                     case 'general':
-                        if ($search) {
+                        if (!empty($search)) {
                             $users = $this->userModel->searchUsersGeneral($search);
                         }
                         break;
@@ -59,15 +79,14 @@ class UserController extends MainController
             } else {
                 $users = $this->userModel->getUsers();
             }
-
-            $success = $_GET['success'] ?? false;
+    
             $message = $_GET['msg'] ?? '';
-
+    
         } catch (Exception $e) {
             $error = 'Error al buscar usuarios: ' . $e->getMessage();
             error_log("[UserController::consultUser] " . $e->getMessage());
         }
-
+    
         $viewData = compact(
             'users',
             'search',
@@ -80,8 +99,8 @@ class UserController extends MainController
             'message',
             'error'
         );
-
-        if ($this->isAjaxRequest() || $this->isDashboardContext()) {
+    
+        if ($this->isDashboardContext() || $this->isAjaxRequest()) {
             $this->loadPartialView('user/consultUser', $viewData);
         } else {
             $redirectUrl = url . "?view=root&action=dashboard";
@@ -89,6 +108,7 @@ class UserController extends MainController
             exit;
         }
     }
+    
 
     public function view()
     {
@@ -273,29 +293,44 @@ class UserController extends MainController
     public function editUserAjax()
     {
         $this->protectRoot();
-
+    
         $data = json_decode(file_get_contents('php://input'), true);
         $userId = $data['user_id'] ?? null;
-
-        if (!$userId || !$data['first_name'] || !$data['last_name'] || !$data['email']) {
+    
+        if (!$userId 
+            || empty($data['first_name']) 
+            || empty($data['last_name']) 
+            || empty($data['email'])
+        ) {
             $this->sendJsonResponse(false, 'Faltan datos requeridos.');
             return;
         }
-
+    
+        // Construir array de datos
+        $updateData = [
+            'first_name'         => $data['first_name'],
+            'last_name'          => $data['last_name'],
+            'email'              => $data['email'],
+            'phone'              => $data['phone'] ?? null,
+            'date_of_birth'      => $data['date_of_birth'] ?? null,
+            'address'            => $data['address'] ?? null,
+            'credential_type'    => $data['credential_type'] ?? null,
+            'credential_number'  => $data['credential_number'] ?? null,
+        ];
+    
         try {
-            $this->userModel->updateUser($userId, [
-                'first_name' => $data['first_name'],
-                'last_name' => $data['last_name'],
-                'email' => $data['email'],
-                'phone' => $data['phone'] ?? null,
-                'date_of_birth' => null,
-                'address' => $data['address'] ?? null,
+            $this->userModel->updateUser($userId, $updateData);
+    
+            $this->sendJsonResponse(true, 'Usuario editado correctamente.', [
+                'redirect' => "?view=user&action=view&id={$userId}&partialView=true"
             ]);
-            $this->sendJsonResponse(true, 'Usuario editado correctamente.');
+    
         } catch (Exception $e) {
+            error_log("[UserController::editUserAjax] " . $e->getMessage());
             $this->sendJsonResponse(false, 'Error al editar usuario: ' . $e->getMessage());
         }
     }
+    
 
     public function deleteUserAjax()
     {
@@ -458,4 +493,215 @@ class UserController extends MainController
             exit;
         }
     }
+
+    public function updateUser()
+    {
+        $this->protectRoot();
+    
+        // Solo permitir método POST
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect("?view=user&action=consultUser");
+            return;
+        }
+    
+        // Validar token CSRF
+        $csrfToken = $_POST['csrf_token'] ?? '';
+        if (!Validator::validateCSRFToken($csrfToken)) {
+            $this->redirect("?view=user&action=consultUser&error=" . urlencode("Token CSRF inválido."));
+            return;
+        }
+    
+        $userId = $_POST['user_id'] ?? null;
+    
+        if (!$userId) {
+            $this->redirect("?view=user&action=consultUser&error=" . urlencode("Usuario no especificado."));
+            return;
+        }
+    
+        // Validar campos obligatorios
+        $firstName = trim($_POST['first_name'] ?? '');
+        $lastName = trim($_POST['last_name'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+    
+        if (empty($firstName) || empty($lastName) || empty($email)) {
+            $this->redirect("?view=user&action=edit&id={$userId}&error=" . urlencode("Nombre, apellido y correo son obligatorios."));
+            return;
+        }
+    
+        // Construir datos
+        $data = [
+            'first_name'         => $firstName,
+            'last_name'          => $lastName,
+            'email'              => $email,
+            'phone'              => trim($_POST['phone'] ?? ''),
+            'date_of_birth'      => trim($_POST['date_of_birth'] ?? ''),
+            'address'            => trim($_POST['address'] ?? ''),
+            'credential_type'    => trim($_POST['credential_type'] ?? ''),
+            'credential_number'  => trim($_POST['credential_number'] ?? ''),
+        ];
+    
+        try {
+            // Actualizar en la base de datos
+            $this->userModel->updateUser($userId, $data);
+    
+            $successMsg = urlencode("Usuario actualizado correctamente.");
+            $this->redirect("?view=user&action=view&id={$userId}&success=1&message={$successMsg}");
+    
+        } catch (Exception $e) {
+            error_log("[UserController::updateUser] " . $e->getMessage());
+            $errorMsg = urlencode("Error al actualizar el usuario.");
+            $this->redirect("?view=user&action=edit&id={$userId}&error={$errorMsg}");
+        }
+    }
+    
+    public function viewRoleHistory()
+{
+    $this->protectRoot();
+
+    $userId = $_GET['id'] ?? null;
+
+    if (!$userId) {
+        $this->loadPartialView('Error/404');
+        return;
+    }
+
+    try {
+        // Obtener historial de roles desde el modelo
+        $roleHistory = $this->userModel->getRoleHistory($userId);
+
+        // Obtener información del usuario
+        $user = $this->userModel->getUser($userId);
+        
+        $this->loadPartialView('user/viewRoleHistory', [
+            'userId' => $userId,
+            'user' => $user,
+            'roleHistory' => $roleHistory
+        ]);
+    } catch (Exception $e) {
+        error_log("[UserController::viewRoleHistory] " . $e->getMessage());
+        $this->loadPartialView('Error/500');
+    }
+}
+
+public function assignRole()
+{
+    $this->protectRoot();
+
+    $userId = $_POST['user_id'] ?? null;
+    $roleType = $_POST['role'] ?? null;
+
+    if (!$userId || !$roleType) {
+        $this->loadPartialView('Error/400', [
+            'message' => 'Faltan datos para asignar el rol.'
+        ]);
+        return;
+    }
+
+    try {
+        $this->userModel->assignRole($userId, $roleType);
+
+        $successMsg = urlencode("Rol asignado correctamente.");
+        $this->redirect("?view=user&action=view&id={$userId}&success=1&message={$successMsg}");
+    } catch (Exception $e) {
+        error_log("[UserController::assignRole] " . $e->getMessage());
+        $errorMsg = urlencode("Error al asignar el rol.");
+        $this->redirect("?view=user&action=view&id={$userId}&error={$errorMsg}");
+    }
+}
+
+public function assignRoleAjax()
+{
+    $this->protectRoot();
+
+    $data = json_decode(file_get_contents('php://input'), true);
+
+    $userId = $data['user_id'] ?? null;
+    $roleType = $data['role_type'] ?? null;
+
+    if (!$userId || !$roleType) {
+        $this->sendJsonResponse(false, 'Faltan datos obligatorios.');
+        return;
+    }
+
+    try {
+        $this->userModel->assignRole($userId, $roleType);
+        $this->sendJsonResponse(true, 'Rol asignado correctamente.');
+    } catch (Exception $e) {
+        error_log("[UserController::assignRoleAjax] " . $e->getMessage());
+        $this->sendJsonResponse(false, 'Error al asignar el rol.');
+    }
+}
+
+public function assignRoleView()
+{
+    $this->protectRoot();
+
+    $userId = $_GET['id'] ?? null;
+
+    if (!$userId) {
+        $this->loadPartialView('Error/404');
+        return;
+    }
+
+    try {
+        $user = $this->userModel->getUser($userId);
+
+        if (!$user) {
+            $this->loadPartialView('Error/404');
+            return;
+        }
+
+        $this->loadPartialView('user/assignRole', [
+            'user' => $user
+        ]);
+
+    } catch (Exception $e) {
+        error_log("[UserController::assignRoleView] " . $e->getMessage());
+        $this->loadPartialView('Error/500');
+    }
+}
+
+public function updateUserAjax()
+{
+    $this->protectRoot();
+
+    $data = $_POST;
+
+    $userId = $data['user_id'] ?? null;
+
+    if (!$userId) {
+        $this->sendJsonResponse(false, 'Usuario no especificado.');
+        return;
+    }
+
+    $firstName = trim($data['first_name'] ?? '');
+    $lastName = trim($data['last_name'] ?? '');
+    $email = trim($data['email'] ?? '');
+
+    if (empty($firstName) || empty($lastName) || empty($email)) {
+        $this->sendJsonResponse(false, 'Nombre, apellido y correo son obligatorios.');
+        return;
+    }
+
+    $updateData = [
+        'first_name'        => $firstName,
+        'last_name'         => $lastName,
+        'email'             => $email,
+        'phone'             => trim($data['phone'] ?? ''),
+        'date_of_birth'     => trim($data['date_of_birth'] ?? ''),
+        'address'           => trim($data['address'] ?? ''),
+        'credential_type'   => trim($data['credential_type'] ?? ''),
+        'credential_number' => trim($data['credential_number'] ?? ''),
+    ];
+
+    try {
+        $this->userModel->updateUser($userId, $updateData);
+        $this->sendJsonResponse(true, 'Usuario actualizado correctamente.');
+    } catch (Exception $e) {
+        error_log("[UserController::updateUserAjax] " . $e->getMessage());
+        $this->sendJsonResponse(false, 'Error al actualizar el usuario.');
+    }
+}
+
+
 }
